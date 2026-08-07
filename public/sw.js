@@ -1,4 +1,4 @@
-const CACHE = 'canesprout-shell-v2.1.2';
+const CACHE = 'canesprout-shell-v2.1.5';
 const CORE = ['/', '/index.html', '/icon.svg'];
 
 self.addEventListener('install', (event) => {

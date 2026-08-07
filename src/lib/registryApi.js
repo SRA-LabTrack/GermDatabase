@@ -19,6 +19,7 @@ export const LIST_FIELDS = [
   'leaf_color',
   'stalk_exposed_color',
   'bud_shape',
+  'germ_trial_code',
   'germ_status',
   'germ_location',
   'germination_pct',
@@ -26,19 +27,35 @@ export const LIST_FIELDS = [
 ];
 
 const memoryCache = new Map();
+const inflightCache = new Map();
 const detailCache = new Map();
 const coreCache = new Map();
 const CACHE_TTL = 90_000;
 const DETAIL_TTL = 300_000;
-const LAST_PAGE_KEY = 'sugarcane-registry:last-page-v212';
+const CACHE_NAMESPACE = 'sugarcane-v215';
+const LAST_PAGE_KEY = `${CACHE_NAMESPACE}:last-page`;
 
-function cacheKey(search, cursor) {
-  return `${String(search || '').trim().toLowerCase()}::${cursor || 'first'}`;
+function cacheKey(search, scope, cursor) {
+  const term = String(search || '').trim().toLowerCase();
+  return `${term ? (scope || 'variety') : 'browse'}::${term}::${cursor || 'first'}`;
 }
+
+export const SEARCH_SCOPES = Object.freeze({
+  variety: { label: 'Variety', attribute: 'variety', mode: 'contains' },
+  trial: { label: 'Trial code', attribute: 'germ_trial_code', mode: 'contains' },
+  location: { label: 'Location', attribute: 'germ_location', mode: 'contains' },
+  status: { label: 'Status', attribute: 'germ_status', mode: 'contains' },
+  all: { label: 'All traits & keywords', attribute: 'search_text', mode: 'fulltext' }
+});
+
+function normalizeScope(scope) {
+  return SEARCH_SCOPES[scope] ? scope : 'variety';
+}
+
 
 function readSessionCache(key) {
   try {
-    const raw = sessionStorage.getItem(`sugarcane:q:${key}`);
+    const raw = sessionStorage.getItem(`${CACHE_NAMESPACE}:q:${key}`);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
     if (Date.now() - parsed.savedAt > CACHE_TTL) return null;
@@ -50,7 +67,7 @@ function readSessionCache(key) {
 
 function writeSessionCache(key, value) {
   try {
-    sessionStorage.setItem(`sugarcane:q:${key}`, JSON.stringify({ savedAt: Date.now(), value }));
+    sessionStorage.setItem(`${CACHE_NAMESPACE}:q:${key}`, JSON.stringify({ savedAt: Date.now(), value }));
   } catch {}
 }
 
@@ -73,11 +90,12 @@ export function getOfflineLastPage() {
 
 export function clearQueryCache() {
   memoryCache.clear();
+  inflightCache.clear();
   detailCache.clear();
   coreCache.clear();
   try {
     Object.keys(sessionStorage)
-      .filter((key) => key.startsWith('sugarcane:q:'))
+      .filter((key) => key.startsWith(`${CACHE_NAMESPACE}:q:`))
       .forEach((key) => sessionStorage.removeItem(key));
   } catch {}
 }
@@ -88,13 +106,14 @@ function rememberCore(documents = []) {
   });
 }
 
-export async function listRecords({ search = '', cursor = '', bypassCache = false } = {}) {
+export async function listRecords({ search = '', scope = 'variety', cursor = '', bypassCache = false } = {}) {
   const term = String(search || '').trim();
+  const normalizedScope = normalizeScope(scope);
   if (term && term.length < SEARCH_MIN) {
     return { documents: [], nextCursor: '', hasMore: false, skippedForShortSearch: true, fromCache: false };
   }
 
-  const key = cacheKey(term, cursor);
+  const key = cacheKey(term, normalizedScope, cursor);
   if (!bypassCache) {
     const hit = memoryCache.get(key);
     if (hit && Date.now() - hit.savedAt < CACHE_TTL) {
@@ -109,39 +128,86 @@ export async function listRecords({ search = '', cursor = '', bypassCache = fals
     }
   }
 
-  const queries = [Query.limit(PAGE_SIZE), Query.select(LIST_FIELDS)];
-  if (term.length >= SEARCH_MIN) queries.push(Query.search('search_text', term));
-  else queries.push(Query.orderAsc('variety'));
-  if (cursor) queries.push(Query.cursorAfter(cursor));
+  if (!bypassCache && inflightCache.has(key)) {
+    return inflightCache.get(key);
+  }
 
-  try {
-    const result = await withAppwriteFailover(() => databases.listDocuments({
-      databaseId: DATABASE_ID,
-      collectionId: COLLECTIONS.records,
-      queries,
-      total: false
-    }));
-    const documents = result.documents || [];
-    rememberCore(documents);
-    const value = {
-      documents,
-      nextCursor: documents.at(-1)?.$id || '',
-      hasMore: documents.length === PAGE_SIZE,
-      skippedForShortSearch: false
-    };
-    memoryCache.set(key, { savedAt: Date.now(), value });
-    writeSessionCache(key, value);
-    if (!term && !cursor) writeOfflineLastPage(value);
-    return { ...value, fromCache: false };
-  } catch (error) {
-    if (!term && !cursor) {
-      const offline = getOfflineLastPage();
-      if (offline?.documents?.length) {
-        rememberCore(offline.documents);
-        return { ...offline, offlineFallback: true, fromCache: true };
+  const execute = async () => {
+    const queries = [Query.limit(PAGE_SIZE), Query.select(LIST_FIELDS)];
+    if (term.length >= SEARCH_MIN) {
+      const scopeConfig = SEARCH_SCOPES[normalizedScope];
+      const attribute = scopeConfig.attribute;
+      if (scopeConfig.mode === 'fulltext') {
+        // Broad keyword matching belongs only to the explicit all-traits scope.
+        // Hyphenated codes are quoted so Appwrite does not split them on '-'.
+        const appwriteTerm = term.includes('-') ? `"${term.replace(/"/g, '')}"` : term;
+        queries.push(Query.search(attribute, appwriteTerm));
+      } else {
+        // Field-specific lookups use substring filtering on a normal key index,
+        // not full-text token matching. Searching "Phil 5001" therefore cannot
+        // match unrelated records merely because they also contain "Phil".
+        queries.push(Query.contains(attribute, term));
       }
+    } else {
+      queries.push(Query.orderAsc('variety'));
     }
-    throw error;
+    if (cursor) queries.push(Query.cursorAfter(cursor));
+
+    try {
+      const result = await withAppwriteFailover(() => databases.listDocuments({
+        databaseId: DATABASE_ID,
+        collectionId: COLLECTIONS.records,
+        queries,
+        total: false
+      }));
+      const rawDocuments = result.documents || [];
+      let documents = rawDocuments;
+      let matchMode = term ? (SEARCH_SCOPES[normalizedScope].mode === 'fulltext' ? 'keywords' : 'contains') : 'browse';
+
+      // If the requested field contains an exact value on the current page,
+      // prefer only that exact record. This keeps a precise lookup precise while
+      // still allowing partial searches such as "5001" or "Phil 50".
+      if (term && SEARCH_SCOPES[normalizedScope].mode !== 'fulltext') {
+        const attribute = SEARCH_SCOPES[normalizedScope].attribute;
+        const needle = term.toLocaleLowerCase();
+        const exact = rawDocuments.filter((document) => String(document?.[attribute] ?? '').trim().toLocaleLowerCase() === needle);
+        if (exact.length) {
+          documents = exact;
+          matchMode = 'exact';
+        }
+      }
+
+      rememberCore(documents);
+      const exactOnly = matchMode === 'exact';
+      const value = {
+        documents,
+        nextCursor: exactOnly ? '' : (rawDocuments.at(-1)?.$id || ''),
+        hasMore: exactOnly ? false : rawDocuments.length === PAGE_SIZE,
+        skippedForShortSearch: false,
+        matchMode
+      };
+      memoryCache.set(key, { savedAt: Date.now(), value });
+      writeSessionCache(key, value);
+      if (!term && !cursor) writeOfflineLastPage(value);
+      return { ...value, fromCache: false };
+    } catch (error) {
+      if (!term && !cursor) {
+        const offline = getOfflineLastPage();
+        if (offline?.documents?.length) {
+          rememberCore(offline.documents);
+          return { ...offline, offlineFallback: true, fromCache: true };
+        }
+      }
+      throw error;
+    }
+  };
+
+  const pending = execute();
+  if (!bypassCache) inflightCache.set(key, pending);
+  try {
+    return await pending;
+  } finally {
+    if (inflightCache.get(key) === pending) inflightCache.delete(key);
   }
 }
 

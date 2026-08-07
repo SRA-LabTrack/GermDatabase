@@ -94,10 +94,17 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .registry-toolbar h2 { margin: 5px 0 5px; font-family: Georgia, "Times New Roman", serif; font-size: 32px; font-weight: 500; }
 .registry-toolbar p { max-width: 760px; margin: 0; color: #748378; line-height: 1.55; font-size: 12px; }
 .toolbar-actions { display: flex; gap: 8px; }
-.search-panel { min-height: 62px; padding: 8px 10px 8px 18px; display: grid; grid-template-columns: auto 1fr auto auto; gap: 10px; align-items: center; border-radius: 20px; background: rgba(255,255,255,.88); border: 1px solid rgba(42, 96, 55, .13); box-shadow: 0 12px 32px rgba(45, 81, 49, .06); }
+.search-panel { min-height: 66px; padding: 8px 10px 8px 18px; display: grid; grid-template-columns: auto minmax(180px,1fr) auto auto auto; gap: 10px; align-items: center; border-radius: 20px; background: rgba(255,255,255,.9); border: 1px solid rgba(42, 96, 55, .13); box-shadow: 0 12px 32px rgba(45, 81, 49, .06); scroll-margin-top: 104px; }
+.search-panel:focus-within { border-color: rgba(48, 128, 63, .38); box-shadow: 0 14px 36px rgba(45, 81, 49, .09), 0 0 0 4px rgba(207, 225, 72, .14); }
 .search-panel svg { color: #4e7a57; }
 .search-panel input { width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; font-size: 14px; padding: 10px 4px; }
 .search-panel > span { padding: 8px 11px; border-radius: 12px; background: #f5f8ec; color: #6d806f; font-size: 10px; white-space: nowrap; }
+.search-scope { display: flex; align-items: center; gap: 7px; padding: 5px 8px 5px 10px; border: 1px solid rgba(42,96,55,.12); border-radius: 13px; background: #fbfdf6; }
+.search-scope > span { color: #788276; font-size: 9px; text-transform: uppercase; letter-spacing: .08em; white-space: nowrap; }
+.search-scope select { max-width: 170px; border: 0; outline: 0; background: transparent; color: #214f31; font: inherit; font-size: 11px; font-weight: 700; cursor: pointer; }
+.search-result-note { display: flex; align-items: center; gap: 9px; margin: 10px 4px 0; color: #5f7464; font-size: 11px; }
+.search-result-note b { min-width: 32px; height: 28px; padding: 0 8px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: linear-gradient(135deg,#dce94f,#9bd269); color: #17472c; font-size: 12px; }
+.search-result-note span { line-height: 1.45; }
 .clear-search { width: 32px; height: 32px; display: grid; place-items: center; border: 0; border-radius: 10px; color: #607665; background: #f3f7ed; }
 .query-policy { margin: 10px 3px 20px; display: flex; align-items: center; gap: 7px; color: #77887b; font-size: 10px; }
 .query-policy svg { color: #5c9a61; }
@@ -265,6 +272,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   .hero-stats > div { min-height: 105px; padding: 14px; }
   .registry-toolbar { align-items: flex-start; }
   .search-panel { grid-template-columns: auto 1fr auto; }
+  .search-scope { grid-column: 2 / 4; justify-content: space-between; }
   .search-panel > span { grid-column: 1 / -1; text-align: center; }
   .record-grid { grid-template-columns: 1fr; }
   .record-image { height: 245px; }

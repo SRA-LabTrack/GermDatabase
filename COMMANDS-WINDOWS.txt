@@ -1,4 +1,6 @@
-CANESPROUT REGISTRY v2.1.2 - WINDOWS COMMANDS
+CaneSprout Registry v2.1.5 Windows commands
+
+CANESPROUT REGISTRY v2.1.5 - WINDOWS COMMANDS
 =============================================
 
 IMPORTANT
@@ -36,3 +38,7 @@ git commit -m "Update CaneSprout Registry"
 git push origin main
 
 Or double-click PUSH-UPDATE-TO-GITHUB.cmd.
+
+
+ONE-TIME v2.1.5 SEARCH INDEX UPDATE
+npm.cmd run setup:appwrite

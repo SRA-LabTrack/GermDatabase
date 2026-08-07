@@ -1,7 +1,7 @@
 @echo off
 setlocal
 cd /d "%~dp0"
-echo CaneSprout Registry v2.1.2 - Appwrite split-schema setup
+echo CaneSprout Registry v2.1.5 - Appwrite split-schema setup
 echo.
 call npm.cmd run setup:appwrite
 if errorlevel 1 (

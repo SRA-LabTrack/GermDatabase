@@ -187,6 +187,16 @@ async function ensureIndex(collectionId, key, type, attributes, orders = []) {
   console.log(`✓ created index ${key}`);
 }
 
+async function waitForIndexes(collectionId, keys) {
+  for (let attempt = 0; attempt < 180; attempt += 1) {
+    const result = await request('GET', `/databases/${databaseId}/collections/${collectionId}/indexes?total=false`);
+    const map = new Map((result.indexes || []).map((index) => [index.key, index.status]));
+    if (keys.every((key) => map.get(key) === 'available')) return;
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
+  throw new Error(`Timed out while waiting for ${collectionId} search indexes. Run setup again if needed.`);
+}
+
 function seedParts(source) {
   const traits = Object.fromEntries(traitKeys.map((key) => [key, String(source[key] ?? '')]));
   const searchText = String(source.search_text || Object.values(traits).filter(Boolean).join(' ')).replace(/\s+/g, ' ').trim().slice(0, 4096);
@@ -291,7 +301,7 @@ async function seedRecords() {
 }
 
 async function main() {
-  console.log('\nSugarcane Germination & Characterization Registry setup v2.1.2');
+  console.log('\nSugarcane Germination & Characterization Registry setup v2.1.5');
   console.log(`Endpoint: ${endpoint}`);
   console.log(`Project:  ${projectId}`);
   console.log(`Database: ${databaseId}\n`);
@@ -322,8 +332,17 @@ async function main() {
   await waitForAttributes(detailsCollection, detailAttrs.map((attribute) => attribute.key));
   await waitForAttributes(metaCollection, ['key', 'value']);
 
+  // Key indexes power precise field filters (Query.contains) without full-text
+  // token broadening. Existing v2.1.4 full-text indexes may remain harmlessly;
+  // fresh installs only need these lean field indexes plus one keyword index.
   await ensureIndex(coreCollection, 'idx_variety', 'key', ['variety'], ['ASC']);
+  await ensureIndex(coreCollection, 'idx_trial', 'key', ['germ_trial_code'], ['ASC']);
+  await ensureIndex(coreCollection, 'idx_location', 'key', ['germ_location'], ['ASC']);
+  await ensureIndex(coreCollection, 'idx_status', 'key', ['germ_status'], ['ASC']);
   await ensureIndex(coreCollection, 'fts_search', 'fulltext', ['search_text']);
+
+  console.log('Waiting for registry search indexes to finish provisioning…');
+  await waitForIndexes(coreCollection, ['idx_variety', 'idx_trial', 'idx_location', 'idx_status', 'fts_search']);
 
   try {
     await ensure(`storage bucket ${bucketId}`, `/storage/buckets/${bucketId}`, '/storage/buckets', {
@@ -350,6 +369,7 @@ async function main() {
   console.log(`• On-demand trait/photo collection: ${detailsCollection}`);
   console.log('• All 60 Characterization.xlsx traits remain optional and are preserved in traits_json.');
   console.log('• Registry pages read only 30 lean core rows; the heavy detail document is fetched only when a record is opened.');
+  console.log('• Variety, trial code, location, status, and all-trait keyword searches use dedicated Appwrite indexes.');
   console.log(`• Failed legacy collections (${legacyCollections.join(', ')}) are ignored and were not modified.`);
   console.log('• Old GermDatabase/germination collections were not deleted.');
   console.log('Revoke/delete the temporary APPWRITE_API_KEY now.\n');

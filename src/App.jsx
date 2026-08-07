@@ -30,6 +30,7 @@ import {
   PAGE_SIZE,
   SEARCH_DEBOUNCE_MS,
   SEARCH_MIN,
+  SEARCH_SCOPES,
   bulkCreateRecords,
   clearQueryCache,
   deleteRecord,
@@ -43,7 +44,7 @@ import {
 } from './lib/registryApi';
 
 const APP_NAME = 'CaneSprout Registry';
-const APP_VERSION = '2.1.2';
+const APP_VERSION = '2.1.5';
 const USER_CACHE_KEY = 'sugarcane-registry-user-v212';
 
 const GERMINATION_FIELDS = [
@@ -79,10 +80,22 @@ function clearCachedUser() {
 
 function messageFor(error) {
   const code = Number(error?.code || error?.status || 0);
-  if (code === 401) return 'Your Appwrite session has expired. Please sign in again.';
+  if (code === 401) return 'Your sign-in is no longer valid. Please sign in again.';
   if (code === 404) return 'The sugarcane collection has not been set up yet. Run npm.cmd run setup:appwrite once.';
   if (isNetworkFailure(error)) return 'Appwrite is unreachable. Cached pages can still be viewed, but saving needs a connection.';
   return error?.message || String(error || 'Something went wrong.');
+}
+
+function loginMessageFor(error) {
+  const code = Number(error?.code || error?.status || 0);
+  const type = String(error?.type || '').toLowerCase();
+  if (type === 'user_invalid_credentials' || type === 'user_not_found' || code === 401) {
+    return 'Incorrect email or password. Please check your credentials and try again.';
+  }
+  if (type === 'user_blocked') return 'This account is blocked. Contact the registry administrator.';
+  if (type === 'user_email_not_whitelisted') return 'This email is not allowed to sign in to this Appwrite project.';
+  if (isNetworkFailure(error)) return 'Could not reach Appwrite. Check your connection and try again.';
+  return error?.message || String(error || 'Could not sign in.');
 }
 
 function pct(record) {
@@ -149,12 +162,24 @@ function AuthScreen({ onSignedIn }) {
       if (mode === 'signup') {
         await withAppwriteFailover(() => account.create({ userId: ID.unique(), email: form.email.trim(), password: form.password, name: form.name.trim() || form.email.trim() }), { timeoutMs: 4500 });
       }
-      await withAppwriteFailover(() => account.createEmailPasswordSession({ email: form.email.trim(), password: form.password }), { timeoutMs: 4500 });
+      try {
+        await withAppwriteFailover(() => account.createEmailPasswordSession({ email: form.email.trim(), password: form.password }), { timeoutMs: 4500 });
+      } catch (sessionError) {
+        // If Appwrite reports an already-active session, restore it instead of
+        // presenting a misleading login error. Any real credential error is
+        // handled by loginMessageFor below.
+        if (String(sessionError?.type || '').toLowerCase() === 'user_session_already_exists') {
+          const existing = await withAppwriteFailover(() => account.get(), { timeoutMs: 3500 });
+          onSignedIn(saveCachedUser(existing));
+          return;
+        }
+        throw sessionError;
+      }
       const immediate = saveCachedUser({ email: form.email.trim(), name: form.name.trim() });
       onSignedIn(immediate);
       account.get().then((user) => onSignedIn(saveCachedUser(user))).catch(() => {});
     } catch (err) {
-      setError(messageFor(err));
+      setError(loginMessageFor(err));
     } finally {
       setBusy(false);
     }
@@ -180,9 +205,9 @@ function AuthScreen({ onSignedIn }) {
           <Brand />
           <div className="auth-heading"><small>{mode === 'login' ? 'Welcome back' : 'New account'}</small><h2>{mode === 'login' ? 'Sign in to the registry' : 'Create registry account'}</h2></div>
           <form onSubmit={submit}>
-            {mode === 'signup' && <label><span>Name</span><input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></label>}
-            <label><span>Email</span><input type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></label>
-            <label><span>Password</span><input type="password" required minLength={8} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} /></label>
+            {mode === 'signup' && <label><span>Name</span><input value={form.name} onChange={(e) => { setError(''); setForm({ ...form, name: e.target.value }); }} /></label>}
+            <label><span>Email</span><input type="email" required value={form.email} onChange={(e) => { setError(''); setForm({ ...form, email: e.target.value }); }} /></label>
+            <label><span>Password</span><input type="password" required minLength={8} value={form.password} onChange={(e) => { setError(''); setForm({ ...form, password: e.target.value }); }} /></label>
             {error && <div className="alert error">{error}</div>}
             <button className="primary-button full" disabled={busy}>{busy ? <><LoaderCircle className="spin" size={17} /> Connecting…</> : mode === 'login' ? 'Sign in' : 'Create account'}</button>
           </form>
@@ -416,6 +441,9 @@ export default function App() {
   const [online, setOnline] = useState(navigator.onLine);
   const [searchInput, setSearchInput] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchScope, setSearchScope] = useState('variety');
+  const searchInputRef = useRef(null);
+  const searchPanelRef = useRef(null);
   const [records, setRecords] = useState([]);
   const [cursor, setCursor] = useState('');
   const [hasMore, setHasMore] = useState(false);
@@ -423,6 +451,7 @@ export default function App() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [listError, setListError] = useState('');
   const [cacheNote, setCacheNote] = useState('');
+  const [searchMatchMode, setSearchMatchMode] = useState('');
   const [refreshKey, setRefreshKey] = useState(0);
   const [detailId, setDetailId] = useState('');
   const [editRecord, setEditRecord] = useState(null);
@@ -439,22 +468,32 @@ export default function App() {
     return () => { window.removeEventListener('online', goOnline); window.removeEventListener('offline', goOffline); };
   }, []);
 
-  // Do not block first paint on this. Cached identity gets the UI on screen immediately.
+  // Restore Appwrite auth in the background on every launch, even when the
+  // local user cache is empty. Cached identity can paint immediately, but
+  // database reads wait until this verification finishes so a stale cache
+  // cannot generate avoidable 401 requests.
   useEffect(() => {
-    if (!user) return;
     let live = true;
-    account.get().then((value) => {
+    const hadCachedUser = Boolean(cachedUser());
+    setSessionState('checking');
+    withAppwriteFailover(() => account.get(), { timeoutMs: 3500 }).then((value) => {
       if (!live) return;
       setUser(saveCachedUser(value));
       setSessionState('ready');
     }).catch((error) => {
       if (!live) return;
-      if (Number(error?.code) === 401) {
+      const code = Number(error?.code || error?.status || 0);
+      if (code === 401) {
         clearCachedUser();
         setUser(null);
         setSessionState('signed-out');
-      } else {
+      } else if (isNetworkFailure(error) && hadCachedUser) {
+        // Keep the cached identity only for the offline cache path.
         setSessionState('offline');
+      } else {
+        clearCachedUser();
+        setUser(null);
+        setSessionState('signed-out');
       }
     });
     return () => { live = false; };
@@ -466,34 +505,68 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const timer = setTimeout(() => setSearchTerm(searchInput.trim()), SEARCH_DEBOUNCE_MS);
+    const trimmed = searchInput.trim();
+
+    // Clear the old browse/search cards as soon as the user starts typing. This
+    // prevents stale unrelated entries from sitting under a new search while
+    // the debounce clock is running. No Appwrite request is made here.
+    if (trimmed) {
+      setRecords([]);
+      setCursor('');
+      setHasMore(false);
+      setCacheNote(trimmed.length < SEARCH_MIN ? `Type ${SEARCH_MIN - trimmed.length} more character${SEARCH_MIN - trimmed.length === 1 ? '' : 's'}. No Appwrite request has been sent.` : '');
+    }
+
+    if (!trimmed) {
+      setSearchTerm('');
+      return undefined;
+    }
+    if (trimmed.length < SEARCH_MIN) return undefined;
+
+    const timer = setTimeout(() => setSearchTerm(trimmed), SEARCH_DEBOUNCE_MS);
     return () => clearTimeout(timer);
   }, [searchInput]);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || sessionState === 'checking') return;
+    const typed = searchInput.trim();
+
+    // 1-2 characters intentionally produce zero database reads. For 3+ chars,
+    // wait until the debounced term exactly matches what is currently typed.
+    if (typed && typed.length < SEARCH_MIN) {
+      setLoading(false);
+      setRecords([]);
+      return;
+    }
+    if (typed.length >= SEARCH_MIN && searchTerm !== typed) {
+      setLoading(true);
+      setRecords([]);
+      return;
+    }
+
+    const effectiveTerm = typed ? searchTerm : '';
     let live = true;
     setLoading(true);
     setListError('');
     setCacheNote('');
-    listRecords({ search: searchTerm }).then((result) => {
+    listRecords({ search: effectiveTerm, scope: searchScope }).then((result) => {
       if (!live) return;
       setRecords(result.documents || []);
       setCursor(result.nextCursor || '');
       setHasMore(Boolean(result.hasMore));
-      if (result.skippedForShortSearch) setCacheNote(`Type at least ${SEARCH_MIN} characters to search. No Appwrite request was sent.`);
-      else if (result.offlineFallback) setCacheNote('Showing the last cached page because Appwrite is currently unreachable.');
-      else if (result.fromCache) setCacheNote('Loaded from short-term cache to avoid another database read.');
+      setSearchMatchMode(result.matchMode || '');
+      if (result.offlineFallback) setCacheNote('Showing the last cached browse page because Appwrite is currently unreachable.');
+      else if (result.fromCache) setCacheNote('Loaded from short-term cache to avoid another Appwrite database read.');
     }).catch((error) => live && setListError(messageFor(error))).finally(() => live && setLoading(false));
     return () => { live = false; };
-  }, [user, searchTerm, refreshKey]);
+  }, [user, sessionState, searchInput, searchTerm, searchScope, refreshKey]);
 
   async function loadMore() {
     if (!cursor || loadingMore) return;
     setLoadingMore(true);
     setListError('');
     try {
-      const result = await listRecords({ search: searchTerm, cursor });
+      const result = await listRecords({ search: searchTerm, scope: searchScope, cursor });
       setRecords((current) => [...current, ...(result.documents || [])]);
       setCursor(result.nextCursor || '');
       setHasMore(Boolean(result.hasMore));
@@ -556,6 +629,14 @@ export default function App() {
     try { await window.germDesktop.checkForUpdates?.(); } catch { setUpdateState('error'); }
   }
 
+  function goToRegistrySearch() {
+    searchPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    window.setTimeout(() => {
+      searchInputRef.current?.focus({ preventScroll: true });
+      searchInputRef.current?.select?.();
+    }, 160);
+  }
+
   async function signOut() {
     account.deleteSession({ sessionId: 'current' }).catch(() => {});
     clearCachedUser();
@@ -571,7 +652,7 @@ export default function App() {
       <header className="topbar">
         <Brand />
         <nav>
-          <button className="nav-button active"><Leaf size={17} /> Registry</button>
+          <button className="nav-button active" onClick={goToRegistrySearch}><Leaf size={17} /> Registry</button>
           <button className="nav-button" onClick={() => setShowImport(true)}><FileSpreadsheet size={17} /> Import Excel</button>
           <button className="nav-button" onClick={createBackup} disabled={Boolean(backupState)}><Download size={17} /> {backupState || 'Backup'}</button>
           <button className="nav-button" onClick={handleUpdates}><RefreshCw size={17} /> {updateState === 'downloaded' ? 'Restart & update' : updateState === 'checking' ? 'Checking…' : 'Updates'}</button>
@@ -590,26 +671,40 @@ export default function App() {
         <div className="hero-stats"><div><small>Source library</small><strong>{SOURCE_RECORD_COUNT}</strong><span>spreadsheet rows included</span></div><div><small>Database page</small><strong>{PAGE_SIZE}</strong><span>records maximum per request</span></div><div><small>Search delay</small><strong>{SEARCH_DEBOUNCE_MS} ms</strong><span>debounced Appwrite search</span></div><div><small>Photos</small><strong>WebP</strong><span>full + thumbnail variants</span></div></div>
       </section>
 
-      <section className="registry-section">
+      <section className="registry-section" id="registry">
         <div className="registry-toolbar">
           <div><span className="eyebrow">Characterization registry</span><h2>Sugarcane varieties</h2><p>Initial browsing loads only {PAGE_SIZE} lean records. Full traits and full-resolution photos are requested only when a card is opened.</p></div>
           <div className="toolbar-actions"><button className="icon-button bordered" title="Refresh current page" onClick={() => { clearQueryCache(); setRefreshKey((value) => value + 1); }}><RefreshCw size={18} /></button></div>
         </div>
 
-        <div className="search-panel">
+        <div className="search-panel" id="registry-search" ref={searchPanelRef}>
           <Search size={20} />
-          <input value={searchInput} onChange={(e) => setSearchInput(e.target.value)} placeholder="Search variety or any characterization keyword…" />
-          {searchInput && <button className="clear-search" onClick={() => setSearchInput('')}><X size={16} /></button>}
-          <span>{searchInput.length > 0 && searchInput.length < SEARCH_MIN ? `${SEARCH_MIN - searchInput.length} more character${SEARCH_MIN - searchInput.length === 1 ? '' : 's'}` : searchInput ? 'Indexed search' : 'Browse first page'}</span>
+          <input
+            ref={searchInputRef}
+            value={searchInput}
+            onChange={(e) => { setSearchMatchMode(''); setSearchInput(e.target.value); }}
+            onKeyDown={(e) => { if (e.key === 'Escape') { setSearchInput(''); e.currentTarget.blur(); } }}
+            placeholder={searchScope === 'all' ? 'Search any characterization trait or keyword…' : `Search ${SEARCH_SCOPES[searchScope].label.toLowerCase()}…`}
+            aria-label="Search sugarcane registry"
+          />
+          <label className="search-scope">
+            <span>Search in</span>
+            <select value={searchScope} onChange={(e) => { setSearchScope(e.target.value); setRecords([]); setCursor(''); setHasMore(false); setSearchMatchMode(''); }}>
+              {Object.entries(SEARCH_SCOPES).map(([value, config]) => <option key={value} value={value}>{config.label}</option>)}
+            </select>
+          </label>
+          {searchInput && <button className="clear-search" onClick={() => { setSearchMatchMode(''); setSearchInput(''); searchInputRef.current?.focus(); }} aria-label="Clear search"><X size={16} /></button>}
+          <span>{searchInput.trim().length > 0 && searchInput.trim().length < SEARCH_MIN ? `${SEARCH_MIN - searchInput.trim().length} more character${SEARCH_MIN - searchInput.trim().length === 1 ? '' : 's'} • 0 reads` : searchInput.trim() ? `${SEARCH_SCOPES[searchScope].label} • ${searchScope === 'all' ? 'keyword index' : 'substring index'}` : 'Browse first 30'}</span>
         </div>
-        <div className="query-policy"><CheckCircle2 size={16} /><span>No continuous polling • no Realtime subscription • no total-count query • no browser-side full inventory filtering</span></div>
+        <div className="query-policy"><CheckCircle2 size={16} /><span>30 records/request • 400 ms debounce • indexed field filters • cursor Load More • lean list fields • detail-on-open • no polling • no Realtime • no total counts</span></div>
+        {!loading && searchInput.trim().length >= SEARCH_MIN && searchTerm === searchInput.trim() && <div className="search-result-note"><b>{records.length}</b><span>{searchMatchMode === 'exact' ? `Exact ${SEARCH_SCOPES[searchScope].label.toLowerCase()} match` : `${records.length === 1 ? 'match' : 'matches'} loaded`} for “{searchTerm}” in {SEARCH_SCOPES[searchScope].label}.{hasMore ? ` More matches are available with Load ${PAGE_SIZE} more.` : ''}</span></div>}
         {cacheNote && <div className="alert info">{cacheNote}</div>}
         {listError && <div className="alert error">{listError}</div>}
 
         <div className="record-grid">
           {loading ? Array.from({ length: 6 }, (_, index) => <SkeletonCard key={index} />) : records.map((record) => <RecordCard key={record.$id} record={record} onOpen={setDetailId} />)}
         </div>
-        {!loading && !records.length && <div className="empty-state"><Sprout size={34} /><h3>{searchTerm && searchTerm.length < SEARCH_MIN ? `Type at least ${SEARCH_MIN} characters` : 'No matching sugarcane records'}</h3><p>{searchTerm && searchTerm.length < SEARCH_MIN ? 'Short searches are intentionally blocked to avoid wasteful database requests.' : 'Try another keyword or add a new record.'}</p></div>}
+        {!loading && !records.length && <div className="empty-state"><Sprout size={34} /><h3>{searchInput.trim() && searchInput.trim().length < SEARCH_MIN ? `Type at least ${SEARCH_MIN} characters` : searchInput.trim() ? 'No matching sugarcane records' : 'No sugarcane records available'}</h3><p>{searchInput.trim() && searchInput.trim().length < SEARCH_MIN ? 'Short searches are blocked locally, so Appwrite receives zero search requests.' : searchInput.trim() ? `No ${SEARCH_SCOPES[searchScope].label.toLowerCase()} match was returned for “${searchInput.trim()}”. Try another term or switch the search field.` : 'Add or import a record to begin.'}</p></div>}
         {!loading && hasMore && <div className="load-more-row"><button className="secondary-button load-more" onClick={loadMore} disabled={loadingMore}>{loadingMore ? <><LoaderCircle className="spin" size={17} /> Loading {PAGE_SIZE} more…</> : `Load ${PAGE_SIZE} more`} </button><small>Cursor pagination continues after the last loaded record.</small></div>}
       </section>
 

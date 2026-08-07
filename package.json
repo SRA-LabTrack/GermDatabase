@@ -1,8 +1,8 @@
 {
   "name": "canesprout-registry",
   "private": true,
-  "version": "2.1.2",
-  "description": "Sugarcane germination and characterization registry with split Appwrite core/detail storage optimized for Appwrite and Vercel free plans",
+  "version": "2.1.5",
+  "description": "Sugarcane germination and characterization registry with indexed field search, 30-row cursor pagination, lazy details/photos, and free-plan optimized Appwrite/Vercel usage",
   "main": "electron/main.cjs",
   "author": "SRA-LabTrack",
   "type": "module",

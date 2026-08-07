@@ -1,6 +1,8 @@
 {
-  "version": "2.1.2",
+  "version": "2.1.5",
   "domain": "sugarcane-germination-characterization",
   "pagination": 30,
-  "searchDebounceMs": 400
+  "searchDebounceMs": 400,
+  "build": "precise-indexed-substring-search",
+  "released": "2026-08-07"
 }

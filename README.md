@@ -1,4 +1,4 @@
-# CaneSprout Registry v2.1.2
+# CaneSprout Registry v2.1.5
 
 Sugarcane germination and varietal characterization registry built with React, Vite, Appwrite, and an Electron desktop wrapper.
 
@@ -108,3 +108,18 @@ git push origin main
 ```
 
 The push updates GitHub, triggers Vercel deployment, and triggers the Windows release workflow.
+
+
+## v2.1.4 indexed registry search
+Registry navigation focuses the search bar. Search uses 400 ms debounce, a 3-character minimum, 30-row cursor pages, dedicated Appwrite indexes for variety/trial/location/status, and a full-text all-traits index. Search results replace browse cards rather than mixing with them. No Vercel functions are used for ordinary database operations.
+
+
+## v2.1.5 precise indexed search
+
+- Registry button scrolls directly to and focuses the search bar.
+- Variety, trial code, location, and status use indexed substring filters instead of broad full-text token matching.
+- If a field search returns an exact value, only the exact record is shown.
+- Full-text behavior is reserved for the explicit All traits & keywords scope.
+- Search result counts report only records actually loaded; no fake `30+` total is shown.
+- A new cache namespace prevents broad v2.1.4 search results from surviving the update.
+- Search still uses 30-record pages, 400 ms debounce, 3-character minimum, cursor Load More, lean selects, no polling, no Realtime, and no total calculation.

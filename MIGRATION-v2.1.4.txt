@@ -1,0 +1,29 @@
+CaneSprout Registry v2.1.4 - Registry search + free-plan optimization
+
+WHAT CHANGED
+- Registry nav button now scrolls to and focuses the search input.
+- Search results replace browse cards immediately; stale unrelated cards are never mixed into a new search.
+- Search starts only at 3 characters and waits 400 ms after typing.
+- Default search scope is Variety for precise accession/variety lookup.
+- Optional indexed scopes: Trial code, Location, Status, All traits & keywords.
+- 30 lean records per Appwrite request with cursor-based Load More.
+- List queries select only card fields; full trait/detail JSON is fetched only after opening a record.
+- Photos remain Appwrite Storage WebP full + thumbnail files with lazy loading.
+- 90-second page/search cache + 5-minute detail cache; no polling, Realtime, total counts, or Vercel API proxy.
+- Static Vite assets continue through Vercel CDN with long-lived hashed-asset caching.
+
+ONE-TIME INDEX UPDATE
+Because v2.1.4 adds field-specific search indexes, run once after replacing files:
+  npm.cmd install
+  npm.cmd run setup:appwrite
+
+The setup is idempotent: existing collections/data are kept and only missing indexes are added.
+
+TEST
+  npm.cmd run dev
+
+PUBLISH
+  git status
+  git add -A
+  git commit -m "CaneSprout v2.1.4 optimized registry search"
+  git push origin main
