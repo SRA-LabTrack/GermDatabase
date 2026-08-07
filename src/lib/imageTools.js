@@ -5,12 +5,9 @@ function extensionOf(name = '') {
   return part ? part.toLowerCase() : '';
 }
 
-function canvasToBlob(canvas, type, quality) {
+function canvasToBlob(canvas, quality) {
   return new Promise((resolve, reject) => {
-    canvas.toBlob((blob) => {
-      if (blob) resolve(blob);
-      else reject(new Error('This image could not be converted to WebP.'));
-    }, type, quality);
+    canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error('Could not encode WebP image.')), 'image/webp', quality);
   });
 }
 
@@ -18,10 +15,9 @@ async function normalizeHeic(file) {
   const extension = extensionOf(file.name);
   const isHeic = HEIC_EXTENSIONS.has(extension) || /image\/hei[cf]/i.test(file.type || '');
   if (!isHeic) return file;
-
-  const heicModule = await import('heic2any');
-  const heic2any = heicModule.default || heicModule;
-  const converted = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.96 });
+  const mod = await import('heic2any');
+  const heic2any = mod.default || mod;
+  const converted = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.95 });
   return Array.isArray(converted) ? converted[0] : converted;
 }
 
@@ -32,15 +28,11 @@ async function decodeImage(blob) {
       return {
         width: bitmap.width,
         height: bitmap.height,
-        draw: (context, width, height) => context.drawImage(bitmap, 0, 0, width, height),
+        draw: (ctx, width, height) => ctx.drawImage(bitmap, 0, 0, width, height),
         close: () => bitmap.close?.()
       };
-    } catch {
-      // Fall through to HTMLImageElement. This path helps with formats that
-      // Electron/Chromium can display but createImageBitmap rejects.
-    }
+    } catch {}
   }
-
   const url = URL.createObjectURL(blob);
   try {
     const image = new Image();
@@ -50,12 +42,27 @@ async function decodeImage(blob) {
     return {
       width: image.naturalWidth,
       height: image.naturalHeight,
-      draw: (context, width, height) => context.drawImage(image, 0, 0, width, height),
+      draw: (ctx, width, height) => ctx.drawImage(image, 0, 0, width, height),
       close: () => {}
     };
   } finally {
     URL.revokeObjectURL(url);
   }
+}
+
+async function renderVariant(decoded, maxDimension, quality) {
+  const scale = Math.min(1, maxDimension / Math.max(decoded.width, decoded.height));
+  const width = Math.max(1, Math.round(decoded.width * scale));
+  const height = Math.max(1, Math.round(decoded.height * scale));
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext('2d', { alpha: true });
+  context.imageSmoothingEnabled = true;
+  context.imageSmoothingQuality = 'high';
+  decoded.draw(context, width, height);
+  const blob = await canvasToBlob(canvas, quality);
+  return { blob, width, height };
 }
 
 export function formatBytes(bytes) {
@@ -68,44 +75,32 @@ export function formatBytes(bytes) {
 }
 
 /**
- * Convert browser-readable images plus HEIC/HEIF to a storage-friendly WebP.
- * Large phone photos are scaled down to a maximum edge while keeping enough
- * resolution for lab documentation and zooming.
+ * Produces two WebP files per selected image:
+ * - full: high-quality documentation image, capped at 2200px
+ * - thumb: small list/card image, capped at 520px
+ * This keeps Appwrite Storage and list bandwidth low without sacrificing detail views.
  */
-export async function compressImageToWebP(file, { maxDimension = 3000, quality = 0.9 } = {}) {
+export async function prepareImageVariants(file) {
   if (!file) throw new Error('Choose an image first.');
-
   const source = await normalizeHeic(file);
   let decoded;
   try {
     decoded = await decodeImage(source);
-  } catch (error) {
-    throw new Error(`Unsupported or damaged image: ${file.name}. Try JPEG, PNG, WebP, AVIF, BMP, GIF, HEIC, or HEIF.`);
+  } catch {
+    throw new Error(`Unsupported or damaged image: ${file.name}`);
   }
 
-  const scale = Math.min(1, maxDimension / Math.max(decoded.width, decoded.height));
-  const width = Math.max(1, Math.round(decoded.width * scale));
-  const height = Math.max(1, Math.round(decoded.height * scale));
-  const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
-  const context = canvas.getContext('2d', { alpha: true });
-  context.imageSmoothingEnabled = true;
-  context.imageSmoothingQuality = 'high';
-  decoded.draw(context, width, height);
-  decoded.close?.();
-
-  let webp = await canvasToBlob(canvas, 'image/webp', quality);
-  if (webp.size > 4 * 1024 * 1024) webp = await canvasToBlob(canvas, 'image/webp', 0.84);
-  if (webp.size > 6 * 1024 * 1024) webp = await canvasToBlob(canvas, 'image/webp', 0.8);
-
-  return {
-    blob: webp,
-    width,
-    height,
-    originalSize: file.size || 0,
-    webpSize: webp.size,
-    originalName: file.name || 'image',
-    mimeType: 'image/webp'
-  };
+  try {
+    let full = await renderVariant(decoded, 2200, 0.88);
+    if (full.blob.size > 3.5 * 1024 * 1024) full = await renderVariant(decoded, 2000, 0.82);
+    const thumb = await renderVariant(decoded, 520, 0.76);
+    return {
+      originalName: file.name || 'image',
+      originalSize: file.size || 0,
+      full,
+      thumb
+    };
+  } finally {
+    decoded.close?.();
+  }
 }

@@ -1,0 +1,18 @@
+CANESPROUT REGISTRY v2.1 - ONE-TIME APPWRITE SETUP
+==================================================
+
+This version uses a new optimized collection:
+  sugarcane_characterizations
+
+It includes all 60 A:BH Characterization.xlsx traits plus optional germination fields.
+The setup script also seeds all 933 non-empty spreadsheet rows.
+
+1. Put a TEMPORARY APPWRITE_API_KEY in .env.
+2. Run:
+   npm install
+   npm run setup:appwrite
+3. Wait until the seed says all 933 rows are processed.
+4. Revoke/delete the temporary API key.
+
+The setup is idempotent. A registry_meta sentinel prevents the 933-row seed from being repeated after a successful run.
+Existing older collections are not deleted.

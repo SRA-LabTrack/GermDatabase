@@ -1,206 +1,110 @@
-# GermDatabase v1.3.0
+# CaneSprout Registry v2.1.0
 
-# GermDatabase
+Sugarcane germination and varietal characterization registry built with React, Vite, Appwrite, and an Electron desktop wrapper.
 
-GermDatabase is an offline-first React + Appwrite microorganism registry with a Windows Electron desktop wrapper.
+## Characterization.xlsx is the source template
 
-## Included scientific records
+The application includes every A:BH trait from the supplied workbook and a one-time seed containing all 933 non-empty spreadsheet rows. The source workbook itself is included at `examples/Characterization.xlsx`.
 
-### MICROORGANISMS
-- microorganism_id
-- scientific_name / common_name
-- genus / species / subspecies
-- organism_type / taxonomy_id
-- gram_stain / cell_shape / cell_arrangement
-- motility / spore_forming / capsule / oxygen_requirement
-- pigmentation / colony_morphology / metabolism
-- optimal_temperature / optimal_ph / growth_medium
-- habitat / host_range / disease_association / transmission_mode
-- virulence_factors / toxin_production / serotype / notes
+Trait groups in the form:
+- Identity
+- Stool
+- Leaf Blade
+- Leaf Sheath
+- Auricle
+- Dewlap
+- Ligule
+- Stalk
+- Bud Shape
 
-### STRAINS
-- strain_id
-- microorganism_id
-- strain_name
-- pathogenic_status
-- biosafety_level
+Every manual-entry trait is optional. Germination tracking fields are also optional.
 
-### SAMPLES
-- sample_id
-- strain_id
-- source
-- collection_date
-- location
-- host_id
-- specimen_type
+## Free-plan focused data access
 
-### OBSERVATIONS
-- observation_id
-- sample_id
-- trait_name
-- observed_value
-- unit
-- method
-- observation_date
-- observer
+The registry intentionally does not download the full collection.
 
-### LAB_TESTS
-- test_id
-- sample_id
-- test_type
-- test_name
-- result
-- unit
-- method
+- Initial page: 30 lean records only.
+- Search: Appwrite full-text index, minimum 3 characters, 400 ms debounce.
+- Pagination: cursor-after `Load 30 more`, never offset paging.
+- List projection: only card fields and thumbnail ID are requested.
+- Details: full record fetched only when opened.
+- Photos: Appwrite Storage, WebP full image + small WebP thumbnail, lazy-loaded.
+- No Base64 images in database documents.
+- No Realtime subscription.
+- No continuous polling.
+- No total-result count request.
+- No Vercel API proxy for ordinary Appwrite operations.
+- Short-term browser query cache reduces repeated reads.
+- Vercel serves only static Vite assets; hashed assets receive long CDN caching.
+- Writes happen only when Save/Import/Delete is confirmed, not while typing.
 
-### ANTIMICROBIAL_RESULTS
-- susceptibility_id
-- sample_id
-- antimicrobial
-- mic_value
-- zone_diameter
-- interpretation
-- standard_used
+## First install
 
-### SEQUENCES
-- sequence_id
-- strain_id
-- marker
-- accession_number
-- sequence_file
-
-### MEDIA
-- media_id
-- sample_id
-- media_type
-- file_path
-- caption
-
-## Already configured
-
-- Appwrite project: `GermDatabase`
-- Appwrite Project ID: `6a744cda00030236187b`
-- Frankfurt endpoint: `https://fra.cloud.appwrite.io/v1`
-- Database ID used by this app: `germdatabase`
-- GitHub release target: `SRA-LabTrack/GermDatabase`
-- Vercel: `vercel.json` is included for a Vite deployment
-
-## Important Appwrite setup
-
-The project ID and endpoint are safe client configuration. An Appwrite **server API key is not**.
-
-1. Copy `.env.example` to `.env`.
-2. In Appwrite, create a temporary API key with database management scopes. Add Storage management scopes if you also want the optional `germ-media` bucket.
-3. Paste it into `APPWRITE_API_KEY` in `.env`.
-4. Run:
-
-```bash
-npm install
-npm run setup:appwrite
-```
-
-The setup command creates the database and all eight scientific collections. When it succeeds, delete the temporary Appwrite API key.
-
-The setup command also tries to register Appwrite Web platforms for `localhost` and `127.0.0.1`. If your temporary key does not include project/platform management permission, database setup still continues and prints a warning. In that case, add a **Web** platform with hostname `localhost` manually in Appwrite Console.
-
-## Run the website
-
-```bash
+```bat
 npm install
 npm run dev
 ```
 
-Open `http://localhost:5174`. This build intentionally uses the hostname `localhost` for Appwrite Web CORS/authentication.
+Open `http://localhost:5174`.
 
-## Appwrite connectivity repair in v1.3.0
+## One-time Appwrite v2.1 setup and spreadsheet seed
 
-- Frankfurt remains the primary Appwrite endpoint: `https://fra.cloud.appwrite.io/v1`.
-- Dev mode now runs on `localhost:5174` instead of `127.0.0.1:5174`.
-- The Windows desktop build no longer loads the app with a `file://` origin.
-- Genuine transport failures can retry the global Appwrite endpoint without masking credential, permission, or validation errors.
-- `CHECK-APPWRITE-CONNECTION.cmd` now tests Node HTTPS, DNS, TCP 443, and Windows HTTPS separately.
-- Offline IndexedDB/outbox behavior remains intact if Appwrite is truly unavailable.
+Create a temporary Appwrite server API key with the required database/storage management scopes and put it in `.env`:
 
-## Offline behavior
+```env
+VITE_APPWRITE_ENDPOINT=https://fra.cloud.appwrite.io/v1
+VITE_APPWRITE_FALLBACK_ENDPOINT=https://cloud.appwrite.io/v1
+VITE_APPWRITE_PROJECT_ID=6a744cda00030236187b
+VITE_APPWRITE_DATABASE_ID=germdatabase
+VITE_APPWRITE_MEDIA_BUCKET_ID=germ-media
 
-GermDatabase stores registry documents in IndexedDB and stores create/update/delete operations in an ordered local outbox. Every change is written locally first. When internet access returns, the app pushes queued changes to Appwrite and then pulls the current remote registry.
-
-The web app also installs a service worker after the first online visit so the application shell can reopen offline.
-
-## Desktop app
-
-Development:
-
-```bash
-npm run desktop:dev
+APPWRITE_ENDPOINT=https://fra.cloud.appwrite.io/v1
+APPWRITE_PROJECT_ID=6a744cda00030236187b
+APPWRITE_DATABASE_ID=germdatabase
+APPWRITE_MEDIA_BUCKET_ID=germ-media
+APPWRITE_API_KEY=PASTE_TEMPORARY_SETUP_KEY_HERE
 ```
 
-Windows installer:
+Then run:
 
-```bash
-npm run desktop:build:win
+```bat
+npm run setup:appwrite
 ```
 
-The packaged desktop app now serves its built UI from a private `http://localhost:<random-port>` server instead of `file://`. This keeps Appwrite browser authentication on a valid Web origin without disabling Electron web security.
+The setup creates `sugarcane_characterizations`, the required indexes, the WebP storage bucket if needed, and seeds all 933 spreadsheet rows exactly once. A server-only sentinel prevents the seed from being repeated on later setup runs.
 
-The desktop build has working **Minimize**, **Full Screen / Exit Full Screen**, and **Exit** controls.
-
-## GitHub releases and updates
-
-The Electron build is configured for GitHub Releases. The included GitHub Actions workflow runs when you push a version tag such as:
-
-```bash
-git tag v1.0.1
-git push origin v1.0.1
-```
-
-GitHub Actions builds the Windows NSIS installer and publishes it to the repository Releases page. Previous releases remain downloadable. Installed desktop builds check GitHub Releases for newer versions through `electron-updater`.
+Revoke the temporary API key after setup. Never add `APPWRITE_API_KEY` to Vercel.
 
 ## Vercel
 
-Connect the repository `SRA-LabTrack/GermDatabase` to the desired Vercel account/team. Vercel will use:
-
+Use:
+- Framework: Vite
+- Install command: `npm install`
 - Build command: `npm run build`
 - Output directory: `dist`
 
-Set these Vercel environment variables:
+Vercel environment variables:
 
 ```text
 VITE_APPWRITE_ENDPOINT=https://fra.cloud.appwrite.io/v1
+VITE_APPWRITE_FALLBACK_ENDPOINT=https://cloud.appwrite.io/v1
 VITE_APPWRITE_PROJECT_ID=6a744cda00030236187b
 VITE_APPWRITE_DATABASE_ID=germdatabase
 VITE_APPWRITE_MEDIA_BUCKET_ID=germ-media
 ```
 
-Do **not** add `APPWRITE_API_KEY` to the browser deployment.
+Also add the final Vercel hostname as an Appwrite Web platform.
 
-## UI revision 1.2.2
-- Transparent GermDatabase logo with no opaque background plate
-- Reference-style spring modal entrance with blur and scale
-- Collapsible Add/Edit sections with animated height, opacity, chevron rotation, and staggered fields
-- Rounded form-sheet sections inspired by the supplied interaction reference while the main registry remains compact
-- Expanded microorganism morphology, physiology, ecology, pathogenicity, and growth traits
-- New microorganism trait summary in the record drawer
+## Git update workflow
 
-### Existing Appwrite installations
-If your `microorganisms` collection already exists, run `npm run setup:appwrite` again with a temporary Appwrite server API key. The setup script now adds any missing microorganism trait attributes without deleting existing records. Remove the temporary key afterward.
+Keep your permanent repository at `C:\Users\kenshennn\Downloads\Germ`.
+For each new ZIP, copy the project contents into that folder without deleting `.git`, then run:
 
-## UI
+```bat
+git status
+git add -A
+git commit -m "Update CaneSprout Registry"
+git push origin main
+```
 
-This edition intentionally uses **square edges** throughout. There are no rounded cards, pills, modals, inputs, or toolbar buttons. The layout is responsive and includes scroll reveal, hover, sync, and transition animations.
-## UI revision 1.1.0
-- AgriRegistry-inspired Georgia serif display typography with compact utility text
-- LabTrack-inspired dense dashboard spacing and information hierarchy
-- Sharp-edge glass UI with translucent blue/white layers and backdrop blur
-- Smaller fonts, toolbar, forms, metrics, tables, and drawers
-- Scroll reveals, staggered metrics, glass sweeps, hover motion, modal/drawer transitions, and sync pulse
-- No rounded corners
-
-
-## v1.4 Excel import and germ photos
-
-GermDatabase now includes an **Import Excel** action in the top navigation and registry toolbar. The importer accepts `.xlsx`, `.xls`, and `.csv`, reads the first worksheet, maps either field keys or human-readable Register Germ labels, previews the rows before committing, ignores completely blank rows, and allows blank cells because Register Germ fields are optional. A matching test workbook is included at `examples/GermDatabase-Dummy-Germ-Import.xlsx`.
-
-Photos can be selected while registering a germ or added later from the germ detail drawer. Images are converted in the browser to high-quality WebP before they are persisted. Large phone photos are scaled to a maximum edge of 3000 px and encoded at high WebP quality, with a gentle second compression pass only for unusually large files. HEIC/HEIF is supported through `heic2any`; other Chromium-readable image formats are accepted through the native decoder.
-
-Photo binaries remain in IndexedDB while offline. During sync they are uploaded to the Appwrite Storage bucket configured by `VITE_APPWRITE_MEDIA_BUCKET_ID` (default `germ-media`), while the media collection stores only a lightweight Appwrite Storage path and caption. This avoids putting Base64 image payloads into database documents.
+The push updates GitHub, triggers Vercel deployment, and triggers the Windows release workflow.

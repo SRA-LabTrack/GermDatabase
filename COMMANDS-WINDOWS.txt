@@ -1,33 +1,34 @@
-GERMDATABASE v1.3.0 - WINDOWS CMD
-================================
+CANESPROUT REGISTRY v2.1.0 - WINDOWS COMMANDS
+=============================================
 
-Open CMD inside the GermDatabase folder.
+FIRST INSTALL
+npm install
 
-FIRST RUN / DEPENDENCIES
-"C:\Program Files\nodejs\npm.cmd" install
+RUN LOCALLY
+npm run dev
+Open: http://localhost:5174
 
-APPWRITE SCHEMA SETUP / UPDATE
-"C:\Program Files\nodejs\npm.cmd" run setup:appwrite
-
-RUN LOCALLY (fresh dev port)
-"C:\Program Files\nodejs\npm.cmd" run dev
-
-Open in browser:
-http://localhost:5174/?v=1.3.0
-
-RUN ELECTRON DESKTOP DEV
-"C:\Program Files\nodejs\npm.cmd" run desktop:dev
+ONE-TIME APPWRITE SCHEMA + 933-ROW SEED
+npm run setup:appwrite
+Requires a TEMPORARY APPWRITE_API_KEY in .env.
+Revoke it immediately after setup succeeds.
 
 BUILD WEBSITE
-"C:\Program Files\nodejs\npm.cmd" run build
+npm run build
 
-PREVIEW WEBSITE BUILD
-"C:\Program Files\nodejs\npm.cmd" run preview
+PREVIEW PRODUCTION BUILD
+npm run preview
+
+RUN ELECTRON DESKTOP DEV
+npm run desktop:dev
 
 BUILD WINDOWS INSTALLER
-"C:\Program Files\nodejs\npm.cmd" run desktop:build:win
+npm run desktop:build:win
 
-NOTE:
-v1.3.0 uses port 5174 during development to bypass the old localhost:5173
-service-worker cache. The app also removes old GermDatabase service-worker
-caches automatically when running in Vite development mode.
+PUBLISH UPDATE FROM C:\Users\kenshennn\Downloads\Germ
+git status
+git add -A
+git commit -m "Update CaneSprout Registry"
+git push origin main
+
+Or double-click PUSH-UPDATE-TO-GITHUB.cmd.

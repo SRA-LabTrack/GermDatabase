@@ -11,126 +11,39 @@ function loadDotEnv(file = '.env') {
     const index = trimmed.indexOf('=');
     if (index < 0) continue;
     const key = trimmed.slice(0, index).trim();
-    let value = trimmed.slice(index + 1).trim();
-    value = value.replace(/^['"]|['"]$/g, '');
+    const value = trimmed.slice(index + 1).trim().replace(/^['"]|['"]$/g, '');
     if (!(key in process.env)) process.env[key] = value;
   }
 }
 
 loadDotEnv();
 
-function normalizeEndpoint(value) {
-  let raw = String(value || '').trim();
-
-  // Be forgiving if a URL was copied from rendered Markdown, for example:
-  // [https://fra.cloud.appwrite.io/v1](https://fra.cloud.appwrite.io/v1)
-  const markdownLink = raw.match(/^\[([^\]]+)\]\((https?:\/\/[^)]+)\)$/i);
-  if (markdownLink) raw = markdownLink[2];
-
-  // Also accept angle-bracket wrapped URLs copied from some terminals/docs.
-  if (/^<https?:\/\/[^>]+>$/i.test(raw)) raw = raw.slice(1, -1);
-
-  raw = raw.replace(/\/$/, '');
-
-  try {
-    const parsed = new URL(raw);
-    if (!['http:', 'https:'].includes(parsed.protocol)) throw new Error('unsupported protocol');
-    return parsed.toString().replace(/\/$/, '');
-  } catch {
-    console.error(`\nInvalid Appwrite endpoint: ${raw || '(empty)'}`);
-    console.error('Use a plain URL such as: APPWRITE_ENDPOINT=https://fra.cloud.appwrite.io/v1\n');
-    process.exit(1);
-  }
-}
-
-const endpoint = normalizeEndpoint(process.env.APPWRITE_ENDPOINT || process.env.VITE_APPWRITE_ENDPOINT || 'https://fra.cloud.appwrite.io/v1');
+const endpoint = String(process.env.APPWRITE_ENDPOINT || process.env.VITE_APPWRITE_ENDPOINT || 'https://fra.cloud.appwrite.io/v1').replace(/\/$/, '');
 const projectId = process.env.APPWRITE_PROJECT_ID || process.env.VITE_APPWRITE_PROJECT_ID || '6a744cda00030236187b';
 const databaseId = process.env.APPWRITE_DATABASE_ID || process.env.VITE_APPWRITE_DATABASE_ID || 'germdatabase';
 const bucketId = process.env.APPWRITE_MEDIA_BUCKET_ID || process.env.VITE_APPWRITE_MEDIA_BUCKET_ID || 'germ-media';
 const apiKey = process.env.APPWRITE_API_KEY;
+const recordsCollection = 'sugarcane_characterizations';
+const metaCollection = 'registry_meta';
+const seedPath = path.resolve(process.cwd(), 'seed', 'characterization.json');
 
 if (!apiKey || apiKey.includes('PASTE_TEMPORARY')) {
   console.error('\nMissing APPWRITE_API_KEY.');
-  console.error('Create a temporary Appwrite server API key with database and storage management scopes, put it in .env, run this script, then delete the key.\n');
+  console.error('Create a temporary Appwrite server API key with database + storage management scopes, put it in .env, run setup once, then revoke it.\n');
+  process.exit(1);
+}
+if (!fs.existsSync(seedPath)) {
+  console.error(`Seed file not found: ${seedPath}`);
   process.exit(1);
 }
 
+const seed = JSON.parse(fs.readFileSync(seedPath, 'utf8'));
 const permissions = ['read("users")', 'create("users")', 'update("users")', 'delete("users")'];
-const s = (key, size = 255, required = false) => ({ key, type: 'string', size, required, array: false });
-const f = (key, required = false) => ({ key, type: 'float', required, array: false });
-const idx = (key, attributes, type = 'key') => ({ key, type, attributes, orders: attributes.map(() => 'ASC') });
 
-const collections = {
-  microorganisms: {
-    name: 'MICROORGANISMS',
-    attributes: [
-      s('microorganism_id', 36), s('scientific_name', 255), s('genus', 128), s('species', 128),
-      s('organism_type', 64), s('taxonomy_id', 128)
-    ],
-    indexes: [idx('idx_microorganism_id', ['microorganism_id'], 'unique'), idx('idx_scientific_name', ['scientific_name']), idx('idx_organism_type', ['organism_type'])]
-  },
-  microorganism_traits: {
-    name: 'MICROORGANISM_TRAITS',
-    attributes: [
-      s('trait_id', 36), s('microorganism_id', 36), s('category', 96), s('trait_key', 128), s('trait_label', 255), s('trait_value', 4096)
-    ],
-    indexes: [idx('idx_trait_id', ['trait_id'], 'unique'), idx('idx_trait_microorganism', ['microorganism_id']), idx('idx_trait_key', ['trait_key'])]
-  },
-  strains: {
-    name: 'STRAINS',
-    attributes: [
-      s('strain_id', 36), s('microorganism_id', 36), s('strain_name', 255), s('pathogenic_status', 64), s('biosafety_level', 32)
-    ],
-    indexes: [idx('idx_strain_id', ['strain_id'], 'unique'), idx('idx_microorganism', ['microorganism_id'])]
-  },
-  samples: {
-    name: 'SAMPLES',
-    attributes: [
-      s('sample_id', 36), s('strain_id', 36), s('source', 255), s('collection_date', 32), s('location', 512), s('host_id', 128), s('specimen_type', 255)
-    ],
-    indexes: [idx('idx_sample_id', ['sample_id'], 'unique'), idx('idx_strain', ['strain_id']), idx('idx_collection_date', ['collection_date'])]
-  },
-  observations: {
-    name: 'OBSERVATIONS',
-    attributes: [
-      s('observation_id', 36), s('sample_id', 36), s('trait_name', 255), s('observed_value', 1024), s('unit', 64), s('method', 512), s('observation_date', 32), s('observer', 255)
-    ],
-    indexes: [idx('idx_observation_id', ['observation_id'], 'unique'), idx('idx_sample', ['sample_id']), idx('idx_trait', ['trait_name'])]
-  },
-  lab_tests: {
-    name: 'LAB_TESTS',
-    attributes: [
-      s('test_id', 36), s('sample_id', 36), s('test_type', 255), s('test_name', 255), s('result', 4096), s('unit', 64), s('method', 512)
-    ],
-    indexes: [idx('idx_test_id', ['test_id'], 'unique'), idx('idx_sample', ['sample_id']), idx('idx_test_name', ['test_name'])]
-  },
-  antimicrobial_results: {
-    name: 'ANTIMICROBIAL_RESULTS',
-    attributes: [
-      s('susceptibility_id', 36), s('sample_id', 36), s('antimicrobial', 255), f('mic_value'), f('zone_diameter'), s('interpretation', 64), s('standard_used', 255)
-    ],
-    indexes: [idx('idx_susceptibility_id', ['susceptibility_id'], 'unique'), idx('idx_sample', ['sample_id']), idx('idx_antimicrobial', ['antimicrobial']), idx('idx_interpretation', ['interpretation'])]
-  },
-  sequences: {
-    name: 'SEQUENCES',
-    attributes: [
-      s('sequence_id', 36), s('strain_id', 36), s('marker', 255), s('accession_number', 255), s('sequence_file', 4096)
-    ],
-    indexes: [idx('idx_sequence_id', ['sequence_id'], 'unique'), idx('idx_strain', ['strain_id']), idx('idx_accession', ['accession_number'])]
-  },
-  media: {
-    name: 'MEDIA',
-    attributes: [
-      s('media_id', 36), s('sample_id', 36), s('media_type', 128), s('file_path', 4096), s('caption', 4096)
-    ],
-    indexes: [idx('idx_media_id', ['media_id'], 'unique'), idx('idx_sample', ['sample_id']), idx('idx_media_type', ['media_type'])]
-  }
-};
 async function request(method, route, body) {
-  const url = `${endpoint}${route}`;
   let response;
   try {
-    response = await fetch(url, {
+    response = await fetch(`${endpoint}${route}`, {
       method,
       headers: {
         'Content-Type': 'application/json',
@@ -142,14 +55,7 @@ async function request(method, route, body) {
       signal: AbortSignal.timeout(30000)
     });
   } catch (error) {
-    const cause = error?.cause || {};
-    const code = cause.code || cause.errno || '';
-    const detail = cause.message || error?.message || 'Unknown network error';
-    const suffix = code ? ` (${code})` : '';
-    const wrapped = new Error(`Could not connect to Appwrite at ${endpoint}${suffix}: ${detail}`);
-    wrapped.type = 'network_fetch_failed';
-    wrapped.cause = error;
-    throw wrapped;
+    throw new Error(`Could not connect to Appwrite at ${endpoint}: ${error?.cause?.message || error?.message || error}`);
   }
   const text = await response.text();
   const parsed = text ? (() => { try { return JSON.parse(text); } catch { return { message: text }; } })() : {};
@@ -162,181 +68,234 @@ async function request(method, route, body) {
   return parsed;
 }
 
-async function ensure(label, checkRoute, createRoute, createBody) {
+async function ensure(label, checkRoute, createRoute, body) {
   try {
     await request('GET', checkRoute);
     console.log(`• ${label} already exists`);
-    return false;
+    return;
   } catch (error) {
     if (error.status !== 404) throw error;
   }
-  await request('POST', createRoute, createBody);
+  await request('POST', createRoute, body);
   console.log(`✓ created ${label}`);
-  return true;
 }
 
-function encodeQuery(query) {
-  return encodeURIComponent(JSON.stringify(query));
-}
-
-async function listCollectionAttributes(collectionPath) {
-  // Appwrite REST queries are JSON strings, e.g. {"method":"limit","values":[100]}.
-  // Older limit(100) syntax causes general_argument_invalid on current Appwrite Cloud.
-  const limit100 = encodeQuery({ method: 'limit', values: [100] });
+async function ensurePlatforms() {
+  const wanted = [
+    { platformId: 'sugarcane-localhost', name: 'Sugarcane Registry Localhost', hostname: 'localhost' },
+    { platformId: 'sugarcane-loopback', name: 'Sugarcane Registry Loopback', hostname: '127.0.0.1' }
+  ];
   try {
-    return await request('GET', `${collectionPath}/attributes?queries[]=${limit100}&total=false`);
+    const result = await request('GET', '/project/platforms?total=false');
+    for (const platform of wanted) {
+      if ((result.platforms || []).some((item) => item?.type === 'web' && item?.hostname === platform.hostname)) continue;
+      try { await request('POST', '/project/platforms/web', platform); } catch (error) { if (error.status !== 409) throw error; }
+    }
   } catch (error) {
-    if (error.type !== 'general_argument_invalid') throw error;
-    console.warn('  ! Appwrite rejected attribute pagination; retrying without a query');
-    return await request('GET', `${collectionPath}/attributes?total=false`);
+    console.warn(`! Could not register localhost automatically: ${error.message}`);
   }
 }
 
-async function ensureCollectionAttributes(collectionId, schema) {
-  const collectionPath = `/databases/${encodeURIComponent(databaseId)}/collections/${encodeURIComponent(collectionId)}`;
-  const result = await listCollectionAttributes(collectionPath);
-  const existing = new Set((result.attributes || []).map((attribute) => attribute.key));
+const textAttr = (key, size = 1024, array = false) => ({ key, type: 'string', size, required: false, array });
+const floatAttr = (key) => ({ key, type: 'float', required: false, array: false });
 
-  for (const attribute of schema.attributes) {
+const characterizationAttrs = [
+  ...seed.fields.map((field) => textAttr(field.key, field.key === 'variety' ? 255 : 2048)),
+  textAttr('germ_trial_code', 255),
+  textAttr('germ_location', 512),
+  textAttr('germ_planting_date', 32),
+  textAttr('germ_material_type', 128),
+  floatAttr('germ_buds_planted'),
+  floatAttr('germ_germinated_count'),
+  floatAttr('germination_pct'),
+  textAttr('germ_observation_date', 32),
+  textAttr('germ_status', 64),
+  textAttr('germ_notes', 4096),
+  textAttr('photo_file_ids', 36, true),
+  textAttr('thumb_file_ids', 36, true),
+  textAttr('photo_names', 255, true),
+  textAttr('thumbnail_file_id', 36),
+  textAttr('primary_file_id', 36),
+  textAttr('source_name', 255),
+  floatAttr('source_row'),
+  textAttr('search_text', 12000)
+];
+
+async function listAttributes(collectionId) {
+  return (await request('GET', `/databases/${databaseId}/collections/${collectionId}/attributes?total=false`)).attributes || [];
+}
+
+async function ensureAttributes(collectionId, attributes) {
+  const existing = new Set((await listAttributes(collectionId)).map((attribute) => attribute.key));
+  const base = `/databases/${databaseId}/collections/${collectionId}/attributes`;
+  for (const attribute of attributes) {
     if (existing.has(attribute.key)) continue;
-
     try {
       if (attribute.type === 'string') {
-        await request('POST', `${collectionPath}/attributes/string`, {
+        await request('POST', `${base}/string`, {
           key: attribute.key,
           size: attribute.size,
-          required: Boolean(attribute.required),
+          required: false,
           array: Boolean(attribute.array),
           encrypt: false
         });
-      } else if (attribute.type === 'float') {
-        await request('POST', `${collectionPath}/attributes/float`, {
-          key: attribute.key,
-          required: Boolean(attribute.required),
-          array: Boolean(attribute.array)
-        });
       } else {
-        console.warn(`  ! skipped unsupported attribute type ${attribute.type} for ${collectionId}.${attribute.key}`);
-        continue;
+        await request('POST', `${base}/float`, {
+          key: attribute.key,
+          required: false,
+          array: false
+        });
       }
-      console.log(`  ✓ added attribute ${collectionId}.${attribute.key}`);
-      existing.add(attribute.key);
+      console.log(`  ✓ ${attribute.key}`);
     } catch (error) {
-      if (error.status === 409) {
-        console.log(`  • attribute ${collectionId}.${attribute.key} already exists`);
-        existing.add(attribute.key);
-        continue;
-      }
-      throw error;
+      if (error.status !== 409) throw error;
     }
   }
 }
 
-async function ensureLocalWebPlatforms() {
-  const desired = [
-    { platformId: 'germdb-localhost', name: 'GermDatabase Localhost', hostname: 'localhost' },
-    { platformId: 'germdb-loopback', name: 'GermDatabase Loopback', hostname: '127.0.0.1' }
-  ];
+async function waitForAttributes(collectionId, keys) {
+  for (let attempt = 0; attempt < 180; attempt += 1) {
+    const attrs = await listAttributes(collectionId);
+    const map = new Map(attrs.map((attribute) => [attribute.key, attribute.status]));
+    if (keys.every((key) => map.get(key) === 'available')) return;
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
+  throw new Error('Timed out while waiting for Appwrite attributes to become available. Run setup again if needed.');
+}
 
+async function ensureIndex(collectionId, key, type, attributes, orders = []) {
+  const route = `/databases/${databaseId}/collections/${collectionId}/indexes/${key}`;
   try {
-    const result = await request('GET', '/project/platforms?total=false');
-    const existing = Array.isArray(result.platforms) ? result.platforms : [];
+    await request('GET', route);
+    console.log(`• index ${key} already exists`);
+    return;
+  } catch (error) {
+    if (error.status !== 404) throw error;
+  }
+  await request('POST', `/databases/${databaseId}/collections/${collectionId}/indexes`, {
+    key,
+    type,
+    attributes,
+    orders,
+    lengths: []
+  });
+  console.log(`✓ created index ${key}`);
+}
 
-    for (const platform of desired) {
-      if (existing.some((item) => item?.type === 'web' && item?.hostname === platform.hostname)) {
-        console.log(`• web platform ${platform.hostname} already exists`);
-        continue;
-      }
+async function hasSeedSentinel() {
+  try {
+    await request('GET', `/databases/${databaseId}/collections/${metaCollection}/documents/characterization_seed_v1`);
+    return true;
+  } catch (error) {
+    if (error.status === 404) return false;
+    throw error;
+  }
+}
 
+async function seedRecords() {
+  if (await hasSeedSentinel()) {
+    console.log(`• ${seed.recordCount} characterization rows were already seeded; skipping bulk writes`);
+    return;
+  }
+
+  console.log(`\nSeeding ${seed.recordCount} spreadsheet rows (one-time operation)…`);
+  let next = 0;
+  let completed = 0;
+  let created = 0;
+  const failures = [];
+
+  const worker = async () => {
+    while (true) {
+      const index = next++;
+      if (index >= seed.records.length) return;
+      const source = seed.records[index];
+      const data = { ...source };
+      const documentId = data.document_id;
+      delete data.document_id;
       try {
-        await request('POST', '/project/platforms/web', platform);
-        console.log(`✓ created web platform ${platform.hostname}`);
+        await request('POST', `/databases/${databaseId}/collections/${recordsCollection}/documents`, { documentId, data });
+        created += 1;
       } catch (error) {
-        if (error.status === 409) {
-          console.log(`• web platform ${platform.hostname} already exists`);
-          continue;
-        }
-        throw error;
+        if (error.status !== 409) failures.push({ index, id: documentId, message: error.message });
+      }
+      completed += 1;
+      if (completed % 50 === 0 || completed === seed.records.length) {
+        console.log(`  ${completed}/${seed.records.length} processed (${created} new)`);
       }
     }
-  } catch (error) {
-    console.warn(`! Could not verify/create local Appwrite Web platforms: ${error.message}`);
-    console.warn('  This does not block database setup. In Appwrite Console > Project > Platforms, add a Web app with hostname "localhost".');
+  };
+
+  await Promise.all(Array.from({ length: 4 }, worker));
+  if (failures.length) {
+    console.error(`Seed encountered ${failures.length} failures. First failure:`, failures[0]);
+    throw new Error('Characterization seed did not finish cleanly. Run setup again; existing deterministic rows will be skipped.');
   }
+
+  await request('POST', `/databases/${databaseId}/collections/${metaCollection}/documents`, {
+    documentId: 'characterization_seed_v1',
+    data: { key: 'characterization_seed_v1', value: `${seed.recordCount} rows from ${seed.source}` }
+  });
+  console.log(`✓ seeded all ${seed.recordCount} spreadsheet rows`);
 }
 
 async function main() {
-  console.log('\nGermDatabase Appwrite setup');
+  console.log('\nSugarcane Germination & Characterization Registry setup');
   console.log(`Endpoint: ${endpoint}`);
   console.log(`Project:  ${projectId}`);
   console.log(`Database: ${databaseId}\n`);
 
-  await ensureLocalWebPlatforms();
+  await ensurePlatforms();
+  await ensure(`database ${databaseId}`, `/databases/${databaseId}`, '/databases', { databaseId, name: 'Sugarcane Registry', enabled: true });
 
-  await ensure(
-    `database ${databaseId}`,
-    `/databases/${encodeURIComponent(databaseId)}`,
-    '/databases',
-    { databaseId, name: 'GermDatabase', enabled: true }
-  );
+  await ensure(`collection ${recordsCollection}`,
+    `/databases/${databaseId}/collections/${recordsCollection}`,
+    `/databases/${databaseId}/collections`,
+    { collectionId: recordsCollection, name: 'SUGARCANE_CHARACTERIZATIONS', permissions, documentSecurity: false, enabled: true });
+  await ensureAttributes(recordsCollection, characterizationAttrs);
 
-  for (const [collectionId, schema] of Object.entries(collections)) {
-    await ensure(
-      `collection ${collectionId}`,
-      `/databases/${encodeURIComponent(databaseId)}/collections/${encodeURIComponent(collectionId)}`,
-      `/databases/${encodeURIComponent(databaseId)}/collections`,
-      {
-        collectionId,
-        name: schema.name,
-        permissions,
-        documentSecurity: false,
-        enabled: true,
-        attributes: schema.attributes,
-        indexes: schema.indexes
-      }
-    );
-    await ensureCollectionAttributes(collectionId, schema);
-  }
+  await ensure(`collection ${metaCollection}`,
+    `/databases/${databaseId}/collections/${metaCollection}`,
+    `/databases/${databaseId}/collections`,
+    { collectionId: metaCollection, name: 'REGISTRY_META', permissions: [], documentSecurity: false, enabled: true });
+  await ensureAttributes(metaCollection, [textAttr('key', 128), textAttr('value', 1024)]);
+
+  console.log('\nWaiting for all record fields to finish provisioning…');
+  await waitForAttributes(recordsCollection, characterizationAttrs.map((attribute) => attribute.key));
+  await waitForAttributes(metaCollection, ['key', 'value']);
+
+  await ensureIndex(recordsCollection, 'idx_variety', 'key', ['variety'], ['ASC']);
+  await ensureIndex(recordsCollection, 'fts_search', 'fulltext', ['search_text']);
 
   try {
-    await ensure(
-      `storage bucket ${bucketId}`,
-      `/storage/buckets/${encodeURIComponent(bucketId)}`,
-      '/storage/buckets',
-      {
-        bucketId,
-        name: 'GermDatabase Media',
-        permissions,
-        fileSecurity: false,
-        enabled: true,
-        maximumFileSize: 104857600,
-        allowedFileExtensions: [],
-        compression: 'gzip',
-        encryption: true,
-        antivirus: true,
-        transformations: true
-      }
-    );
+    await ensure(`storage bucket ${bucketId}`, `/storage/buckets/${bucketId}`, '/storage/buckets', {
+      bucketId,
+      name: 'Sugarcane Photos',
+      permissions,
+      fileSecurity: false,
+      enabled: true,
+      maximumFileSize: 15728640,
+      allowedFileExtensions: ['webp'],
+      compression: 'none',
+      encryption: true,
+      antivirus: true,
+      transformations: true
+    });
   } catch (error) {
-    console.warn(`! Media bucket was not created: ${error.message}`);
-    console.warn('  The core database is still usable. Add Storage scopes to the temporary key and re-run if you want the bucket.');
+    console.warn(`! Storage bucket setup skipped: ${error.message}`);
   }
 
-  console.log('\nDone. Flexible microorganism traits now use the MICROORGANISM_TRAITS collection.');
-  console.log('Any extra attributes already created in MICROORGANISMS can remain; they are no longer required.');
-  console.log('Delete the temporary Appwrite API key now.');
-  console.log('Your React client never needs or receives that server key.\n');
+  await seedRecords();
+
+  console.log('\nDone.');
+  console.log('• All spreadsheet traits are optional in the UI and Appwrite schema.');
+  console.log('• All Characterization.xlsx rows are seeded once using deterministic IDs.');
+  console.log('• Registry searches use full-text indexes, 30-row cursor pages, and lean field selection.');
+  console.log('• Old GermDatabase/germination collections were not deleted.');
+  console.log('Revoke/delete the temporary APPWRITE_API_KEY now.\n');
 }
 
 main().catch((error) => {
   console.error(`\nSetup failed: ${error.message}`);
   if (error.type) console.error(`Appwrite type: ${error.type}`);
-  if (error.type === 'network_fetch_failed') {
-    console.error('\nNetwork checks:');
-    console.error(`  1. Open ${endpoint} in a browser. A JSON response means the host is reachable.`);
-    console.error(`  2. Run: nslookup ${new URL(endpoint).hostname}`);
-    console.error(`  3. Run: powershell -Command "Test-NetConnection ${new URL(endpoint).hostname} -Port 443"`);
-    console.error('  4. Check VPN/proxy/antivirus HTTPS inspection if the browser works but Node does not.');
-  }
   process.exit(1);
 });

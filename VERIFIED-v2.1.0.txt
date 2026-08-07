@@ -1,0 +1,31 @@
+CANESPROUT REGISTRY v2.1.0 - VALIDATION NOTES
+==============================================
+
+SOURCE WORKBOOK
+- 1 sheet
+- A1:BH938
+- 60 source columns
+- 933 non-empty data rows
+- All 933 rows are present in seed/characterization.json
+- All 60 traits are present in src/lib/characterizationFields.js
+
+PERFORMANCE DESIGN
+- 30 records per Appwrite list request
+- cursorAfter pagination
+- 400 ms search debounce
+- 3-character minimum before indexed search
+- Query.select lean list fields
+- full record fetched only on open
+- no total calculation
+- no realtime subscription
+- no continuous polling
+- no Vercel API proxy
+- WebP full + thumbnail storage
+- lazy image loading
+- short-term query cache
+
+VALIDATION
+- JS/JSX parser validation passed with TypeScript parser
+- JSON files parsed successfully
+- setup-appwrite.mjs passed node --check
+- Full npm/Vite build could not run in the ChatGPT sandbox because its private npm mirror does not mirror the public Appwrite package.

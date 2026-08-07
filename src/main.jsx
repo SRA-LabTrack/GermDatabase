@@ -3,33 +3,19 @@ import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
 import './styles.css';
 
-const APP_VERSION = '1.4.0';
+const APP_VERSION = '2.1.0';
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
 
-// Never let an old PWA service worker cache Vite source while developing.
-// This was the reason localhost could keep showing an older GermDatabase UI.
 if ('serviceWorker' in navigator && !window.germDesktop) {
   window.addEventListener('load', async () => {
     if (import.meta.env.DEV) {
       try {
         const registrations = await navigator.serviceWorker.getRegistrations();
         await Promise.all(registrations.map((registration) => registration.unregister()));
-        if ('caches' in window) {
-          const keys = await caches.keys();
-          await Promise.all(keys.filter((key) => key.startsWith('germdatabase-')).map((key) => caches.delete(key)));
-        }
-        console.info(`GermDatabase v${APP_VERSION}: development cache cleared.`);
-      } catch (error) {
-        console.warn('Could not clear the development service-worker cache.', error);
-      }
+      } catch {}
       return;
     }
-
-    navigator.serviceWorker.register(`./sw.js?v=${APP_VERSION}`, { updateViaCache: 'none' }).catch(() => {});
+    navigator.serviceWorker.register(`/sw.js?v=${APP_VERSION}`, { updateViaCache: 'none' }).catch(() => {});
   });
 }

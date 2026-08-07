@@ -5,7 +5,7 @@ set "APPWRITE_HOST=fra.cloud.appwrite.io"
 set "APPWRITE_URL=https://fra.cloud.appwrite.io/v1"
 
 echo ============================================================
-echo GermDatabase Appwrite connectivity check
+echo CaneSprout Registry Appwrite connectivity check
 echo ============================================================
 echo.
 echo [1/4] Testing Appwrite over Node HTTPS...

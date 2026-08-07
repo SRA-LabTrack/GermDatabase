@@ -1,0 +1,29 @@
+CANESPROUT REGISTRY v2.1.0 - UPDATE FROM YOUR GIT FOLDER
+========================================================
+
+Permanent Git folder:
+C:\Users\kenshennn\Downloads\Germ
+
+1. Extract this ZIP somewhere outside the Git folder.
+2. Open the included GermDatabase folder.
+3. Copy EVERYTHING inside it into:
+   C:\Users\kenshennn\Downloads\Germ
+4. Choose Replace files in destination.
+5. Do NOT delete the hidden .git folder in C:\Users\kenshennn\Downloads\Germ.
+6. Open CMD in C:\Users\kenshennn\Downloads\Germ and run:
+
+   git status
+   git add -A
+   git commit -m "CaneSprout Registry v2.1 characterization overhaul"
+   git push origin main
+
+7. Because v2.1 introduces the new optimized collection and the 933-row spreadsheet seed,
+   run the one-time Appwrite setup with a temporary API key:
+
+   npm install
+   npm run setup:appwrite
+
+8. Revoke the temporary Appwrite API key when setup finishes.
+
+Later source-only UI updates normally need only replace files + git add/commit/push.
+Only rerun setup when a future update explicitly changes the Appwrite schema.

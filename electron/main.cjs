@@ -95,7 +95,7 @@ async function createWindow() {
     height: 900,
     minWidth: 860,
     minHeight: 620,
-    backgroundColor: '#eef5ff',
+    backgroundColor: '#f4f7f0',
     frame: true,
     autoHideMenuBar: true,
     icon: resolveWindowIcon(),
@@ -124,7 +124,7 @@ async function createWindow() {
 
 app.whenReady().then(() => {
   createWindow().catch((error) => {
-    console.error('Could not start GermDatabase window:', error);
+    console.error('Could not start CaneSprout Registry window:', error);
     app.quit();
   });
   app.on('activate', () => {
