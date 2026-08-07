@@ -301,7 +301,7 @@ async function seedRecords() {
 }
 
 async function main() {
-  console.log('\nSugarcane Germination & Characterization Registry setup v2.2.0');
+  console.log('\nSugarcane Germination & Characterization Registry setup v2.2.1');
   console.log(`Endpoint: ${endpoint}`);
   console.log(`Project:  ${projectId}`);
   console.log(`Database: ${databaseId}\n`);

@@ -1,8 +1,8 @@
 {
   "name": "canesprout-registry",
   "private": true,
-  "version": "2.2.0",
-  "description": "Sugarcane germination and characterization registry with glass UI, exact-first indexed search, 25-row cursor pagination, Appwrite list caching, lazy details/photos, and Vercel free-plan optimized static delivery",
+  "version": "2.2.1",
+  "description": "Sugarcane germination and characterization registry with glass UI, hidden spreadsheet column metadata, exact-first indexed search, 25-row cursor pagination, changed-fields-only writes, longer bounded caches, optimized WebP media, and Vercel/Appwrite free-plan safeguards",
   "main": "electron/main.cjs",
   "author": "SRA-LabTrack",
   "type": "module",

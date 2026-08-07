@@ -32,6 +32,7 @@ import {
   SEARCH_MIN,
   SEARCH_SCOPES,
   bulkCreateRecords,
+  clearListCache,
   clearQueryCache,
   deleteRecord,
   deleteStoredFiles,
@@ -44,10 +45,11 @@ import {
 } from './lib/registryApi';
 
 const APP_NAME = 'CaneSprout Registry';
-const APP_VERSION = '2.2.0';
-const USER_CACHE_KEY = 'sugarcane-registry-user-v220';
-const SESSION_LEASE_KEY = 'sugarcane-registry-session-lease-v220';
-const SESSION_LEASE_MS = 15 * 60_000;
+const APP_VERSION = '2.2.1';
+const USER_CACHE_KEY = 'sugarcane-registry-user-v221';
+const SESSION_LEASE_KEY = 'sugarcane-registry-session-lease-v221';
+const SESSION_LEASE_MS = 30 * 60_000;
+const MANUAL_REFRESH_COOLDOWN_MS = 20_000;
 
 const GERMINATION_FIELDS = [
   { key: 'germ_trial_code', label: 'Germination trial / batch code', type: 'text' },
@@ -149,7 +151,7 @@ function Field({ field, value, onChange }) {
   };
   return (
     <label className={`form-field ${field.type === 'textarea' ? 'wide' : ''}`}>
-      <span>{field.label}{field.column ? <em>{field.column}</em> : null}<i>Optional</i></span>
+      <span>{field.label}<i>Optional</i></span>
       {field.type === 'textarea' ? (
         <textarea {...common} rows={4} placeholder="Optional" />
       ) : field.type === 'select' ? (
@@ -239,7 +241,7 @@ function RecordCard({ record, onOpen }) {
   return (
     <article className="record-card" onClick={() => onOpen(record.$id)}>
       <div className={`record-image ${image ? 'has-image' : ''}`}>
-        {image ? <img src={image} alt={record.variety || 'Sugarcane'} loading="lazy" decoding="async" /> : <div className="record-placeholder"><Sprout size={38} /><span>Photo optional</span></div>}
+        {image ? <img src={image} alt={record.variety || 'Sugarcane'} loading="lazy" decoding="async" fetchPriority="low" /> : <div className="record-placeholder"><Sprout size={38} /><span>Photo optional</span></div>}
         <span className="record-status">{record.germ_status || 'Characterized'}</span>
         {germPct !== null && <span className="rate-chip">{germPct.toFixed(1)}% germinated</span>}
       </div>
@@ -268,6 +270,7 @@ function DetailModal({ recordId, onClose, onEdit, onDeleted }) {
   const [error, setError] = useState('');
   const [showEmpty, setShowEmpty] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [photoViewIndex, setPhotoViewIndex] = useState(-1);
 
   useEffect(() => {
     let live = true;
@@ -303,7 +306,7 @@ function DetailModal({ recordId, onClose, onEdit, onDeleted }) {
               <div className="detail-hero-rate"><small>Germination</small><strong>{pct(record) === null ? '—' : `${pct(record).toFixed(1)}%`}</strong></div>
             </section>
 
-            {!!photos.length && <section className="photo-gallery">{photos.map((id, index) => <img key={id} src={fileViewUrl(id)} alt={record.photo_names?.[index] || 'Sugarcane photo'} loading="lazy" decoding="async" />)}</section>}
+            {!!photos.length && <><section className="photo-gallery">{photos.map((id, index) => <button type="button" className="photo-thumb-button" key={id} onClick={() => setPhotoViewIndex(index)} title="Load full-resolution photo"><img src={fileViewUrl(record.thumb_file_ids?.[index] || id)} alt={record.photo_names?.[index] || 'Sugarcane photo'} loading="lazy" decoding="async" fetchPriority="low" /><span>View full photo</span></button>)}</section><p className="photo-bandwidth-note">Small WebP thumbnails are shown here. Full-resolution media is requested from Appwrite Storage only when you open a photo.</p></>}
 
             <section className="detail-section"><div className="section-title"><div><small>Germination tracking</small><h3>Trial information</h3></div></div><div className="detail-grid">{GERMINATION_FIELDS.map((field) => <div key={field.key}><small>{field.label}</small><strong>{record[field.key] || 'Not provided'}</strong></div>)}<div><small>Calculated germination %</small><strong>{pct(record) === null ? 'Not available' : `${pct(record).toFixed(2)}%`}</strong></div></div></section>
 
@@ -311,11 +314,12 @@ function DetailModal({ recordId, onClose, onEdit, onDeleted }) {
             {CHARACTERIZATION_GROUPS.map((group) => {
               const fields = showEmpty ? group.fields : group.fields.filter((field) => record[field.key]);
               if (!fields.length) return null;
-              return <section className="detail-section" key={group.title}><div className="section-title"><div><small>Spreadsheet traits</small><h3>{group.title}</h3></div></div><div className="detail-grid">{fields.map((field) => <div key={field.key}><small>{field.label} <em>{field.column}</em></small><strong>{record[field.key] || 'Not provided'}</strong></div>)}</div></section>;
+              return <section className="detail-section" key={group.title}><div className="section-title"><div><small>Spreadsheet traits</small><h3>{group.title}</h3></div></div><div className="detail-grid">{fields.map((field) => <div key={field.key}><small>{field.label}</small><strong>{record[field.key] || 'Not provided'}</strong></div>)}</div></section>;
             })}
           </>}
         </div>
         {record && <footer className="modal-footer"><button className="danger-button" onClick={remove} disabled={deleting}><Trash2 size={16} /> {deleting ? 'Deleting…' : 'Delete'}</button><span className="footer-spacer" /><button className="secondary-button" onClick={() => onEdit(record)}><Pencil size={16} /> Edit</button><button className="primary-button" onClick={onClose}>Done</button></footer>}
+        {record && photoViewIndex >= 0 && photos[photoViewIndex] && <div className="photo-lightbox" onMouseDown={(e) => e.target === e.currentTarget && setPhotoViewIndex(-1)}><button type="button" className="icon-button photo-lightbox-close" onClick={() => setPhotoViewIndex(-1)} aria-label="Close full photo"><X size={20} /></button><img src={fileViewUrl(photos[photoViewIndex])} alt={record.photo_names?.[photoViewIndex] || 'Full sugarcane photo'} decoding="async" fetchPriority="high" /><span>{record.photo_names?.[photoViewIndex] || `Photo ${photoViewIndex + 1}`}</span></div>}
       </section>
     </div>
   );
@@ -355,13 +359,13 @@ function RecordFormModal({ initial, onClose, onSaved }) {
     event.preventDefault();
     setBusy(true);
     setError('');
+    let uploaded = [];
     try {
       const variants = [];
       for (let index = 0; index < newFiles.length; index += 1) {
         setProgress(`Compressing photo ${index + 1} of ${newFiles.length} to WebP…`);
         variants.push(await prepareImageVariants(newFiles[index]));
       }
-      let uploaded = [];
       if (variants.length) {
         setProgress('Uploading optimized full images and thumbnails…');
         uploaded = await uploadPreparedPhotos(variants, ({ done, total }) => setProgress(`Uploading photo ${done} of ${total}…`));
@@ -375,11 +379,15 @@ function RecordFormModal({ initial, onClose, onSaved }) {
       next.primary_file_id = next.photo_file_ids[0] || '';
       next.thumbnail_file_id = next.thumb_file_ids[0] || '';
       setProgress('Saving record…');
-      await saveRecord(next, initial?.$id || '');
+      await saveRecord(next, initial?.$id || '', initial || null);
       if (removedFileIds.length) deleteStoredFiles(removedFileIds).catch(() => {});
       onSaved();
       onClose();
     } catch (err) {
+      if (uploaded.length) {
+        const orphanIds = uploaded.flatMap((item) => [item.fullId, item.thumbId]).filter(Boolean);
+        await deleteStoredFiles(orphanIds).catch(() => {});
+      }
       setError(messageFor(err));
     } finally {
       setBusy(false);
@@ -458,6 +466,7 @@ export default function App() {
   const searchInputRef = useRef(null);
   const searchPanelRef = useRef(null);
   const forceFreshRef = useRef(false);
+  const lastManualRefreshRef = useRef(0);
   const [records, setRecords] = useState([]);
   const [cursor, setCursor] = useState('');
   const [hasMore, setHasMore] = useState(false);
@@ -673,9 +682,19 @@ export default function App() {
     try { await window.germDesktop.checkForUpdates?.(); } catch { setUpdateState('error'); }
   }
 
-  function refreshRegistry() {
+  function refreshRegistry(options = {}) {
+    const manual = options?.manual === true;
+    if (manual) {
+      const now = Date.now();
+      const remaining = MANUAL_REFRESH_COOLDOWN_MS - (now - lastManualRefreshRef.current);
+      if (remaining > 0) {
+        setCacheNote(`Fresh refresh is limited to once every ${Math.ceil(MANUAL_REFRESH_COOLDOWN_MS / 1000)} seconds to protect the free-plan quota.`);
+        return;
+      }
+      lastManualRefreshRef.current = now;
+    }
     forceFreshRef.current = true;
-    clearQueryCache();
+    clearListCache();
     setRefreshKey((value) => value + 1);
   }
 
@@ -719,13 +738,13 @@ export default function App() {
 
       <section className="hero">
         <div className="hero-copy"><span className="eyebrow"><Sprout size={15} /> Sugarcane research library</span><h1>Germination records with the full characterization sheet built in.</h1><p>Every trait from Characterization.xlsx is available when you add or edit a variety, but none of them are mandatory. Search stays server-side, exact lookups probe one indexed row first, and recent pages are cached so repeated visits avoid unnecessary reads.</p><div className="hero-actions"><button className="primary-button" onClick={() => { setEditRecord(null); setShowForm(true); }}><Plus size={17} /> New sugarcane record</button><button className="secondary-button" onClick={() => setShowImport(true)}><FileSpreadsheet size={17} /> Import workbook</button></div></div>
-        <div className="hero-stats"><div><small>Source library</small><strong>{SOURCE_RECORD_COUNT}</strong><span>spreadsheet rows included</span></div><div><small>Database page</small><strong>{PAGE_SIZE}</strong><span>lean rows maximum per request</span></div><div><small>Search delay</small><strong>{SEARCH_DEBOUNCE_MS} ms</strong><span>debounced indexed search</span></div><div><small>Cache window</small><strong>5 min</strong><span>local + Appwrite list caching</span></div></div>
+        <div className="hero-stats"><div><small>Source library</small><strong>{SOURCE_RECORD_COUNT}</strong><span>spreadsheet rows included</span></div><div><small>Database page</small><strong>{PAGE_SIZE}</strong><span>lean rows maximum per request</span></div><div><small>Search delay</small><strong>{SEARCH_DEBOUNCE_MS} ms</strong><span>debounced indexed search</span></div><div><small>Cache window</small><strong>10 min</strong><span>local + Appwrite list caching</span></div></div>
       </section>
 
       <section className="registry-section" id="registry">
         <div className="registry-toolbar">
-          <div><span className="eyebrow">Characterization registry</span><h2>Sugarcane varieties</h2><p>Initial browsing loads only {PAGE_SIZE} lean records. A recent first page can reopen from device cache with zero database reads; full traits and full-resolution photos load only when a card is opened.</p></div>
-          <div className="toolbar-actions"><button className="icon-button bordered" title="Refresh current page" onClick={refreshRegistry}><RefreshCw size={18} /></button></div>
+          <div><span className="eyebrow">Characterization registry</span><h2>Sugarcane varieties</h2><p>Initial browsing loads only {PAGE_SIZE} lean records. A recent first page can reopen from device cache with zero database reads; full traits and full-resolution photos load only when a card is opened. Column letters stay internal and are never shown in the interface.</p></div>
+          <div className="toolbar-actions"><button className="icon-button bordered" title="Refresh current page" onClick={() => refreshRegistry({ manual: true })}><RefreshCw size={18} /></button></div>
         </div>
 
         <div className="search-panel" id="registry-search" ref={searchPanelRef}>
@@ -747,7 +766,7 @@ export default function App() {
           {searchInput && <button className="clear-search" onClick={() => { setSearchMatchMode(''); setSearchInput(''); searchInputRef.current?.focus(); }} aria-label="Clear search"><X size={16} /></button>}
           <span>{searchInput.trim().length > 0 && searchInput.trim().length < SEARCH_MIN ? `${SEARCH_MIN - searchInput.trim().length} more character${SEARCH_MIN - searchInput.trim().length === 1 ? '' : 's'} • 0 reads` : searchInput.trim() ? `${SEARCH_SCOPES[searchScope].label} • ${searchScope === 'all' ? 'keyword index' : 'smart index'}` : `Browse first ${PAGE_SIZE}`}</span>
         </div>
-        <div className="query-policy"><CheckCircle2 size={16} /><span>25 rows/request • exact-first indexed search • 400 ms debounce • cursor Load More • 5 min list cache • 15 min detail cache • no polling • no Realtime • no totals</span></div>
+        <div className="query-policy"><CheckCircle2 size={16} /><span>25 rows/request • exact-first indexed search • 500 ms debounce • cursor Load More • 10 min list cache • 30 min detail cache • changed-fields-only saves • no polling • no Realtime • no totals</span></div>
         {!loading && searchInput.trim().length >= SEARCH_MIN && searchTerm === searchInput.trim() && <div className="search-result-note"><b>{records.length}</b><span>{searchMatchMode === 'exact' ? `Exact ${SEARCH_SCOPES[searchScope].label.toLowerCase()} match` : `${records.length === 1 ? 'match' : 'matches'} loaded`} for “{searchTerm}” in {SEARCH_SCOPES[searchScope].label}.{hasMore ? ` More matches are available with Load ${PAGE_SIZE} more.` : ''}</span></div>}
         {cacheNote && <div className="alert info">{cacheNote}</div>}
         {listError && <div className="alert error">{listError}</div>}

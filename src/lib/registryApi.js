@@ -12,7 +12,7 @@ import { CHARACTERIZATION_FIELDS } from './characterizationFields';
 
 export const PAGE_SIZE = 25;
 export const SEARCH_MIN = 3;
-export const SEARCH_DEBOUNCE_MS = 400;
+export const SEARCH_DEBOUNCE_MS = 500;
 export const LIST_FIELDS = [
   'variety',
   'stool_plant_habit',
@@ -30,13 +30,13 @@ const memoryCache = new Map();
 const inflightCache = new Map();
 const detailCache = new Map();
 const coreCache = new Map();
-const CACHE_TTL = 5 * 60_000;
-const DETAIL_TTL = 15 * 60_000;
-const PERSISTENT_BROWSE_TTL = 10 * 60_000;
-const APPWRITE_BROWSE_TTL_SECONDS = 300;
-const APPWRITE_SEARCH_TTL_SECONDS = 180;
+const CACHE_TTL = 10 * 60_000;
+const DETAIL_TTL = 30 * 60_000;
+const PERSISTENT_BROWSE_TTL = 30 * 60_000;
+const APPWRITE_BROWSE_TTL_SECONDS = 600;
+const APPWRITE_SEARCH_TTL_SECONDS = 300;
 const BACKUP_PAGE_SIZE = 100;
-const CACHE_NAMESPACE = 'sugarcane-v220';
+const CACHE_NAMESPACE = 'sugarcane-v221';
 const LAST_PAGE_KEY = `${CACHE_NAMESPACE}:last-page`;
 const CORE_KEY_PREFIX = `${CACHE_NAMESPACE}:core:`;
 const DETAIL_KEY_PREFIX = `${CACHE_NAMESPACE}:detail:`;
@@ -121,16 +121,35 @@ function writeDetailSession(recordId, value) {
   writeTimedStorage(sessionStorage, `${DETAIL_KEY_PREFIX}${recordId}`, value);
 }
 
-export function clearQueryCache() {
+export function clearListCache() {
   memoryCache.clear();
   inflightCache.clear();
+  try {
+    Object.keys(sessionStorage)
+      .filter((key) => key.startsWith(`${CACHE_NAMESPACE}:q:`))
+      .forEach((key) => sessionStorage.removeItem(key));
+    localStorage.removeItem(LAST_PAGE_KEY);
+  } catch {}
+}
+
+function clearRecordCache(recordId) {
+  if (!recordId) return;
+  detailCache.delete(recordId);
+  coreCache.delete(recordId);
+  try {
+    sessionStorage.removeItem(`${CORE_KEY_PREFIX}${recordId}`);
+    sessionStorage.removeItem(`${DETAIL_KEY_PREFIX}${recordId}`);
+  } catch {}
+}
+
+export function clearQueryCache() {
+  clearListCache();
   detailCache.clear();
   coreCache.clear();
   try {
     Object.keys(sessionStorage)
       .filter((key) => key.startsWith(`${CACHE_NAMESPACE}:`))
       .forEach((key) => sessionStorage.removeItem(key));
-    localStorage.removeItem(LAST_PAGE_KEY);
   } catch {}
 }
 
@@ -159,6 +178,25 @@ function buildLeanQueries(limit = PAGE_SIZE) {
 async function smartFieldFirstPage(term, scopeConfig, bypassCache) {
   const attribute = scopeConfig.attribute;
   const ttl = APPWRITE_SEARCH_TTL_SECONDS;
+
+  // Numeric fragments such as "5001" are normally intended to match a code
+  // inside a variety name (for example Phil 5001). Skip exact + prefix probes
+  // in that common case so one user search does not make three API requests.
+  if (attribute === 'variety' && /^\d/.test(term)) {
+    const result = await fetchList([
+      ...buildLeanQueries(),
+      Query.contains(attribute, term),
+      Query.orderAsc(attribute)
+    ], { ttl, bypassCache });
+    const documents = result.documents || [];
+    return {
+      rawDocuments: documents,
+      documents,
+      matchMode: 'contains',
+      hasMore: documents.length === PAGE_SIZE,
+      nextCursor: documents.at(-1)?.$id || ''
+    };
+  }
 
   // 1) Exact probe first. A successful precise lookup costs only one returned
   // row instead of reading a whole 25-row contains page.
@@ -391,7 +429,8 @@ export async function getRecord(recordId, { bypassCache = false } = {}) {
   const detailPromise = withAppwriteFailover(() => databases.getDocument({
     databaseId: DATABASE_ID,
     collectionId: COLLECTIONS.details,
-    documentId: recordId
+    documentId: recordId,
+    queries: [Query.select(['traits_json', 'details_json'])]
   }), { timeoutMs: 6500 });
 
   if (!core) {
@@ -497,17 +536,28 @@ async function upsertDocument(collectionId, documentId, data, exists) {
   }), { retryTransport: false, timeoutMs: 7000 });
 }
 
-export async function saveRecord(data, recordId = '') {
+export async function saveRecord(data, recordId = '', previous = null) {
   const { core: corePayload, detail: detailPayload } = splitPayload(data);
   const id = recordId || ID.unique();
   const exists = Boolean(recordId);
 
-  const detail = await upsertDocument(COLLECTIONS.details, id, detailPayload, exists);
-  let core;
+  // Editing should not spend two Appwrite writes when only one half of the
+  // split document changed. The already-open full record is compared locally,
+  // so this optimization adds zero reads.
+  const previousPayload = exists && previous ? splitPayload(previous) : null;
+  const coreChanged = !previousPayload || JSON.stringify(previousPayload.core) !== JSON.stringify(corePayload);
+  const detailChanged = !previousPayload || JSON.stringify(previousPayload.detail) !== JSON.stringify(detailPayload);
+
+  if (exists && !coreChanged && !detailChanged) return previous;
+
+  let detail = { $id: id, ...detailPayload };
+  if (detailChanged) detail = await upsertDocument(COLLECTIONS.details, id, detailPayload, exists);
+
+  let core = { $id: id, ...corePayload };
   try {
-    core = await upsertDocument(COLLECTIONS.records, id, corePayload, exists);
+    if (coreChanged) core = await upsertDocument(COLLECTIONS.records, id, corePayload, exists);
   } catch (error) {
-    if (!exists) {
+    if (!exists && detailChanged) {
       await Promise.allSettled([
         databases.deleteDocument({ databaseId: DATABASE_ID, collectionId: COLLECTIONS.details, documentId: id })
       ]);
@@ -516,7 +566,8 @@ export async function saveRecord(data, recordId = '') {
   }
 
   const value = expandRecord(core, detail);
-  clearQueryCache();
+  clearListCache();
+  clearRecordCache(id);
   coreCache.set(id, core);
   detailCache.set(id, { savedAt: Date.now(), value });
   writeCoreSession(core);
@@ -536,12 +587,25 @@ async function deleteDocumentIfPresent(collectionId, documentId) {
   }
 }
 
+async function deleteStoredFileIfPresent(fileId) {
+  if (!fileId) return;
+  try {
+    await storage.deleteFile({ bucketId: MEDIA_BUCKET_ID, fileId });
+  } catch (error) {
+    const code = Number(error?.code || error?.status || 0);
+    if (code !== 404) throw error;
+  }
+}
+
 export async function deleteRecord(record) {
   const ids = [...(record.photo_file_ids || []), ...(record.thumb_file_ids || [])];
-  await Promise.allSettled(ids.map((fileId) => storage.deleteFile({ bucketId: MEDIA_BUCKET_ID, fileId })));
+  // Delete media first. If Storage is unreachable, keep the database metadata
+  // intact so the user can retry instead of creating unreachable orphan files.
+  await Promise.all(ids.filter(Boolean).map(deleteStoredFileIfPresent));
   await deleteDocumentIfPresent(COLLECTIONS.details, record.$id);
   await deleteDocumentIfPresent(COLLECTIONS.records, record.$id);
-  clearQueryCache();
+  clearListCache();
+  clearRecordCache(record.$id);
 }
 
 export function fileViewUrl(fileId) {
@@ -575,7 +639,7 @@ export async function uploadPreparedPhotos(variants, onProgress) {
 }
 
 export async function deleteStoredFiles(fileIds = []) {
-  await Promise.allSettled(fileIds.filter(Boolean).map((fileId) => storage.deleteFile({ bucketId: MEDIA_BUCKET_ID, fileId })));
+  await Promise.all(fileIds.filter(Boolean).map(deleteStoredFileIfPresent));
 }
 
 export async function bulkCreateRecords(rows, onProgress) {
@@ -618,6 +682,6 @@ export async function bulkCreateRecords(rows, onProgress) {
   // Two workers stay comfortably below the Web SDK write-rate ceiling while
   // still making large workbook imports reasonably quick.
   await Promise.all(Array.from({ length: Math.min(2, rows.length) }, worker));
-  clearQueryCache();
+  clearListCache();
   return { imported: rows.length - errors.length, errors };
 }

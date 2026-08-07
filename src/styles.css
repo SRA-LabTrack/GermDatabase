@@ -171,6 +171,17 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .detail-hero-rate small { display: block; color: #7a887b; font-size: 9px; text-transform: uppercase; }
 .detail-hero-rate strong { display: block; margin-top: 3px; font-family: Georgia, "Times New Roman", serif; font-size: 28px; font-weight: 500; }
 .photo-gallery { margin-top: 16px; display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
+.photo-thumb-button { position: relative; overflow: hidden; min-height: 150px; padding: 0; border: 1px solid rgba(67,111,70,.12); border-radius: 16px; background: rgba(246,251,241,.82); cursor: pointer; }
+.photo-thumb-button img { width: 100%; height: 100%; min-height: 150px; object-fit: cover; display: block; transition: transform .35s var(--ease-spring), filter .25s ease; }
+.photo-thumb-button span { position: absolute; right: 9px; bottom: 9px; padding: 6px 9px; border-radius: 999px; background: rgba(255,255,255,.82); backdrop-filter: blur(12px); color: #285739; font-size: 8px; font-weight: 850; letter-spacing: .04em; opacity: 0; transform: translateY(5px); transition: opacity .2s ease, transform .2s ease; }
+.photo-thumb-button:hover img { transform: scale(1.035); filter: saturate(1.04); }
+.photo-thumb-button:hover span { opacity: 1; transform: translateY(0); }
+.photo-bandwidth-note { margin: 8px 2px 0; color: #7b8d7d; font-size: 9px; }
+.photo-lightbox { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: 38px; background: rgba(14,37,24,.70); backdrop-filter: blur(18px) saturate(1.08); animation: fadeIn .2s ease both; }
+.photo-lightbox img { max-width: min(94vw, 1500px); max-height: 86vh; object-fit: contain; border-radius: 22px; box-shadow: 0 35px 100px rgba(0,0,0,.36); animation: modalIn .28s var(--ease-spring) both; }
+.photo-lightbox > span { position: fixed; bottom: 18px; padding: 7px 12px; border-radius: 999px; background: rgba(255,255,255,.80); backdrop-filter: blur(12px); color: #234f34; font-size: 10px; font-weight: 750; }
+.photo-lightbox-close { position: fixed; top: 18px; right: 18px; z-index: 2; background: rgba(255,255,255,.88) !important; }
+
 .photo-gallery img { width: 100%; height: 210px; object-fit: cover; border-radius: 17px; border: 1px solid #e5ebdf; background: #edf3e8; }
 .detail-section, .form-section { margin-top: 17px; padding: 20px; border-radius: 21px; background: rgba(255,255,255,.92); border: 1px solid #e5ece0; }
 .section-title, .form-section-heading { margin-bottom: 14px; }
@@ -179,7 +190,6 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .detail-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
 .detail-grid > div { min-width: 0; padding: 11px 12px; border-radius: 13px; background: #f7faf4; }
 .detail-grid small { display: block; color: #849087; font-size: 8px; text-transform: uppercase; letter-spacing: .05em; }
-.detail-grid small em { margin-left: 4px; padding: 2px 5px; border-radius: 5px; font-style: normal; color: #6f7e46; background: #fff6bf; }
 .detail-grid strong { display: block; margin-top: 5px; color: #35543f; font-size: 11px; line-height: 1.4; overflow-wrap: anywhere; }
 .show-empty-row { margin-top: 15px; display: flex; justify-content: flex-end; }
 .optional-banner { padding: 14px 16px; display: flex; gap: 10px; align-items: center; border-radius: 16px; color: #42623f; background: linear-gradient(135deg, #eef8e6, #fff7c9); border: 1px solid #e2ebbd; }
@@ -191,7 +201,6 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .form-field { min-width: 0; display: flex; flex-direction: column; gap: 6px; }
 .form-field.wide { grid-column: 1 / -1; }
 .form-field > span { display: flex; align-items: center; gap: 6px; min-height: 16px; color: #55705b; font-size: 9px; font-weight: 800; }
-.form-field > span em { padding: 2px 5px; border-radius: 5px; font-style: normal; color: #776926; background: #fff4b9; }
 .form-field > span i { margin-left: auto; color: #99a39a; font-size: 8px; font-style: normal; font-weight: 600; }
 .form-field input, .form-field select, .form-field textarea { width: 100%; min-width: 0; border: 1px solid #dfe7db; border-radius: 12px; background: #fbfdf9; padding: 10px 11px; outline: none; font-size: 11px; }
 .form-field input:hover, .form-field select:hover, .form-field textarea:hover { border-color: #c9d9c2; }
@@ -293,7 +302,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 
 
 /* ================================================================
-   v2.2.0 GLASS UI + CLIENT-ONLY MOTION
+   v2.2.1 GLASS UI + CLIENT-ONLY MOTION
    Visual polish below adds no network/database requests. Expensive blur is
    limited to a few large surfaces; record cards use translucent gradients.
    ================================================================ */

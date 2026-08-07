@@ -1,0 +1,34 @@
+CaneSprout v2.2.1 quota-oriented architecture
+=============================================
+
+APPWRITE
+- 25-row lean list pages using Query.select.
+- 3-character minimum + 500ms debounce.
+- Exact/prefix/contains search stays server-side and indexed.
+- Cursor-based Load More; total:false.
+- No Realtime subscriptions and no periodic polling.
+- 10-minute local list cache, 30-minute first-page device cache, 30-minute record-detail cache.
+- Appwrite response TTL caching: 10 minutes browse, 5 minutes search.
+- Full traits fetched only when opening a record.
+- Edits update only changed split documents, based on local comparison of the already-open record.
+- Writes are never performed on keystrokes.
+- Mutations are not transport-retried after uncertain timeouts.
+- Images are WebP in Appwrite Storage, with separate 360px lazy thumbnails and 1600px documentation images.
+- Full backup is explicit only and uses 100-row cursor pages.
+- Manual uncached refresh is guarded by a 20-second cooldown.
+- Numeric variety fragments skip two unnecessary API probes before substring search.
+
+VERCEL
+- Static Vite frontend only; ordinary CRUD/auth/storage talks directly to Appwrite.
+- No Vercel Functions in the normal workflow.
+- Hashed assets use one-year immutable caching.
+- Service worker uses cache-first static shell after first capture.
+- Automatic service-worker network update check is capped to once every 24 hours.
+- No version polling loop.
+- noindex/nofollow discourages crawler traffic to the authenticated registry.
+
+UI effects are CSS/transform/opacity based and do not add network requests.
+
+- Detail photo galleries use small thumbnails; the full Appwrite Storage image is fetched only after an explicit photo click.
+- Failed record saves attempt to remove newly uploaded image variants so they do not become orphaned Storage usage.
+- Record deletion keeps database metadata if media cleanup fails, allowing a safe retry instead of losing file references.

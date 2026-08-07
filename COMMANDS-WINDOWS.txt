@@ -1,6 +1,6 @@
-CaneSprout Registry v2.2.0 Windows commands
+CaneSprout Registry v2.2.1 Windows commands
 
-CANESPROUT REGISTRY v2.2.0 - WINDOWS COMMANDS
+CANESPROUT REGISTRY v2.2.1 - WINDOWS COMMANDS
 =============================================
 
 IMPORTANT
@@ -22,7 +22,7 @@ npm.cmd run preview
 
 APPWRITE SETUP
 npm.cmd run setup:appwrite
-Only needed for a fresh Appwrite project/schema. v2.2.0 adds no new attributes or indexes,
+Only needed for a fresh Appwrite project/schema. v2.2.1 adds no new attributes or indexes,
 so an existing working v2.1.5 database does NOT need setup again.
 
 RUN ELECTRON DESKTOP DEV
@@ -34,7 +34,7 @@ npm.cmd run desktop:build:win
 PUBLISH UPDATE FROM C:\Users\kenshennn\Downloads\Germ
 git status
 git add -A
-git commit -m "CaneSprout v2.2 glass and free-plan optimization"
+git commit -m "CaneSprout v2.2.1 quota guard and trait label cleanup"
 git push origin main
 
 Or double-click PUSH-UPDATE-TO-GITHUB.cmd.
