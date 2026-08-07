@@ -1,0 +1,8 @@
+CaneSprout Registry v2.3.0 validation
+=====================================
+- TypeScript parser pass completed for JS/JSX source files with JSX enabled.
+- Node syntax checks passed for non-JSX source, setup script, and Electron files.
+- CSS parsed successfully with PostCSS.
+- package.json, vercel.json, version.json, and seed JSON validated.
+- Seed still contains 60 characterization fields and 933 source records.
+- Full npm/Vite build could not run in the ChatGPT sandbox because its private npm mirror does not provide appwrite@26.2.0. Public npm installation on the user's PC/Vercel is expected to resolve the declared package normally.

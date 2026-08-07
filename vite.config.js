@@ -9,6 +9,7 @@ export default defineConfig({
     minify: 'esbuild',
     cssMinify: true,
     cssCodeSplit: true,
+    reportCompressedSize: false,
     modulePreload: { polyfill: false },
     rollupOptions: {
       output: {

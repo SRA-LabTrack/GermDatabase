@@ -1,4 +1,4 @@
-const CACHE = 'canesprout-shell-v2.2.1';
+const CACHE = 'canesprout-shell-v2.3.0';
 
 self.addEventListener('install', () => {
   // No install-time precache: avoid duplicate Vercel requests on a user's first visit.

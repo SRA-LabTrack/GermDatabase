@@ -17,8 +17,6 @@ export const LIST_FIELDS = [
   'variety',
   'stool_plant_habit',
   'leaf_color',
-  'stalk_exposed_color',
-  'bud_shape',
   'germ_trial_code',
   'germ_status',
   'germ_location',
@@ -29,14 +27,15 @@ export const LIST_FIELDS = [
 const memoryCache = new Map();
 const inflightCache = new Map();
 const detailCache = new Map();
+const detailInflight = new Map();
 const coreCache = new Map();
-const CACHE_TTL = 10 * 60_000;
-const DETAIL_TTL = 30 * 60_000;
-const PERSISTENT_BROWSE_TTL = 30 * 60_000;
-const APPWRITE_BROWSE_TTL_SECONDS = 600;
+const CACHE_TTL = 15 * 60_000;
+const DETAIL_TTL = 45 * 60_000;
+const PERSISTENT_BROWSE_TTL = 45 * 60_000;
+const APPWRITE_BROWSE_TTL_SECONDS = 900;
 const APPWRITE_SEARCH_TTL_SECONDS = 300;
 const BACKUP_PAGE_SIZE = 100;
-const CACHE_NAMESPACE = 'sugarcane-v221';
+const CACHE_NAMESPACE = 'sugarcane-v230';
 const LAST_PAGE_KEY = `${CACHE_NAMESPACE}:last-page`;
 const CORE_KEY_PREFIX = `${CACHE_NAMESPACE}:core:`;
 const DETAIL_KEY_PREFIX = `${CACHE_NAMESPACE}:detail:`;
@@ -135,6 +134,7 @@ export function clearListCache() {
 function clearRecordCache(recordId) {
   if (!recordId) return;
   detailCache.delete(recordId);
+  detailInflight.delete(recordId);
   coreCache.delete(recordId);
   try {
     sessionStorage.removeItem(`${CORE_KEY_PREFIX}${recordId}`);
@@ -145,6 +145,7 @@ function clearRecordCache(recordId) {
 export function clearQueryCache() {
   clearListCache();
   detailCache.clear();
+  detailInflight.clear();
   coreCache.clear();
   try {
     Object.keys(sessionStorage)
@@ -419,36 +420,47 @@ export async function getRecord(recordId, { bypassCache = false } = {}) {
       detailCache.set(recordId, { savedAt: Date.now(), value: sessionHit });
       return sessionHit;
     }
+    if (detailInflight.has(recordId)) return detailInflight.get(recordId);
   }
 
-  // Registry pages remember their lean core rows in sessionStorage, so opening
-  // a cached card usually costs only the one heavy detail-document read.
-  let core = bypassCache ? null : (coreCache.get(recordId) || readCoreSession(recordId));
-  if (core) coreCache.set(recordId, core);
+  const execute = async () => {
+    // Registry pages remember their lean core rows in sessionStorage, so opening
+    // a cached card normally costs only the one heavy detail-document read.
+    let core = bypassCache ? null : (coreCache.get(recordId) || readCoreSession(recordId));
+    if (core) coreCache.set(recordId, core);
 
-  const detailPromise = withAppwriteFailover(() => databases.getDocument({
-    databaseId: DATABASE_ID,
-    collectionId: COLLECTIONS.details,
-    documentId: recordId,
-    queries: [Query.select(['traits_json', 'details_json'])]
-  }), { timeoutMs: 6500 });
-
-  if (!core) {
-    core = await withAppwriteFailover(() => databases.getDocument({
+    const detailPromise = withAppwriteFailover(() => databases.getDocument({
       databaseId: DATABASE_ID,
-      collectionId: COLLECTIONS.records,
+      collectionId: COLLECTIONS.details,
       documentId: recordId,
-      queries: [Query.select([...LIST_FIELDS, 'source_name', 'source_row'])]
+      queries: [Query.select(['traits_json', 'details_json'])]
     }), { timeoutMs: 6500 });
-    coreCache.set(recordId, core);
-    writeCoreSession(core);
-  }
 
-  const detail = await detailPromise;
-  const value = expandRecord(core, detail);
-  detailCache.set(recordId, { savedAt: Date.now(), value });
-  writeDetailSession(recordId, value);
-  return value;
+    if (!core) {
+      core = await withAppwriteFailover(() => databases.getDocument({
+        databaseId: DATABASE_ID,
+        collectionId: COLLECTIONS.records,
+        documentId: recordId,
+        queries: [Query.select([...LIST_FIELDS, 'source_name', 'source_row'])]
+      }), { timeoutMs: 6500 });
+      coreCache.set(recordId, core);
+      writeCoreSession(core);
+    }
+
+    const detail = await detailPromise;
+    const value = expandRecord(core, detail);
+    detailCache.set(recordId, { savedAt: Date.now(), value });
+    writeDetailSession(recordId, value);
+    return value;
+  };
+
+  const pending = execute();
+  if (!bypassCache) detailInflight.set(recordId, pending);
+  try {
+    return await pending;
+  } finally {
+    if (detailInflight.get(recordId) === pending) detailInflight.delete(recordId);
+  }
 }
 
 function makeTraits(data) {

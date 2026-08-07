@@ -1,67 +1,51 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import {
   ArrowUpRight,
   CheckCircle2,
-  ChevronRight,
   Cloud,
   CloudOff,
-  FileSpreadsheet,
   Download,
-  Maximize2,
-  Minimize2,
-  ImagePlus,
+  Droplets,
+  FileSpreadsheet,
   Leaf,
   LoaderCircle,
   LogOut,
-  Pencil,
+  MapPin,
+  Maximize2,
+  Minimize2,
   Plus,
   RefreshCw,
   Search,
   Sprout,
-  Trash2,
-  Upload,
+  Wheat,
   X
 } from 'lucide-react';
 import { account, ID, isNetworkFailure, withAppwriteFailover } from './lib/appwrite';
-import { CHARACTERIZATION_FIELDS, CHARACTERIZATION_GROUPS, SOURCE_RECORD_COUNT } from './lib/characterizationFields';
-import { parseCharacterizationExcel } from './lib/excelImport';
-import { formatBytes, prepareImageVariants } from './lib/imageTools';
+import { CHARACTERIZATION_FIELDS, SOURCE_RECORD_COUNT } from './lib/characterizationFields';
+import { GERMINATION_FIELDS } from './lib/germinationFields';
 import {
   PAGE_SIZE,
   SEARCH_DEBOUNCE_MS,
   SEARCH_MIN,
   SEARCH_SCOPES,
-  bulkCreateRecords,
   clearListCache,
   clearQueryCache,
-  deleteRecord,
-  deleteStoredFiles,
   exportAllRecords,
   fileViewUrl,
   getRecord,
-  listRecords,
-  saveRecord,
-  uploadPreparedPhotos
+  listRecords
 } from './lib/registryApi';
+import { loginMessageFor, messageFor, pct } from './lib/registryUi';
+
+const DetailModal = lazy(() => import('./components/DetailModal.jsx'));
+const RecordFormModal = lazy(() => import('./components/RecordFormModal.jsx'));
+const ImportModal = lazy(() => import('./components/ImportModal.jsx'));
 
 const APP_NAME = 'CaneSprout Registry';
-const APP_VERSION = '2.2.1';
-const USER_CACHE_KEY = 'sugarcane-registry-user-v221';
-const SESSION_LEASE_KEY = 'sugarcane-registry-session-lease-v221';
-const SESSION_LEASE_MS = 30 * 60_000;
-const MANUAL_REFRESH_COOLDOWN_MS = 20_000;
-
-const GERMINATION_FIELDS = [
-  { key: 'germ_trial_code', label: 'Germination trial / batch code', type: 'text' },
-  { key: 'germ_location', label: 'Nursery / field location', type: 'text' },
-  { key: 'germ_planting_date', label: 'Planting date', type: 'date' },
-  { key: 'germ_material_type', label: 'Planting material', type: 'select', options: ['Single-bud sett', 'Two-bud sett', 'Three-bud sett', 'Bud chip', 'Whole stalk section', 'Other'] },
-  { key: 'germ_buds_planted', label: 'Buds planted', type: 'number' },
-  { key: 'germ_germinated_count', label: 'Germinated buds', type: 'number' },
-  { key: 'germ_observation_date', label: 'Observation date', type: 'date' },
-  { key: 'germ_status', label: 'Germination status', type: 'select', options: ['Planned', 'Germinating', 'Established', 'Completed', 'Failed'] },
-  { key: 'germ_notes', label: 'Germination notes', type: 'textarea' }
-];
+const APP_VERSION = '2.3.0';
+const USER_CACHE_KEY = 'sugarcane-registry-user-v230';
+const MANUAL_REFRESH_COOLDOWN_MS = 30_000;
+const STALE_NOTICE_MS = 45 * 60_000;
 
 function cachedUser() {
   try {
@@ -75,64 +59,11 @@ function cachedUser() {
 function saveCachedUser(user) {
   const safe = { id: user?.$id || user?.id || 'cached', name: user?.name || '', email: user?.email || '' };
   localStorage.setItem(USER_CACHE_KEY, JSON.stringify(safe));
-  try { sessionStorage.setItem(SESSION_LEASE_KEY, String(Date.now())); } catch {}
   return safe;
-}
-
-function hasFreshSessionLease() {
-  try {
-    const verifiedAt = Number(sessionStorage.getItem(SESSION_LEASE_KEY) || 0);
-    return verifiedAt > 0 && Date.now() - verifiedAt < SESSION_LEASE_MS;
-  } catch {
-    return false;
-  }
 }
 
 function clearCachedUser() {
   localStorage.removeItem(USER_CACHE_KEY);
-  try { sessionStorage.removeItem(SESSION_LEASE_KEY); } catch {}
-}
-
-function messageFor(error) {
-  const code = Number(error?.code || error?.status || 0);
-  if (code === 401) return 'Your sign-in is no longer valid. Please sign in again.';
-  if (code === 404) return 'The sugarcane collection has not been set up yet. Run npm.cmd run setup:appwrite once.';
-  if (isNetworkFailure(error)) return 'Appwrite is unreachable. Cached pages can still be viewed, but saving needs a connection.';
-  return error?.message || String(error || 'Something went wrong.');
-}
-
-function loginMessageFor(error) {
-  const code = Number(error?.code || error?.status || 0);
-  const type = String(error?.type || '').toLowerCase();
-  if (type === 'user_invalid_credentials' || type === 'user_not_found' || code === 401) {
-    return 'Incorrect email or password. Please check your credentials and try again.';
-  }
-  if (type === 'user_blocked') return 'This account is blocked. Contact the registry administrator.';
-  if (type === 'user_email_not_whitelisted') return 'This email is not allowed to sign in to this Appwrite project.';
-  if (isNetworkFailure(error)) return 'Could not reach Appwrite. Check your connection and try again.';
-  return error?.message || String(error || 'Could not sign in.');
-}
-
-function pct(record) {
-  const raw = record?.germination_pct;
-  if (raw === '' || raw == null) return null;
-  const value = Number(raw);
-  return Number.isFinite(value) ? Math.max(0, Math.min(100, value)) : null;
-}
-
-function emptyForm() {
-  const base = Object.fromEntries(CHARACTERIZATION_FIELDS.map((field) => [field.key, '']));
-  GERMINATION_FIELDS.forEach((field) => { base[field.key] = ''; });
-  return {
-    ...base,
-    photo_file_ids: [],
-    thumb_file_ids: [],
-    photo_names: [],
-    thumbnail_file_id: '',
-    primary_file_id: '',
-    source_name: 'Manual entry',
-    source_row: ''
-  };
 }
 
 function Brand() {
@@ -141,25 +72,6 @@ function Brand() {
       <span className="brand-badge"><Sprout size={24} /></span>
       <span><strong>{APP_NAME}</strong><small>Sugarcane germination & characterization</small></span>
     </div>
-  );
-}
-
-function Field({ field, value, onChange }) {
-  const common = {
-    value: value ?? '',
-    onChange: (event) => onChange(field.key, event.target.value)
-  };
-  return (
-    <label className={`form-field ${field.type === 'textarea' ? 'wide' : ''}`}>
-      <span>{field.label}<i>Optional</i></span>
-      {field.type === 'textarea' ? (
-        <textarea {...common} rows={4} placeholder="Optional" />
-      ) : field.type === 'select' ? (
-        <select {...common}><option value="">Not provided</option>{field.options.map((option) => <option key={option}>{option}</option>)}</select>
-      ) : (
-        <input {...common} type={field.type || 'text'} min={field.type === 'number' ? 0 : undefined} step={field.type === 'number' ? 'any' : undefined} placeholder="Optional" />
-      )}
-    </label>
   );
 }
 
@@ -181,9 +93,6 @@ function AuthScreen({ onSignedIn }) {
       try {
         await withAppwriteFailover(() => account.createEmailPasswordSession({ email: form.email.trim(), password: form.password }), { timeoutMs: 4500 });
       } catch (sessionError) {
-        // If Appwrite reports an already-active session, restore it instead of
-        // presenting a misleading login error. Any real credential error is
-        // handled by loginMessageFor below.
         if (String(sessionError?.type || '').toLowerCase() === 'user_session_already_exists') {
           const existing = await withAppwriteFailover(() => account.get(), { timeoutMs: 3500 });
           onSignedIn(saveCachedUser(existing));
@@ -191,8 +100,7 @@ function AuthScreen({ onSignedIn }) {
         }
         throw sessionError;
       }
-      const immediate = saveCachedUser({ email: form.email.trim(), name: form.name.trim() });
-      onSignedIn(immediate);
+      onSignedIn(saveCachedUser({ email: form.email.trim(), name: form.name.trim() }));
     } catch (err) {
       setError(loginMessageFor(err));
     } finally {
@@ -205,56 +113,89 @@ function AuthScreen({ onSignedIn }) {
       <section className="auth-art">
         <div className="auth-orb orb-one" />
         <div className="auth-orb orb-two" />
+        <div className="auth-field-lines" aria-hidden="true" />
         <div className="auth-copy">
-          <span className="eyebrow"><Leaf size={15} /> SRA sugarcane records</span>
-          <h1>From bud emergence to full varietal character.</h1>
-          <p>Search the characterization library without downloading the whole database, document germination observations, and attach storage-efficient field photos.</p>
+          <span className="eyebrow"><Wheat size={15} /> SRA sugarcane field records</span>
+          <h1>From planted bud to established cane.</h1>
+          <p>Document sugarcane emergence, nursery observations, field performance, varietal traits, and photos without loading the whole registry at once.</p>
+          <div className="crop-flow compact-flow" aria-label="Sugarcane record workflow">
+            <span><Sprout size={15} /> Planting</span><i />
+            <span><Droplets size={15} /> Emergence</span><i />
+            <span><Leaf size={15} /> Establishment</span><i />
+            <span><Wheat size={15} /> Characterization</span>
+          </div>
           <div className="auth-metrics">
-            <span><strong>{SOURCE_RECORD_COUNT}</strong> spreadsheet rows included</span>
-            <span><strong>{PAGE_SIZE}</strong> records per request</span>
+            <span><strong>{SOURCE_RECORD_COUNT}</strong> characterization entries</span>
+            <span><strong>{CHARACTERIZATION_FIELDS.length}</strong> optional varietal traits</span>
           </div>
         </div>
       </section>
       <section className="auth-panel">
         <div className="auth-card">
           <Brand />
-          <div className="auth-heading"><small>{mode === 'login' ? 'Welcome back' : 'New account'}</small><h2>{mode === 'login' ? 'Sign in to the registry' : 'Create registry account'}</h2></div>
+          <div className="auth-heading"><small>{mode === 'login' ? 'Welcome back' : 'New account'}</small><h2>{mode === 'login' ? 'Sign in to the field registry' : 'Create registry account'}</h2></div>
           <form onSubmit={submit}>
-            {mode === 'signup' && <label><span>Name</span><input value={form.name} onChange={(e) => { setError(''); setForm({ ...form, name: e.target.value }); }} /></label>}
-            <label><span>Email</span><input type="email" required value={form.email} onChange={(e) => { setError(''); setForm({ ...form, email: e.target.value }); }} /></label>
-            <label><span>Password</span><input type="password" required minLength={8} value={form.password} onChange={(e) => { setError(''); setForm({ ...form, password: e.target.value }); }} /></label>
+            {mode === 'signup' && <label><span>Name</span><input value={form.name} onChange={(event) => { setError(''); setForm({ ...form, name: event.target.value }); }} /></label>}
+            <label><span>Email</span><input type="email" required value={form.email} onChange={(event) => { setError(''); setForm({ ...form, email: event.target.value }); }} /></label>
+            <label><span>Password</span><input type="password" required minLength={8} value={form.password} onChange={(event) => { setError(''); setForm({ ...form, password: event.target.value }); }} /></label>
             {error && <div className="alert error">{error}</div>}
             <button className="primary-button full" disabled={busy}>{busy ? <><LoaderCircle className="spin" size={17} /> Connecting…</> : mode === 'login' ? 'Sign in' : 'Create account'}</button>
           </form>
-          <button className="text-button" onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); }}>
-            {mode === 'login' ? 'Need an account? Create one' : 'Already registered? Sign in'}
-          </button>
+          <button className="text-button" onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); }}>{mode === 'login' ? 'Need an account? Create one' : 'Already registered? Sign in'}</button>
         </div>
       </section>
     </main>
   );
 }
 
-function RecordCard({ record, onOpen }) {
+function useViewportReveal() {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return undefined;
+    if (!('IntersectionObserver' in window)) {
+      setVisible(true);
+      return undefined;
+    }
+    const observer = new IntersectionObserver((entries) => {
+      if (entries.some((entry) => entry.isIntersecting)) {
+        setVisible(true);
+        observer.disconnect();
+      }
+    }, { rootMargin: '160px 0px', threshold: 0.04 });
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+  return [ref, visible];
+}
+
+function RecordCard({ record, onOpen, index }) {
   const image = fileViewUrl(record.thumbnail_file_id);
   const germPct = pct(record);
+  const [cardRef, visible] = useViewportReveal();
   return (
-    <article className="record-card" onClick={() => onOpen(record.$id)}>
+    <article
+      ref={cardRef}
+      className={`record-card viewport-card ${visible ? 'is-visible' : ''}`}
+      style={{ '--card-delay': `${Math.min(index % 6, 5) * 34}ms` }}
+      onClick={() => onOpen(record.$id)}
+    >
       <div className={`record-image ${image ? 'has-image' : ''}`}>
-        {image ? <img src={image} alt={record.variety || 'Sugarcane'} loading="lazy" decoding="async" fetchPriority="low" /> : <div className="record-placeholder"><Sprout size={38} /><span>Photo optional</span></div>}
+        {image ? <img src={image} alt={record.variety || 'Sugarcane'} loading="lazy" decoding="async" fetchPriority="low" /> : <div className="record-placeholder"><Sprout size={38} /><span>Field photo optional</span></div>}
         <span className="record-status">{record.germ_status || 'Characterized'}</span>
         {germPct !== null && <span className="rate-chip">{germPct.toFixed(1)}% germinated</span>}
       </div>
       <div className="record-body">
         <div className="record-kicker"><span>Sugarcane variety</span><ArrowUpRight size={16} /></div>
         <h3>{record.variety || 'Unnamed variety'}</h3>
-        <div className="trait-mini-grid">
+        <div className="trait-mini-grid agri-mini-grid">
           <span><small>Plant habit</small><b>{record.stool_plant_habit || 'Not provided'}</b></span>
           <span><small>Leaf color</small><b>{record.leaf_color || 'Not provided'}</b></span>
-          <span><small>Stalk color</small><b>{record.stalk_exposed_color || 'Not provided'}</b></span>
-          <span><small>Bud shape</small><b>{record.bud_shape || 'Not provided'}</b></span>
+          <span><small>Trial / batch</small><b>{record.germ_trial_code || 'Not recorded'}</b></span>
+          <span><small>Nursery / field</small><b>{record.germ_location || 'Not recorded'}</b></span>
         </div>
-        <footer><span>{record.germ_location || 'Germination location not recorded'}</span><ChevronRight size={17} /></footer>
+        <footer><span>Open germination & characterization record</span><span className="card-open-icon"><ArrowUpRight size={16} /></span></footer>
       </div>
     </article>
   );
@@ -264,201 +205,14 @@ function SkeletonCard() {
   return <div className="record-card skeleton"><div className="record-image" /><div className="record-body"><i /><i /><i /></div></div>;
 }
 
-function DetailModal({ recordId, onClose, onEdit, onDeleted }) {
-  const [record, setRecord] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [showEmpty, setShowEmpty] = useState(false);
-  const [deleting, setDeleting] = useState(false);
-  const [photoViewIndex, setPhotoViewIndex] = useState(-1);
-
-  useEffect(() => {
-    let live = true;
-    getRecord(recordId).then((value) => { if (live) setRecord(value); }).catch((err) => live && setError(messageFor(err))).finally(() => live && setLoading(false));
-    return () => { live = false; };
-  }, [recordId]);
-
-  async function remove() {
-    if (!record || !confirm(`Delete ${record.variety || 'this record'}? This also removes its stored photos.`)) return;
-    setDeleting(true);
-    try {
-      await deleteRecord(record);
-      onDeleted();
-      onClose();
-    } catch (err) {
-      setError(messageFor(err));
-    } finally {
-      setDeleting(false);
-    }
-  }
-
-  const photos = record?.photo_file_ids || [];
-  return (
-    <div className="modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <section className="modal detail-modal">
-        <header className="modal-header"><div><small>Record details</small><h2>{record?.variety || 'Sugarcane characterization'}</h2></div><button className="icon-button" onClick={onClose}><X size={19} /></button></header>
-        <div className="modal-content detail-content">
-          {loading && <div className="detail-loading"><LoaderCircle className="spin" /> Loading only this record…</div>}
-          {error && <div className="alert error">{error}</div>}
-          {record && <>
-            <section className="detail-hero">
-              <div><span className="eyebrow">Characterization + germination</span><h3>{record.variety || 'Unnamed variety'}</h3><p>{record.source_name || 'Manual entry'}{record.source_row ? ` • source row ${record.source_row}` : ''}</p></div>
-              <div className="detail-hero-rate"><small>Germination</small><strong>{pct(record) === null ? '—' : `${pct(record).toFixed(1)}%`}</strong></div>
-            </section>
-
-            {!!photos.length && <><section className="photo-gallery">{photos.map((id, index) => <button type="button" className="photo-thumb-button" key={id} onClick={() => setPhotoViewIndex(index)} title="Load full-resolution photo"><img src={fileViewUrl(record.thumb_file_ids?.[index] || id)} alt={record.photo_names?.[index] || 'Sugarcane photo'} loading="lazy" decoding="async" fetchPriority="low" /><span>View full photo</span></button>)}</section><p className="photo-bandwidth-note">Small WebP thumbnails are shown here. Full-resolution media is requested from Appwrite Storage only when you open a photo.</p></>}
-
-            <section className="detail-section"><div className="section-title"><div><small>Germination tracking</small><h3>Trial information</h3></div></div><div className="detail-grid">{GERMINATION_FIELDS.map((field) => <div key={field.key}><small>{field.label}</small><strong>{record[field.key] || 'Not provided'}</strong></div>)}<div><small>Calculated germination %</small><strong>{pct(record) === null ? 'Not available' : `${pct(record).toFixed(2)}%`}</strong></div></div></section>
-
-            <div className="show-empty-row"><button className="secondary-button" onClick={() => setShowEmpty(!showEmpty)}>{showEmpty ? 'Hide empty traits' : 'Show all traits, including empty'}</button></div>
-            {CHARACTERIZATION_GROUPS.map((group) => {
-              const fields = showEmpty ? group.fields : group.fields.filter((field) => record[field.key]);
-              if (!fields.length) return null;
-              return <section className="detail-section" key={group.title}><div className="section-title"><div><small>Spreadsheet traits</small><h3>{group.title}</h3></div></div><div className="detail-grid">{fields.map((field) => <div key={field.key}><small>{field.label}</small><strong>{record[field.key] || 'Not provided'}</strong></div>)}</div></section>;
-            })}
-          </>}
-        </div>
-        {record && <footer className="modal-footer"><button className="danger-button" onClick={remove} disabled={deleting}><Trash2 size={16} /> {deleting ? 'Deleting…' : 'Delete'}</button><span className="footer-spacer" /><button className="secondary-button" onClick={() => onEdit(record)}><Pencil size={16} /> Edit</button><button className="primary-button" onClick={onClose}>Done</button></footer>}
-        {record && photoViewIndex >= 0 && photos[photoViewIndex] && <div className="photo-lightbox" onMouseDown={(e) => e.target === e.currentTarget && setPhotoViewIndex(-1)}><button type="button" className="icon-button photo-lightbox-close" onClick={() => setPhotoViewIndex(-1)} aria-label="Close full photo"><X size={20} /></button><img src={fileViewUrl(photos[photoViewIndex])} alt={record.photo_names?.[photoViewIndex] || 'Full sugarcane photo'} decoding="async" fetchPriority="high" /><span>{record.photo_names?.[photoViewIndex] || `Photo ${photoViewIndex + 1}`}</span></div>}
-      </section>
-    </div>
-  );
-}
-
-function RecordFormModal({ initial, onClose, onSaved }) {
-  const editing = Boolean(initial?.$id);
-  const [form, setForm] = useState(() => ({ ...emptyForm(), ...(initial || {}) }));
-  const [newFiles, setNewFiles] = useState([]);
-  const [removedFileIds, setRemovedFileIds] = useState([]);
-  const [busy, setBusy] = useState(false);
-  const [progress, setProgress] = useState('');
-  const [error, setError] = useState('');
-
-  function change(key, value) {
-    setForm((current) => ({ ...current, [key]: value }));
-  }
-
-  function removeExisting(index) {
-    const full = [...(form.photo_file_ids || [])];
-    const thumbs = [...(form.thumb_file_ids || [])];
-    const names = [...(form.photo_names || [])];
-    const deleted = [full[index], thumbs[index]].filter(Boolean);
-    full.splice(index, 1); thumbs.splice(index, 1); names.splice(index, 1);
-    setRemovedFileIds((ids) => [...ids, ...deleted]);
-    setForm((current) => ({
-      ...current,
-      photo_file_ids: full,
-      thumb_file_ids: thumbs,
-      photo_names: names,
-      primary_file_id: full[0] || '',
-      thumbnail_file_id: thumbs[0] || ''
-    }));
-  }
-
-  async function submit(event) {
-    event.preventDefault();
-    setBusy(true);
-    setError('');
-    let uploaded = [];
-    try {
-      const variants = [];
-      for (let index = 0; index < newFiles.length; index += 1) {
-        setProgress(`Compressing photo ${index + 1} of ${newFiles.length} to WebP…`);
-        variants.push(await prepareImageVariants(newFiles[index]));
-      }
-      if (variants.length) {
-        setProgress('Uploading optimized full images and thumbnails…');
-        uploaded = await uploadPreparedPhotos(variants, ({ done, total }) => setProgress(`Uploading photo ${done} of ${total}…`));
-      }
-      const next = {
-        ...form,
-        photo_file_ids: [...(form.photo_file_ids || []), ...uploaded.map((item) => item.fullId)],
-        thumb_file_ids: [...(form.thumb_file_ids || []), ...uploaded.map((item) => item.thumbId)],
-        photo_names: [...(form.photo_names || []), ...uploaded.map((item) => item.name)]
-      };
-      next.primary_file_id = next.photo_file_ids[0] || '';
-      next.thumbnail_file_id = next.thumb_file_ids[0] || '';
-      setProgress('Saving record…');
-      await saveRecord(next, initial?.$id || '', initial || null);
-      if (removedFileIds.length) deleteStoredFiles(removedFileIds).catch(() => {});
-      onSaved();
-      onClose();
-    } catch (err) {
-      if (uploaded.length) {
-        const orphanIds = uploaded.flatMap((item) => [item.fullId, item.thumbId]).filter(Boolean);
-        await deleteStoredFiles(orphanIds).catch(() => {});
-      }
-      setError(messageFor(err));
-    } finally {
-      setBusy(false);
-      setProgress('');
-    }
-  }
-
-  const existingPhotos = form.photo_file_ids || [];
-  return (
-    <div className="modal-backdrop">
-      <form className="modal record-form-modal" onSubmit={submit}>
-        <header className="modal-header"><div><small>{editing ? 'Edit sugarcane record' : 'New sugarcane record'}</small><h2>{editing ? form.variety || 'Edit characterization' : 'Add characterization & germination data'}</h2></div><button type="button" className="icon-button" onClick={onClose}><X size={19} /></button></header>
-        <div className="modal-content form-scroll">
-          <div className="optional-banner"><CheckCircle2 size={18} /><div><strong>Every trait is optional.</strong><span>The form mirrors every Characterization.xlsx trait. Fill only what was actually observed.</span></div></div>
-          <section className="form-section germ-section"><div className="form-section-heading"><small>Germination tracking</small><h3>Trial & emergence data</h3></div><div className="form-grid">{GERMINATION_FIELDS.map((field) => <Field key={field.key} field={field} value={form[field.key]} onChange={change} />)}</div></section>
-          {CHARACTERIZATION_GROUPS.map((group) => <section className="form-section" key={group.title}><div className="form-section-heading"><small>Characterization spreadsheet</small><h3>{group.title}</h3></div><div className="form-grid">{group.fields.map((field) => <Field key={field.key} field={field} value={form[field.key]} onChange={change} />)}</div></section>)}
-          <section className="form-section"><div className="form-section-heading"><small>Storage optimized</small><h3>Photos</h3></div><p className="form-hint">Images are converted in the browser to a high-quality WebP plus a small WebP thumbnail. The list loads only thumbnails; full images load only when you open a record.</p>
-            {!!existingPhotos.length && <div className="edit-photo-grid">{existingPhotos.map((id, index) => <div key={id}><img src={fileViewUrl(form.thumb_file_ids?.[index] || id)} alt="Existing" loading="lazy" /><button type="button" onClick={() => removeExisting(index)}><X size={14} /> Remove</button></div>)}</div>}
-            <label className="photo-drop"><ImagePlus size={24} /><span><strong>Add photos</strong><small>JPEG, PNG, WebP, HEIC/HEIF and browser-readable formats</small></span><input type="file" accept="image/*,.heic,.heif" multiple onChange={(e) => setNewFiles(Array.from(e.target.files || []).slice(0, 8))} /></label>
-            {!!newFiles.length && <div className="selected-files">{newFiles.map((file) => <span key={`${file.name}-${file.size}`}>{file.name} <small>{formatBytes(file.size)}</small></span>)}</div>}
-          </section>
-          {error && <div className="alert error">{error}</div>}
-          {progress && <div className="alert progress"><LoaderCircle className="spin" size={17} /> {progress}</div>}
-        </div>
-        <footer className="modal-footer"><button type="button" className="secondary-button" onClick={onClose}>Cancel</button><span className="footer-spacer" /><button className="primary-button" disabled={busy}>{busy ? 'Saving…' : editing ? 'Save changes' : 'Save record'}</button></footer>
-      </form>
-    </div>
-  );
-}
-
-function ImportModal({ onClose, onImported }) {
-  const [preview, setPreview] = useState(null);
-  const [busy, setBusy] = useState(false);
-  const [progress, setProgress] = useState('');
-  const [error, setError] = useState('');
-  const inputRef = useRef(null);
-
-  async function choose(file) {
-    if (!file) return;
-    setBusy(true); setError('');
-    try { setPreview(await parseCharacterizationExcel(file)); }
-    catch (err) { setError(messageFor(err)); }
-    finally { setBusy(false); }
-  }
-
-  async function importRows() {
-    if (!preview?.rows?.length) return;
-    setBusy(true); setError('');
-    try {
-      const result = await bulkCreateRecords(preview.rows, ({ done, total, errors }) => setProgress(`Writing ${done}/${total} records directly to Appwrite${errors ? ` • ${errors} failed` : ''}`));
-      if (result.errors.length) setError(`${result.imported} records imported. ${result.errors.length} rows failed. First error: ${result.errors[0].message}`);
-      else { onImported(); onClose(); }
-    } catch (err) { setError(messageFor(err)); }
-    finally { setBusy(false); setProgress(''); }
-  }
-
-  return (
-    <div className="modal-backdrop"><section className="modal import-modal"><header className="modal-header"><div><small>Bulk import</small><h2>Import Characterization Excel</h2></div><button className="icon-button" onClick={onClose}><X size={19} /></button></header><div className="modal-content">
-      <div className="import-note"><FileSpreadsheet size={24} /><div><strong>The provided A:BH template is supported directly.</strong><span>The parser reads the group row + trait row and maps all 60 spreadsheet columns. Bulk import is the only time the app intentionally performs many database writes.</span></div></div>
-      <button className="upload-zone" onClick={() => inputRef.current?.click()} disabled={busy}><Upload size={24} /><strong>{busy && !preview ? 'Reading workbook…' : 'Choose .xlsx / .xls file'}</strong><span>Nothing is uploaded until you confirm the preview.</span></button>
-      <input ref={inputRef} hidden type="file" accept=".xlsx,.xls" onChange={(e) => choose(e.target.files?.[0])} />
-      {preview && <><div className="import-summary"><span><small>Sheet</small><strong>{preview.sheetName}</strong></span><span><small>Layout</small><strong>{preview.layout}</strong></span><span><small>Rows</small><strong>{preview.rows.length}</strong></span></div><div className="preview-wrap"><table><thead><tr><th>#</th><th>Variety</th><th>Plant habit</th><th>Leaf color</th><th>Stalk color</th><th>Bud shape</th></tr></thead><tbody>{preview.rows.slice(0, 10).map((row, index) => <tr key={index}><td>{index + 1}</td><td>{row.variety || '—'}</td><td>{row.stool_plant_habit || '—'}</td><td>{row.leaf_color || '—'}</td><td>{row.stalk_exposed_color || '—'}</td><td>{row.bud_shape || '—'}</td></tr>)}</tbody></table>{preview.rows.length > 10 && <div className="table-more">+ {preview.rows.length - 10} additional rows</div>}</div></>}
-      {progress && <div className="alert progress"><LoaderCircle className="spin" size={17} /> {progress}</div>}
-      {error && <div className="alert error">{error}</div>}
-    </div><footer className="modal-footer"><button className="secondary-button" onClick={onClose}>Cancel</button><span className="footer-spacer" />{preview && <button className="primary-button" onClick={importRows} disabled={busy}>{busy ? 'Importing…' : `Import ${preview.rows.length} rows`}</button>}</footer></section></div>
-  );
+function ModalLoading() {
+  return <div className="modal-backdrop"><div className="lazy-modal-loader"><LoaderCircle className="spin" size={22} /><span>Opening tool…</span></div></div>;
 }
 
 export default function App() {
-  const [user, setUser] = useState(() => cachedUser());
-  const [sessionState, setSessionState] = useState(user ? (hasFreshSessionLease() ? 'ready' : 'checking') : 'signed-out');
+  const initialUser = cachedUser();
+  const [user, setUser] = useState(initialUser);
+  const [sessionState, setSessionState] = useState(initialUser ? 'ready' : 'checking');
   const [online, setOnline] = useState(navigator.onLine);
   const [searchInput, setSearchInput] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -467,10 +221,11 @@ export default function App() {
   const searchPanelRef = useRef(null);
   const forceFreshRef = useRef(false);
   const lastManualRefreshRef = useRef(0);
+  const lastFreshDataRef = useRef(Date.now());
   const [records, setRecords] = useState([]);
   const [cursor, setCursor] = useState('');
   const [hasMore, setHasMore] = useState(false);
-  const [loading, setLoading] = useState(Boolean(user));
+  const [loading, setLoading] = useState(Boolean(initialUser));
   const [loadingMore, setLoadingMore] = useState(false);
   const [listError, setListError] = useState('');
   const [cacheNote, setCacheNote] = useState('');
@@ -484,24 +239,23 @@ export default function App() {
   const [updateState, setUpdateState] = useState('');
 
   useEffect(() => {
-    const goOnline = () => setOnline(true);
-    const goOffline = () => setOnline(false);
+    const goOnline = () => { setOnline(true); setSessionState((state) => state === 'offline' ? 'ready' : state); };
+    const goOffline = () => { setOnline(false); if (user) setSessionState('offline'); };
     window.addEventListener('online', goOnline);
     window.addEventListener('offline', goOffline);
     return () => { window.removeEventListener('online', goOnline); window.removeEventListener('offline', goOffline); };
   }, []);
 
-  // Restore Appwrite auth in the background on every launch, even when the
-  // local user cache is empty. Cached identity can paint immediately, but
-  // database reads wait until this verification finishes so a stale cache
-  // cannot generate avoidable 401 requests.
+  // Returning users do not spend an extra Appwrite account.get() request on
+  // every launch. The first real registry query verifies the cookie anyway;
+  // a 401 clears the cached identity immediately. account.get() is only used
+  // when no local identity exists but a valid Appwrite cookie might.
   useEffect(() => {
-    let live = true;
-    const hadCachedUser = Boolean(cachedUser());
-    if (hadCachedUser && hasFreshSessionLease()) {
-      setSessionState('ready');
-      return () => { live = false; };
+    if (cachedUser()) {
+      setSessionState(navigator.onLine ? 'ready' : 'offline');
+      return undefined;
     }
+    let live = true;
     setSessionState('checking');
     withAppwriteFailover(() => account.get(), { timeoutMs: 3500 }).then((value) => {
       if (!live) return;
@@ -510,18 +264,11 @@ export default function App() {
     }).catch((error) => {
       if (!live) return;
       const code = Number(error?.code || error?.status || 0);
-      if (code === 401) {
+      if (code === 401 || !isNetworkFailure(error)) {
         clearCachedUser();
-        clearQueryCache();
         setUser(null);
         setSessionState('signed-out');
-      } else if (isNetworkFailure(error) && hadCachedUser) {
-        // Keep the cached identity only for the offline cache path.
-        setSessionState('offline');
       } else {
-        clearCachedUser();
-        clearQueryCache();
-        setUser(null);
         setSessionState('signed-out');
       }
     });
@@ -529,48 +276,50 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (!window.germDesktop?.onUpdateStatus) return;
+    if (!window.germDesktop?.onUpdateStatus) return undefined;
     window.germDesktop.onUpdateStatus((payload) => setUpdateState(payload?.status === 'downloading' ? `Downloading ${payload.detail || ''}` : payload?.status || ''));
+    return undefined;
+  }, []);
+
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState === 'visible' && Date.now() - lastFreshDataRef.current > STALE_NOTICE_MS) {
+        setCacheNote('This view has been open for a while. Cached records remain available; use Refresh only if you need the newest field changes.');
+      }
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
   }, []);
 
   useEffect(() => {
     const trimmed = searchInput.trim();
-
-    // Clear the old browse/search cards as soon as the user starts typing. This
-    // prevents stale unrelated entries from sitting under a new search while
-    // the debounce clock is running. No Appwrite request is made here.
     if (trimmed) {
       setRecords([]);
       setCursor('');
       setHasMore(false);
       setCacheNote(trimmed.length < SEARCH_MIN ? `Type ${SEARCH_MIN - trimmed.length} more character${SEARCH_MIN - trimmed.length === 1 ? '' : 's'}. No Appwrite request has been sent.` : '');
     }
-
     if (!trimmed) {
       setSearchTerm('');
       return undefined;
     }
     if (trimmed.length < SEARCH_MIN) return undefined;
-
     const timer = setTimeout(() => setSearchTerm(trimmed), SEARCH_DEBOUNCE_MS);
     return () => clearTimeout(timer);
   }, [searchInput]);
 
   useEffect(() => {
-    if (!user || sessionState === 'checking') return;
+    if (!user || sessionState === 'checking') return undefined;
     const typed = searchInput.trim();
-
-    // 1-2 characters intentionally produce zero database reads. For 3+ chars,
-    // wait until the debounced term exactly matches what is currently typed.
     if (typed && typed.length < SEARCH_MIN) {
       setLoading(false);
       setRecords([]);
-      return;
+      return undefined;
     }
     if (typed.length >= SEARCH_MIN && searchTerm !== typed) {
       setLoading(true);
       setRecords([]);
-      return;
+      return undefined;
     }
 
     const effectiveTerm = typed ? searchTerm : '';
@@ -586,9 +335,10 @@ export default function App() {
       setCursor(result.nextCursor || '');
       setHasMore(Boolean(result.hasMore));
       setSearchMatchMode(result.matchMode || '');
+      if (!result.fromCache) lastFreshDataRef.current = Date.now();
       if (result.offlineFallback) setCacheNote('Showing the last saved browse page because Appwrite is currently unreachable.');
-      else if (result.persistentCache) setCacheNote('Loaded the recent browse page from this device: 0 Appwrite reads. Use Refresh if you need the newest data.');
-      else if (result.fromCache) setCacheNote('Loaded from local short-term cache: 0 additional Appwrite reads.');
+      else if (result.persistentCache) setCacheNote('Loaded a recent field page from this device: 0 Appwrite reads. Use Refresh only when you need newer data.');
+      else if (result.fromCache) setCacheNote('Loaded from bounded local cache: 0 additional Appwrite reads.');
     }).catch((error) => {
       if (!live) return;
       const code = Number(error?.code || error?.status || 0);
@@ -633,17 +383,12 @@ export default function App() {
 
   async function createBackup() {
     if (backupState) return;
-    if (!confirm('Full backup reads every registry record and detail document from Appwrite. Continue only when you actually need a fresh backup?')) return;
+    if (!confirm('A full backup intentionally reads every registry record and details document. Continue only when you need a fresh export?')) return;
     setBackupState('Starting backup…');
     setListError('');
     try {
       const documents = await exportAllRecords(({ pages, records: count }) => setBackupState(`Reading page ${pages} • ${count} records`));
-      const payload = {
-        exportedAt: new Date().toISOString(),
-        appVersion: APP_VERSION,
-        source: 'CaneSprout Registry direct Appwrite export',
-        records: documents
-      };
+      const payload = { exportedAt: new Date().toISOString(), appVersion: APP_VERSION, source: 'CaneSprout Registry direct Appwrite export', records: documents };
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement('a');
@@ -703,7 +448,7 @@ export default function App() {
     window.setTimeout(() => {
       searchInputRef.current?.focus({ preventScroll: true });
       searchInputRef.current?.select?.();
-    }, 160);
+    }, 180);
   }
 
   async function signOut() {
@@ -729,60 +474,68 @@ export default function App() {
           <button className="primary-button compact" onClick={() => { setEditRecord(null); setShowForm(true); }}><Plus size={17} /> Add record</button>
         </nav>
         <div className="topbar-right">
-          <span className={`connection ${online ? 'online' : 'offline'}`}>{online ? <Cloud size={17} /> : <CloudOff size={17} />}<b>{online ? 'Online' : 'Offline'}</b><small>{sessionState === 'checking' ? 'Checking session quietly…' : sessionState === 'offline' ? 'Cached session' : 'Appwrite ready'}</small></span>
+          <span className={`connection ${online ? 'online' : 'offline'}`}>{online ? <Cloud size={17} /> : <CloudOff size={17} />}<b>{online ? 'Online' : 'Offline'}</b><small>{sessionState === 'offline' ? 'Device cache available' : 'Direct Appwrite'}</small></span>
           <span className="user-chip"><b>{user.name || user.email?.split('@')[0] || 'User'}</b><small>{user.email}</small></span>
           {window.germDesktop && <div className="desktop-controls"><button className="icon-button" title="Minimize" onClick={() => window.germDesktop.minimize?.()}><Minimize2 size={17} /></button><button className="icon-button" title="Full screen" onClick={() => window.germDesktop.toggleFullscreen?.()}><Maximize2 size={17} /></button></div>}
           <button className="icon-button" title="Sign out" onClick={signOut}><LogOut size={18} /></button>
         </div>
       </header>
 
-      <section className="hero">
-        <div className="hero-copy"><span className="eyebrow"><Sprout size={15} /> Sugarcane research library</span><h1>Germination records with the full characterization sheet built in.</h1><p>Every trait from Characterization.xlsx is available when you add or edit a variety, but none of them are mandatory. Search stays server-side, exact lookups probe one indexed row first, and recent pages are cached so repeated visits avoid unnecessary reads.</p><div className="hero-actions"><button className="primary-button" onClick={() => { setEditRecord(null); setShowForm(true); }}><Plus size={17} /> New sugarcane record</button><button className="secondary-button" onClick={() => setShowImport(true)}><FileSpreadsheet size={17} /> Import workbook</button></div></div>
-        <div className="hero-stats"><div><small>Source library</small><strong>{SOURCE_RECORD_COUNT}</strong><span>spreadsheet rows included</span></div><div><small>Database page</small><strong>{PAGE_SIZE}</strong><span>lean rows maximum per request</span></div><div><small>Search delay</small><strong>{SEARCH_DEBOUNCE_MS} ms</strong><span>debounced indexed search</span></div><div><small>Cache window</small><strong>10 min</strong><span>local + Appwrite list caching</span></div></div>
+      <section className="hero agricultural-hero">
+        <div className="hero-sun" aria-hidden="true" />
+        <div className="hero-field-pattern" aria-hidden="true" />
+        <div className="hero-copy">
+          <span className="eyebrow"><Wheat size={15} /> Sugarcane germination & varietal records</span>
+          <h1>Follow sugarcane from planting material to field-ready establishment.</h1>
+          <p>Keep germination trials, nursery locations, emergence observations, varietal characterization, and field photos together in one searchable record without loading the whole library at once.</p>
+          <div className="crop-flow">
+            <span><Sprout size={16} /><b>Plant</b><small>setts & bud chips</small></span><i />
+            <span><Droplets size={16} /><b>Observe</b><small>emergence & vigor</small></span><i />
+            <span><Leaf size={16} /><b>Establish</b><small>nursery & field</small></span><i />
+            <span><Wheat size={16} /><b>Characterize</b><small>varietal traits</small></span>
+          </div>
+          <div className="hero-actions"><button className="primary-button" onClick={() => { setEditRecord(null); setShowForm(true); }}><Plus size={17} /> New sugarcane record</button><button className="secondary-button" onClick={() => setShowImport(true)}><FileSpreadsheet size={17} /> Import field workbook</button></div>
+        </div>
+        <div className="hero-stats agricultural-stats">
+          <div><span className="stat-icon"><FileSpreadsheet size={18} /></span><small>Characterization entries</small><strong>{SOURCE_RECORD_COUNT}</strong><span>source sugarcane records</span></div>
+          <div><span className="stat-icon"><Leaf size={18} /></span><small>Varietal traits</small><strong>{CHARACTERIZATION_FIELDS.length}</strong><span>optional traits available</span></div>
+          <div><span className="stat-icon"><Droplets size={18} /></span><small>Germination tracking</small><strong>{GERMINATION_FIELDS.length}</strong><span>optional planting & emergence fields</span></div>
+          <div><span className="stat-icon"><MapPin size={18} /></span><small>Lean field browsing</small><strong>{PAGE_SIZE}</strong><span>records maximum per page</span></div>
+        </div>
       </section>
 
       <section className="registry-section" id="registry">
         <div className="registry-toolbar">
-          <div><span className="eyebrow">Characterization registry</span><h2>Sugarcane varieties</h2><p>Initial browsing loads only {PAGE_SIZE} lean records. A recent first page can reopen from device cache with zero database reads; full traits and full-resolution photos load only when a card is opened. Column letters stay internal and are never shown in the interface.</p></div>
+          <div><span className="eyebrow">Sugarcane field library</span><h2>Germination & characterization records</h2><p>Browse lean field summaries first. Full optional traits and full-resolution photos are requested only when you open a record, keeping routine monitoring light on Appwrite and Vercel.</p></div>
           <div className="toolbar-actions"><button className="icon-button bordered" title="Refresh current page" onClick={() => refreshRegistry({ manual: true })}><RefreshCw size={18} /></button></div>
         </div>
 
         <div className="search-panel" id="registry-search" ref={searchPanelRef}>
           <Search size={20} />
-          <input
-            ref={searchInputRef}
-            value={searchInput}
-            onChange={(e) => { setSearchMatchMode(''); setSearchInput(e.target.value); }}
-            onKeyDown={(e) => { if (e.key === 'Escape') { setSearchInput(''); e.currentTarget.blur(); } }}
-            placeholder={searchScope === 'all' ? 'Search any characterization trait or keyword…' : `Search ${SEARCH_SCOPES[searchScope].label.toLowerCase()}…`}
-            aria-label="Search sugarcane registry"
-          />
-          <label className="search-scope">
-            <span>Search in</span>
-            <select value={searchScope} onChange={(e) => { setSearchScope(e.target.value); setRecords([]); setCursor(''); setHasMore(false); setSearchMatchMode(''); }}>
-              {Object.entries(SEARCH_SCOPES).map(([value, config]) => <option key={value} value={value}>{config.label}</option>)}
-            </select>
-          </label>
+          <input ref={searchInputRef} value={searchInput} onChange={(event) => { setSearchMatchMode(''); setSearchInput(event.target.value); }} onKeyDown={(event) => { if (event.key === 'Escape') { setSearchInput(''); event.currentTarget.blur(); } }} placeholder={searchScope === 'all' ? 'Search varietal traits or field keywords…' : `Search ${SEARCH_SCOPES[searchScope].label.toLowerCase()}…`} aria-label="Search sugarcane registry" />
+          <label className="search-scope"><span>Search in</span><select value={searchScope} onChange={(event) => { setSearchScope(event.target.value); setRecords([]); setCursor(''); setHasMore(false); setSearchMatchMode(''); }}>{Object.entries(SEARCH_SCOPES).map(([value, config]) => <option key={value} value={value}>{config.label}</option>)}</select></label>
           {searchInput && <button className="clear-search" onClick={() => { setSearchMatchMode(''); setSearchInput(''); searchInputRef.current?.focus(); }} aria-label="Clear search"><X size={16} /></button>}
           <span>{searchInput.trim().length > 0 && searchInput.trim().length < SEARCH_MIN ? `${SEARCH_MIN - searchInput.trim().length} more character${SEARCH_MIN - searchInput.trim().length === 1 ? '' : 's'} • 0 reads` : searchInput.trim() ? `${SEARCH_SCOPES[searchScope].label} • ${searchScope === 'all' ? 'keyword index' : 'smart index'}` : `Browse first ${PAGE_SIZE}`}</span>
         </div>
-        <div className="query-policy"><CheckCircle2 size={16} /><span>25 rows/request • exact-first indexed search • 500 ms debounce • cursor Load More • 10 min list cache • 30 min detail cache • changed-fields-only saves • no polling • no Realtime • no totals</span></div>
+        <div className="query-policy"><CheckCircle2 size={16} /><span>{PAGE_SIZE} rows/request • {SEARCH_DEBOUNCE_MS} ms debounce • cursor Load More • lean card fields • bounded caching • local drafts • lazy tools/photos • no polling • no Realtime • no totals</span></div>
         {!loading && searchInput.trim().length >= SEARCH_MIN && searchTerm === searchInput.trim() && <div className="search-result-note"><b>{records.length}</b><span>{searchMatchMode === 'exact' ? `Exact ${SEARCH_SCOPES[searchScope].label.toLowerCase()} match` : `${records.length === 1 ? 'match' : 'matches'} loaded`} for “{searchTerm}” in {SEARCH_SCOPES[searchScope].label}.{hasMore ? ` More matches are available with Load ${PAGE_SIZE} more.` : ''}</span></div>}
         {cacheNote && <div className="alert info">{cacheNote}</div>}
         {listError && <div className="alert error">{listError}</div>}
 
         <div className="record-grid">
-          {loading ? Array.from({ length: 6 }, (_, index) => <SkeletonCard key={index} />) : records.map((record) => <RecordCard key={record.$id} record={record} onOpen={setDetailId} />)}
+          {loading ? Array.from({ length: 6 }, (_, index) => <SkeletonCard key={index} />) : records.map((record, index) => <RecordCard key={record.$id} record={record} index={index} onOpen={setDetailId} />)}
         </div>
-        {!loading && !records.length && <div className="empty-state"><Sprout size={34} /><h3>{searchInput.trim() && searchInput.trim().length < SEARCH_MIN ? `Type at least ${SEARCH_MIN} characters` : searchInput.trim() ? 'No matching sugarcane records' : 'No sugarcane records available'}</h3><p>{searchInput.trim() && searchInput.trim().length < SEARCH_MIN ? 'Short searches are blocked locally, so Appwrite receives zero search requests.' : searchInput.trim() ? `No ${SEARCH_SCOPES[searchScope].label.toLowerCase()} match was returned for “${searchInput.trim()}”. Try another term or switch the search field.` : 'Add or import a record to begin.'}</p></div>}
-        {!loading && hasMore && <div className="load-more-row"><button className="secondary-button load-more" onClick={loadMore} disabled={loadingMore}>{loadingMore ? <><LoaderCircle className="spin" size={17} /> Loading {PAGE_SIZE} more…</> : `Load ${PAGE_SIZE} more`} </button><small>Cursor pagination continues after the last loaded record.</small></div>}
+        {!loading && !records.length && <div className="empty-state"><Sprout size={34} /><h3>{searchInput.trim() && searchInput.trim().length < SEARCH_MIN ? `Type at least ${SEARCH_MIN} characters` : searchInput.trim() ? 'No matching sugarcane records' : 'No sugarcane records available'}</h3><p>{searchInput.trim() && searchInput.trim().length < SEARCH_MIN ? 'Short searches stay entirely on this device, so Appwrite receives zero requests.' : searchInput.trim() ? `No ${SEARCH_SCOPES[searchScope].label.toLowerCase()} match was returned for “${searchInput.trim()}”. Try another term or search field.` : 'Add or import a sugarcane record to begin.'}</p></div>}
+        {!loading && hasMore && <div className="load-more-row"><button className="secondary-button load-more" onClick={loadMore} disabled={loadingMore}>{loadingMore ? <><LoaderCircle className="spin" size={17} /> Loading {PAGE_SIZE} more…</> : `Load ${PAGE_SIZE} more`}</button><small>More records are fetched only when requested.</small></div>}
       </section>
 
-      <footer className="app-footer"><span><Sprout size={15} /> {APP_NAME} v{APP_VERSION}</span><span>Static Vite frontend • direct Appwrite Web SDK • browser-cached shell • no Vercel functions</span></footer>
+      <footer className="app-footer"><span><Sprout size={15} /> {APP_NAME} v{APP_VERSION}</span><span>Static Vite shell • direct Appwrite Web SDK • on-demand chunks • storage-efficient WebP media</span></footer>
 
-      {detailId && <DetailModal recordId={detailId} onClose={() => setDetailId('')} onEdit={openEdit} onDeleted={refreshRegistry} />}
-      {showForm && <RecordFormModal initial={editRecord} onClose={() => { setShowForm(false); setEditRecord(null); }} onSaved={refreshRegistry} />}
-      {showImport && <ImportModal onClose={() => setShowImport(false)} onImported={refreshRegistry} />}
+      <Suspense fallback={<ModalLoading />}>
+        {detailId && <DetailModal recordId={detailId} onClose={() => setDetailId('')} onEdit={openEdit} onDeleted={refreshRegistry} />}
+        {showForm && <RecordFormModal initial={editRecord} onClose={() => { setShowForm(false); setEditRecord(null); }} onSaved={refreshRegistry} />}
+        {showImport && <ImportModal onClose={() => setShowImport(false)} onImported={refreshRegistry} />}
+      </Suspense>
     </main>
   );
 }

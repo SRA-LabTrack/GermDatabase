@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
 import './styles.css';
 
-const APP_VERSION = '2.2.1';
-const SW_CHECK_KEY = 'canesprout-sw-check-v221';
+const APP_VERSION = '2.3.0';
+const SW_CHECK_KEY = 'canesprout-sw-check-v230';
 const SW_CHECK_INTERVAL = 24 * 60 * 60_000;
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App />);

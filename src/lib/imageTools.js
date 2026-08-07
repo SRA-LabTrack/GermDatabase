@@ -76,8 +76,8 @@ export function formatBytes(bytes) {
 
 /**
  * Produces two WebP files per selected image:
- * - full: high-quality documentation image, capped at 1600px
- * - thumb: small list/card image, capped at 360px
+ * - full: high-quality documentation image, capped at 1500px
+ * - thumb: small list/card image, capped at 320px
  * This keeps Appwrite Storage and list bandwidth low without sacrificing detail views.
  */
 export async function prepareImageVariants(file) {
@@ -91,9 +91,9 @@ export async function prepareImageVariants(file) {
   }
 
   try {
-    let full = await renderVariant(decoded, 1600, 0.82);
-    if (full.blob.size > 2.0 * 1024 * 1024) full = await renderVariant(decoded, 1400, 0.78);
-    const thumb = await renderVariant(decoded, 360, 0.70);
+    let full = await renderVariant(decoded, 1500, 0.82);
+    if (full.blob.size > 2.0 * 1024 * 1024) full = await renderVariant(decoded, 1320, 0.78);
+    const thumb = await renderVariant(decoded, 320, 0.70);
     return {
       originalName: file.name || 'image',
       originalSize: file.size || 0,

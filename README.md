@@ -1,37 +1,65 @@
-# CaneSprout Registry v2.2.1
+# CaneSprout Registry v2.3.0
 
-Sugarcane germination and varietal characterization registry for SRA-style research records. This build keeps all 60 Characterization.xlsx traits optional, supports germination observations and WebP field photos, and is deliberately optimized for Appwrite Free + Vercel Hobby usage.
+Agriculture-first sugarcane germination and varietal characterization registry. This build keeps all 60 Characterization.xlsx traits optional, retains the 933 source records, tracks planting/emergence observations, stores field photos as WebP in Appwrite Storage, and is deliberately tuned for Appwrite Free + Vercel Hobby usage.
 
-## Runtime efficiency
+## Agriculture-focused interface
 
-- 25 lean core rows maximum per browse/search page.
-- Cursor-based Load More, never whole-registry loading.
-- 3-character search minimum with 500 ms debounce.
-- Variety/trial/location/status searches use exact-first indexed lookup, then prefix, then contains only if needed.
-- All-traits search uses the dedicated full-text index.
-- `total=false` on lists.
-- Appwrite list-response TTL caching: 10 minutes for browsing, 5 minutes for searches.
-- Browser/session list cache: 10 minutes; first browse page persists for 30 minutes.
-- Detail cache: 30 minutes; full trait JSON loads only when a record is opened.
-- No polling and no Realtime subscription.
+- Hero content now follows the crop workflow: planting material → emergence → establishment → varietal characterization.
+- Technical developer statistics were replaced with agricultural record metrics.
+- Registry cards emphasize plant habit, leaf color, trial/batch, nursery/field location, status, and germination rate.
+- Spreadsheet column letters remain internal mapping metadata and are never displayed.
+- Green/yellow/white glass UI remains, with lighter blur on repeated elements and smoother compositor-friendly transitions.
+- Record cards reveal only when near the viewport and use `content-visibility` so off-screen cards cost less rendering work.
+- `prefers-reduced-motion` remains supported.
+
+## Free-plan safeguards
+
+- 25 lean rows maximum per browse/search request.
+- Cursor-based Load More. The entire registry is never downloaded for normal browsing.
+- 3-character search minimum and 500 ms debounce.
+- Indexed exact-first variety/trial/location/status lookup; full-text only for All traits & keywords.
+- Numeric variety fragments skip redundant exact/prefix probes.
+- Registry cards request only the fields shown on the cards.
+- Full 60-trait JSON loads only after opening a record.
+- Duplicate simultaneous detail requests are deduplicated.
+- Browser/session list cache: 15 minutes.
+- First browse page device cache: 45 minutes.
+- Detail cache: 45 minutes.
+- Appwrite list-response TTL: 15 minutes for browsing and 5 minutes for search.
+- No polling, no Realtime subscription, and no total-result calculations.
 - Writes happen only on explicit Save, Import, Delete, or setup/seed.
-- Mutations are never replayed automatically after a transport timeout.
-- Backup is explicit and uses 100-row cursor pages to reduce request overhead.
-- Photos live in Appwrite Storage, not database Base64. Full WebP max 1600 px; thumbnail max 360 px. Detail galleries load thumbnails first and fetch a full image only when clicked.
+- Edits update only the changed split collection.
+- Mutations are never automatically replayed after transport timeouts.
+- Local form drafts are saved to localStorage after a debounce and use zero Appwrite writes.
+- Manual uncached refresh has a 30-second cooldown.
+- Returning users with a local identity skip a redundant `account.get()` call; the first registry request verifies the session naturally.
+- Backup remains explicit and uses 100-row cursor pages.
+
+## Media/storage efficiency
+
+- Images are compressed in the browser before upload.
+- Full documentation image: max 1500 px WebP, with a smaller fallback for unusually large output.
+- Thumbnail: max 320 px WebP.
+- Cards and record galleries load thumbnails lazily.
+- Full-resolution photos are fetched only after the user opens a photo.
+- Failed record saves attempt to clean newly uploaded files to avoid orphaned Storage usage.
 
 ## Vercel efficiency
 
-The deployed app is a static Vite frontend. Normal login, search, record reads/writes, and Storage operations go directly from the browser to Appwrite. There are no Vercel Functions in the ordinary CRUD path.
+The production site is a static Vite frontend. Normal authentication, registry reads/writes, search, and Storage operations go directly from the browser to Appwrite. No normal CRUD request is routed through a Vercel Function.
 
-Hashed assets have one-year browser caching. The service worker does not prefetch on install, serves the captured app shell cache-first on later visits, and only checks its script at most once every 24 hours unless the user clicks Updates. `robots.txt` and `X-Robots-Tag` discourage public crawler traffic to the authenticated registry.
-
-## Glass UI
-
-v2.2.1 adds translucent green/yellow/white glass surfaces, modal transitions, card entrance/hover motion, subtle ambient gradient orbs, focus animations, and shimmer skeletons. Motion is CSS-only and therefore does not create network requests. `prefers-reduced-motion` is respected.
+- Heavy UI tools are split into on-demand chunks: record details, add/edit form, and Excel import.
+- XLSX is loaded only after Import is opened and a workbook is selected.
+- HEIC conversion is loaded only for HEIC/HEIF photos.
+- Hashed Vite assets are browser/CDN cached for one year.
+- The service worker performs no install-time prefetch and checks for updates at most once every 24 hours unless Updates is clicked.
+- `version.json` is cached for one day.
+- Search crawlers are discouraged with `robots.txt`, meta robots, and `X-Robots-Tag`.
+- Appwrite preconnect/dns-prefetch improves first-request latency without adding API calls.
 
 ## Windows commands
 
-Use Windows CMD commands with `npm.cmd`:
+Run these in Windows CMD from the project folder:
 
 ```bat
 npm.cmd install
@@ -40,7 +68,7 @@ npm.cmd run build
 npm.cmd run preview
 ```
 
-Existing working v2.1.5 Appwrite databases do **not** need another setup for v2.2.1. For a fresh database only:
+v2.3.0 adds no Appwrite attributes, collections, or indexes. If your existing v2.1.5+ schema already works, **do not rerun setup**. For a fresh Appwrite project only:
 
 ```bat
 npm.cmd run setup:appwrite
@@ -53,8 +81,8 @@ From `C:\Users\kenshennn\Downloads\Germ`:
 ```bat
 git status
 git add -A
-git commit -m "CaneSprout v2.2.1 quota guard and trait label cleanup"
+git commit -m "CaneSprout v2.3 agriculture UI and quota optimization"
 git push origin main
 ```
 
-If Vercel is connected to `SRA-LabTrack/GermDatabase`, that push starts the web deployment automatically. The repository's GitHub Actions workflow continues to handle Windows releases.
+If Vercel is connected to `SRA-LabTrack/GermDatabase`, the push automatically starts the new web deployment. The existing GitHub Actions workflow continues to handle Windows releases.

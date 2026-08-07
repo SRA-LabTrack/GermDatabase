@@ -1,0 +1,31 @@
+CaneSprout Registry v2.3.0
+==========================
+
+NO APPWRITE SCHEMA MIGRATION IS REQUIRED from a working v2.1.5+ database.
+
+AGRICULTURE UI OVERHAUL
+- Homepage/hero now focuses on planting material, emergence, establishment, nursery/field location, and varietal characterization.
+- Developer-oriented hero cards were replaced with characterization entries, optional traits, germination fields, and lean page size.
+- Registry cards emphasize agricultural fields and no longer request stalk/bud summary fields just to paint the list.
+- Glass UI is preserved while repeated grid cards avoid expensive backdrop blur.
+- Cards animate only near the viewport and off-screen cards use content-visibility.
+
+QUOTA/PERFORMANCE CHANGES
+- 25 rows/request, 500 ms debounce, 3-character minimum, cursor pagination.
+- Lean list selection reduced to only fields rendered on registry cards.
+- List cache 15 min; first page device cache 45 min; detail cache 45 min.
+- Appwrite browse TTL 15 min; search TTL 5 min.
+- Duplicate simultaneous detail requests are deduplicated.
+- Cached returning users skip a redundant Appwrite account.get call.
+- Manual uncached refresh cooldown increased to 30 seconds.
+- Add/Edit forms save local drafts after 900 ms to localStorage only, never Appwrite.
+- Details, Add/Edit, and Import tools are lazy-loaded as separate Vite chunks.
+- XLSX and HEIC libraries remain on-demand only.
+- Full WebP photo max 1500 px; thumbnail max 320 px.
+- No data prefetching was added: Load More remains explicit so Appwrite reads are not spent on records a user may never view.
+
+VERCEL
+- Static assets remain CDN/browser cached.
+- No Vercel Functions are introduced.
+- version.json cache increased to one day.
+- Appwrite preconnect improves latency without creating API calls.

@@ -1,0 +1,45 @@
+CaneSprout Registry v2.3.0 - Free-plan optimization summary
+============================================================
+
+APPWRITE
+- 25 lean core rows per normal list/search request.
+- Cursor-only pagination; no whole-registry browser loading.
+- 3-character minimum + 500 ms debounce.
+- Indexed exact-first smart search; full text only in All traits & keywords.
+- Only 8 core card fields are selected for list pages.
+- Full traits/details read only after record open.
+- In-flight list and detail request deduplication.
+- Browser/session list cache 15 min.
+- Persistent first page 45 min.
+- Details 45 min.
+- Appwrite list TTL: browse 15 min, search 5 min.
+- No polling, no Realtime, no total calculations.
+- Changed-half-only edits.
+- Local drafts use localStorage, not database writes.
+- Mutation failover/replay disabled.
+- Manual refresh cooldown 30 sec.
+- Backup uses explicit 100-row cursor pages.
+
+STORAGE
+- WebP full photo max 1500 px, thumbnail max 320 px.
+- Lazy thumbnails on cards/details.
+- Full image requested only on explicit click.
+- Orphan cleanup after failed saves.
+
+VERCEL
+- Static Vite app; normal Appwrite CRUD bypasses Vercel Functions.
+- Detail/Add/Edit/Import UI code split into lazy chunks.
+- XLSX and HEIC libraries load only when needed.
+- One-year immutable caching for hashed assets.
+- Cache-first captured shell; no service-worker install prefetch.
+- Automatic SW check at most once/24h; manual Updates remains available.
+- version.json one-day cache.
+- noindex/noarchive crawler controls.
+- No automatic next-page data prefetch, because saving Appwrite reads is more important than speculative loading.
+
+ANIMATION/RENDERING
+- Glass blur concentrated on navbar, hero, search, modals.
+- Repeated cards use no backdrop blur.
+- Card entrance uses IntersectionObserver and opacity/transform only.
+- Off-screen cards use content-visibility and containment.
+- Reduced-motion preferences respected.

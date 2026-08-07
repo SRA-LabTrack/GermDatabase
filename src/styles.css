@@ -468,3 +468,251 @@ body { overflow-x: hidden; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
 }
+
+/* =============================================================
+   v2.3.0 agriculture-first UI + render-efficient motion layer
+   ============================================================= */
+:root {
+  --field-green: #2f7a43;
+  --cane-green: #5f9e4e;
+  --young-leaf: #a9cf69;
+  --sun-yellow: #efd85d;
+  --straw-yellow: #f7e8a2;
+  --soil-brown: #7d6942;
+  --motion-fast: 180ms;
+  --motion-normal: 280ms;
+}
+
+.app-shell {
+  background:
+    radial-gradient(circle at 7% 12%, rgba(128, 190, 103, .14), transparent 24%),
+    radial-gradient(circle at 91% 18%, rgba(239, 216, 93, .22), transparent 22%),
+    linear-gradient(145deg, #f7fbf1 0%, #eef7e6 54%, #fff9dc 100%);
+}
+
+.agricultural-hero {
+  min-height: 390px;
+  grid-template-columns: minmax(0, 1.35fr) minmax(360px, .85fr);
+  isolation: isolate;
+  background:
+    linear-gradient(120deg, rgba(255,255,255,.70), rgba(246,250,214,.64) 54%, rgba(255,244,175,.64)),
+    radial-gradient(circle at 8% 15%, rgba(125,186,101,.20), transparent 28%);
+  backdrop-filter: blur(12px) saturate(118%);
+  -webkit-backdrop-filter: blur(12px) saturate(118%);
+}
+
+.hero-sun {
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  right: 7%;
+  top: -86px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,245,166,.80) 0 34%, rgba(239,216,93,.28) 48%, transparent 70%);
+  filter: blur(.2px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero-field-pattern {
+  position: absolute;
+  left: -10%;
+  right: -8%;
+  bottom: -150px;
+  height: 310px;
+  opacity: .34;
+  transform: perspective(560px) rotateX(65deg);
+  transform-origin: center bottom;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 70px, rgba(48,114,61,.20) 71px 74px),
+    repeating-linear-gradient(0deg, transparent 0 46px, rgba(117,157,71,.12) 47px 49px);
+  mask-image: linear-gradient(to top, #000 16%, transparent 94%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.agricultural-hero::after {
+  width: 360px;
+  height: 360px;
+  right: -110px;
+  top: auto;
+  bottom: -140px;
+  border-width: 52px;
+  border-color: rgba(255,255,255,.24);
+}
+
+.crop-flow {
+  margin-top: 23px;
+  display: grid;
+  grid-template-columns: auto minmax(18px, 1fr) auto minmax(18px, 1fr) auto minmax(18px, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  max-width: 790px;
+}
+
+.crop-flow > span {
+  min-width: 112px;
+  padding: 11px 12px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 8px;
+  align-items: center;
+  border-radius: 16px;
+  color: #275238;
+  background: rgba(255,255,255,.56);
+  border: 1px solid rgba(255,255,255,.72);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.72);
+}
+.crop-flow > span svg { grid-row: 1 / span 2; color: var(--field-green); }
+.crop-flow > span b { font-size: 11px; line-height: 1.05; }
+.crop-flow > span small { margin-top: 2px; color: #728273; font-size: 8.5px; line-height: 1.15; }
+.crop-flow > i { height: 1px; background: linear-gradient(90deg, rgba(64,125,67,.12), rgba(64,125,67,.36), rgba(64,125,67,.12)); }
+.crop-flow.compact-flow { max-width: 700px; margin-top: 20px; }
+.crop-flow.compact-flow > span { min-width: auto; padding: 9px 10px; display: flex; gap: 6px; font-size: 9px; font-weight: 750; }
+
+.agricultural-stats > div {
+  min-height: 128px;
+  padding: 18px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(145deg, rgba(255,255,255,.68), rgba(250,251,226,.50));
+  backdrop-filter: blur(8px) saturate(110%);
+  -webkit-backdrop-filter: blur(8px) saturate(110%);
+}
+.agricultural-stats > div::after {
+  content: "";
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  right: -20px;
+  bottom: -28px;
+  border-radius: 50%;
+  background: rgba(154,199,99,.09);
+}
+.stat-icon {
+  width: 31px;
+  height: 31px;
+  margin-bottom: 8px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  color: #2e6c3f;
+  background: linear-gradient(145deg, rgba(224,237,110,.78), rgba(166,213,126,.72));
+}
+
+.registry-toolbar h2 { color: #153d27; }
+.registry-toolbar .eyebrow { color: #527a50; }
+
+/* Repeated cards use no backdrop blur. Glass stays concentrated on the navbar,
+   hero, search, and modals where it has the most visual payoff. */
+.record-card {
+  animation: none !important;
+  content-visibility: auto;
+  contain-intrinsic-size: 510px;
+  contain: layout paint style;
+  background: linear-gradient(145deg, rgba(255,255,255,.94), rgba(248,252,241,.91));
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.viewport-card {
+  opacity: 0;
+  transform: translate3d(0, 16px, 0) scale(.988);
+  transition:
+    opacity var(--motion-normal) ease var(--card-delay, 0ms),
+    transform 360ms cubic-bezier(.22,.84,.28,1) var(--card-delay, 0ms),
+    box-shadow var(--motion-normal) ease,
+    border-color var(--motion-normal) ease;
+  will-change: opacity, transform;
+}
+.viewport-card.is-visible { opacity: 1; transform: translate3d(0,0,0) scale(1); will-change: auto; }
+.viewport-card.is-visible:hover { transform: translate3d(0,-7px,0) scale(1.006); }
+.record-image { background: linear-gradient(145deg, #dceecd, #f6edab); }
+.record-placeholder { color: #6b9a69; }
+.record-placeholder span { font-weight: 750; }
+.agri-mini-grid span { min-height: 63px; }
+.agri-mini-grid b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.record-body footer { align-items: center; }
+.card-open-icon { width: 31px; height: 31px; display: grid; place-items: center; border-radius: 10px; color: #2f7143; background: #edf5e5; }
+
+/* The toolbar/search remain glassy but use a lower blur radius than v2.2. */
+.topbar { backdrop-filter: blur(14px) saturate(125%); -webkit-backdrop-filter: blur(14px) saturate(125%); }
+.search-panel { backdrop-filter: blur(14px) saturate(125%); -webkit-backdrop-filter: blur(14px) saturate(125%); }
+.modal { backdrop-filter: blur(18px) saturate(125%); -webkit-backdrop-filter: blur(18px) saturate(125%); }
+.modal-backdrop { backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px); }
+
+.auth-field-lines {
+  position: absolute;
+  inset: auto -20% -28% -12%;
+  height: 360px;
+  opacity: .30;
+  transform: perspective(560px) rotateX(62deg);
+  background: repeating-linear-gradient(90deg, transparent 0 62px, rgba(43,111,58,.28) 63px 66px);
+  mask-image: linear-gradient(to top, #000 15%, transparent 92%);
+  pointer-events: none;
+}
+
+.local-draft-banner {
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-radius: 16px;
+  background: rgba(255,248,204,.72);
+  border: 1px solid rgba(220,190,69,.24);
+}
+.local-draft-banner > div { display: flex; flex-direction: column; gap: 2px; }
+.local-draft-banner strong { font-size: 12px; }
+.local-draft-banner span { color: #7e795e; font-size: 10px; }
+.text-button.inline { width: auto; margin-left: auto; padding: 8px 10px; font-size: 10px; }
+
+.lazy-modal-loader {
+  width: 170px;
+  min-height: 90px;
+  padding: 18px;
+  display: grid;
+  place-items: center;
+  gap: 7px;
+  border-radius: 20px;
+  color: #315f3d;
+  background: rgba(255,255,255,.82);
+  border: 1px solid rgba(255,255,255,.9);
+  box-shadow: 0 24px 70px rgba(26,65,37,.18);
+}
+.lazy-modal-loader span { font-size: 11px; font-weight: 750; }
+
+/* Keep motion on compositor-friendly opacity/transform paths. */
+.hero-copy, .agricultural-stats > div, .crop-flow > span, .stat-icon {
+  transform: translateZ(0);
+}
+.hero-actions .primary-button:hover, .hero-actions .secondary-button:hover { transform: translate3d(0,-2px,0); }
+
+@media (max-width: 1180px) {
+  .agricultural-hero { grid-template-columns: 1fr; }
+  .agricultural-stats { grid-template-columns: repeat(4, minmax(0,1fr)); }
+  .agricultural-stats > div { min-height: 108px; }
+  .crop-flow { max-width: none; }
+}
+
+@media (max-width: 900px) {
+  .agricultural-stats { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .crop-flow { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .crop-flow > i { display: none; }
+  .crop-flow > span { min-width: 0; }
+}
+
+@media (max-width: 760px) {
+  .agricultural-hero { width: min(100% - 24px, 1540px); margin-top: 18px; padding: 25px 20px; border-radius: 26px; }
+  .agricultural-hero h1 { font-size: clamp(34px, 11vw, 48px); }
+  .agricultural-stats { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .agricultural-stats > div { padding: 14px; }
+  .crop-flow { grid-template-columns: 1fr 1fr; }
+  .record-card { contain-intrinsic-size: 560px; }
+  .local-draft-banner { align-items: flex-start; flex-direction: column; }
+  .text-button.inline { margin-left: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .viewport-card, .viewport-card.is-visible, .viewport-card.is-visible:hover { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .hero-sun, .hero-field-pattern, .auth-field-lines { animation: none !important; }
+}

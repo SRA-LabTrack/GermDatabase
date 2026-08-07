@@ -1,8 +1,8 @@
 {
-  "version": "2.2.1",
+  "version": "2.3.0",
   "domain": "sugarcane-germination-characterization",
   "pagination": 25,
-  "searchDebounceMs": 400,
-  "build": "no-column-badges-selective-writes-quota-guard",
-  "released": "2026-08-07"
+  "searchDebounceMs": 500,
+  "build": "agriculture-ui-lazy-tools-local-drafts-quota-guard",
+  "released": "2026-08-08"
 }
