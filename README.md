@@ -1,4 +1,4 @@
-# CaneSprout Registry v2.1.0
+# CaneSprout Registry v2.1.2
 
 Sugarcane germination and varietal characterization registry built with React, Vite, Appwrite, and an Electron desktop wrapper.
 
@@ -41,8 +41,8 @@ The registry intentionally does not download the full collection.
 ## First install
 
 ```bat
-npm install
-npm run dev
+npm.cmd install
+npm.cmd run dev
 ```
 
 Open `http://localhost:5174`.
@@ -68,10 +68,10 @@ APPWRITE_API_KEY=PASTE_TEMPORARY_SETUP_KEY_HERE
 Then run:
 
 ```bat
-npm run setup:appwrite
+npm.cmd run setup:appwrite
 ```
 
-The setup creates `sugarcane_characterizations`, the required indexes, the WebP storage bucket if needed, and seeds all 933 spreadsheet rows exactly once. A server-only sentinel prevents the seed from being repeated on later setup runs.
+The setup creates `sugarcane_registry_core` + `sugarcane_registry_details`, the required indexes, the WebP storage bucket if needed, and seeds all 933 spreadsheet rows exactly once. A server-only sentinel prevents the seed from being repeated on later setup runs.
 
 Revoke the temporary API key after setup. Never add `APPWRITE_API_KEY` to Vercel.
 

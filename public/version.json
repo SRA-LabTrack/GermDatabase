@@ -1,1 +1,6 @@
-{"version":"2.1.0","domain":"sugarcane-germination-characterization","pagination":30,"searchDebounceMs":400}
+{
+  "version": "2.1.2",
+  "domain": "sugarcane-germination-characterization",
+  "pagination": 30,
+  "searchDebounceMs": 400
+}

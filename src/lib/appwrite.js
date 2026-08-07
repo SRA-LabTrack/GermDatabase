@@ -27,7 +27,8 @@ export const DATABASE_ID = String(import.meta.env.VITE_APPWRITE_DATABASE_ID || '
 export const MEDIA_BUCKET_ID = String(import.meta.env.VITE_APPWRITE_MEDIA_BUCKET_ID || 'germ-media').trim();
 
 export const COLLECTIONS = {
-  records: 'sugarcane_characterizations'
+  records: 'sugarcane_registry_core',
+  details: 'sugarcane_registry_details'
 };
 
 export const client = new Client().setEndpoint(activeEndpoint).setProject(APPWRITE_PROJECT_ID);

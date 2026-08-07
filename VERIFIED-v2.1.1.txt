@@ -1,0 +1,11 @@
+CANESPROUT REGISTRY v2.1.1 - VALIDATION NOTES
+=============================================
+
+- Fixes Appwrite attribute_limit_exceeded from v2.1.0.
+- Uses sugarcane_registry with 24 compact string attributes instead of 60+ large attributes.
+- Preserves all 60 spreadsheet traits in traits_json.
+- Full-text search_text still contains all spreadsheet traits for indexed search.
+- List view selects only 9 lightweight card fields, 30 records at a time.
+- Detail view expands traits_json only after a card is opened.
+- Seed remains 933 rows and deterministic/idempotent.
+- The failed v2.1.0 collection is not deleted or used.

@@ -1,29 +1,33 @@
-CANESPROUT REGISTRY v2.1.0 - WINDOWS COMMANDS
+CANESPROUT REGISTRY v2.1.2 - WINDOWS COMMANDS
 =============================================
 
-FIRST INSTALL
-npm install
+IMPORTANT
+These commands are for Windows CMD, so they deliberately use npm.cmd.
+Vercel runs Linux and must keep plain npm in vercel.json.
 
-RUN LOCALLY
-npm run dev
-Open: http://localhost:5174
+FIRST INSTALL / AFTER PACKAGE CHANGES
+npm.cmd install
 
-ONE-TIME APPWRITE SCHEMA + 933-ROW SEED
-npm run setup:appwrite
+ONE-TIME APPWRITE SPLIT-SCHEMA SETUP + 933-ROW SEED
+npm.cmd run setup:appwrite
 Requires a TEMPORARY APPWRITE_API_KEY in .env.
 Revoke it immediately after setup succeeds.
 
+RUN LOCALLY
+npm.cmd run dev
+Open: http://localhost:5174
+
 BUILD WEBSITE
-npm run build
+npm.cmd run build
 
 PREVIEW PRODUCTION BUILD
-npm run preview
+npm.cmd run preview
 
 RUN ELECTRON DESKTOP DEV
-npm run desktop:dev
+npm.cmd run desktop:dev
 
 BUILD WINDOWS INSTALLER
-npm run desktop:build:win
+npm.cmd run desktop:build:win
 
 PUBLISH UPDATE FROM C:\Users\kenshennn\Downloads\Germ
 git status

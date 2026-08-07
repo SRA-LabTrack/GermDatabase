@@ -43,8 +43,8 @@ import {
 } from './lib/registryApi';
 
 const APP_NAME = 'CaneSprout Registry';
-const APP_VERSION = '2.1.0';
-const USER_CACHE_KEY = 'sugarcane-registry-user-v210';
+const APP_VERSION = '2.1.2';
+const USER_CACHE_KEY = 'sugarcane-registry-user-v212';
 
 const GERMINATION_FIELDS = [
   { key: 'germ_trial_code', label: 'Germination trial / batch code', type: 'text' },
@@ -80,13 +80,15 @@ function clearCachedUser() {
 function messageFor(error) {
   const code = Number(error?.code || error?.status || 0);
   if (code === 401) return 'Your Appwrite session has expired. Please sign in again.';
-  if (code === 404) return 'The sugarcane collection has not been set up yet. Run npm run setup:appwrite once.';
+  if (code === 404) return 'The sugarcane collection has not been set up yet. Run npm.cmd run setup:appwrite once.';
   if (isNetworkFailure(error)) return 'Appwrite is unreachable. Cached pages can still be viewed, but saving needs a connection.';
   return error?.message || String(error || 'Something went wrong.');
 }
 
 function pct(record) {
-  const value = Number(record?.germination_pct);
+  const raw = record?.germination_pct;
+  if (raw === '' || raw == null) return null;
+  const value = Number(raw);
   return Number.isFinite(value) ? Math.max(0, Math.min(100, value)) : null;
 }
 

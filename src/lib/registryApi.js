@@ -27,9 +27,10 @@ export const LIST_FIELDS = [
 
 const memoryCache = new Map();
 const detailCache = new Map();
+const coreCache = new Map();
 const CACHE_TTL = 90_000;
 const DETAIL_TTL = 300_000;
-const LAST_PAGE_KEY = 'sugarcane-registry:last-page-v210';
+const LAST_PAGE_KEY = 'sugarcane-registry:last-page-v212';
 
 function cacheKey(search, cursor) {
   return `${String(search || '').trim().toLowerCase()}::${cursor || 'first'}`;
@@ -61,7 +62,9 @@ function writeOfflineLastPage(value) {
 
 export function getOfflineLastPage() {
   try {
-    const parsed = JSON.parse(localStorage.getItem(LAST_PAGE_KEY) || 'null');
+    const raw = localStorage.getItem(LAST_PAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
     return parsed?.value || null;
   } catch {
     return null;
@@ -71,11 +74,18 @@ export function getOfflineLastPage() {
 export function clearQueryCache() {
   memoryCache.clear();
   detailCache.clear();
+  coreCache.clear();
   try {
     Object.keys(sessionStorage)
       .filter((key) => key.startsWith('sugarcane:q:'))
       .forEach((key) => sessionStorage.removeItem(key));
   } catch {}
+}
+
+function rememberCore(documents = []) {
+  documents.forEach((document) => {
+    if (document?.$id) coreCache.set(document.$id, document);
+  });
 }
 
 export async function listRecords({ search = '', cursor = '', bypassCache = false } = {}) {
@@ -87,18 +97,19 @@ export async function listRecords({ search = '', cursor = '', bypassCache = fals
   const key = cacheKey(term, cursor);
   if (!bypassCache) {
     const hit = memoryCache.get(key);
-    if (hit && Date.now() - hit.savedAt < CACHE_TTL) return { ...hit.value, fromCache: true };
+    if (hit && Date.now() - hit.savedAt < CACHE_TTL) {
+      rememberCore(hit.value.documents);
+      return { ...hit.value, fromCache: true };
+    }
     const sessionHit = readSessionCache(key);
     if (sessionHit) {
       memoryCache.set(key, { savedAt: Date.now(), value: sessionHit });
+      rememberCore(sessionHit.documents);
       return { ...sessionHit, fromCache: true };
     }
   }
 
-  const queries = [
-    Query.limit(PAGE_SIZE),
-    Query.select(LIST_FIELDS)
-  ];
+  const queries = [Query.limit(PAGE_SIZE), Query.select(LIST_FIELDS)];
   if (term.length >= SEARCH_MIN) queries.push(Query.search('search_text', term));
   else queries.push(Query.orderAsc('variety'));
   if (cursor) queries.push(Query.cursorAfter(cursor));
@@ -111,6 +122,7 @@ export async function listRecords({ search = '', cursor = '', bypassCache = fals
       total: false
     }));
     const documents = result.documents || [];
+    rememberCore(documents);
     const value = {
       documents,
       nextCursor: documents.at(-1)?.$id || '',
@@ -124,23 +136,43 @@ export async function listRecords({ search = '', cursor = '', bypassCache = fals
   } catch (error) {
     if (!term && !cursor) {
       const offline = getOfflineLastPage();
-      if (offline?.documents?.length) return { ...offline, offlineFallback: true, fromCache: true };
+      if (offline?.documents?.length) {
+        rememberCore(offline.documents);
+        return { ...offline, offlineFallback: true, fromCache: true };
+      }
     }
     throw error;
   }
 }
 
+function parseJsonObject(value) {
+  if (!value) return {};
+  try {
+    const parsed = JSON.parse(value);
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+  } catch {
+    return {};
+  }
+}
 
-export async function exportAllRecords(onProgress) {
+function expandRecord(core, detail) {
+  if (!core && !detail) return null;
+  const traits = parseJsonObject(detail?.traits_json);
+  const extra = parseJsonObject(detail?.details_json);
+  return { ...traits, ...extra, ...(core || {}), $id: core?.$id || detail?.$id };
+}
+
+async function listAllCollection(collectionId, { orderByVariety = false, onProgress } = {}) {
   const all = [];
   let cursor = '';
   let page = 0;
   while (true) {
-    const queries = [Query.limit(PAGE_SIZE), Query.orderAsc('variety')];
+    const queries = [Query.limit(PAGE_SIZE)];
+    if (orderByVariety) queries.push(Query.orderAsc('variety'));
     if (cursor) queries.push(Query.cursorAfter(cursor));
     const result = await withAppwriteFailover(() => databases.listDocuments({
       databaseId: DATABASE_ID,
-      collectionId: COLLECTIONS.records,
+      collectionId,
       queries,
       total: false
     }), { timeoutMs: 9000 });
@@ -155,20 +187,51 @@ export async function exportAllRecords(onProgress) {
   return all;
 }
 
+export async function exportAllRecords(onProgress) {
+  // Backup is explicit and rare. Fetch each collection in cursor pages instead
+  // of doing one detail read per row.
+  const cores = await listAllCollection(COLLECTIONS.records, { orderByVariety: true, onProgress });
+  const details = await listAllCollection(COLLECTIONS.details);
+  const detailMap = new Map(details.map((document) => [document.$id, document]));
+  return cores.map((core) => expandRecord(core, detailMap.get(core.$id)));
+}
+
 export async function getRecord(recordId, { bypassCache = false } = {}) {
   const hit = detailCache.get(recordId);
   if (!bypassCache && hit && Date.now() - hit.savedAt < DETAIL_TTL) return hit.value;
-  const value = await withAppwriteFailover(() => databases.getDocument({
+
+  // A record opened from the registry already has its lean core document cached,
+  // so normal detail opens cost only one extra Appwrite document read.
+  let core = coreCache.get(recordId);
+  const detailPromise = withAppwriteFailover(() => databases.getDocument({
     databaseId: DATABASE_ID,
-    collectionId: COLLECTIONS.records,
+    collectionId: COLLECTIONS.details,
     documentId: recordId
   }));
+  if (!core || bypassCache) {
+    [core] = await Promise.all([
+      withAppwriteFailover(() => databases.getDocument({
+        databaseId: DATABASE_ID,
+        collectionId: COLLECTIONS.records,
+        documentId: recordId
+      }))
+    ]);
+    coreCache.set(recordId, core);
+  }
+  const detail = await detailPromise;
+  const value = expandRecord(core, detail);
   detailCache.set(recordId, { savedAt: Date.now(), value });
   return value;
 }
 
-function makeSearchText(data) {
-  const traitText = CHARACTERIZATION_FIELDS.map((field) => data[field.key]).filter(Boolean);
+function makeTraits(data) {
+  return Object.fromEntries(
+    CHARACTERIZATION_FIELDS.map((field) => [field.key, String(data[field.key] ?? '').trim()])
+  );
+}
+
+function makeSearchText(data, traits) {
+  const traitText = CHARACTERIZATION_FIELDS.map((field) => traits[field.key]).filter(Boolean);
   const extra = [
     data.germ_trial_code,
     data.germ_location,
@@ -176,66 +239,116 @@ function makeSearchText(data) {
     data.germ_material_type,
     data.germ_notes
   ].filter(Boolean);
-  return [...traitText, ...extra].join(' ').replace(/\s+/g, ' ').trim().slice(0, 12000);
+  return [...traitText, ...extra].join(' ').replace(/\s+/g, ' ').trim().slice(0, 4096);
 }
 
-function normalizePayload(data) {
-  const payload = {};
-  for (const field of CHARACTERIZATION_FIELDS) payload[field.key] = String(data[field.key] ?? '').trim();
-  payload.germ_trial_code = String(data.germ_trial_code ?? '').trim();
-  payload.germ_location = String(data.germ_location ?? '').trim();
-  payload.germ_planting_date = String(data.germ_planting_date ?? '').trim();
-  payload.germ_material_type = String(data.germ_material_type ?? '').trim();
-  payload.germ_observation_date = String(data.germ_observation_date ?? '').trim();
-  payload.germ_status = String(data.germ_status ?? '').trim();
-  payload.germ_notes = String(data.germ_notes ?? '').trim();
-  payload.germ_buds_planted = data.germ_buds_planted === '' || data.germ_buds_planted == null ? null : Number(data.germ_buds_planted);
-  payload.germ_germinated_count = data.germ_germinated_count === '' || data.germ_germinated_count == null ? null : Number(data.germ_germinated_count);
-  const planted = payload.germ_buds_planted;
-  const germinated = payload.germ_germinated_count;
-  payload.germination_pct = Number.isFinite(planted) && planted > 0 && Number.isFinite(germinated)
-    ? Math.max(0, Math.min(100, (germinated / planted) * 100))
-    : null;
-  payload.photo_file_ids = Array.isArray(data.photo_file_ids) ? data.photo_file_ids : [];
-  payload.thumb_file_ids = Array.isArray(data.thumb_file_ids) ? data.thumb_file_ids : [];
-  payload.photo_names = Array.isArray(data.photo_names) ? data.photo_names : [];
-  payload.thumbnail_file_id = String(data.thumbnail_file_id || payload.thumb_file_ids[0] || '');
-  payload.primary_file_id = String(data.primary_file_id || payload.photo_file_ids[0] || '');
-  payload.source_name = String(data.source_name || 'Manual entry');
-  payload.source_row = Number.isFinite(Number(data.source_row)) ? Number(data.source_row) : null;
-  payload.search_text = makeSearchText(payload);
-  return payload;
+function splitPayload(data) {
+  const traits = makeTraits(data);
+  const plantedText = String(data.germ_buds_planted ?? '').trim();
+  const germinatedText = String(data.germ_germinated_count ?? '').trim();
+  const planted = Number(plantedText);
+  const germinated = Number(germinatedText);
+  const germinationPct = plantedText !== '' && Number.isFinite(planted) && planted > 0 && germinatedText !== '' && Number.isFinite(germinated)
+    ? String(Math.max(0, Math.min(100, (germinated / planted) * 100)))
+    : '';
+
+  const core = {
+    variety: traits.variety || '',
+    stool_plant_habit: traits.stool_plant_habit || '',
+    leaf_color: traits.leaf_color || '',
+    stalk_exposed_color: traits.stalk_exposed_color || '',
+    bud_shape: traits.bud_shape || '',
+    germ_trial_code: String(data.germ_trial_code ?? '').trim(),
+    germ_location: String(data.germ_location ?? '').trim(),
+    germ_status: String(data.germ_status ?? '').trim(),
+    germination_pct: germinationPct,
+    thumbnail_file_id: String(data.thumbnail_file_id || data.thumb_file_ids?.[0] || ''),
+    source_name: String(data.source_name || 'Manual entry'),
+    source_row: data.source_row == null ? '' : String(data.source_row).trim(),
+    search_text: makeSearchText(data, traits)
+  };
+
+  const details = {
+    germ_planting_date: String(data.germ_planting_date ?? '').trim(),
+    germ_material_type: String(data.germ_material_type ?? '').trim(),
+    germ_buds_planted: plantedText,
+    germ_germinated_count: germinatedText,
+    germ_observation_date: String(data.germ_observation_date ?? '').trim(),
+    germ_notes: String(data.germ_notes ?? '').trim(),
+    photo_file_ids: Array.isArray(data.photo_file_ids) ? data.photo_file_ids : [],
+    thumb_file_ids: Array.isArray(data.thumb_file_ids) ? data.thumb_file_ids : [],
+    photo_names: Array.isArray(data.photo_names) ? data.photo_names : [],
+    primary_file_id: String(data.primary_file_id || data.photo_file_ids?.[0] || '')
+  };
+
+  const traitsJson = JSON.stringify(traits);
+  const detailsJson = JSON.stringify(details);
+  if (traitsJson.length > 4096) throw new Error('Characterization traits are too large to save. Shorten unusually long trait values.');
+  if (detailsJson.length > 4096) throw new Error('Record details are too large to save. Shorten notes or remove some attached photo metadata.');
+  return { core, detail: { traits_json: traitsJson, details_json: detailsJson } };
+}
+
+async function upsertDocument(collectionId, documentId, data, exists) {
+  if (exists) {
+    try {
+      return await withAppwriteFailover(() => databases.updateDocument({
+        databaseId: DATABASE_ID,
+        collectionId,
+        documentId,
+        data
+      }));
+    } catch (error) {
+      if (error?.code !== 404 && error?.status !== 404) throw error;
+    }
+  }
+  return withAppwriteFailover(() => databases.createDocument({
+    databaseId: DATABASE_ID,
+    collectionId,
+    documentId,
+    data
+  }));
 }
 
 export async function saveRecord(data, recordId = '') {
-  const payload = normalizePayload(data);
+  const { core: corePayload, detail: detailPayload } = splitPayload(data);
   const id = recordId || ID.unique();
-  const value = recordId
-    ? await withAppwriteFailover(() => databases.updateDocument({
-        databaseId: DATABASE_ID,
-        collectionId: COLLECTIONS.records,
-        documentId: id,
-        data: payload
-      }))
-    : await withAppwriteFailover(() => databases.createDocument({
-        databaseId: DATABASE_ID,
-        collectionId: COLLECTIONS.records,
-        documentId: id,
-        data: payload
-      }));
+  const exists = Boolean(recordId);
+
+  // Save heavy details first. If a brand-new core create fails, clean up its
+  // detail document so no orphan remains.
+  const detail = await upsertDocument(COLLECTIONS.details, id, detailPayload, exists);
+  let core;
+  try {
+    core = await upsertDocument(COLLECTIONS.records, id, corePayload, exists);
+  } catch (error) {
+    if (!exists) {
+      await Promise.allSettled([
+        databases.deleteDocument({ databaseId: DATABASE_ID, collectionId: COLLECTIONS.details, documentId: id })
+      ]);
+    }
+    throw error;
+  }
+
+  const value = expandRecord(core, detail);
   clearQueryCache();
+  coreCache.set(id, core);
   detailCache.set(id, { savedAt: Date.now(), value });
   return value;
+}
+
+async function deleteDocumentIfPresent(collectionId, documentId) {
+  try {
+    await withAppwriteFailover(() => databases.deleteDocument({ databaseId: DATABASE_ID, collectionId, documentId }));
+  } catch (error) {
+    if (error?.code !== 404 && error?.status !== 404) throw error;
+  }
 }
 
 export async function deleteRecord(record) {
   const ids = [...(record.photo_file_ids || []), ...(record.thumb_file_ids || [])];
   await Promise.allSettled(ids.map((fileId) => storage.deleteFile({ bucketId: MEDIA_BUCKET_ID, fileId })));
-  await withAppwriteFailover(() => databases.deleteDocument({
-    databaseId: DATABASE_ID,
-    collectionId: COLLECTIONS.records,
-    documentId: record.$id
-  }));
+  await deleteDocumentIfPresent(COLLECTIONS.details, record.$id);
+  await deleteDocumentIfPresent(COLLECTIONS.records, record.$id);
   clearQueryCache();
 }
 
@@ -269,7 +382,6 @@ export async function uploadPreparedPhotos(variants, onProgress) {
   }
 }
 
-
 export async function deleteStoredFiles(fileIds = []) {
   await Promise.allSettled(fileIds.filter(Boolean).map((fileId) => storage.deleteFile({ bucketId: MEDIA_BUCKET_ID, fileId })));
 }
@@ -280,17 +392,30 @@ export async function bulkCreateRecords(rows, onProgress) {
   const errors = [];
   const worker = async () => {
     while (true) {
-      const index = next;
-      next += 1;
+      const index = next++;
       if (index >= rows.length) return;
+      const id = ID.unique();
       try {
-        const payload = normalizePayload({ ...rows[index], source_name: rows[index].source_name || 'Excel import' });
+        const { core, detail } = splitPayload({ ...rows[index], source_name: rows[index].source_name || 'Excel import' });
         await withAppwriteFailover(() => databases.createDocument({
           databaseId: DATABASE_ID,
-          collectionId: COLLECTIONS.records,
-          documentId: ID.unique(),
-          data: payload
+          collectionId: COLLECTIONS.details,
+          documentId: id,
+          data: detail
         }), { timeoutMs: 9000 });
+        try {
+          await withAppwriteFailover(() => databases.createDocument({
+            databaseId: DATABASE_ID,
+            collectionId: COLLECTIONS.records,
+            documentId: id,
+            data: core
+          }), { timeoutMs: 9000 });
+        } catch (error) {
+          await Promise.allSettled([
+            databases.deleteDocument({ databaseId: DATABASE_ID, collectionId: COLLECTIONS.details, documentId: id })
+          ]);
+          throw error;
+        }
       } catch (error) {
         errors.push({ index, message: error?.message || String(error) });
       }

@@ -1,0 +1,26 @@
+CANESPROUT REGISTRY v2.1.1 - ATTRIBUTE LIMIT FIX
+===============================================
+
+If v2.1.0 failed with:
+  attribute_limit_exceeded
+
+you do NOT need to repair that half-created collection. v2.1.1 uses the new
+compact collection sugarcane_registry instead.
+
+After copying this update into your Git folder:
+
+  npm install
+  npm run setup:appwrite
+
+Then test locally:
+
+  npm run dev
+
+When working, publish:
+
+  git status
+  git add -A
+  git commit -m "Fix Appwrite characterization schema limit"
+  git push origin main
+
+The old sugarcane_characterizations collection is ignored by v2.1.1.

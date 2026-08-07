@@ -1,18 +1,26 @@
-CANESPROUT REGISTRY v2.1 - ONE-TIME APPWRITE SETUP
-==================================================
+CANESPROUT REGISTRY v2.1.2 - ONE-TIME APPWRITE SETUP
+====================================================
 
-This version uses a new optimized collection:
+Windows CMD command:
+  npm.cmd run setup:appwrite
+
+The setup creates fresh collections:
+  sugarcane_registry_core
+  sugarcane_registry_details
+  registry_meta (if not already present)
+
+WHY TWO COLLECTIONS
+Appwrite rejected the previous one-collection design because the collection reserved
+maximum string sizes for too many fields. The split design keeps list/search data tiny
+and moves the full 60-trait payload to a separate on-demand detail document.
+
+All 60 spreadsheet traits remain available and optional in Add/Edit Record.
+All 933 Characterization.xlsx rows are seeded once using deterministic document IDs.
+
+The setup intentionally leaves these failed/legacy collections untouched:
   sugarcane_characterizations
+  sugarcane_registry
 
-It includes all 60 A:BH Characterization.xlsx traits plus optional germination fields.
-The setup script also seeds all 933 non-empty spreadsheet rows.
-
-1. Put a TEMPORARY APPWRITE_API_KEY in .env.
-2. Run:
-   npm install
-   npm run setup:appwrite
-3. Wait until the seed says all 933 rows are processed.
-4. Revoke/delete the temporary API key.
-
-The setup is idempotent. A registry_meta sentinel prevents the 933-row seed from being repeated after a successful run.
-Existing older collections are not deleted.
+TEMPORARY API KEY
+APPWRITE_API_KEY is server-only. Put it in local .env only for setup, then revoke it.
+Never add APPWRITE_API_KEY to Vercel or GitHub.
