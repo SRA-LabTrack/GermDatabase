@@ -10,7 +10,7 @@ import {
 } from './appwrite';
 import { CHARACTERIZATION_FIELDS } from './characterizationFields';
 
-export const PAGE_SIZE = 30;
+export const PAGE_SIZE = 25;
 export const SEARCH_MIN = 3;
 export const SEARCH_DEBOUNCE_MS = 400;
 export const LIST_FIELDS = [
@@ -30,21 +30,27 @@ const memoryCache = new Map();
 const inflightCache = new Map();
 const detailCache = new Map();
 const coreCache = new Map();
-const CACHE_TTL = 90_000;
-const DETAIL_TTL = 300_000;
-const CACHE_NAMESPACE = 'sugarcane-v215';
+const CACHE_TTL = 5 * 60_000;
+const DETAIL_TTL = 15 * 60_000;
+const PERSISTENT_BROWSE_TTL = 10 * 60_000;
+const APPWRITE_BROWSE_TTL_SECONDS = 300;
+const APPWRITE_SEARCH_TTL_SECONDS = 180;
+const BACKUP_PAGE_SIZE = 100;
+const CACHE_NAMESPACE = 'sugarcane-v220';
 const LAST_PAGE_KEY = `${CACHE_NAMESPACE}:last-page`;
+const CORE_KEY_PREFIX = `${CACHE_NAMESPACE}:core:`;
+const DETAIL_KEY_PREFIX = `${CACHE_NAMESPACE}:detail:`;
 
-function cacheKey(search, scope, cursor) {
+function cacheKey(search, scope, cursor, strategy = 'auto') {
   const term = String(search || '').trim().toLowerCase();
-  return `${term ? (scope || 'variety') : 'browse'}::${term}::${cursor || 'first'}`;
+  return `${term ? (scope || 'variety') : 'browse'}::${term}::${strategy}::${cursor || 'first'}`;
 }
 
 export const SEARCH_SCOPES = Object.freeze({
-  variety: { label: 'Variety', attribute: 'variety', mode: 'contains' },
-  trial: { label: 'Trial code', attribute: 'germ_trial_code', mode: 'contains' },
-  location: { label: 'Location', attribute: 'germ_location', mode: 'contains' },
-  status: { label: 'Status', attribute: 'germ_status', mode: 'contains' },
+  variety: { label: 'Variety', attribute: 'variety', mode: 'smart' },
+  trial: { label: 'Trial code', attribute: 'germ_trial_code', mode: 'smart' },
+  location: { label: 'Location', attribute: 'germ_location', mode: 'smart' },
+  status: { label: 'Status', attribute: 'germ_status', mode: 'smart' },
   all: { label: 'All traits & keywords', attribute: 'search_text', mode: 'fulltext' }
 });
 
@@ -52,40 +58,67 @@ function normalizeScope(scope) {
   return SEARCH_SCOPES[scope] ? scope : 'variety';
 }
 
-
-function readSessionCache(key) {
+function readTimedStorage(storageObject, key, ttl) {
   try {
-    const raw = sessionStorage.getItem(`${CACHE_NAMESPACE}:q:${key}`);
+    const raw = storageObject.getItem(key);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
-    if (Date.now() - parsed.savedAt > CACHE_TTL) return null;
+    if (!parsed?.savedAt || Date.now() - parsed.savedAt > ttl) {
+      storageObject.removeItem(key);
+      return null;
+    }
     return parsed.value;
   } catch {
     return null;
   }
 }
 
+function writeTimedStorage(storageObject, key, value) {
+  try {
+    storageObject.setItem(key, JSON.stringify({ savedAt: Date.now(), value }));
+  } catch {}
+}
+
+function readSessionCache(key) {
+  return readTimedStorage(sessionStorage, `${CACHE_NAMESPACE}:q:${key}`, CACHE_TTL);
+}
+
 function writeSessionCache(key, value) {
-  try {
-    sessionStorage.setItem(`${CACHE_NAMESPACE}:q:${key}`, JSON.stringify({ savedAt: Date.now(), value }));
-  } catch {}
+  writeTimedStorage(sessionStorage, `${CACHE_NAMESPACE}:q:${key}`, value);
 }
 
-function writeOfflineLastPage(value) {
-  try {
-    localStorage.setItem(LAST_PAGE_KEY, JSON.stringify({ savedAt: Date.now(), value }));
-  } catch {}
+function writePersistentBrowse(value) {
+  writeTimedStorage(localStorage, LAST_PAGE_KEY, value);
 }
 
-export function getOfflineLastPage() {
+function getPersistentBrowse({ allowExpired = false } = {}) {
+  if (!allowExpired) return readTimedStorage(localStorage, LAST_PAGE_KEY, PERSISTENT_BROWSE_TTL);
   try {
     const raw = localStorage.getItem(LAST_PAGE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    return parsed?.value || null;
+    return raw ? JSON.parse(raw)?.value || null : null;
   } catch {
     return null;
   }
+}
+
+export function getOfflineLastPage() {
+  return getPersistentBrowse({ allowExpired: true });
+}
+
+function readCoreSession(recordId) {
+  return readTimedStorage(sessionStorage, `${CORE_KEY_PREFIX}${recordId}`, DETAIL_TTL);
+}
+
+function writeCoreSession(record) {
+  if (record?.$id) writeTimedStorage(sessionStorage, `${CORE_KEY_PREFIX}${record.$id}`, record);
+}
+
+function readDetailSession(recordId) {
+  return readTimedStorage(sessionStorage, `${DETAIL_KEY_PREFIX}${recordId}`, DETAIL_TTL);
+}
+
+function writeDetailSession(recordId, value) {
+  writeTimedStorage(sessionStorage, `${DETAIL_KEY_PREFIX}${recordId}`, value);
 }
 
 export function clearQueryCache() {
@@ -95,25 +128,118 @@ export function clearQueryCache() {
   coreCache.clear();
   try {
     Object.keys(sessionStorage)
-      .filter((key) => key.startsWith(`${CACHE_NAMESPACE}:q:`))
+      .filter((key) => key.startsWith(`${CACHE_NAMESPACE}:`))
       .forEach((key) => sessionStorage.removeItem(key));
+    localStorage.removeItem(LAST_PAGE_KEY);
   } catch {}
 }
 
 function rememberCore(documents = []) {
   documents.forEach((document) => {
-    if (document?.$id) coreCache.set(document.$id, document);
+    if (!document?.$id) return;
+    coreCache.set(document.$id, document);
+    writeCoreSession(document);
   });
 }
 
-export async function listRecords({ search = '', scope = 'variety', cursor = '', bypassCache = false } = {}) {
-  const term = String(search || '').trim();
-  const normalizedScope = normalizeScope(scope);
-  if (term && term.length < SEARCH_MIN) {
-    return { documents: [], nextCursor: '', hasMore: false, skippedForShortSearch: true, fromCache: false };
+async function fetchList(queries, { ttl = APPWRITE_SEARCH_TTL_SECONDS, bypassCache = false } = {}) {
+  return withAppwriteFailover(() => databases.listDocuments({
+    databaseId: DATABASE_ID,
+    collectionId: COLLECTIONS.records,
+    queries,
+    total: false,
+    ttl: bypassCache ? 0 : ttl
+  }), { timeoutMs: 6500 });
+}
+
+function buildLeanQueries(limit = PAGE_SIZE) {
+  return [Query.limit(limit), Query.select(LIST_FIELDS)];
+}
+
+async function smartFieldFirstPage(term, scopeConfig, bypassCache) {
+  const attribute = scopeConfig.attribute;
+  const ttl = APPWRITE_SEARCH_TTL_SECONDS;
+
+  // 1) Exact probe first. A successful precise lookup costs only one returned
+  // row instead of reading a whole 25-row contains page.
+  const exactResult = await fetchList([
+    Query.limit(1),
+    Query.select(LIST_FIELDS),
+    Query.equal(attribute, term)
+  ], { ttl, bypassCache });
+  const exactDocuments = exactResult.documents || [];
+  if (exactDocuments.length) {
+    return { rawDocuments: exactDocuments, documents: exactDocuments, matchMode: 'exact', hasMore: false, nextCursor: '' };
   }
 
-  const key = cacheKey(term, normalizedScope, cursor);
+  // 2) Prefer prefix matches. This is usually more precise than arbitrary
+  // substring matching while still supporting partial variety/trial searches.
+  const prefixResult = await fetchList([
+    ...buildLeanQueries(),
+    Query.startsWith(attribute, term),
+    Query.orderAsc(attribute)
+  ], { ttl, bypassCache });
+  const prefixDocuments = prefixResult.documents || [];
+  if (prefixDocuments.length) {
+    return {
+      rawDocuments: prefixDocuments,
+      documents: prefixDocuments,
+      matchMode: 'prefix',
+      hasMore: prefixDocuments.length === PAGE_SIZE,
+      nextCursor: prefixDocuments.at(-1)?.$id || ''
+    };
+  }
+
+  // 3) Fall back to contains only when exact and prefix both returned nothing.
+  // Searching "5001" can therefore still find "Phil 5001" without making
+  // every ordinary exact lookup pay for a broad page of results.
+  const containsResult = await fetchList([
+    ...buildLeanQueries(),
+    Query.contains(attribute, term),
+    Query.orderAsc(attribute)
+  ], { ttl, bypassCache });
+  const containsDocuments = containsResult.documents || [];
+  return {
+    rawDocuments: containsDocuments,
+    documents: containsDocuments,
+    matchMode: 'contains',
+    hasMore: containsDocuments.length === PAGE_SIZE,
+    nextCursor: containsDocuments.at(-1)?.$id || ''
+  };
+}
+
+async function strategyPage(term, scopeConfig, cursor, strategy, bypassCache) {
+  const queries = buildLeanQueries();
+  if (strategy === 'keywords') {
+    const appwriteTerm = term.includes('-') ? `"${term.replace(/"/g, '')}"` : term;
+    queries.push(Query.search(scopeConfig.attribute, appwriteTerm));
+  } else if (strategy === 'prefix') {
+    queries.push(Query.startsWith(scopeConfig.attribute, term), Query.orderAsc(scopeConfig.attribute));
+  } else {
+    queries.push(Query.contains(scopeConfig.attribute, term), Query.orderAsc(scopeConfig.attribute));
+  }
+  if (cursor) queries.push(Query.cursorAfter(cursor));
+  const result = await fetchList(queries, { ttl: APPWRITE_SEARCH_TTL_SECONDS, bypassCache });
+  const documents = result.documents || [];
+  return {
+    documents,
+    rawDocuments: documents,
+    matchMode: strategy,
+    hasMore: documents.length === PAGE_SIZE,
+    nextCursor: documents.at(-1)?.$id || ''
+  };
+}
+
+export async function listRecords({ search = '', scope = 'variety', cursor = '', strategy = 'auto', bypassCache = false } = {}) {
+  const term = String(search || '').trim();
+  const normalizedScope = normalizeScope(scope);
+  const scopeConfig = SEARCH_SCOPES[normalizedScope];
+  if (term && term.length < SEARCH_MIN) {
+    return { documents: [], nextCursor: '', hasMore: false, skippedForShortSearch: true, fromCache: false, matchMode: '' };
+  }
+
+  const requestedStrategy = cursor && strategy !== 'auto' ? strategy : 'auto';
+  const key = cacheKey(term, normalizedScope, cursor, requestedStrategy);
   if (!bypassCache) {
     const hit = memoryCache.get(key);
     if (hit && Date.now() - hit.savedAt < CACHE_TTL) {
@@ -126,69 +252,52 @@ export async function listRecords({ search = '', scope = 'variety', cursor = '',
       rememberCore(sessionHit.documents);
       return { ...sessionHit, fromCache: true };
     }
+    if (!term && !cursor) {
+      const persistent = getPersistentBrowse();
+      if (persistent?.documents?.length) {
+        memoryCache.set(key, { savedAt: Date.now(), value: persistent });
+        rememberCore(persistent.documents);
+        return { ...persistent, fromCache: true, persistentCache: true };
+      }
+    }
   }
 
-  if (!bypassCache && inflightCache.has(key)) {
-    return inflightCache.get(key);
-  }
+  if (!bypassCache && inflightCache.has(key)) return inflightCache.get(key);
 
   const execute = async () => {
-    const queries = [Query.limit(PAGE_SIZE), Query.select(LIST_FIELDS)];
-    if (term.length >= SEARCH_MIN) {
-      const scopeConfig = SEARCH_SCOPES[normalizedScope];
-      const attribute = scopeConfig.attribute;
-      if (scopeConfig.mode === 'fulltext') {
-        // Broad keyword matching belongs only to the explicit all-traits scope.
-        // Hyphenated codes are quoted so Appwrite does not split them on '-'.
-        const appwriteTerm = term.includes('-') ? `"${term.replace(/"/g, '')}"` : term;
-        queries.push(Query.search(attribute, appwriteTerm));
-      } else {
-        // Field-specific lookups use substring filtering on a normal key index,
-        // not full-text token matching. Searching "Phil 5001" therefore cannot
-        // match unrelated records merely because they also contain "Phil".
-        queries.push(Query.contains(attribute, term));
-      }
-    } else {
-      queries.push(Query.orderAsc('variety'));
-    }
-    if (cursor) queries.push(Query.cursorAfter(cursor));
-
     try {
-      const result = await withAppwriteFailover(() => databases.listDocuments({
-        databaseId: DATABASE_ID,
-        collectionId: COLLECTIONS.records,
-        queries,
-        total: false
-      }));
-      const rawDocuments = result.documents || [];
-      let documents = rawDocuments;
-      let matchMode = term ? (SEARCH_SCOPES[normalizedScope].mode === 'fulltext' ? 'keywords' : 'contains') : 'browse';
-
-      // If the requested field contains an exact value on the current page,
-      // prefer only that exact record. This keeps a precise lookup precise while
-      // still allowing partial searches such as "5001" or "Phil 50".
-      if (term && SEARCH_SCOPES[normalizedScope].mode !== 'fulltext') {
-        const attribute = SEARCH_SCOPES[normalizedScope].attribute;
-        const needle = term.toLocaleLowerCase();
-        const exact = rawDocuments.filter((document) => String(document?.[attribute] ?? '').trim().toLocaleLowerCase() === needle);
-        if (exact.length) {
-          documents = exact;
-          matchMode = 'exact';
-        }
+      let page;
+      if (!term) {
+        const queries = [...buildLeanQueries(), Query.orderAsc('variety')];
+        if (cursor) queries.push(Query.cursorAfter(cursor));
+        const result = await fetchList(queries, { ttl: APPWRITE_BROWSE_TTL_SECONDS, bypassCache });
+        const documents = result.documents || [];
+        page = {
+          documents,
+          rawDocuments: documents,
+          matchMode: 'browse',
+          nextCursor: documents.at(-1)?.$id || '',
+          hasMore: documents.length === PAGE_SIZE
+        };
+      } else if (scopeConfig.mode === 'fulltext') {
+        page = await strategyPage(term, scopeConfig, cursor, 'keywords', bypassCache);
+      } else if (cursor && ['prefix', 'contains'].includes(strategy)) {
+        page = await strategyPage(term, scopeConfig, cursor, strategy, bypassCache);
+      } else {
+        page = await smartFieldFirstPage(term, scopeConfig, bypassCache);
       }
 
-      rememberCore(documents);
-      const exactOnly = matchMode === 'exact';
       const value = {
-        documents,
-        nextCursor: exactOnly ? '' : (rawDocuments.at(-1)?.$id || ''),
-        hasMore: exactOnly ? false : rawDocuments.length === PAGE_SIZE,
+        documents: page.documents,
+        nextCursor: page.nextCursor,
+        hasMore: page.hasMore,
         skippedForShortSearch: false,
-        matchMode
+        matchMode: page.matchMode
       };
+      rememberCore(value.documents);
       memoryCache.set(key, { savedAt: Date.now(), value });
       writeSessionCache(key, value);
-      if (!term && !cursor) writeOfflineLastPage(value);
+      if (!term && !cursor) writePersistentBrowse(value);
       return { ...value, fromCache: false };
     } catch (error) {
       if (!term && !cursor) {
@@ -233,20 +342,21 @@ async function listAllCollection(collectionId, { orderByVariety = false, onProgr
   let cursor = '';
   let page = 0;
   while (true) {
-    const queries = [Query.limit(PAGE_SIZE)];
+    const queries = [Query.limit(BACKUP_PAGE_SIZE)];
     if (orderByVariety) queries.push(Query.orderAsc('variety'));
     if (cursor) queries.push(Query.cursorAfter(cursor));
     const result = await withAppwriteFailover(() => databases.listDocuments({
       databaseId: DATABASE_ID,
       collectionId,
       queries,
-      total: false
-    }), { timeoutMs: 9000 });
+      total: false,
+      ttl: 0
+    }), { timeoutMs: 12_000 });
     const docs = result.documents || [];
     all.push(...docs);
     page += 1;
     onProgress?.({ pages: page, records: all.length });
-    if (docs.length < PAGE_SIZE) break;
+    if (docs.length < BACKUP_PAGE_SIZE) break;
     cursor = docs.at(-1)?.$id || '';
     if (!cursor) break;
   }
@@ -254,8 +364,8 @@ async function listAllCollection(collectionId, { orderByVariety = false, onProgr
 }
 
 export async function exportAllRecords(onProgress) {
-  // Backup is explicit and rare. Fetch each collection in cursor pages instead
-  // of doing one detail read per row.
+  // Backup is explicit and rare. 100-row pages minimize API request overhead
+  // while preserving a complete export. Reads still count per returned row.
   const cores = await listAllCollection(COLLECTIONS.records, { orderByVariety: true, onProgress });
   const details = await listAllCollection(COLLECTIONS.details);
   const detailMap = new Map(details.map((document) => [document.$id, document]));
@@ -265,28 +375,40 @@ export async function exportAllRecords(onProgress) {
 export async function getRecord(recordId, { bypassCache = false } = {}) {
   const hit = detailCache.get(recordId);
   if (!bypassCache && hit && Date.now() - hit.savedAt < DETAIL_TTL) return hit.value;
+  if (!bypassCache) {
+    const sessionHit = readDetailSession(recordId);
+    if (sessionHit) {
+      detailCache.set(recordId, { savedAt: Date.now(), value: sessionHit });
+      return sessionHit;
+    }
+  }
 
-  // A record opened from the registry already has its lean core document cached,
-  // so normal detail opens cost only one extra Appwrite document read.
-  let core = coreCache.get(recordId);
+  // Registry pages remember their lean core rows in sessionStorage, so opening
+  // a cached card usually costs only the one heavy detail-document read.
+  let core = bypassCache ? null : (coreCache.get(recordId) || readCoreSession(recordId));
+  if (core) coreCache.set(recordId, core);
+
   const detailPromise = withAppwriteFailover(() => databases.getDocument({
     databaseId: DATABASE_ID,
     collectionId: COLLECTIONS.details,
     documentId: recordId
-  }));
-  if (!core || bypassCache) {
-    [core] = await Promise.all([
-      withAppwriteFailover(() => databases.getDocument({
-        databaseId: DATABASE_ID,
-        collectionId: COLLECTIONS.records,
-        documentId: recordId
-      }))
-    ]);
+  }), { timeoutMs: 6500 });
+
+  if (!core) {
+    core = await withAppwriteFailover(() => databases.getDocument({
+      databaseId: DATABASE_ID,
+      collectionId: COLLECTIONS.records,
+      documentId: recordId,
+      queries: [Query.select([...LIST_FIELDS, 'source_name', 'source_row'])]
+    }), { timeoutMs: 6500 });
     coreCache.set(recordId, core);
+    writeCoreSession(core);
   }
+
   const detail = await detailPromise;
   const value = expandRecord(core, detail);
   detailCache.set(recordId, { savedAt: Date.now(), value });
+  writeDetailSession(recordId, value);
   return value;
 }
 
@@ -362,7 +484,7 @@ async function upsertDocument(collectionId, documentId, data, exists) {
         collectionId,
         documentId,
         data
-      }));
+      }), { retryTransport: false, timeoutMs: 7000 });
     } catch (error) {
       if (error?.code !== 404 && error?.status !== 404) throw error;
     }
@@ -372,7 +494,7 @@ async function upsertDocument(collectionId, documentId, data, exists) {
     collectionId,
     documentId,
     data
-  }));
+  }), { retryTransport: false, timeoutMs: 7000 });
 }
 
 export async function saveRecord(data, recordId = '') {
@@ -380,8 +502,6 @@ export async function saveRecord(data, recordId = '') {
   const id = recordId || ID.unique();
   const exists = Boolean(recordId);
 
-  // Save heavy details first. If a brand-new core create fails, clean up its
-  // detail document so no orphan remains.
   const detail = await upsertDocument(COLLECTIONS.details, id, detailPayload, exists);
   let core;
   try {
@@ -399,12 +519,18 @@ export async function saveRecord(data, recordId = '') {
   clearQueryCache();
   coreCache.set(id, core);
   detailCache.set(id, { savedAt: Date.now(), value });
+  writeCoreSession(core);
+  writeDetailSession(id, value);
   return value;
 }
 
 async function deleteDocumentIfPresent(collectionId, documentId) {
   try {
-    await withAppwriteFailover(() => databases.deleteDocument({ databaseId: DATABASE_ID, collectionId, documentId }));
+    await withAppwriteFailover(() => databases.deleteDocument({
+      databaseId: DATABASE_ID,
+      collectionId,
+      documentId
+    }), { retryTransport: false, timeoutMs: 7000 });
   } catch (error) {
     if (error?.code !== 404 && error?.status !== 404) throw error;
   }
@@ -468,14 +594,14 @@ export async function bulkCreateRecords(rows, onProgress) {
           collectionId: COLLECTIONS.details,
           documentId: id,
           data: detail
-        }), { timeoutMs: 9000 });
+        }), { retryTransport: false, timeoutMs: 9000 });
         try {
           await withAppwriteFailover(() => databases.createDocument({
             databaseId: DATABASE_ID,
             collectionId: COLLECTIONS.records,
             documentId: id,
             data: core
-          }), { timeoutMs: 9000 });
+          }), { retryTransport: false, timeoutMs: 9000 });
         } catch (error) {
           await Promise.allSettled([
             databases.deleteDocument({ databaseId: DATABASE_ID, collectionId: COLLECTIONS.details, documentId: id })
@@ -489,7 +615,9 @@ export async function bulkCreateRecords(rows, onProgress) {
       onProgress?.({ done: completed, total: rows.length, errors: errors.length });
     }
   };
-  await Promise.all(Array.from({ length: Math.min(3, rows.length) }, worker));
+  // Two workers stay comfortably below the Web SDK write-rate ceiling while
+  // still making large workbook imports reasonably quick.
+  await Promise.all(Array.from({ length: Math.min(2, rows.length) }, worker));
   clearQueryCache();
   return { imported: rows.length - errors.length, errors };
 }

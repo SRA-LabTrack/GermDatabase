@@ -1,0 +1,26 @@
+CaneSprout Registry v2.2.0
+
+NO APPWRITE SCHEMA MIGRATION IS REQUIRED when v2.1.5 already works.
+
+Runtime changes:
+- 25-row pages instead of 30.
+- exact -> prefix -> contains smart field search.
+- Appwrite list TTL caching plus local/session caches.
+- 10-minute persistent first browse page.
+- 15-minute detail cache.
+- safe non-retried database mutations.
+- 100-row backup pagination.
+- smaller WebP full/thumbnail targets.
+- browser-cached static shell and six-hour service-worker check interval.
+- no automatic version polling.
+- green/yellow/white glass UI and CSS-only transitions.
+
+Windows test:
+  npm.cmd install
+  npm.cmd run dev
+
+Publish:
+  git status
+  git add -A
+  git commit -m "CaneSprout v2.2 glass and free-plan optimization"
+  git push origin main

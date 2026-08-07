@@ -1,0 +1,32 @@
+CaneSprout Registry v2.2.0 - Free-plan optimization summary
+
+APPWRITE
+- 25 lean core rows per browse/search page.
+- 3-character minimum and 400 ms debounce.
+- Exact field lookup is attempted with limit 1 before prefix/contains search.
+- Cursor pagination; no offset pagination.
+- total=false on list calls.
+- Appwrite list response TTL: 5 minutes browse, 3 minutes search.
+- Browser/session list cache: 5 minutes.
+- First browse page persistent device cache: 10 minutes.
+- Detail cache: 15 minutes.
+- Full detail document is read only when a card is opened.
+- No polling and no Realtime subscription.
+- Writes are only on explicit save/import/delete.
+- Mutation requests are not transport-retried, preventing duplicate writes after timeouts.
+- Full backup is explicit, warns first, and uses 100-row pages to reduce API request overhead.
+- Photos stay in Appwrite Storage as WebP: full max 1800px, thumbnail max 420px.
+
+VERCEL
+- Static Vite frontend only; no Vercel API Functions for normal CRUD.
+- Hashed assets cache in the browser for one year.
+- Service worker uses cache-first navigation after it has captured the shell.
+- No install-time service-worker prefetches, avoiding duplicate first-visit Edge Requests.
+- HTML gets a 10-minute browser cache window.
+- Update checks are user-triggered instead of continuous polling.
+- robots.txt + X-Robots-Tag discourage crawler traffic to the authenticated app.
+- Excel and HEIC libraries remain lazy-loaded only when needed.
+
+UI
+- Glass styling and transitions are CSS/client-side only; they do not add Appwrite or Vercel requests.
+- Motion uses transform/opacity and respects prefers-reduced-motion.

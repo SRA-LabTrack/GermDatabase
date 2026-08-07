@@ -44,8 +44,10 @@ import {
 } from './lib/registryApi';
 
 const APP_NAME = 'CaneSprout Registry';
-const APP_VERSION = '2.1.5';
-const USER_CACHE_KEY = 'sugarcane-registry-user-v212';
+const APP_VERSION = '2.2.0';
+const USER_CACHE_KEY = 'sugarcane-registry-user-v220';
+const SESSION_LEASE_KEY = 'sugarcane-registry-session-lease-v220';
+const SESSION_LEASE_MS = 15 * 60_000;
 
 const GERMINATION_FIELDS = [
   { key: 'germ_trial_code', label: 'Germination trial / batch code', type: 'text' },
@@ -71,11 +73,22 @@ function cachedUser() {
 function saveCachedUser(user) {
   const safe = { id: user?.$id || user?.id || 'cached', name: user?.name || '', email: user?.email || '' };
   localStorage.setItem(USER_CACHE_KEY, JSON.stringify(safe));
+  try { sessionStorage.setItem(SESSION_LEASE_KEY, String(Date.now())); } catch {}
   return safe;
+}
+
+function hasFreshSessionLease() {
+  try {
+    const verifiedAt = Number(sessionStorage.getItem(SESSION_LEASE_KEY) || 0);
+    return verifiedAt > 0 && Date.now() - verifiedAt < SESSION_LEASE_MS;
+  } catch {
+    return false;
+  }
 }
 
 function clearCachedUser() {
   localStorage.removeItem(USER_CACHE_KEY);
+  try { sessionStorage.removeItem(SESSION_LEASE_KEY); } catch {}
 }
 
 function messageFor(error) {
@@ -160,7 +173,8 @@ function AuthScreen({ onSignedIn }) {
     setError('');
     try {
       if (mode === 'signup') {
-        await withAppwriteFailover(() => account.create({ userId: ID.unique(), email: form.email.trim(), password: form.password, name: form.name.trim() || form.email.trim() }), { timeoutMs: 4500 });
+        const userId = ID.unique();
+        await withAppwriteFailover(() => account.create({ userId, email: form.email.trim(), password: form.password, name: form.name.trim() || form.email.trim() }), { timeoutMs: 4500, retryTransport: false });
       }
       try {
         await withAppwriteFailover(() => account.createEmailPasswordSession({ email: form.email.trim(), password: form.password }), { timeoutMs: 4500 });
@@ -177,7 +191,6 @@ function AuthScreen({ onSignedIn }) {
       }
       const immediate = saveCachedUser({ email: form.email.trim(), name: form.name.trim() });
       onSignedIn(immediate);
-      account.get().then((user) => onSignedIn(saveCachedUser(user))).catch(() => {});
     } catch (err) {
       setError(loginMessageFor(err));
     } finally {
@@ -437,13 +450,14 @@ function ImportModal({ onClose, onImported }) {
 
 export default function App() {
   const [user, setUser] = useState(() => cachedUser());
-  const [sessionState, setSessionState] = useState(user ? 'checking' : 'signed-out');
+  const [sessionState, setSessionState] = useState(user ? (hasFreshSessionLease() ? 'ready' : 'checking') : 'signed-out');
   const [online, setOnline] = useState(navigator.onLine);
   const [searchInput, setSearchInput] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [searchScope, setSearchScope] = useState('variety');
   const searchInputRef = useRef(null);
   const searchPanelRef = useRef(null);
+  const forceFreshRef = useRef(false);
   const [records, setRecords] = useState([]);
   const [cursor, setCursor] = useState('');
   const [hasMore, setHasMore] = useState(false);
@@ -475,6 +489,10 @@ export default function App() {
   useEffect(() => {
     let live = true;
     const hadCachedUser = Boolean(cachedUser());
+    if (hadCachedUser && hasFreshSessionLease()) {
+      setSessionState('ready');
+      return () => { live = false; };
+    }
     setSessionState('checking');
     withAppwriteFailover(() => account.get(), { timeoutMs: 3500 }).then((value) => {
       if (!live) return;
@@ -485,6 +503,7 @@ export default function App() {
       const code = Number(error?.code || error?.status || 0);
       if (code === 401) {
         clearCachedUser();
+        clearQueryCache();
         setUser(null);
         setSessionState('signed-out');
       } else if (isNetworkFailure(error) && hadCachedUser) {
@@ -492,6 +511,7 @@ export default function App() {
         setSessionState('offline');
       } else {
         clearCachedUser();
+        clearQueryCache();
         setUser(null);
         setSessionState('signed-out');
       }
@@ -549,15 +569,29 @@ export default function App() {
     setLoading(true);
     setListError('');
     setCacheNote('');
-    listRecords({ search: effectiveTerm, scope: searchScope }).then((result) => {
+    const bypassCache = forceFreshRef.current;
+    forceFreshRef.current = false;
+    listRecords({ search: effectiveTerm, scope: searchScope, bypassCache }).then((result) => {
       if (!live) return;
       setRecords(result.documents || []);
       setCursor(result.nextCursor || '');
       setHasMore(Boolean(result.hasMore));
       setSearchMatchMode(result.matchMode || '');
-      if (result.offlineFallback) setCacheNote('Showing the last cached browse page because Appwrite is currently unreachable.');
-      else if (result.fromCache) setCacheNote('Loaded from short-term cache to avoid another Appwrite database read.');
-    }).catch((error) => live && setListError(messageFor(error))).finally(() => live && setLoading(false));
+      if (result.offlineFallback) setCacheNote('Showing the last saved browse page because Appwrite is currently unreachable.');
+      else if (result.persistentCache) setCacheNote('Loaded the recent browse page from this device: 0 Appwrite reads. Use Refresh if you need the newest data.');
+      else if (result.fromCache) setCacheNote('Loaded from local short-term cache: 0 additional Appwrite reads.');
+    }).catch((error) => {
+      if (!live) return;
+      const code = Number(error?.code || error?.status || 0);
+      if (code === 401) {
+        clearCachedUser();
+        clearQueryCache();
+        setUser(null);
+        setSessionState('signed-out');
+        return;
+      }
+      setListError(messageFor(error));
+    }).finally(() => live && setLoading(false));
     return () => { live = false; };
   }, [user, sessionState, searchInput, searchTerm, searchScope, refreshKey]);
 
@@ -566,7 +600,7 @@ export default function App() {
     setLoadingMore(true);
     setListError('');
     try {
-      const result = await listRecords({ search: searchTerm, scope: searchScope, cursor });
+      const result = await listRecords({ search: searchTerm, scope: searchScope, cursor, strategy: searchMatchMode });
       setRecords((current) => [...current, ...(result.documents || [])]);
       setCursor(result.nextCursor || '');
       setHasMore(Boolean(result.hasMore));
@@ -590,6 +624,7 @@ export default function App() {
 
   async function createBackup() {
     if (backupState) return;
+    if (!confirm('Full backup reads every registry record and detail document from Appwrite. Continue only when you actually need a fresh backup?')) return;
     setBackupState('Starting backup…');
     setListError('');
     try {
@@ -618,6 +653,15 @@ export default function App() {
 
   async function handleUpdates() {
     if (!window.germDesktop) {
+      setUpdateState('checking');
+      try {
+        const registration = await navigator.serviceWorker?.getRegistration?.();
+        await registration?.update?.();
+        if ('caches' in window) {
+          const keys = await caches.keys();
+          await Promise.all(keys.filter((key) => key.startsWith('canesprout-')).map((key) => caches.delete(key)));
+        }
+      } catch {}
       window.location.reload();
       return;
     }
@@ -627,6 +671,12 @@ export default function App() {
     }
     setUpdateState('checking');
     try { await window.germDesktop.checkForUpdates?.(); } catch { setUpdateState('error'); }
+  }
+
+  function refreshRegistry() {
+    forceFreshRef.current = true;
+    clearQueryCache();
+    setRefreshKey((value) => value + 1);
   }
 
   function goToRegistrySearch() {
@@ -640,6 +690,7 @@ export default function App() {
   async function signOut() {
     account.deleteSession({ sessionId: 'current' }).catch(() => {});
     clearCachedUser();
+    clearQueryCache();
     setUser(null);
     setSessionState('signed-out');
     setRecords([]);
@@ -667,14 +718,14 @@ export default function App() {
       </header>
 
       <section className="hero">
-        <div className="hero-copy"><span className="eyebrow"><Sprout size={15} /> Sugarcane research library</span><h1>Germination records with the full characterization sheet built in.</h1><p>Every trait from Characterization.xlsx is available when you add or edit a variety, but none of them are mandatory. Search stays server-side so the browser never downloads the entire collection.</p><div className="hero-actions"><button className="primary-button" onClick={() => { setEditRecord(null); setShowForm(true); }}><Plus size={17} /> New sugarcane record</button><button className="secondary-button" onClick={() => setShowImport(true)}><FileSpreadsheet size={17} /> Import workbook</button></div></div>
-        <div className="hero-stats"><div><small>Source library</small><strong>{SOURCE_RECORD_COUNT}</strong><span>spreadsheet rows included</span></div><div><small>Database page</small><strong>{PAGE_SIZE}</strong><span>records maximum per request</span></div><div><small>Search delay</small><strong>{SEARCH_DEBOUNCE_MS} ms</strong><span>debounced Appwrite search</span></div><div><small>Photos</small><strong>WebP</strong><span>full + thumbnail variants</span></div></div>
+        <div className="hero-copy"><span className="eyebrow"><Sprout size={15} /> Sugarcane research library</span><h1>Germination records with the full characterization sheet built in.</h1><p>Every trait from Characterization.xlsx is available when you add or edit a variety, but none of them are mandatory. Search stays server-side, exact lookups probe one indexed row first, and recent pages are cached so repeated visits avoid unnecessary reads.</p><div className="hero-actions"><button className="primary-button" onClick={() => { setEditRecord(null); setShowForm(true); }}><Plus size={17} /> New sugarcane record</button><button className="secondary-button" onClick={() => setShowImport(true)}><FileSpreadsheet size={17} /> Import workbook</button></div></div>
+        <div className="hero-stats"><div><small>Source library</small><strong>{SOURCE_RECORD_COUNT}</strong><span>spreadsheet rows included</span></div><div><small>Database page</small><strong>{PAGE_SIZE}</strong><span>lean rows maximum per request</span></div><div><small>Search delay</small><strong>{SEARCH_DEBOUNCE_MS} ms</strong><span>debounced indexed search</span></div><div><small>Cache window</small><strong>5 min</strong><span>local + Appwrite list caching</span></div></div>
       </section>
 
       <section className="registry-section" id="registry">
         <div className="registry-toolbar">
-          <div><span className="eyebrow">Characterization registry</span><h2>Sugarcane varieties</h2><p>Initial browsing loads only {PAGE_SIZE} lean records. Full traits and full-resolution photos are requested only when a card is opened.</p></div>
-          <div className="toolbar-actions"><button className="icon-button bordered" title="Refresh current page" onClick={() => { clearQueryCache(); setRefreshKey((value) => value + 1); }}><RefreshCw size={18} /></button></div>
+          <div><span className="eyebrow">Characterization registry</span><h2>Sugarcane varieties</h2><p>Initial browsing loads only {PAGE_SIZE} lean records. A recent first page can reopen from device cache with zero database reads; full traits and full-resolution photos load only when a card is opened.</p></div>
+          <div className="toolbar-actions"><button className="icon-button bordered" title="Refresh current page" onClick={refreshRegistry}><RefreshCw size={18} /></button></div>
         </div>
 
         <div className="search-panel" id="registry-search" ref={searchPanelRef}>
@@ -694,9 +745,9 @@ export default function App() {
             </select>
           </label>
           {searchInput && <button className="clear-search" onClick={() => { setSearchMatchMode(''); setSearchInput(''); searchInputRef.current?.focus(); }} aria-label="Clear search"><X size={16} /></button>}
-          <span>{searchInput.trim().length > 0 && searchInput.trim().length < SEARCH_MIN ? `${SEARCH_MIN - searchInput.trim().length} more character${SEARCH_MIN - searchInput.trim().length === 1 ? '' : 's'} • 0 reads` : searchInput.trim() ? `${SEARCH_SCOPES[searchScope].label} • ${searchScope === 'all' ? 'keyword index' : 'substring index'}` : 'Browse first 30'}</span>
+          <span>{searchInput.trim().length > 0 && searchInput.trim().length < SEARCH_MIN ? `${SEARCH_MIN - searchInput.trim().length} more character${SEARCH_MIN - searchInput.trim().length === 1 ? '' : 's'} • 0 reads` : searchInput.trim() ? `${SEARCH_SCOPES[searchScope].label} • ${searchScope === 'all' ? 'keyword index' : 'smart index'}` : `Browse first ${PAGE_SIZE}`}</span>
         </div>
-        <div className="query-policy"><CheckCircle2 size={16} /><span>30 records/request • 400 ms debounce • indexed field filters • cursor Load More • lean list fields • detail-on-open • no polling • no Realtime • no total counts</span></div>
+        <div className="query-policy"><CheckCircle2 size={16} /><span>25 rows/request • exact-first indexed search • 400 ms debounce • cursor Load More • 5 min list cache • 15 min detail cache • no polling • no Realtime • no totals</span></div>
         {!loading && searchInput.trim().length >= SEARCH_MIN && searchTerm === searchInput.trim() && <div className="search-result-note"><b>{records.length}</b><span>{searchMatchMode === 'exact' ? `Exact ${SEARCH_SCOPES[searchScope].label.toLowerCase()} match` : `${records.length === 1 ? 'match' : 'matches'} loaded`} for “{searchTerm}” in {SEARCH_SCOPES[searchScope].label}.{hasMore ? ` More matches are available with Load ${PAGE_SIZE} more.` : ''}</span></div>}
         {cacheNote && <div className="alert info">{cacheNote}</div>}
         {listError && <div className="alert error">{listError}</div>}
@@ -708,11 +759,11 @@ export default function App() {
         {!loading && hasMore && <div className="load-more-row"><button className="secondary-button load-more" onClick={loadMore} disabled={loadingMore}>{loadingMore ? <><LoaderCircle className="spin" size={17} /> Loading {PAGE_SIZE} more…</> : `Load ${PAGE_SIZE} more`} </button><small>Cursor pagination continues after the last loaded record.</small></div>}
       </section>
 
-      <footer className="app-footer"><span><Sprout size={15} /> {APP_NAME} v{APP_VERSION}</span><span>Static Vite frontend • direct Appwrite Web SDK • Vercel CDN</span></footer>
+      <footer className="app-footer"><span><Sprout size={15} /> {APP_NAME} v{APP_VERSION}</span><span>Static Vite frontend • direct Appwrite Web SDK • browser-cached shell • no Vercel functions</span></footer>
 
-      {detailId && <DetailModal recordId={detailId} onClose={() => setDetailId('')} onEdit={openEdit} onDeleted={() => setRefreshKey((value) => value + 1)} />}
-      {showForm && <RecordFormModal initial={editRecord} onClose={() => { setShowForm(false); setEditRecord(null); }} onSaved={() => setRefreshKey((value) => value + 1)} />}
-      {showImport && <ImportModal onClose={() => setShowImport(false)} onImported={() => setRefreshKey((value) => value + 1)} />}
+      {detailId && <DetailModal recordId={detailId} onClose={() => setDetailId('')} onEdit={openEdit} onDeleted={refreshRegistry} />}
+      {showForm && <RecordFormModal initial={editRecord} onClose={() => { setShowForm(false); setEditRecord(null); }} onSaved={refreshRegistry} />}
+      {showImport && <ImportModal onClose={() => setShowImport(false)} onImported={refreshRegistry} />}
     </main>
   );
 }

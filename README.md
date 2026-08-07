@@ -1,125 +1,60 @@
-# CaneSprout Registry v2.1.5
+# CaneSprout Registry v2.2.0
 
-Sugarcane germination and varietal characterization registry built with React, Vite, Appwrite, and an Electron desktop wrapper.
+Sugarcane germination and varietal characterization registry for SRA-style research records. This build keeps all 60 Characterization.xlsx traits optional, supports germination observations and WebP field photos, and is deliberately optimized for Appwrite Free + Vercel Hobby usage.
 
-## Characterization.xlsx is the source template
+## Runtime efficiency
 
-The application includes every A:BH trait from the supplied workbook and a one-time seed containing all 933 non-empty spreadsheet rows. The source workbook itself is included at `examples/Characterization.xlsx`.
+- 25 lean core rows maximum per browse/search page.
+- Cursor-based Load More, never whole-registry loading.
+- 3-character search minimum with 400 ms debounce.
+- Variety/trial/location/status searches use exact-first indexed lookup, then prefix, then contains only if needed.
+- All-traits search uses the dedicated full-text index.
+- `total=false` on lists.
+- Appwrite list-response TTL caching: 5 minutes for browsing, 3 minutes for searches.
+- Browser/session list cache: 5 minutes; first browse page persists for 10 minutes.
+- Detail cache: 15 minutes; full trait JSON loads only when a record is opened.
+- No polling and no Realtime subscription.
+- Writes happen only on explicit Save, Import, Delete, or setup/seed.
+- Mutations are never replayed automatically after a transport timeout.
+- Backup is explicit and uses 100-row cursor pages to reduce request overhead.
+- Photos live in Appwrite Storage, not database Base64. Full WebP max 1800 px; thumbnail max 420 px.
 
-Trait groups in the form:
-- Identity
-- Stool
-- Leaf Blade
-- Leaf Sheath
-- Auricle
-- Dewlap
-- Ligule
-- Stalk
-- Bud Shape
+## Vercel efficiency
 
-Every manual-entry trait is optional. Germination tracking fields are also optional.
+The deployed app is a static Vite frontend. Normal login, search, record reads/writes, and Storage operations go directly from the browser to Appwrite. There are no Vercel Functions in the ordinary CRUD path.
 
-## Free-plan focused data access
+Hashed assets have one-year browser caching. The service worker does not prefetch on install, serves the captured app shell cache-first on later visits, and only checks its script at most every six hours unless the user clicks Updates. `robots.txt` and `X-Robots-Tag` discourage public crawler traffic to the authenticated registry.
 
-The registry intentionally does not download the full collection.
+## Glass UI
 
-- Initial page: 30 lean records only.
-- Search: Appwrite full-text index, minimum 3 characters, 400 ms debounce.
-- Pagination: cursor-after `Load 30 more`, never offset paging.
-- List projection: only card fields and thumbnail ID are requested.
-- Details: full record fetched only when opened.
-- Photos: Appwrite Storage, WebP full image + small WebP thumbnail, lazy-loaded.
-- No Base64 images in database documents.
-- No Realtime subscription.
-- No continuous polling.
-- No total-result count request.
-- No Vercel API proxy for ordinary Appwrite operations.
-- Short-term browser query cache reduces repeated reads.
-- Vercel serves only static Vite assets; hashed assets receive long CDN caching.
-- Writes happen only when Save/Import/Delete is confirmed, not while typing.
+v2.2.0 adds translucent green/yellow/white glass surfaces, modal transitions, card entrance/hover motion, subtle ambient gradient orbs, focus animations, and shimmer skeletons. Motion is CSS-only and therefore does not create network requests. `prefers-reduced-motion` is respected.
 
-## First install
+## Windows commands
+
+Use Windows CMD commands with `npm.cmd`:
 
 ```bat
 npm.cmd install
 npm.cmd run dev
+npm.cmd run build
+npm.cmd run preview
 ```
 
-Open `http://localhost:5174`.
-
-## One-time Appwrite v2.1 setup and spreadsheet seed
-
-Create a temporary Appwrite server API key with the required database/storage management scopes and put it in `.env`:
-
-```env
-VITE_APPWRITE_ENDPOINT=https://fra.cloud.appwrite.io/v1
-VITE_APPWRITE_FALLBACK_ENDPOINT=https://cloud.appwrite.io/v1
-VITE_APPWRITE_PROJECT_ID=6a744cda00030236187b
-VITE_APPWRITE_DATABASE_ID=germdatabase
-VITE_APPWRITE_MEDIA_BUCKET_ID=germ-media
-
-APPWRITE_ENDPOINT=https://fra.cloud.appwrite.io/v1
-APPWRITE_PROJECT_ID=6a744cda00030236187b
-APPWRITE_DATABASE_ID=germdatabase
-APPWRITE_MEDIA_BUCKET_ID=germ-media
-APPWRITE_API_KEY=PASTE_TEMPORARY_SETUP_KEY_HERE
-```
-
-Then run:
+Existing working v2.1.5 Appwrite databases do **not** need another setup for v2.2.0. For a fresh database only:
 
 ```bat
 npm.cmd run setup:appwrite
 ```
 
-The setup creates `sugarcane_registry_core` + `sugarcane_registry_details`, the required indexes, the WebP storage bucket if needed, and seeds all 933 spreadsheet rows exactly once. A server-only sentinel prevents the seed from being repeated on later setup runs.
+## Publish from the permanent Git folder
 
-Revoke the temporary API key after setup. Never add `APPWRITE_API_KEY` to Vercel.
-
-## Vercel
-
-Use:
-- Framework: Vite
-- Install command: `npm install`
-- Build command: `npm run build`
-- Output directory: `dist`
-
-Vercel environment variables:
-
-```text
-VITE_APPWRITE_ENDPOINT=https://fra.cloud.appwrite.io/v1
-VITE_APPWRITE_FALLBACK_ENDPOINT=https://cloud.appwrite.io/v1
-VITE_APPWRITE_PROJECT_ID=6a744cda00030236187b
-VITE_APPWRITE_DATABASE_ID=germdatabase
-VITE_APPWRITE_MEDIA_BUCKET_ID=germ-media
-```
-
-Also add the final Vercel hostname as an Appwrite Web platform.
-
-## Git update workflow
-
-Keep your permanent repository at `C:\Users\kenshennn\Downloads\Germ`.
-For each new ZIP, copy the project contents into that folder without deleting `.git`, then run:
+From `C:\Users\kenshennn\Downloads\Germ`:
 
 ```bat
 git status
 git add -A
-git commit -m "Update CaneSprout Registry"
+git commit -m "CaneSprout v2.2 glass and free-plan optimization"
 git push origin main
 ```
 
-The push updates GitHub, triggers Vercel deployment, and triggers the Windows release workflow.
-
-
-## v2.1.4 indexed registry search
-Registry navigation focuses the search bar. Search uses 400 ms debounce, a 3-character minimum, 30-row cursor pages, dedicated Appwrite indexes for variety/trial/location/status, and a full-text all-traits index. Search results replace browse cards rather than mixing with them. No Vercel functions are used for ordinary database operations.
-
-
-## v2.1.5 precise indexed search
-
-- Registry button scrolls directly to and focuses the search bar.
-- Variety, trial code, location, and status use indexed substring filters instead of broad full-text token matching.
-- If a field search returns an exact value, only the exact record is shown.
-- Full-text behavior is reserved for the explicit All traits & keywords scope.
-- Search result counts report only records actually loaded; no fake `30+` total is shown.
-- A new cache namespace prevents broad v2.1.4 search results from surviving the update.
-- Search still uses 30-record pages, 400 ms debounce, 3-character minimum, cursor Load More, lean selects, no polling, no Realtime, and no total calculation.
+If Vercel is connected to `SRA-LabTrack/GermDatabase`, that push starts the web deployment automatically. The repository's GitHub Actions workflow continues to handle Windows releases.

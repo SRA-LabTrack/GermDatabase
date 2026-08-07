@@ -301,7 +301,7 @@ async function seedRecords() {
 }
 
 async function main() {
-  console.log('\nSugarcane Germination & Characterization Registry setup v2.1.5');
+  console.log('\nSugarcane Germination & Characterization Registry setup v2.2.0');
   console.log(`Endpoint: ${endpoint}`);
   console.log(`Project:  ${projectId}`);
   console.log(`Database: ${databaseId}\n`);
@@ -332,9 +332,8 @@ async function main() {
   await waitForAttributes(detailsCollection, detailAttrs.map((attribute) => attribute.key));
   await waitForAttributes(metaCollection, ['key', 'value']);
 
-  // Key indexes power precise field filters (Query.contains) without full-text
-  // token broadening. Existing v2.1.4 full-text indexes may remain harmlessly;
-  // fresh installs only need these lean field indexes plus one keyword index.
+  // Key indexes power exact/prefix/contains field filters without full-text token
+  // broadening. Fresh installs need these lean field indexes plus one keyword index.
   await ensureIndex(coreCollection, 'idx_variety', 'key', ['variety'], ['ASC']);
   await ensureIndex(coreCollection, 'idx_trial', 'key', ['germ_trial_code'], ['ASC']);
   await ensureIndex(coreCollection, 'idx_location', 'key', ['germ_location'], ['ASC']);
@@ -368,8 +367,8 @@ async function main() {
   console.log(`• Lean list/search collection: ${coreCollection}`);
   console.log(`• On-demand trait/photo collection: ${detailsCollection}`);
   console.log('• All 60 Characterization.xlsx traits remain optional and are preserved in traits_json.');
-  console.log('• Registry pages read only 30 lean core rows; the heavy detail document is fetched only when a record is opened.');
-  console.log('• Variety, trial code, location, status, and all-trait keyword searches use dedicated Appwrite indexes.');
+  console.log('• Registry pages read only 25 lean core rows; the heavy detail document is fetched only when a record is opened.');
+  console.log('• Variety, trial code, location, and status use exact/prefix/contains key indexes; all-trait keywords use one full-text index.');
   console.log(`• Failed legacy collections (${legacyCollections.join(', ')}) are ignored and were not modified.`);
   console.log('• Old GermDatabase/germination collections were not deleted.');
   console.log('Revoke/delete the temporary APPWRITE_API_KEY now.\n');

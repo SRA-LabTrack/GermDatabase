@@ -1,8 +1,8 @@
 {
-  "version": "2.1.5",
+  "version": "2.2.0",
   "domain": "sugarcane-germination-characterization",
-  "pagination": 30,
+  "pagination": 25,
   "searchDebounceMs": 400,
-  "build": "precise-indexed-substring-search",
+  "build": "glass-freeplan-cache-exact-first",
   "released": "2026-08-07"
 }

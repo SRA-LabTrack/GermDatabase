@@ -1,8 +1,7 @@
-const CACHE = 'canesprout-shell-v2.1.5';
-const CORE = ['/', '/index.html', '/icon.svg'];
+const CACHE = 'canesprout-shell-v2.2.0';
 
-self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(CORE)).catch(() => {}));
+self.addEventListener('install', () => {
+  // No install-time precache: avoid duplicate Vercel requests on a user's first visit.
   self.skipWaiting();
 });
 
@@ -13,18 +12,36 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
+async function cacheSuccessful(request, response, cacheKey = request) {
+  if (response?.ok) {
+    const cache = await caches.open(CACHE);
+    await cache.put(cacheKey, response.clone());
+  }
+  return response;
+}
+
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
-  if (url.pathname.includes('/assets/')) {
-    event.respondWith(caches.match(event.request).then((cached) => cached || fetch(event.request).then((response) => {
-      if (response.ok) caches.open(CACHE).then((cache) => cache.put(event.request, response.clone()));
-      return response;
-    })));
+
+  if (url.pathname.startsWith('/assets/') || url.pathname === '/icon.svg' || url.pathname === '/icon.png') {
+    event.respondWith(caches.match(event.request).then((cached) => cached || fetch(event.request).then((response) => cacheSuccessful(event.request, response))));
     return;
   }
+
   if (event.request.mode === 'navigate') {
-    event.respondWith(fetch(event.request, { cache: 'no-store' }).catch(() => caches.match('/index.html')));
+    event.respondWith((async () => {
+      const cache = await caches.open(CACHE);
+      const cached = await cache.match('/index.html');
+      if (cached) return cached;
+      try {
+        const response = await fetch(event.request);
+        if (response.ok) await cache.put('/index.html', response.clone());
+        return response;
+      } catch {
+        return cache.match('/index.html');
+      }
+    })());
   }
 });

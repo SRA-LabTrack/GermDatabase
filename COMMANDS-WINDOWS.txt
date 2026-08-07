@@ -1,6 +1,6 @@
-CaneSprout Registry v2.1.5 Windows commands
+CaneSprout Registry v2.2.0 Windows commands
 
-CANESPROUT REGISTRY v2.1.5 - WINDOWS COMMANDS
+CANESPROUT REGISTRY v2.2.0 - WINDOWS COMMANDS
 =============================================
 
 IMPORTANT
@@ -9,11 +9,6 @@ Vercel runs Linux and must keep plain npm in vercel.json.
 
 FIRST INSTALL / AFTER PACKAGE CHANGES
 npm.cmd install
-
-ONE-TIME APPWRITE SPLIT-SCHEMA SETUP + 933-ROW SEED
-npm.cmd run setup:appwrite
-Requires a TEMPORARY APPWRITE_API_KEY in .env.
-Revoke it immediately after setup succeeds.
 
 RUN LOCALLY
 npm.cmd run dev
@@ -25,6 +20,11 @@ npm.cmd run build
 PREVIEW PRODUCTION BUILD
 npm.cmd run preview
 
+APPWRITE SETUP
+npm.cmd run setup:appwrite
+Only needed for a fresh Appwrite project/schema. v2.2.0 adds no new attributes or indexes,
+so an existing working v2.1.5 database does NOT need setup again.
+
 RUN ELECTRON DESKTOP DEV
 npm.cmd run desktop:dev
 
@@ -34,11 +34,7 @@ npm.cmd run desktop:build:win
 PUBLISH UPDATE FROM C:\Users\kenshennn\Downloads\Germ
 git status
 git add -A
-git commit -m "Update CaneSprout Registry"
+git commit -m "CaneSprout v2.2 glass and free-plan optimization"
 git push origin main
 
 Or double-click PUSH-UPDATE-TO-GITHUB.cmd.
-
-
-ONE-TIME v2.1.5 SEARCH INDEX UPDATE
-npm.cmd run setup:appwrite
