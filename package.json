@@ -1,0 +1,80 @@
+{
+  "name": "germdatabase",
+  "private": true,
+  "version": "1.5.0",
+  "description": "Fast offline-first microorganism registry with Excel import, WebP photo storage, and automatic GitHub updates",
+  "main": "electron/main.cjs",
+  "author": "SRA-LabTrack",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host localhost --port 5174",
+    "build": "vite build",
+    "preview": "vite preview",
+    "setup:appwrite": "node scripts/setup-appwrite.mjs",
+    "desktop:dev": "concurrently -k \"vite --host localhost --port 5174\" \"wait-on http://localhost:5174 && cross-env GERM_DEV_URL=http://localhost:5174 electron .\"",
+    "desktop:build": "npm run build && electron-builder",
+    "desktop:build:win": "npm run build && electron-builder --win nsis",
+    "desktop:publish": "npm run build && electron-builder --win nsis --publish always"
+  },
+  "dependencies": {
+    "appwrite": "^26.2.0",
+    "electron-updater": "^6.6.2",
+    "idb": "^8.0.3",
+    "lucide-react": "^0.468.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "xlsx": "^0.18.5",
+    "heic2any": "^0.0.4"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "cross-env": "^7.0.3",
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8",
+    "vite": "^6.0.5",
+    "wait-on": "^8.0.1"
+  },
+  "build": {
+    "appId": "ph.sralabtrack.germdatabase",
+    "productName": "GermDatabase",
+    "asar": true,
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "GermDatabase-Setup-${version}.${ext}",
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "GermDatabase"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "SRA-LabTrack",
+        "repo": "GermDatabase",
+        "releaseType": "release"
+      }
+    ],
+    "artifactName": "GermDatabase-Setup-${version}.${ext}",
+    "electronUpdaterCompatibility": ">=2.16"
+  }
+}

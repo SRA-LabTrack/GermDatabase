@@ -1,0 +1,10 @@
+GermDatabase v1.2.9 verification
+
+- Vite JSX entry has no query-string loader bug.
+- Dev server uses port 5174.
+- Entire microorganism registry row opens details by mouse, Enter, or Space.
+- Register/Edit trait sections initialize collapsed.
+- All Register/Edit fields render optional and required=false.
+- Empty strain/sample sections do not create meaningless linked records.
+- Appwrite startup/login calls time out gracefully and local registry remains usable.
+- Appwrite endpoint values are normalized if pasted in Markdown link form.

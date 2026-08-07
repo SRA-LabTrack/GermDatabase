@@ -1,0 +1,29 @@
+GermDatabase v1.2.2 - Appwrite trait schema fix
+
+WHY THIS VERSION EXISTS
+v1.2.1 added many biology traits as individual attributes inside the existing
+microorganisms collection. Appwrite can reject additional attributes when the
+collection reaches its schema size/attribute limit.
+
+v1.2.2 keeps only the stable core microorganism fields in microorganisms:
+- microorganism_id
+- scientific_name
+- genus
+- species
+- organism_type
+- taxonomy_id
+
+All flexible biology fields now sync to a separate microorganism_traits
+collection. Existing extra attributes already created in microorganisms DO NOT
+need to be deleted and existing records are preserved.
+
+AFTER EXTRACTING
+1. Open Command Prompt inside the GermDatabase folder.
+2. Run:
+   npm.cmd install
+   npm.cmd run setup:appwrite
+   npm.cmd run dev
+
+IMPORTANT
+Keep the same .env values/API key you used for setup. Once setup reports Done,
+delete/revoke the temporary Appwrite server API key.

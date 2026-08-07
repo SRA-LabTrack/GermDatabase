@@ -1,0 +1,9 @@
+GermDatabase v1.2.8 verified UI behavior
+
+1. The Vite entry is /src/main.jsx with NO query string, fixing Invalid loader value: "7".
+2. Every microorganism table row has an onClick handler that opens the selected germ details.
+3. Keyboard Enter/Space on a focused row also opens the germ details.
+4. Register Germ and Edit Germ use TraitForm with every accordion section closed by default.
+5. Every field in Register/Edit is rendered with optional=true, so HTML required validation is disabled and no required asterisks are shown.
+6. Registering with blank strain/sample sections does not create empty strain/sample records.
+7. Development uses 127.0.0.1:5174 to avoid the older localhost:5173 service-worker cache.

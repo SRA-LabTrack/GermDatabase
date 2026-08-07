@@ -1,0 +1,17 @@
+GermDatabase v1.5.0 optimization/update revision
+
+Implemented:
+- non-blocking startup/session restore
+- faster login by avoiding blocking account.get after session creation
+- single-scan IndexedDB startup cache
+- bounded parallel Appwrite collection pulls
+- lazy XLSX loading
+- cache-friendly Vite vendor chunks
+- improved service worker strategy
+- delayed desktop updater network activity
+- automatic main-branch GitHub Windows releases
+- web build version manifest/update detection
+- Restart & update action for downloaded desktop releases
+- Vercel/GitHub deployment guide and environment variables
+
+All v1.4 Excel import, WebP photos, offline queue, Appwrite storage, and favicon functionality is retained.

@@ -1,0 +1,25 @@
+GermDatabase v1.4.0 verification
+===============================
+
+Implemented:
+- Excel import button in top bar and registry toolbar.
+- .xlsx/.xls/.csv parsing with preview before import.
+- Excel rows use the same optional Register Germ fields and generate IDs automatically.
+- Dummy import workbook included in examples/GermDatabase-Dummy-Germ-Import.xlsx.
+- Photo selection during Register Germ.
+- Dedicated Photos section in germ details.
+- Client-side image conversion to high-quality WebP before persistence/upload.
+- HEIC/HEIF conversion support through heic2any plus Chromium-readable image formats.
+- Offline photo blob storage in IndexedDB.
+- Appwrite Storage upload to germ-media during sync; database stores a lightweight storage path.
+- Photo deletion queues both media document and Storage file removal.
+- Safer outbox flushing that does not hold IndexedDB transactions open across network awaits.
+- White-background website/favicon artwork.
+
+Validation performed:
+- node --check passed for non-JSX application modules and setup/electron scripts.
+- TypeScript transpileModule syntax validation passed for App.jsx and main.jsx.
+- Dummy workbook generated and inspected with 5 data rows and 36 supported import columns.
+
+Build note:
+The execution sandbox npm mirror does not mirror the xlsx/heic2any packages (and previously did not mirror the requested Appwrite SDK version), so a full npm install/build cannot be performed in this sandbox. On a normal public npm connection, run npm install before npm run dev or npm run desktop:build.

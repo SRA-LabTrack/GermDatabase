@@ -1,0 +1,44 @@
+GERMDATABASE v1.3.0 - WINDOWS CMD
+================================
+
+Open CMD inside the GermDatabase folder.
+
+FIRST RUN / DEPENDENCIES
+"C:\Program Files\nodejs\npm.cmd" install
+
+APPWRITE SCHEMA SETUP / UPDATE
+"C:\Program Files\nodejs\npm.cmd" run setup:appwrite
+
+RUN LOCALLY (fresh dev port)
+"C:\Program Files\nodejs\npm.cmd" run dev
+
+Open in browser:
+http://localhost:5174/?v=1.3.0
+
+RUN ELECTRON DESKTOP DEV
+"C:\Program Files\nodejs\npm.cmd" run desktop:dev
+
+BUILD WEBSITE
+"C:\Program Files\nodejs\npm.cmd" run build
+
+PREVIEW WEBSITE BUILD
+"C:\Program Files\nodejs\npm.cmd" run preview
+
+BUILD WINDOWS INSTALLER
+"C:\Program Files\nodejs\npm.cmd" run desktop:build:win
+
+NOTE:
+v1.3.0 uses port 5174 during development to bypass the old localhost:5173
+service-worker cache. The app also removes old GermDatabase service-worker
+caches automatically when running in Vite development mode.
+
+=== GITHUB / CONTINUOUS UPDATES ===
+First upload: double-click FIRST-UPLOAD-TO-GITHUB.cmd
+Future updates: double-click PUSH-UPDATE-TO-GITHUB.cmd
+
+Manual future update commands:
+git add -A
+git commit -m "Update GermDatabase"
+git push origin main
+
+Each push to main triggers the Windows GitHub Release workflow. If Vercel is connected to the repository, the same push also deploys the website.

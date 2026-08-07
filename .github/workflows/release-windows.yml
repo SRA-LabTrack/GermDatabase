@@ -1,0 +1,56 @@
+name: Build and publish Windows update
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: germdatabase-desktop-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Generate monotonically increasing desktop version
+        shell: pwsh
+        run: |
+          $pkg = Get-Content package.json -Raw | ConvertFrom-Json
+          $parts = $pkg.version.Split('.')
+          $releaseVersion = "$($parts[0]).$($parts[1]).${{ github.run_number }}"
+          npm version $releaseVersion --no-git-tag-version
+          "RELEASE_VERSION=$releaseVersion" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Build web assets
+        run: npm run build
+        env:
+          VITE_APPWRITE_ENDPOINT: https://fra.cloud.appwrite.io/v1
+          VITE_APPWRITE_FALLBACK_ENDPOINT: https://cloud.appwrite.io/v1
+          VITE_APPWRITE_PROJECT_ID: 6a744cda00030236187b
+          VITE_APPWRITE_DATABASE_ID: germdatabase
+          VITE_APPWRITE_MEDIA_BUCKET_ID: germ-media
+
+      - name: Publish Windows NSIS update to GitHub Releases
+        run: npx electron-builder --win nsis --publish always
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Release summary
+        shell: pwsh
+        run: |
+          Write-Host "Published GermDatabase v$env:RELEASE_VERSION"
+          Write-Host "Existing installed versions will discover it through electron-updater."

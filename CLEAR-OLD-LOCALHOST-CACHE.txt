@@ -1,0 +1,8 @@
+If localhost:5173 ever shows an old GermDatabase UI:
+
+1. Stop the dev server with Ctrl+C.
+2. Start v1.2.8.
+3. Open: http://localhost:5173/?v=1.2.8
+4. Press Ctrl+Shift+R once.
+
+v1.2.8 automatically unregisters the old GermDatabase service worker and clears GermDatabase caches while running in Vite development mode.

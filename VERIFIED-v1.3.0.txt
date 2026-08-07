@@ -1,0 +1,14 @@
+GermDatabase v1.3.0 - APPWRITE CONNECTION FIX
+
+Changes in this build:
+- Dev server hostname changed from 127.0.0.1 to localhost for Appwrite Web CORS compatibility.
+- Packaged Electron app now serves dist through a private localhost HTTP server instead of file://.
+- Electron web security remains enabled.
+- Frankfurt Appwrite endpoint stays primary.
+- Network-only Appwrite failures retry a secondary global endpoint; auth/permission errors do not.
+- Appwrite setup attempts to register localhost and 127.0.0.1 Web platforms when API-key permissions allow it.
+- Connection diagnostics now separate Node HTTPS, DNS, TCP 443, and PowerShell HTTPS tests.
+- Offline cache/outbox behavior preserved.
+
+Primary project ID: 6a744cda00030236187b
+Primary endpoint: https://fra.cloud.appwrite.io/v1
