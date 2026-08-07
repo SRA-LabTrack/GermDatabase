@@ -1,4 +1,4 @@
-const CACHE = 'germdatabase-shell-v2';
+const CACHE = 'germdatabase-shell-v1.4.0';
 const CORE = ['./', './index.html'];
 
 self.addEventListener('install', (event) => {
@@ -17,30 +17,15 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
-  const url = new URL(event.request.url);
-  if (url.origin !== self.location.origin) return;
 
-  // Vite assets are content-hashed. Cache-first makes repeat launches nearly
-  // instant while a new deployment naturally gets new asset URLs.
-  if (url.pathname.includes('/assets/')) {
-    event.respondWith((async () => {
-      const cached = await caches.match(event.request);
-      if (cached) return cached;
+  event.respondWith((async () => {
+    try {
       const response = await fetch(event.request);
-      if (response.ok) {
+      if (response && response.status === 200 && response.type !== 'opaque') {
         const copy = response.clone();
         caches.open(CACHE).then((cache) => cache.put(event.request, copy));
       }
       return response;
-    })());
-    return;
-  }
-
-  // HTML/version checks stay network-first so GitHub -> Vercel updates are
-  // discovered immediately instead of being trapped behind an old shell.
-  event.respondWith((async () => {
-    try {
-      return await fetch(event.request, { cache: 'no-store' });
     } catch {
       const cached = await caches.match(event.request);
       if (cached) return cached;

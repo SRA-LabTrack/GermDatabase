@@ -3,8 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
 import './styles.css';
 
-const APP_VERSION = typeof __GERM_VERSION__ !== 'undefined' ? __GERM_VERSION__ : '1.5.0';
-const BUILD_ID = typeof __GERM_BUILD_ID__ !== 'undefined' ? __GERM_BUILD_ID__ : `v${APP_VERSION}`;
+const APP_VERSION = '1.4.0';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -31,6 +30,6 @@ if ('serviceWorker' in navigator && !window.germDesktop) {
       return;
     }
 
-    navigator.serviceWorker.register(`./sw.js?v=${encodeURIComponent(BUILD_ID)}`, { updateViaCache: 'none' }).catch(() => {});
+    navigator.serviceWorker.register(`./sw.js?v=${APP_VERSION}`, { updateViaCache: 'none' }).catch(() => {});
   });
 }

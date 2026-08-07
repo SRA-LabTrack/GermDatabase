@@ -77,7 +77,6 @@ function startLocalAppServer() {
 
 autoUpdater.autoDownload = true;
 autoUpdater.autoInstallOnAppQuit = true;
-autoUpdater.allowDowngrade = false;
 
 function sendUpdateStatus(status, detail = '') {
   if (win && !win.isDestroyed()) win.webContents.send('updates:status', { status, detail });
@@ -119,9 +118,7 @@ async function createWindow() {
   win.on('closed', () => { win = null; });
 
   if (app.isPackaged) {
-    // Do not compete with Appwrite authentication or first paint for network/CPU.
-    // Updates still check automatically once the app is settled.
-    setTimeout(() => autoUpdater.checkForUpdates().catch(() => {}), 15000);
+    setTimeout(() => autoUpdater.checkForUpdates().catch(() => {}), 2500);
   }
 }
 

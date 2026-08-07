@@ -1,3 +1,5 @@
+import * as XLSX from 'xlsx';
+
 function normalizedHeader(value) {
   return String(value || '')
     .trim()
@@ -7,7 +9,7 @@ function normalizedHeader(value) {
     .replace(/^_+|_+$/g, '');
 }
 
-function normalizeDate(value, XLSX) {
+function normalizeDate(value) {
   if (value === null || value === undefined || value === '') return '';
   if (value instanceof Date && !Number.isNaN(value.getTime())) return value.toISOString().slice(0, 10);
   if (typeof value === 'number') {
@@ -24,9 +26,6 @@ function normalizeDate(value, XLSX) {
 }
 
 export async function parseGermExcel(file, fields) {
-  // XLSX is intentionally loaded only when Import Excel is used. This keeps
-  // the large spreadsheet parser out of the startup/login bundle.
-  const XLSX = await import('xlsx');
   const buffer = await file.arrayBuffer();
   const workbook = XLSX.read(buffer, { type: 'array', cellDates: true });
   const sheetName = workbook.SheetNames[0];
@@ -46,7 +45,7 @@ export async function parseGermExcel(file, fields) {
     for (const [header, value] of Object.entries(row || {})) {
       const key = aliases.get(normalizedHeader(header));
       if (!key) continue;
-      normalized[key] = key === 'collection_date' ? normalizeDate(value, XLSX) : String(value ?? '').trim();
+      normalized[key] = key === 'collection_date' ? normalizeDate(value) : String(value ?? '').trim();
     }
     return normalized;
   }).filter((row) => Object.values(row).some((value) => String(value || '').trim()));

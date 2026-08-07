@@ -31,14 +31,3 @@ NOTE:
 v1.3.0 uses port 5174 during development to bypass the old localhost:5173
 service-worker cache. The app also removes old GermDatabase service-worker
 caches automatically when running in Vite development mode.
-
-=== GITHUB / CONTINUOUS UPDATES ===
-First upload: double-click FIRST-UPLOAD-TO-GITHUB.cmd
-Future updates: double-click PUSH-UPDATE-TO-GITHUB.cmd
-
-Manual future update commands:
-git add -A
-git commit -m "Update GermDatabase"
-git push origin main
-
-Each push to main triggers the Windows GitHub Release workflow. If Vercel is connected to the repository, the same push also deploys the website.

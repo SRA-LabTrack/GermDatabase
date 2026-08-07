@@ -5,6 +5,7 @@ import {
   ChevronDown,
   Database,
   Dna,
+  Eye,
   FileSpreadsheet,
   FlaskConical,
   ImagePlus,
@@ -36,10 +37,8 @@ import {
   saveMediaLocal,
   syncAll
 } from './lib/offlineStore';
+import { parseGermExcel } from './lib/excelImport';
 import { compressImageToWebP, formatBytes } from './lib/imageTools';
-
-const APP_VERSION = typeof __GERM_VERSION__ !== 'undefined' ? __GERM_VERSION__ : '1.5.0';
-const BUILD_ID = typeof __GERM_BUILD_ID__ !== 'undefined' ? __GERM_BUILD_ID__ : `v${APP_VERSION}`;
 
 const REGISTER_GROUPS = [
   {
@@ -333,6 +332,98 @@ function PhotoCard({ row, onDelete }) {
   );
 }
 
+function RegistryEntryCard({ row, summary, onOpen }) {
+  const [source, setSource] = useState('');
+  const photo = summary?.photo || null;
+
+  useEffect(() => {
+    let cancelled = false;
+    let localUrl = '';
+    setSource('');
+    if (!photo) return () => {};
+
+    (async () => {
+      const local = await getMediaBlob(photo.$id).catch(() => null);
+      if (cancelled) return;
+      if (local?.blob) {
+        localUrl = URL.createObjectURL(local.blob);
+        setSource(localUrl);
+      } else {
+        setSource(mediaRemoteUrl(photo.file_path));
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      if (localUrl) URL.revokeObjectURL(localUrl);
+    };
+  }, [photo?.$id, photo?.file_path]);
+
+  const scientificName = row.scientific_name || 'Unidentified microorganism';
+  const commonName = summary?.commonName || row.common_name || 'Common name not recorded';
+  const location = summary?.location || 'Location not recorded';
+  const genusSpecies = [row.genus, row.species].filter(Boolean).join(' ') || 'Genus / species unassigned';
+
+  return (
+    <article
+      className="registry-entry-card"
+      role="button"
+      tabIndex={0}
+      aria-label={`Open ${scientificName} details`}
+      onClick={onOpen}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onOpen();
+        }
+      }}
+    >
+      <div className={`registry-entry-media ${source ? 'has-photo' : ''}`}>
+        {source ? (
+          <img
+            src={source}
+            alt={photo?.caption || `${scientificName} photo`}
+            loading="lazy"
+            decoding="async"
+            onError={() => setSource('')}
+          />
+        ) : (
+          <div className="registry-entry-placeholder">
+            <ImagePlus size={32} />
+            <span>{photo ? 'Photo unavailable' : 'Optional photo not added'}</span>
+          </div>
+        )}
+        <span className="registry-entry-type">{row.organism_type || 'Unspecified'}</span>
+        <button
+          className="registry-entry-view"
+          type="button"
+          aria-label={`View ${scientificName}`}
+          onClick={(event) => { event.stopPropagation(); onOpen(); }}
+        >
+          <Eye size={17} />
+        </button>
+      </div>
+
+      <div className="registry-entry-body">
+        <div className="registry-entry-kicker">
+          <span>{row.microorganism_id || row.$id}</span>
+          <span>{row._pending ? 'QUEUED' : 'SYNCED'}</span>
+        </div>
+        <h3>{scientificName}</h3>
+        <p className="registry-entry-common">{commonName}</p>
+        <div className="registry-entry-rule" />
+        <div className="registry-entry-detail"><Leaf size={15} /><span>{genusSpecies}</span></div>
+        <div className="registry-entry-detail"><Database size={15} /><span>{location}</span></div>
+        <div className="registry-entry-stats">
+          <span><strong>{summary?.strainCount || 0}</strong> strains</span>
+          <span><strong>{summary?.sampleCount || 0}</strong> samples</span>
+          <span><strong>{summary?.drugCount || 0}</strong> tests</span>
+        </div>
+      </div>
+    </article>
+  );
+}
+
 function PhotoPickerSummary({ files, onRemove }) {
   if (!files.length) return <div className="photo-picker-empty">No photos selected.</div>;
   return (
@@ -405,38 +496,14 @@ function AuthPage({ onAuthenticated }) {
     e.preventDefault();
     setBusy(true);
     setError('');
-    const email = form.email.trim();
     try {
-      let createdUser = null;
       if (mode === 'signup') {
-        createdUser = await withAppwriteFailover(() => withTimeout(
-          account.create({ userId: ID.unique(), email, password: form.password, name: form.name.trim() }),
-          4500
-        ));
+        await withAppwriteFailover(() => withTimeout(account.create({ userId: ID.unique(), email: form.email.trim(), password: form.password, name: form.name.trim() }), 7500));
       }
-
-      // A successful session is enough to enter the registry. account.get() is
-      // enrichment, not a reason to hold the login screen hostage.
-      const session = await withAppwriteFailover(() => withTimeout(
-        account.createEmailPasswordSession({ email, password: form.password }),
-        4500
-      ));
-      const cachedMatch = cachedUser?.email === email ? cachedUser : null;
-      const fastUser = createdUser || {
-        $id: session?.userId || cachedMatch?.id || 'current-user',
-        name: cachedMatch?.name || email.split('@')[0],
-        email
-      };
-      localStorage.setItem('germdatabase-user', JSON.stringify({ id: fastUser.$id, name: fastUser.name, email: fastUser.email }));
-      onAuthenticated(fastUser);
-
-      // Refresh the canonical profile in the background without delaying entry.
-      withAppwriteFailover(() => withTimeout(account.get(), 3500))
-        .then((profile) => {
-          localStorage.setItem('germdatabase-user', JSON.stringify({ id: profile.$id, name: profile.name, email: profile.email }));
-          onAuthenticated(profile);
-        })
-        .catch(() => {});
+      await withAppwriteFailover(() => withTimeout(account.createEmailPasswordSession({ email: form.email.trim(), password: form.password }), 7500));
+      const user = await withAppwriteFailover(() => withTimeout(account.get(), 7500));
+      localStorage.setItem('germdatabase-user', JSON.stringify({ id: user.$id, name: user.name, email: user.email }));
+      onAuthenticated(user);
     } catch (err) {
       setError(appwriteErrorMessage(err));
     } finally {
@@ -518,7 +585,7 @@ export default function App() {
   }
 
   async function performSync() {
-    if (!navigator.onLine || syncing || user?.offline || user?.restoring) return;
+    if (!navigator.onLine || syncing || user?.offline) return;
     setSyncing(true);
     setSyncError('');
     try {
@@ -534,43 +601,34 @@ export default function App() {
 
   useEffect(() => {
     let cancelled = false;
-    let cached = null;
-    try { cached = JSON.parse(localStorage.getItem('germdatabase-user') || 'null'); } catch {}
+    (async () => {
+      await refreshLocal();
+      let cached = null;
+      try { cached = JSON.parse(localStorage.getItem('germdatabase-user') || 'null'); } catch {}
 
-    // First paint must never wait for Appwrite. Cached data loads independently,
-    // while a remembered user can open the local registry immediately.
-    if (cached) {
-      setUser({
-        $id: cached.id,
-        name: cached.name,
-        email: cached.email,
-        offline: !navigator.onLine,
-        restoring: navigator.onLine,
-        networkFallback: !navigator.onLine
-      });
-    }
-    setAuthReady(true);
-    refreshLocal().catch(() => {});
-
-    if (navigator.onLine) {
-      withAppwriteFailover(() => withTimeout(account.get(), 3500))
-        .then((current) => {
-          if (cancelled) return;
-          setUser(current);
-          localStorage.setItem('germdatabase-user', JSON.stringify({ id: current.$id, name: current.name, email: current.email }));
-        })
-        .catch(() => {
-          if (cancelled || !cached) return;
-          setUser({ $id: cached.id, name: cached.name, email: cached.email, offline: true, networkFallback: true });
-          setSyncError(`Appwrite unavailable at ${getActiveAppwriteEndpoint() || APPWRITE_ENDPOINT}. Working from the local cache.`);
-        });
-    }
-
+      if (navigator.onLine) {
+        try {
+          const current = await withAppwriteFailover(() => withTimeout(account.get(), 6500));
+          if (!cancelled) {
+            setUser(current);
+            localStorage.setItem('germdatabase-user', JSON.stringify({ id: current.$id, name: current.name, email: current.email }));
+          }
+        } catch (error) {
+          if (!cancelled && cached) {
+            setUser({ $id: cached.id, name: cached.name, email: cached.email, offline: true, networkFallback: true });
+            setSyncError(`Appwrite unavailable at ${getActiveAppwriteEndpoint() || APPWRITE_ENDPOINT}. Working from the local cache.`);
+          }
+        }
+      } else if (cached && !cancelled) {
+        setUser({ $id: cached.id, name: cached.name, email: cached.email, offline: true, networkFallback: true });
+      }
+      if (!cancelled) setAuthReady(true);
+    })();
     return () => { cancelled = true; };
   }, []);
 
   useEffect(() => {
-    if (!user || user.offline || user.restoring || !navigator.onLine) return;
+    if (!user || user.offline || !navigator.onLine) return;
     performSync();
   }, [user]);
 
@@ -596,28 +654,6 @@ export default function App() {
     window.germDesktop.onUpdateStatus((payload) => setUpdateStatus(`${payload.status}${payload.detail ? ` • ${payload.detail}` : ''}`));
   }, []);
 
-  useEffect(() => {
-    if (window.germDesktop) return;
-    let cancelled = false;
-
-    async function detectWebUpdate() {
-      try {
-        const response = await fetch(`/version.json?t=${Date.now()}`, { cache: 'no-store' });
-        if (!response.ok) return;
-        const latest = await response.json();
-        if (!cancelled && latest?.buildId && latest.buildId !== BUILD_ID) {
-          setUpdateStatus(`available • v${latest.version || 'new'} • click Updates`);
-        }
-      } catch {}
-    }
-
-    const onVisible = () => { if (document.visibilityState === 'visible') detectWebUpdate(); };
-    const timer = setInterval(detectWebUpdate, 5 * 60 * 1000);
-    document.addEventListener('visibilitychange', onVisible);
-    setTimeout(detectWebUpdate, 6000);
-    return () => { cancelled = true; clearInterval(timer); document.removeEventListener('visibilitychange', onVisible); };
-  }, []);
-
   const selected = records.microorganisms.find((row) => row.$id === selectedId) || null;
   const selectedStrains = useMemo(() => records.strains.filter((row) => row.microorganism_id === selectedId), [records.strains, selectedId]);
   const selectedStrainIds = useMemo(() => new Set(selectedStrains.map((row) => row.$id)), [selectedStrains]);
@@ -629,22 +665,67 @@ export default function App() {
   const hasAnyTrait = MICROORGANISM_TRAIT_KEYS.some((key) => Boolean(traitValue(key)));
 
   const organismTypes = useMemo(() => ['All', ...Array.from(new Set(records.microorganisms.map((row) => row.organism_type).filter(Boolean))).sort()], [records.microorganisms]);
-  const traitSearchIndex = useMemo(() => {
-    const index = new Map();
-    for (const trait of records.microorganism_traits) {
-      const current = index.get(trait.microorganism_id) || '';
-      index.set(trait.microorganism_id, `${current} ${trait.trait_label || ''} ${trait.trait_value || ''}`.toLowerCase());
-    }
-    return index;
-  }, [records.microorganism_traits]);
   const visibleMicrobes = useMemo(() => records.microorganisms.filter((row) => {
     if (typeFilter !== 'All' && row.organism_type !== typeFilter) return false;
     const q = search.trim().toLowerCase();
     if (!q) return true;
-    const traitText = traitSearchIndex.get(row.$id) || '';
+    const traitText = records.microorganism_traits
+      .filter((trait) => trait.microorganism_id === row.$id)
+      .map((trait) => `${trait.trait_label || ''} ${trait.trait_value || ''}`)
+      .join(' ');
     return [row.scientific_name, row.common_name, row.genus, row.species, row.subspecies, row.organism_type, row.taxonomy_id, row.gram_stain, row.cell_shape, traitText]
       .some((value) => String(value || '').toLowerCase().includes(q));
-  }), [records.microorganisms, traitSearchIndex, search, typeFilter]);
+  }), [records.microorganisms, records.microorganism_traits, search, typeFilter]);
+
+  const registrySummaries = useMemo(() => {
+    const summaries = new Map(records.microorganisms.map((row) => [row.$id, {
+      strainCount: 0,
+      sampleCount: 0,
+      drugCount: 0,
+      photo: null,
+      commonName: '',
+      location: ''
+    }]));
+    const strainToMicrobe = new Map();
+    const sampleToMicrobe = new Map();
+
+    for (const strain of records.strains) {
+      strainToMicrobe.set(strain.$id, strain.microorganism_id);
+      const summary = summaries.get(strain.microorganism_id);
+      if (summary) summary.strainCount += 1;
+    }
+
+    for (const sample of records.samples) {
+      const microorganismId = strainToMicrobe.get(sample.strain_id);
+      if (!microorganismId) continue;
+      sampleToMicrobe.set(sample.$id, microorganismId);
+      const summary = summaries.get(microorganismId);
+      if (!summary) continue;
+      summary.sampleCount += 1;
+      if (!summary.location && sample.location) summary.location = sample.location;
+    }
+
+    for (const result of records.antimicrobial_results) {
+      const microorganismId = sampleToMicrobe.get(result.sample_id);
+      const summary = summaries.get(microorganismId);
+      if (summary) summary.drugCount += 1;
+    }
+
+    for (const media of records.media) {
+      if (!isPhotoMedia(media)) continue;
+      const microorganismId = sampleToMicrobe.get(media.sample_id);
+      const summary = summaries.get(microorganismId);
+      if (summary && !summary.photo) summary.photo = media;
+    }
+
+    for (const trait of records.microorganism_traits) {
+      if (trait.trait_key !== 'common_name' || !trait.trait_value) continue;
+      const summary = summaries.get(trait.microorganism_id);
+      if (summary && !summary.commonName) summary.commonName = trait.trait_value;
+    }
+
+    return summaries;
+  }, [records.microorganisms, records.strains, records.samples, records.antimicrobial_results, records.media, records.microorganism_traits]);
 
   function recordsForSelected(collection) {
     if (collection === 'sequences') return records.sequences.filter((row) => selectedStrainIds.has(row.strain_id));
@@ -820,7 +901,6 @@ export default function App() {
     if (!file) return;
     setImportError('');
     try {
-      const { parseGermExcel } = await import('./lib/excelImport');
       const parsed = await parseGermExcel(file, REGISTER_FIELDS);
       setImportPreview({ fileName: file.name, rows: parsed.rows, sheetName: parsed.sheetName });
     } catch (error) {
@@ -1044,25 +1124,11 @@ export default function App() {
   }
 
   async function checkUpdates() {
-    setUpdateStatus('checking');
     if (window.germDesktop) {
+      setUpdateStatus('checking');
       await window.germDesktop.checkForUpdates();
-      return;
-    }
-
-    try {
-      const response = await fetch(`/version.json?t=${Date.now()}`, { cache: 'no-store' });
-      const latest = await response.json();
-      if (latest?.buildId && latest.buildId !== BUILD_ID) {
-        setUpdateStatus(`installing web update • v${latest.version || 'new'}`);
-        const registration = await navigator.serviceWorker?.getRegistration();
-        await registration?.update?.().catch(() => {});
-        window.location.reload();
-        return;
-      }
-      setUpdateStatus(`current • v${APP_VERSION}`);
-    } catch {
-      setUpdateStatus('could not check web update');
+    } else {
+      window.open('https://github.com/SRA-LabTrack/GermDatabase/releases', '_blank', 'noopener,noreferrer');
     }
   }
 
@@ -1091,10 +1157,10 @@ export default function App() {
         </div>
         <div className="window-actions">
           <div className="status-cell">
-            <strong><span className={`status-dot ${syncing ? 'syncing' : user?.restoring ? 'syncing' : user?.offline ? 'offline' : online ? '' : 'offline'}`} />{syncing ? 'Syncing' : user?.restoring ? 'Connecting' : user?.offline ? 'Local mode' : online ? 'Online' : 'Offline'}</strong>
+            <strong><span className={`status-dot ${syncing ? 'syncing' : user?.offline ? 'offline' : online ? '' : 'offline'}`} />{syncing ? 'Syncing' : user?.offline ? 'Local mode' : online ? 'Online' : 'Offline'}</strong>
             <small>{syncError || pendingLabel} • {syncTimeLabel(lastSync)}</small>
           </div>
-          <button className="top-button" onClick={performSync} disabled={!online || syncing || user.offline || user.restoring}><RefreshCw size={15} /> Sync</button>
+          <button className="top-button" onClick={performSync} disabled={!online || syncing || user.offline}><RefreshCw size={15} /> Sync</button>
           <button className="top-button" onClick={minimizeWindow}><Minimize2 size={15} /> Minimize</button>
           <button className="top-button" onClick={toggleFullscreen}><Maximize2 size={15} /> {isFullscreen ? 'Exit full screen' : 'Full screen'}</button>
           <button className="top-button danger" onClick={closeWindow}>Exit</button>
@@ -1110,7 +1176,7 @@ export default function App() {
             <p className="hero-copy">Track microorganism identity, strains, samples, observations, laboratory tests, antimicrobial susceptibility, sequence references, and media. Changes are cached locally first and synchronized to Appwrite when connectivity returns.</p>
             <div className="hero-actions">
               <button className="button primary" onClick={() => setRegisterOpen(true)}><Plus size={16} /> Register a germ</button>
-              <button className="button" onClick={performSync} disabled={!online || syncing || user.offline || user.restoring}><RefreshCw size={16} /> Sync now</button>
+              <button className="button" onClick={performSync} disabled={!online || syncing || user.offline}><RefreshCw size={16} /> Sync now</button>
             </div>
           </div>
           <div className="hero-side">
@@ -1138,42 +1204,18 @@ export default function App() {
               <h2>Microorganism Registry</h2>
               <span className="tag">{visibleMicrobes.length} shown</span>
             </div>
-            <div className="table-wrap">
+            <div className="registry-card-wrap">
               {visibleMicrobes.length ? (
-                <table>
-                  <thead><tr><th>Microorganism ID</th><th>Scientific name</th><th>Type</th><th>Genus / Species</th><th>Strains</th><th>Samples</th><th>Susceptibility tests</th></tr></thead>
-                  <tbody key={`${search}::${typeFilter}::${visibleMicrobes.length}`}>
-                    {visibleMicrobes.map((row) => {
-                      const strainIds = records.strains.filter((s) => s.microorganism_id === row.$id).map((s) => s.$id);
-                      const sampleIds = records.samples.filter((s) => strainIds.includes(s.strain_id)).map((s) => s.$id);
-                      const drugs = records.antimicrobial_results.filter((d) => sampleIds.includes(d.sample_id)).length;
-                      return (
-                        <tr
-                          key={row.$id}
-                          className="registry-row"
-                          role="button"
-                          tabIndex={0}
-                          aria-label={`Open ${row.scientific_name || 'microorganism'} details`}
-                          onClick={() => setSelectedId(row.$id)}
-                          onKeyDown={(event) => {
-                            if (event.key === 'Enter' || event.key === ' ') {
-                              event.preventDefault();
-                              setSelectedId(row.$id);
-                            }
-                          }}
-                        >
-                          <td>{row.microorganism_id || row.$id}</td>
-                          <td><span className="record-name">{row.scientific_name || 'Unnamed microorganism'}</span>{row._pending && <div><span className="tag warn">Queued</span></div>}</td>
-                          <td><span className="tag">{row.organism_type || 'Unknown'}</span></td>
-                          <td>{row.genus || '—'} / {row.species || '—'}</td>
-                          <td>{strainIds.length}</td>
-                          <td>{sampleIds.length}</td>
-                          <td>{drugs}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                <div className="registry-card-grid" key={`${search}::${typeFilter}::${visibleMicrobes.length}`}>
+                  {visibleMicrobes.map((row) => (
+                    <RegistryEntryCard
+                      key={row.$id}
+                      row={row}
+                      summary={registrySummaries.get(row.$id)}
+                      onOpen={() => setSelectedId(row.$id)}
+                    />
+                  ))}
+                </div>
               ) : <div className="empty"><strong>No microorganism records yet.</strong>Register the first germ or change the search filters.</div>}
             </div>
           </div>
@@ -1348,14 +1390,7 @@ export default function App() {
       )}
 
       <div className="global-luntian"><Leaf size={12} /> Powered by <strong>Luntian</strong></div>
-      {updateStatus && (
-        <div style={{ position: 'fixed', right: 14, bottom: 14, zIndex: 120 }} className="notice-box">
-          Update: {updateStatus}
-          {window.germDesktop && updateStatus.startsWith('downloaded') && (
-            <button className="button small primary" style={{ marginLeft: 10 }} onClick={() => window.germDesktop.installUpdate()}>Restart & update</button>
-          )}
-        </div>
-      )}
+      {updateStatus && <div style={{ position: 'fixed', right: 14, bottom: 14, zIndex: 120 }} className="notice-box">Update: {updateStatus}</div>}
     </div>
   );
 }

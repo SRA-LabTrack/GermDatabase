@@ -61,20 +61,8 @@ export async function getLocalCollection(collection) {
 }
 
 export async function getAllCached() {
-  // One IndexedDB scan is dramatically faster than opening an index query for
-  // every collection during startup, especially with a large local registry.
-  const db = await dbPromise;
-  const rows = await db.getAll(STORE_RECORDS);
-  const result = Object.fromEntries(Object.values(COLLECTIONS).map((collection) => [collection, []]));
-  for (const row of rows) {
-    if (row.deleted || !result[row.collection]) continue;
-    result[row.collection].push({
-      $id: row.id,
-      ...row.data,
-      _local: true,
-      _pending: Boolean(row.pending)
-    });
-  }
+  const result = {};
+  for (const collection of Object.values(COLLECTIONS)) result[collection] = await getLocalCollection(collection);
   return result;
 }
 
@@ -237,22 +225,12 @@ export async function syncAll(onProgress) {
   if (!navigator.onLine) throw new Error('No internet connection');
   await flushOutbox(onProgress);
   const collections = Object.values(COLLECTIONS);
-  let cursor = 0;
   let done = 0;
-  const workerCount = Math.min(3, collections.length);
-
-  // Pull a few independent collections in parallel. Three workers keeps the
-  // initial sync quick without turning Appwrite into a request stampede.
-  async function worker() {
-    while (cursor < collections.length) {
-      const collection = collections[cursor++];
-      await pullCollection(collection);
-      done += 1;
-      onProgress?.({ phase: 'pull', done, total: collections.length });
-    }
+  for (const collection of collections) {
+    await pullCollection(collection);
+    done += 1;
+    onProgress?.({ phase: 'pull', done, total: collections.length });
   }
-
-  await Promise.all(Array.from({ length: workerCount }, () => worker()));
   const db = await dbPromise;
   await db.put(STORE_META, { key: 'lastSync', value: Date.now() });
 }

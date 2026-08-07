@@ -1,0 +1,8 @@
+GermDatabase v1.5.1 - Photo-first registry cards
+
+- Registry entries now render as responsive cards.
+- The first photo attached to any sample under the germ becomes the card header image.
+- Photos use the already-compressed WebP media record and lazy-load.
+- Entries without photos keep an optional-photo placeholder.
+- Card photo updates after local refresh/sync without storing duplicate image data.
+- Card summaries are indexed in one pass for performance.

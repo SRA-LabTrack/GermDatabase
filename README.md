@@ -147,17 +147,14 @@ The desktop build has working **Minimize**, **Full Screen / Exit Full Screen**, 
 
 ## GitHub releases and updates
 
-The Windows desktop build uses `electron-updater` with GitHub Releases. The included workflow now runs on **every push to `main`**. It derives a monotonically increasing desktop version from the package major/minor plus the GitHub Actions run number, builds the NSIS installer, and publishes the update metadata and installer automatically.
-
-Once the repository is connected, normal updates are simply:
+The Electron build is configured for GitHub Releases. The included GitHub Actions workflow runs when you push a version tag such as:
 
 ```bash
-git add .
-git commit -m "Update GermDatabase"
-git push
+git tag v1.0.1
+git push origin v1.0.1
 ```
 
-Existing installed versions discover newer GitHub Releases automatically. After the package downloads, GermDatabase offers **Restart & update**.
+GitHub Actions builds the Windows NSIS installer and publishes it to the repository Releases page. Previous releases remain downloadable. Installed desktop builds check GitHub Releases for newer versions through `electron-updater`.
 
 ## Vercel
 
@@ -170,7 +167,6 @@ Set these Vercel environment variables:
 
 ```text
 VITE_APPWRITE_ENDPOINT=https://fra.cloud.appwrite.io/v1
-VITE_APPWRITE_FALLBACK_ENDPOINT=https://cloud.appwrite.io/v1
 VITE_APPWRITE_PROJECT_ID=6a744cda00030236187b
 VITE_APPWRITE_DATABASE_ID=germdatabase
 VITE_APPWRITE_MEDIA_BUCKET_ID=germ-media
@@ -208,17 +204,3 @@ GermDatabase now includes an **Import Excel** action in the top navigation and r
 Photos can be selected while registering a germ or added later from the germ detail drawer. Images are converted in the browser to high-quality WebP before they are persisted. Large phone photos are scaled to a maximum edge of 3000 px and encoded at high WebP quality, with a gentle second compression pass only for unusually large files. HEIC/HEIF is supported through `heic2any`; other Chromium-readable image formats are accepted through the native decoder.
 
 Photo binaries remain in IndexedDB while offline. During sync they are uploaded to the Appwrite Storage bucket configured by `VITE_APPWRITE_MEDIA_BUCKET_ID` (default `germ-media`), while the media collection stores only a lightweight Appwrite Storage path and caption. This avoids putting Base64 image payloads into database documents.
-
-
-## v1.5 performance and continuous-update revision
-
-- Authentication no longer blocks first paint on the Appwrite session probe.
-- Login enters as soon as the session is created; profile enrichment happens in the background.
-- Cached registry startup uses one IndexedDB scan instead of one query per collection.
-- Initial Appwrite pulls use three bounded workers rather than nine fully sequential collection pulls.
-- `xlsx` is dynamically imported only when Excel Import is opened.
-- Vite separates React, Appwrite, icons, IndexedDB, Excel, and HEIC into cache-friendly chunks.
-- The service worker uses cache-first content-hashed assets and network-first HTML/version checks.
-- Desktop update checks are delayed until after startup so they do not compete with login.
-- Every push to GitHub `main` can create a new Windows release for older installed clients.
-- Vercel builds expose a commit-based `version.json`, allowing running web clients to detect a newer deployment.
