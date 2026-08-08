@@ -4,6 +4,7 @@ import { CHARACTERIZATION_GROUPS } from '../lib/characterizationFields';
 import { GERMINATION_FIELDS } from '../lib/germinationFields';
 import { formatBytes, prepareImageVariants } from '../lib/imageTools';
 import { queueOfflineRecord } from '../lib/offlineQueue';
+import { submitChangeRequest } from '../lib/approvalApi';
 import { deleteStoredFiles, fileViewUrl, saveRecord, uploadPreparedPhotos } from '../lib/registryApi';
 import { emptyForm, messageFor } from '../lib/registryUi';
 
@@ -41,7 +42,8 @@ function writeDraft(key, form) {
   } catch {}
 }
 
-export default function RecordFormModal({ initial, ownerId, online, onClose, onSaved, onQueued }) {
+export default function RecordFormModal({ initial, actor, isAdmin = false, online, onClose, onSaved, onSubmitted, onQueued }) {
+  const ownerId = actor?.id || actor?.$id || actor?.email || 'local-user';
   const editing = Boolean(initial?.$id);
   const draftKey = `${DRAFT_PREFIX}${initial?.$id || 'new'}`;
   const storedDraft = useMemo(() => readDraft(draftKey), [draftKey]);
@@ -113,6 +115,7 @@ export default function RecordFormModal({ initial, ownerId, online, onClose, onS
       setProgress(variants.length ? `Saving ${formatBytes(queuedBytes)} of compressed photos to this device…` : 'Saving complete record to this device…');
       const entry = await queueOfflineRecord({
         ownerId,
+        actor: { id: actor?.id || actor?.$id || '', name: actor?.name || '', email: actor?.email || '', isAdmin },
         form,
         recordId: initial?.$id || '',
         previous: initial || null,
@@ -144,7 +147,10 @@ export default function RecordFormModal({ initial, ownerId, online, onClose, onS
       const variants = await prepareSelectedPhotos();
       if (variants.length) {
         setProgress('Uploading optimized field images and thumbnails…');
-        uploaded = await uploadPreparedPhotos(variants, ({ done, total }) => setProgress(`Uploading photo ${done} of ${total}…`));
+        uploaded = await uploadPreparedPhotos(variants, ({ done, total }) => setProgress(`Uploading photo ${done} of ${total}…`), {
+          ownerUserId: actor?.id || actor?.$id || '',
+          finalAccess: isAdmin
+        });
       }
       const next = {
         ...form,
@@ -154,12 +160,26 @@ export default function RecordFormModal({ initial, ownerId, online, onClose, onS
       };
       next.primary_file_id = next.photo_file_ids[0] || '';
       next.thumbnail_file_id = next.thumb_file_ids[0] || '';
-      setProgress('Saving record to Appwrite…');
-      await saveRecord(next, initial?.$id || '', initial || null);
-      if (removedFileIds.length) deleteStoredFiles(removedFileIds).catch(() => {});
-      clearDraft();
-      onSaved();
-      onClose();
+      if (isAdmin) {
+        setProgress('Saving approved record to Appwrite…');
+        await saveRecord(next, initial?.$id || '', initial || null);
+        if (removedFileIds.length) deleteStoredFiles(removedFileIds).catch(() => {});
+        clearDraft();
+        onSaved?.();
+        onClose();
+      } else {
+        setProgress(editing ? 'Submitting edit for administrator approval…' : 'Submitting registration for administrator approval…');
+        await submitChangeRequest({
+          record: next,
+          recordId: initial?.$id || '',
+          actor,
+          uploadedFileIds: uploaded.flatMap((item) => [item.fullId, item.thumbId]),
+          removedFileIds
+        });
+        clearDraft();
+        onSubmitted?.({ type: editing ? 'edit' : 'create', variety: next.variety || 'Sugarcane record' });
+        onClose();
+      }
     } catch (err) {
       if (uploaded.length) {
         const orphanIds = uploaded.flatMap((item) => [item.fullId, item.thumbId]).filter(Boolean);
@@ -181,7 +201,7 @@ export default function RecordFormModal({ initial, ownerId, online, onClose, onS
           <button type="button" className="icon-button" onClick={closeKeepingDraft} aria-label="Close form"><X size={19} /></button>
         </header>
         <div className="modal-content form-scroll">
-          <div className="optional-banner"><CheckCircle2 size={18} /><div><strong>Every trait is optional.</strong><span>Record only what was actually observed. Cloud writes happen only when you press Save record; Save offline uses IndexedDB on this device.</span></div></div>
+          <div className="optional-banner"><CheckCircle2 size={18} /><div><strong>Every trait is optional.</strong><span>{isAdmin ? 'Administrator saves apply directly to the live registry.' : 'User registrations and edits are submitted for administrator approval before they change the live registry.'} Save offline uses IndexedDB on this device.</span></div></div>
           {!online && <div className="offline-form-banner"><CloudOff size={18} /><div><strong>Offline field mode</strong><span>Save offline stores the complete entry plus compressed WebP photos locally. It can sync later when Appwrite is reachable.</span></div></div>}
           {draftRestored && <div className="local-draft-banner"><div><strong>Local draft restored</strong><span>This lightweight text draft came from this device and used zero Appwrite writes.</span></div><button type="button" className="text-button inline" onClick={() => { clearDraft(); setForm({ ...emptyForm(), ...(initial || {}) }); }}>Discard draft</button></div>}
 
@@ -202,7 +222,7 @@ export default function RecordFormModal({ initial, ownerId, online, onClose, onS
           <button type="button" className="secondary-button" onClick={closeKeepingDraft}>{dirty ? 'Close & keep draft' : 'Close'}</button>
           <span className="footer-spacer" />
           <button type="button" className="secondary-button offline-save-button" onClick={saveOffline} disabled={busy}><HardDrive size={16} /> {busy && !progress ? 'Saving offline…' : 'Save offline'}</button>
-          <button className="primary-button" disabled={busy}>{busy ? (online ? 'Saving…' : 'Saving offline…') : online ? (editing ? 'Save changes' : 'Save record') : 'Save offline'}</button>
+          <button className="primary-button" disabled={busy}>{busy ? (online ? (isAdmin ? 'Saving…' : 'Submitting…') : 'Saving offline…') : online ? (isAdmin ? (editing ? 'Save changes' : 'Save record') : (editing ? 'Submit edit for approval' : 'Submit registration')) : 'Save offline'}</button>
         </footer>
       </form>
     </div>

@@ -1,9 +1,12 @@
 import {
+  ADMIN_LABEL,
   COLLECTIONS,
   DATABASE_ID,
   ID,
   MEDIA_BUCKET_ID,
+  Permission,
   Query,
+  Role,
   databases,
   storage,
   withAppwriteFailover
@@ -649,13 +652,19 @@ export function fileViewUrl(fileId) {
   }
 }
 
-export async function uploadPreparedPhotos(variants, onProgress, { preserveOnFailure = false } = {}) {
+export async function uploadPreparedPhotos(variants, onProgress, { preserveOnFailure = false, ownerUserId = '', finalAccess = false } = {}) {
   const uploaded = [];
   const touchedIds = [];
+  const owner = String(ownerUserId || '').trim();
+  const permissions = finalAccess
+    ? [Permission.read(Role.users()), Permission.update(Role.label(ADMIN_LABEL)), Permission.delete(Role.label(ADMIN_LABEL))]
+    : owner
+      ? [Permission.read(Role.users()), Permission.update(Role.user(owner)), Permission.delete(Role.user(owner))]
+      : undefined;
 
   async function createFileIdempotent(fileId, file) {
     try {
-      await storage.createFile({ bucketId: MEDIA_BUCKET_ID, fileId, file });
+      await storage.createFile({ bucketId: MEDIA_BUCKET_ID, fileId, file, permissions });
     } catch (error) {
       // Queued photos have deterministic IDs. A 409 means a previous sync
       // likely completed this upload before the device lost the response.
@@ -688,6 +697,47 @@ export async function uploadPreparedPhotos(variants, onProgress, { preserveOnFai
       await Promise.allSettled(touchedIds.map((fileId) => storage.deleteFile({ bucketId: MEDIA_BUCKET_ID, fileId })));
     }
     throw error;
+  }
+}
+
+
+
+export async function verifyPendingFiles(fileIds = [], ownerUserId = '', { allowMissing = false } = {}) {
+  const owner = String(ownerUserId || '').trim();
+  if (!owner) throw new Error('Pending photo ownership cannot be verified without a submitter ID.');
+  const verified = [];
+  for (const fileId of Array.from(new Set(fileIds.filter(Boolean)))) {
+    let file;
+    try {
+      file = await withAppwriteFailover(() => storage.getFile({
+        bucketId: MEDIA_BUCKET_ID,
+        fileId
+      }), { timeoutMs: 5000 });
+    } catch (error) {
+      const code = Number(error?.code || error?.status || 0);
+      if (allowMissing && code === 404) continue;
+      throw error;
+    }
+    const permissions = Array.isArray(file?.$permissions) ? file.$permissions : [];
+    const owned = permissions.some((permission) => String(permission).includes(`user:${owner}`));
+    if (!owned) throw new Error('A pending photo could not be verified as belonging to the submitting user.');
+    verified.push(fileId);
+  }
+  return verified;
+}
+
+export async function lockStoredFiles(fileIds = []) {
+  const permissions = [
+    Permission.read(Role.users()),
+    Permission.update(Role.label(ADMIN_LABEL)),
+    Permission.delete(Role.label(ADMIN_LABEL))
+  ];
+  for (const fileId of Array.from(new Set(fileIds.filter(Boolean)))) {
+    await withAppwriteFailover(() => storage.updateFile({
+      bucketId: MEDIA_BUCKET_ID,
+      fileId,
+      permissions
+    }), { retryTransport: false, timeoutMs: 7000 });
   }
 }
 

@@ -1,0 +1,32 @@
+CaneSprout Registry v2.5.4 — Appwrite Admin Label Migration
+
+WHY THIS UPDATE EXISTS
+Appwrite Cloud user labels are alphanumeric only. The old CaneSprout role name
+"canesprout_admin" contains an underscore, so Appwrite correctly rejected it.
+The administrator label is now:
+
+    canesproutadmin
+
+WHAT THE ONE-TIME GRANT COMMAND NOW DOES
+npm.cmd run grant:bootstrap-admin now performs the complete migration:
+1. Rewrites live registry collection permissions to label:canesproutadmin.
+2. Rewrites approval-request collection permissions to label:canesproutadmin.
+3. Rewrites the photo bucket admin permissions to label:canesproutadmin.
+4. Looks up ncrowsboosting@gmail.com, preferring known user ID 6a7534ee0022112c4500.
+5. Grants the real Appwrite user label canesproutadmin.
+6. Preserves any other valid labels already on the account.
+
+This avoids the broken state where the UI expects one role name while Appwrite
+permissions expect another.
+
+ONE-TIME COMMAND
+    npm.cmd run grant:bootstrap-admin
+
+Use a temporary APPWRITE_API_KEY that has the setup-level database/collection,
+storage/bucket, and user read/write permissions needed for this migration.
+Revoke the temporary key immediately after the command succeeds.
+
+Then sign out of CaneSprout and sign back in.
+Admin Center should show:
+- Approvals: pending registrations and edits
+- Account Management: create User/Admin accounts and grant/revoke Admin role

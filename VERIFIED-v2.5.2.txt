@@ -1,0 +1,9 @@
+CaneSprout Registry v2.5.2 verification
+
+- Admin Center toolbar action is present for Appwrite-labeled administrators.
+- Admin Center opens on registration/edit Approvals and includes Account Management as a second tab.
+- Default bootstrap administrator email is ncrowsboosting@gmail.com.
+- Minimal one-time admin grant command added: npm.cmd run grant:bootstrap-admin.
+- Windows helper added: GRANT-NCROWSBOOSTING-ADMIN.cmd.
+- Administrator authority remains enforced by the Appwrite label canesproutadmin, not by client-side email matching.
+- No new database attributes or collections beyond the v2.5 approval schema.

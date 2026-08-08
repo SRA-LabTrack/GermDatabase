@@ -109,3 +109,8 @@ No Appwrite schema migration is required for v2.4.0.
 ## v2.4.3 reference toolbar
 
 The authenticated header now uses one continuous rounded glass toolbar inspired by the supplied AgriRegistry reference: large Registry / Import Excel / Add record tiles, a dedicated online/offline queue status card, and a full account card. Backup, Updates, Offline Queue, and desktop window controls remain available from the compact More menu. This is a UI-only change and adds no Appwrite or Vercel requests.
+
+
+## v2.5 administrator approval workflow
+
+CaneSprout uses the Appwrite label `canesproutadmin` for administrator authority. Signed-in users can browse live records and submit new registrations/edits for approval. Administrators can approve/reject those requests, delete live records, import workbooks, create accounts, and grant/revoke administrator authority. Privileged user-management actions are isolated to the server-only `/api/admin-accounts` endpoint; routine registry operations continue to use the Appwrite Web SDK directly.

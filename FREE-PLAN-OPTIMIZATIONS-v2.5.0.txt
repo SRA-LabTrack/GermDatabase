@@ -1,0 +1,21 @@
+CaneSprout v2.5.0 quota-safe role/approval architecture
+======================================================
+
+Routine traffic stays Browser -> Appwrite:
+- registry browsing/searching
+- request submission
+- admin approval/rejection
+- live record create/edit/delete by admins
+- compressed WebP photo upload
+- IndexedDB offline sync
+
+Vercel /api/admin-accounts is used only for rare privileged identity operations:
+- list/search project users when Account Management is opened
+- create a user/admin account
+- promote/demote an account via Appwrite label
+
+No approval polling and no Realtime subscriptions are used.
+Pending approvals load only 25 at a time and skip total calculations.
+Users cannot write live records, so edits do not create live Appwrite writes until approved.
+Offline user submissions synchronize one pending request at a time with deterministic IDs.
+The permanent Vercel API key needs only users.read + users.write.

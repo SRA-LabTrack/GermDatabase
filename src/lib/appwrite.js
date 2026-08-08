@@ -1,4 +1,4 @@
-import { Account, Client, Databases, ID, Query, Storage } from 'appwrite';
+import { Account, Client, Databases, ID, Permission, Query, Role, Storage } from 'appwrite';
 
 const DEFAULT_REGION_ENDPOINT = 'https://fra.cloud.appwrite.io/v1';
 const LEGACY_GLOBAL_ENDPOINT = 'https://cloud.appwrite.io/v1';
@@ -39,9 +39,12 @@ export const APPWRITE_PROJECT_ID = String(import.meta.env.VITE_APPWRITE_PROJECT_
 export const DATABASE_ID = String(import.meta.env.VITE_APPWRITE_DATABASE_ID || 'germdatabase').trim();
 export const MEDIA_BUCKET_ID = String(import.meta.env.VITE_APPWRITE_MEDIA_BUCKET_ID || 'germ-media').trim();
 
+export const ADMIN_LABEL = 'canesproutadmin';
+
 export const COLLECTIONS = {
   records: 'sugarcane_registry_core',
-  details: 'sugarcane_registry_details'
+  details: 'sugarcane_registry_details',
+  requests: 'registry_change_requests'
 };
 
 export const client = new Client().setEndpoint(activeEndpoint).setProject(APPWRITE_PROJECT_ID);
@@ -110,4 +113,4 @@ export async function withAppwriteFailover(operation, { timeoutMs = 3500, retryT
   throw lastError || new Error('Appwrite is unreachable.');
 }
 
-export { ID, Query };
+export { ID, Permission, Query, Role };

@@ -1,10 +1,10 @@
 {
-  "version": "2.4.5",
+  "version": "2.5.5",
   "domain": "sugarcane-germination-characterization",
   "pagination": 25,
   "searchDebounceMs": 500,
-  "build": "reference-single-bar-toolbar-offline-indexeddb-queue",
+  "build": "admin-toolbar-role-refresh-fix",
   "released": "2026-08-08",
   "name": "CaneSprout Registry",
-  "notes": "Reference-style rounded single-bar toolbar with large equal primary action tiles, dedicated online/offline queue status, full account card, and compact overflow for Backup, Updates, Offline Queue, and desktop controls. Offline and quota-safe behavior is unchanged."
+  "notes": "Fixes role-aware toolbar sizing: users use a two-action grid, admins use a four-action grid, and Appwrite role labels refresh once per browser session so newly promoted administrators see admin controls without stale-cache confusion."
 }

@@ -1,4 +1,5 @@
 import { ID, isNetworkFailure } from './appwrite';
+import { submitChangeRequest } from './approvalApi';
 import { clearListCache, deleteStoredFiles, saveRecord, uploadPreparedPhotos, validateRecordPayload } from './registryApi';
 
 const DB_NAME = 'canesprout-offline-queue';
@@ -133,7 +134,7 @@ export async function getOfflineQueueSummary(ownerId) {
   };
 }
 
-export async function queueOfflineRecord({ ownerId, form, recordId = '', previous = null, removedFileIds = [], variants = [] }) {
+export async function queueOfflineRecord({ ownerId, actor = null, form, recordId = '', previous = null, removedFileIds = [], variants = [] }) {
   await requestPersistentStorage();
   validateRecordPayload(form);
   const owner = ownerKey(ownerId);
@@ -148,6 +149,9 @@ export async function queueOfflineRecord({ ownerId, form, recordId = '', previou
   const entry = {
     id,
     ownerId: owner,
+    actor: safeClone(actor) || { id: String(ownerId || ''), name: '', email: '', isAdmin: false },
+    syncMode: actor?.isAdmin ? 'direct' : 'approval',
+    requestId: existing?.requestId || ID.unique(),
     operation: existingId ? 'update' : 'create',
     createdAt: existing?.createdAt || now,
     updatedAt: now,
@@ -219,9 +223,11 @@ function delay(ms) {
   return new Promise((resolve) => window.setTimeout(resolve, ms));
 }
 
-async function syncOneEntry(entry, onProgress) {
+async function syncOneEntry(entry, onProgress, currentActor = null) {
   const working = {
     ...entry,
+    actor: entry.actor || currentActor || { id: entry.ownerId || '', name: '', email: '', isAdmin: false },
+    syncMode: entry.syncMode || (currentActor?.isAdmin ? 'direct' : 'approval'),
     status: 'syncing',
     attempts: Number(entry.attempts || 0) + 1,
     lastError: '',
@@ -229,25 +235,42 @@ async function syncOneEntry(entry, onProgress) {
   };
   await putEntry(working);
 
+  const isAdmin = working.syncMode === 'direct' || Boolean(working.actor?.isAdmin);
   const uploaded = await uploadPreparedPhotos(working.photos || [], ({ done, total }) => {
     onProgress?.({ phase: 'photos', entry: working, done, total });
-  }, { preserveOnFailure: true });
+  }, {
+    preserveOnFailure: true,
+    ownerUserId: working.actor?.id || '',
+    finalAccess: isAdmin
+  });
 
   const next = buildSyncRecord(working, uploaded);
-  onProgress?.({ phase: 'record', entry: working });
-  const savedRecord = await saveRecord(next, working.id, working.previous || null, { knownNew: working.operation === 'create' });
-
-  if (working.removedFileIds?.length) {
-    onProgress?.({ phase: 'cleanup', entry: working });
-    await deleteStoredFiles(working.removedFileIds);
+  onProgress?.({ phase: isAdmin ? 'record' : 'request', entry: working });
+  let savedRecord = null;
+  if (isAdmin) {
+    savedRecord = await saveRecord(next, working.id, working.previous || null, { knownNew: working.operation === 'create' });
+    if (working.removedFileIds?.length) {
+      onProgress?.({ phase: 'cleanup', entry: working });
+      await deleteStoredFiles(working.removedFileIds);
+    }
+  } else {
+    await submitChangeRequest({
+      record: next,
+      recordId: working.operation === 'update' ? working.id : '',
+      targetId: working.operation === 'create' ? working.id : '',
+      actor: working.actor,
+      uploadedFileIds: uploaded.flatMap((item) => [item.fullId, item.thumbId]),
+      removedFileIds: working.removedFileIds || [],
+      requestId: working.requestId
+    });
   }
 
   await removeEntry(working.id);
   clearListCache();
-  return savedRecord;
+  return { savedRecord, submittedForApproval: !isAdmin, variety: next.variety || 'Sugarcane record' };
 }
 
-export async function syncOfflineQueue({ ownerId, entryId = '', onProgress, ignoreBackoff = false } = {}) {
+export async function syncOfflineQueue({ ownerId, actor = null, entryId = '', onProgress, ignoreBackoff = false } = {}) {
   if (activeSyncPromise) return activeSyncPromise;
   const owner = ownerKey(ownerId);
 
@@ -261,14 +284,16 @@ export async function syncOfflineQueue({ ownerId, entryId = '', onProgress, igno
     let synced = 0;
     let failed = 0;
     const syncedRecords = [];
+    let approvalRequests = 0;
     let stoppedForNetwork = false;
 
     for (let index = 0; index < entries.length; index += 1) {
       const entry = entries[index];
       onProgress?.({ phase: 'entry', entry, index: index + 1, total: entries.length });
       try {
-        const savedRecord = await syncOneEntry(entry, onProgress);
-        if (savedRecord) syncedRecords.push(savedRecord);
+        const outcome = await syncOneEntry(entry, onProgress, actor);
+        if (outcome?.savedRecord) syncedRecords.push(outcome.savedRecord);
+        if (outcome?.submittedForApproval) approvalRequests = (approvalRequests || 0) + 1;
         synced += 1;
       } catch (error) {
         failed += 1;
@@ -294,7 +319,7 @@ export async function syncOfflineQueue({ ownerId, entryId = '', onProgress, igno
     }
 
     const remaining = (await listOfflineEntries(owner)).length;
-    return { synced, failed, remaining, stoppedForNetwork, records: syncedRecords };
+    return { synced, failed, remaining, stoppedForNetwork, records: syncedRecords, approvalRequests };
   })();
 
   try {

@@ -23,12 +23,18 @@ const projectId = process.env.APPWRITE_PROJECT_ID || process.env.VITE_APPWRITE_P
 const databaseId = process.env.APPWRITE_DATABASE_ID || process.env.VITE_APPWRITE_DATABASE_ID || 'germdatabase';
 const bucketId = process.env.APPWRITE_MEDIA_BUCKET_ID || process.env.VITE_APPWRITE_MEDIA_BUCKET_ID || 'germ-media';
 const apiKey = process.env.APPWRITE_API_KEY;
+const initialAdminEmail = String(process.env.INITIAL_ADMIN_EMAIL || 'ncrowsboosting@gmail.com').trim().toLowerCase();
+const initialAdminPassword = String(process.env.INITIAL_ADMIN_PASSWORD || '');
+const initialAdminUserId = String(process.env.INITIAL_ADMIN_USER_ID || '6a7534ee0022112c4500').trim();
+const initialAdminName = String(process.env.INITIAL_ADMIN_NAME || 'CaneSprout Administrator').trim();
+const adminLabel = 'canesproutadmin';
 
 // v2.1.2 splits the record into two deliberately small collections.
 // This avoids Appwrite's collection row/schema size budget while keeping list
 // requests lean. Failed v2.1.0/v2.1.1 collections are left untouched.
 const coreCollection = 'sugarcane_registry_core';
 const detailsCollection = 'sugarcane_registry_details';
+const requestsCollection = 'registry_change_requests';
 const legacyCollections = ['sugarcane_characterizations', 'sugarcane_registry'];
 const metaCollection = 'registry_meta';
 const seedSentinel = 'characterization_seed_v212_split';
@@ -36,7 +42,7 @@ const seedPath = path.resolve(process.cwd(), 'seed', 'characterization.json');
 
 if (!apiKey || apiKey.includes('PASTE_TEMPORARY')) {
   console.error('\nMissing APPWRITE_API_KEY.');
-  console.error('Create a temporary Appwrite server API key with database + storage management scopes, put it in .env, run setup once, then revoke it.\n');
+  console.error('Create a temporary Appwrite server API key with database, row, column, index, storage, and users read/write scopes, put it in .env, run setup once, then revoke it.\n');
   process.exit(1);
 }
 if (!fs.existsSync(seedPath)) {
@@ -45,7 +51,24 @@ if (!fs.existsSync(seedPath)) {
 }
 
 const seed = JSON.parse(fs.readFileSync(seedPath, 'utf8'));
-const permissions = ['read("users")', 'create("users")', 'update("users")', 'delete("users")'];
+const livePermissions = [
+  'read("users")',
+  `create("label:${adminLabel}")`,
+  `update("label:${adminLabel}")`,
+  `delete("label:${adminLabel}")`
+];
+const requestPermissions = [
+  'create("users")',
+  `read("label:${adminLabel}")`,
+  `update("label:${adminLabel}")`,
+  `delete("label:${adminLabel}")`
+];
+const mediaPermissions = [
+  'read("users")',
+  'create("users")',
+  `update("label:${adminLabel}")`,
+  `delete("label:${adminLabel}")`
+];
 const traitKeys = seed.fields.map((field) => field.key);
 
 async function request(method, route, body) {
@@ -129,6 +152,73 @@ const detailAttrs = [
   textAttr('traits_json', 4096),
   textAttr('details_json', 4096)
 ];
+
+const requestAttrs = [
+  textAttr('request_type', 16),
+  textAttr('target_id', 36),
+  textAttr('submitted_by', 36),
+  textAttr('submitted_name', 128),
+  textAttr('submitted_email', 320),
+  textAttr('submitted_at', 32),
+  textAttr('status', 16),
+  textAttr('variety_summary', 255),
+  textAttr('payload_json', 12000),
+  textAttr('resolution_note', 500),
+  textAttr('resolved_at', 32),
+  textAttr('resolved_by', 128)
+];
+
+async function enforceCollectionPolicy(collectionId, name, permissions, documentSecurity = false) {
+  await request('PUT', `/databases/${databaseId}/collections/${collectionId}`, {
+    name, permissions, documentSecurity, enabled: true, purge: true
+  });
+  console.log(`✓ enforced permissions for ${collectionId}`);
+}
+
+async function bootstrapAdministrator() {
+  try {
+    let chosen = null;
+    if (initialAdminEmail) {
+      if (initialAdminUserId) {
+        try {
+          const direct = await request('GET', `/users/${encodeURIComponent(initialAdminUserId)}`);
+          if (String(direct?.email || '').toLowerCase() === initialAdminEmail) chosen = direct;
+        } catch (error) {
+          if (error.status !== 404) console.warn(`! Direct bootstrap-admin lookup was unavailable: ${error.message}`);
+        }
+      }
+      if (!chosen) {
+        const result = await request('GET', `/users?total=false&search=${encodeURIComponent(initialAdminEmail)}`);
+        chosen = (result.users || []).find((user) => String(user.email || '').toLowerCase() === initialAdminEmail) || null;
+      }
+      if (!chosen && initialAdminPassword.length >= 8) {
+        chosen = await request('POST', '/users', {
+          userId: `admin_${Date.now().toString(36)}`,
+          email: initialAdminEmail,
+          password: initialAdminPassword,
+          name: initialAdminName || initialAdminEmail.split('@')[0]
+        });
+        console.log(`✓ created initial administrator account ${initialAdminEmail}`);
+      }
+    } else {
+      const result = await request('GET', '/users?total=false');
+      if ((result.users || []).length === 1) chosen = result.users[0];
+    }
+
+    if (!chosen) {
+      console.warn(`! Administrator ${initialAdminEmail} was not assigned. Run npm.cmd run grant:bootstrap-admin after setup.`);
+      return;
+    }
+    const labels = new Set(Array.isArray(chosen.labels) ? chosen.labels.filter(Boolean) : []);
+    labels.delete('canesprout_admin');
+    labels.add(adminLabel);
+    await request('PUT', `/users/${chosen.$id}/labels`, { labels: Array.from(labels) });
+    console.log(`✓ administrator authority granted to ${chosen.email || chosen.$id}`);
+  } catch (error) {
+    console.warn(`! Bootstrap administrator assignment was skipped: ${error.message}`);
+    console.warn('  Run npm.cmd run grant:bootstrap-admin after setup; the registry schema can still finish safely.');
+  }
+}
 
 async function listAttributes(collectionId) {
   return (await request('GET', `/databases/${databaseId}/collections/${collectionId}/attributes?total=false`)).attributes || [];
@@ -301,7 +391,7 @@ async function seedRecords() {
 }
 
 async function main() {
-  console.log('\nSugarcane Germination & Characterization Registry setup v2.2.1');
+  console.log('\nSugarcane Germination & Characterization Registry setup v2.5.0');
   console.log(`Endpoint: ${endpoint}`);
   console.log(`Project:  ${projectId}`);
   console.log(`Database: ${databaseId}\n`);
@@ -312,14 +402,20 @@ async function main() {
   await ensure(`collection ${coreCollection}`,
     `/databases/${databaseId}/collections/${coreCollection}`,
     `/databases/${databaseId}/collections`,
-    { collectionId: coreCollection, name: 'SUGARCANE_REGISTRY_CORE', permissions, documentSecurity: false, enabled: true });
+    { collectionId: coreCollection, name: 'SUGARCANE_REGISTRY_CORE', permissions: livePermissions, documentSecurity: false, enabled: true });
   await ensureAttributes(coreCollection, coreAttrs);
 
   await ensure(`collection ${detailsCollection}`,
     `/databases/${databaseId}/collections/${detailsCollection}`,
     `/databases/${databaseId}/collections`,
-    { collectionId: detailsCollection, name: 'SUGARCANE_REGISTRY_DETAILS', permissions, documentSecurity: false, enabled: true });
+    { collectionId: detailsCollection, name: 'SUGARCANE_REGISTRY_DETAILS', permissions: livePermissions, documentSecurity: false, enabled: true });
   await ensureAttributes(detailsCollection, detailAttrs);
+
+  await ensure(`collection ${requestsCollection}`,
+    `/databases/${databaseId}/collections/${requestsCollection}`,
+    `/databases/${databaseId}/collections`,
+    { collectionId: requestsCollection, name: 'REGISTRY_CHANGE_REQUESTS', permissions: requestPermissions, documentSecurity: true, enabled: true });
+  await ensureAttributes(requestsCollection, requestAttrs);
 
   await ensure(`collection ${metaCollection}`,
     `/databases/${databaseId}/collections/${metaCollection}`,
@@ -330,7 +426,12 @@ async function main() {
   console.log('\nWaiting for split schema fields to finish provisioning…');
   await waitForAttributes(coreCollection, coreAttrs.map((attribute) => attribute.key));
   await waitForAttributes(detailsCollection, detailAttrs.map((attribute) => attribute.key));
+  await waitForAttributes(requestsCollection, requestAttrs.map((attribute) => attribute.key));
   await waitForAttributes(metaCollection, ['key', 'value']);
+
+  await enforceCollectionPolicy(coreCollection, 'SUGARCANE_REGISTRY_CORE', livePermissions, false);
+  await enforceCollectionPolicy(detailsCollection, 'SUGARCANE_REGISTRY_DETAILS', livePermissions, false);
+  await enforceCollectionPolicy(requestsCollection, 'REGISTRY_CHANGE_REQUESTS', requestPermissions, true);
 
   // Key indexes power exact/prefix/contains field filters without full-text token
   // broadening. Fresh installs need these lean field indexes plus one keyword index.
@@ -339,16 +440,19 @@ async function main() {
   await ensureIndex(coreCollection, 'idx_location', 'key', ['germ_location'], ['ASC']);
   await ensureIndex(coreCollection, 'idx_status', 'key', ['germ_status'], ['ASC']);
   await ensureIndex(coreCollection, 'fts_search', 'fulltext', ['search_text']);
+  await ensureIndex(requestsCollection, 'idx_request_status', 'key', ['status'], ['ASC']);
+  await ensureIndex(requestsCollection, 'idx_request_submitter', 'key', ['submitted_by'], ['ASC']);
 
   console.log('Waiting for registry search indexes to finish provisioning…');
   await waitForIndexes(coreCollection, ['idx_variety', 'idx_trial', 'idx_location', 'idx_status', 'fts_search']);
+  await waitForIndexes(requestsCollection, ['idx_request_status', 'idx_request_submitter']);
 
   try {
     await ensure(`storage bucket ${bucketId}`, `/storage/buckets/${bucketId}`, '/storage/buckets', {
       bucketId,
       name: 'Sugarcane Photos',
-      permissions,
-      fileSecurity: false,
+      permissions: mediaPermissions,
+      fileSecurity: true,
       enabled: true,
       maximumFileSize: 15728640,
       allowedFileExtensions: ['webp'],
@@ -357,10 +461,24 @@ async function main() {
       antivirus: true,
       transformations: true
     });
+    await request('PUT', `/storage/buckets/${bucketId}`, {
+      name: 'Sugarcane Photos',
+      permissions: mediaPermissions,
+      fileSecurity: true,
+      enabled: true,
+      maximumFileSize: 15728640,
+      allowedFileExtensions: ['webp'],
+      compression: 'none',
+      encryption: true,
+      antivirus: true,
+      transformations: true
+    });
+    console.log('✓ enforced photo bucket permissions');
   } catch (error) {
     console.warn(`! Storage bucket setup skipped: ${error.message}`);
   }
 
+  await bootstrapAdministrator();
   await seedRecords();
 
   console.log('\nDone.');
@@ -370,8 +488,11 @@ async function main() {
   console.log('• Registry pages read only 25 lean core rows; the heavy detail document is fetched only when a record is opened.');
   console.log('• Variety, trial code, location, and status use exact/prefix/contains key indexes; all-trait keywords use one full-text index.');
   console.log(`• Failed legacy collections (${legacyCollections.join(', ')}) are ignored and were not modified.`);
+  console.log('• Users can read live records but cannot directly create, update, or delete them.');
+  console.log('• User registrations/edits are stored in registry_change_requests until an administrator approves them.');
+  console.log(`• Administrator authority is enforced with the Appwrite user label ${adminLabel}.`);
   console.log('• Old GermDatabase/germination collections were not deleted.');
-  console.log('Revoke/delete the temporary APPWRITE_API_KEY now.\n');
+  console.log('Revoke/delete the temporary APPWRITE_API_KEY used for setup now. For Vercel account management, create a separate least-privilege server key and store it only as APPWRITE_ADMIN_API_KEY.\n');
 }
 
 main().catch((error) => {

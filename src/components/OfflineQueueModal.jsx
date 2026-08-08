@@ -19,7 +19,7 @@ function ageText(timestamp) {
   return `${Math.round(hours / 24)} d ago`;
 }
 
-export default function OfflineQueueModal({ ownerId, online, onClose, onSynced }) {
+export default function OfflineQueueModal({ ownerId, actor, online, onClose, onSynced }) {
   const [entries, setEntries] = useState([]);
   const [summary, setSummary] = useState({ count: 0, photoCount: 0, bytes: 0, errors: 0 });
   const [estimate, setEstimate] = useState(null);
@@ -55,6 +55,7 @@ export default function OfflineQueueModal({ ownerId, online, onClose, onSynced }
     try {
       const result = await syncOfflineQueue({
         ownerId,
+        actor,
         entryId,
         ignoreBackoff: true,
         onProgress: (event) => {
@@ -62,12 +63,13 @@ export default function OfflineQueueModal({ ownerId, online, onClose, onSynced }
           if (event.phase === 'entry') setProgress(`Syncing ${event.index} of ${event.total}: ${name}`);
           if (event.phase === 'photos') setProgress(`Uploading compressed photo ${event.done} of ${event.total} for ${name}`);
           if (event.phase === 'record') setProgress(`Saving ${name} to Appwrite…`);
+          if (event.phase === 'request') setProgress(`Submitting ${name} for administrator approval…`);
           if (event.phase === 'cleanup') setProgress(`Finishing photo cleanup for ${name}…`);
         }
       });
       if (result.synced) onSynced?.(result);
       if (result.failed) setError(`${result.failed} queued entr${result.failed === 1 ? 'y' : 'ies'} still need attention. Nothing was discarded.`);
-      setProgress(result.synced ? `${result.synced} offline entr${result.synced === 1 ? 'y' : 'ies'} synced successfully.` : 'No queued entries were synced.');
+      setProgress(result.synced ? (result.approvalRequests ? `${result.approvalRequests} submission${result.approvalRequests === 1 ? '' : 's'} sent for administrator approval.` : `${result.synced} offline entr${result.synced === 1 ? 'y' : 'ies'} synced successfully.`) : 'No queued entries were synced.');
       await reload();
     } catch (err) {
       setError(err?.message || String(err || 'Offline sync failed.'));

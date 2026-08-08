@@ -19,11 +19,13 @@ import {
   Plus,
   RefreshCw,
   Search,
+  ShieldCheck,
   Sprout,
   Wheat,
+  Users,
   X
 } from 'lucide-react';
-import { account, ID, isNetworkFailure, withAppwriteFailover } from './lib/appwrite';
+import { ADMIN_LABEL, account, isNetworkFailure, withAppwriteFailover } from './lib/appwrite';
 import { CHARACTERIZATION_FIELDS, SOURCE_RECORD_COUNT } from './lib/characterizationFields';
 import { GERMINATION_FIELDS } from './lib/germinationFields';
 import {
@@ -45,10 +47,12 @@ const DetailModal = lazy(() => import('./components/DetailModal.jsx'));
 const RecordFormModal = lazy(() => import('./components/RecordFormModal.jsx'));
 const ImportModal = lazy(() => import('./components/ImportModal.jsx'));
 const OfflineQueueModal = lazy(() => import('./components/OfflineQueueModal.jsx'));
+const AdminCenterModal = lazy(() => import('./components/AdminCenterModal.jsx'));
 
 const APP_NAME = 'CaneSprout Registry';
-const APP_VERSION = '2.4.5';
+const APP_VERSION = '2.5.4';
 const USER_CACHE_KEY = 'sugarcane-registry-user-v230';
+const ROLE_REFRESH_PREFIX = 'canesprout-role-refresh-v251:';
 const MANUAL_REFRESH_COOLDOWN_MS = 30_000;
 const STALE_NOTICE_MS = 45 * 60_000;
 
@@ -62,13 +66,21 @@ function cachedUser() {
 }
 
 function saveCachedUser(user) {
-  const safe = { id: user?.$id || user?.id || 'cached', name: user?.name || '', email: user?.email || '' };
+  const safe = { id: user?.$id || user?.id || 'cached', name: user?.name || '', email: user?.email || '', labels: Array.isArray(user?.labels) ? user.labels : [] };
   localStorage.setItem(USER_CACHE_KEY, JSON.stringify(safe));
   return safe;
 }
 
 function clearCachedUser() {
   localStorage.removeItem(USER_CACHE_KEY);
+}
+
+function roleRefreshKey(user) {
+  return `${ROLE_REFRESH_PREFIX}${user?.id || user?.$id || user?.email || 'unknown'}`;
+}
+
+function markRoleRefreshed(user) {
+  try { sessionStorage.setItem(roleRefreshKey(user), '1'); } catch {}
 }
 
 function Brand() {
@@ -81,7 +93,6 @@ function Brand() {
 }
 
 function AuthScreen({ onSignedIn }) {
-  const [mode, setMode] = useState('login');
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -91,21 +102,14 @@ function AuthScreen({ onSignedIn }) {
     setBusy(true);
     setError('');
     try {
-      if (mode === 'signup') {
-        const userId = ID.unique();
-        await withAppwriteFailover(() => account.create({ userId, email: form.email.trim(), password: form.password, name: form.name.trim() || form.email.trim() }), { timeoutMs: 4500, retryTransport: false });
-      }
       try {
         await withAppwriteFailover(() => account.createEmailPasswordSession({ email: form.email.trim(), password: form.password }), { timeoutMs: 3500, retryTransport: false });
       } catch (sessionError) {
-        if (String(sessionError?.type || '').toLowerCase() === 'user_session_already_exists') {
-          const existing = await withAppwriteFailover(() => account.get(), { timeoutMs: 3500 });
-          onSignedIn(saveCachedUser(existing));
-          return;
-        }
-        throw sessionError;
+        if (String(sessionError?.type || '').toLowerCase() !== 'user_session_already_exists') throw sessionError;
       }
-      onSignedIn(saveCachedUser({ email: form.email.trim(), name: form.name.trim() }));
+      const existing = await withAppwriteFailover(() => account.get(), { timeoutMs: 3500 });
+      markRoleRefreshed(existing);
+      onSignedIn(saveCachedUser(existing));
     } catch (err) {
       setError(loginMessageFor(err));
     } finally {
@@ -138,15 +142,14 @@ function AuthScreen({ onSignedIn }) {
       <section className="auth-panel">
         <div className="auth-card">
           <Brand />
-          <div className="auth-heading"><small>{mode === 'login' ? 'Welcome back' : 'New account'}</small><h2>{mode === 'login' ? 'Sign in to the field registry' : 'Create registry account'}</h2></div>
+          <div className="auth-heading"><small>Welcome back</small><h2>Sign in to the field registry</h2></div>
           <form onSubmit={submit}>
-            {mode === 'signup' && <label><span>Name</span><input value={form.name} onChange={(event) => { setError(''); setForm({ ...form, name: event.target.value }); }} /></label>}
             <label><span>Email</span><input type="email" required value={form.email} onChange={(event) => { setError(''); setForm({ ...form, email: event.target.value }); }} /></label>
             <label><span>Password</span><input type="password" required minLength={8} value={form.password} onChange={(event) => { setError(''); setForm({ ...form, password: event.target.value }); }} /></label>
             {error && <div className="alert error">{error}</div>}
-            <button className="primary-button full" disabled={busy}>{busy ? <><LoaderCircle className="spin" size={17} /> Connecting…</> : mode === 'login' ? 'Sign in' : 'Create account'}</button>
+            <button className="primary-button full" disabled={busy}>{busy ? <><LoaderCircle className="spin" size={17} /> Connecting…</> : 'Sign in'}</button>
           </form>
-          <button className="text-button" onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); }}>{mode === 'login' ? 'Need an account? Create one' : 'Already registered? Sign in'}</button>
+          <p className="auth-admin-note">Accounts are created and assigned roles by a CaneSprout administrator.</p>
         </div>
       </section>
     </main>
@@ -241,6 +244,9 @@ export default function App() {
   const [showForm, setShowForm] = useState(false);
   const [showImport, setShowImport] = useState(false);
   const [showOfflineQueue, setShowOfflineQueue] = useState(false);
+  const [showAdminCenter, setShowAdminCenter] = useState(false);
+  const [adminCenterTab, setAdminCenterTab] = useState('approvals');
+  const [submissionNotice, setSubmissionNotice] = useState('');
   const [offlineSummary, setOfflineSummary] = useState({ count: 0, pending: 0, errors: 0, photoCount: 0, bytes: 0 });
   const [offlineSyncState, setOfflineSyncState] = useState('');
   const [backupState, setBackupState] = useState('');
@@ -282,17 +288,19 @@ export default function App() {
         setOfflineSyncState(`Syncing ${summary.count} offline entr${summary.count === 1 ? 'y' : 'ies'}…`);
         const result = await syncOfflineQueue({
           ownerId,
+          actor: { ...user, isAdmin: Array.isArray(user?.labels) && user.labels.includes(ADMIN_LABEL) },
           onProgress: (event) => {
             if (cancelled) return;
             const name = event.entry?.form?.variety || event.entry?.form?.germ_trial_code || 'offline record';
             if (event.phase === 'entry') setOfflineSyncState(`Syncing ${event.index}/${event.total}: ${name}`);
             if (event.phase === 'photos') setOfflineSyncState(`Uploading compressed photo ${event.done}/${event.total}`);
             if (event.phase === 'record') setOfflineSyncState(`Saving ${name}…`);
+            if (event.phase === 'request') setOfflineSyncState(`Submitting ${name} for administrator approval…`);
           }
         });
         if (cancelled) return;
         if (result.synced) {
-          setOfflineSyncState(`${result.synced} offline entr${result.synced === 1 ? 'y' : 'ies'} synced`);
+          setOfflineSyncState(result.approvalRequests ? `${result.approvalRequests} offline submission${result.approvalRequests === 1 ? '' : 's'} sent for administrator approval` : `${result.synced} offline entr${result.synced === 1 ? 'y' : 'ies'} synced`);
           clearListCache();
           // Avoid an automatic post-sync list read. When browsing normally,
           // merge the just-saved records into the current page locally.
@@ -318,7 +326,8 @@ export default function App() {
   // a 401 clears the cached identity immediately. account.get() is only used
   // when no local identity exists but a valid Appwrite cookie might.
   useEffect(() => {
-    if (cachedUser()) {
+    const cached = cachedUser();
+    if (cached && Array.isArray(cached.labels)) {
       setSessionState(navigator.onLine ? 'ready' : 'offline');
       return undefined;
     }
@@ -341,6 +350,36 @@ export default function App() {
     });
     return () => { live = false; };
   }, []);
+
+  // Role-sensitive UI must not rely on an old cached label forever. We refresh
+  // the current Appwrite account once per browser tab/session when online.
+  // Login already performs account.get(), so freshly signed-in users are marked
+  // as refreshed and do not spend an extra request.
+  useEffect(() => {
+    if (!user || !online) return undefined;
+    const key = roleRefreshKey(user);
+    try {
+      if (sessionStorage.getItem(key) === '1') return undefined;
+      sessionStorage.setItem(key, 'pending');
+    } catch {}
+
+    let live = true;
+    withAppwriteFailover(() => account.get(), { timeoutMs: 3500 }).then((fresh) => {
+      if (!live) return;
+      const next = saveCachedUser(fresh);
+      markRoleRefreshed(next);
+      setUser(next);
+    }).catch((error) => {
+      try { sessionStorage.removeItem(key); } catch {}
+      const code = Number(error?.code || error?.status || 0);
+      if (code === 401 && live) {
+        clearCachedUser();
+        setUser(null);
+        setSessionState('signed-out');
+      }
+    });
+    return () => { live = false; };
+  }, [user?.id, user?.email, online]);
 
   useEffect(() => {
     if (!window.germDesktop?.onUpdateStatus) return undefined;
@@ -545,17 +584,36 @@ export default function App() {
     setRecords([]);
   }
 
+  const isAdmin = Array.isArray(user?.labels) && user.labels.includes(ADMIN_LABEL);
+
+  async function openAdminCenter(tab = 'approvals') {
+    try {
+      const fresh = await withAppwriteFailover(() => account.get(), { timeoutMs: 3500 });
+      const next = saveCachedUser(fresh);
+      setUser(next);
+      if (!Array.isArray(next.labels) || !next.labels.includes(ADMIN_LABEL)) {
+        setSubmissionNotice('This account no longer has administrator authority.');
+        return;
+      }
+      setAdminCenterTab(tab);
+      setShowAdminCenter(true);
+    } catch (error) {
+      setListError(messageFor(error));
+    }
+  }
+
   if (!user) return <AuthScreen onSignedIn={(next) => { setUser(next); setSessionState('ready'); }} />;
 
   return (
     <main className="app-shell">
-      <header className="topbar reference-toolbar">
+      <header className={`topbar reference-toolbar ${isAdmin ? 'admin-toolbar' : 'user-toolbar'}`}>
         <div className="toolbar-brand-panel"><Brand /></div>
 
-        <nav className="toolbar-main-actions" aria-label="Primary registry navigation">
+        <nav className={`toolbar-main-actions ${isAdmin ? 'admin-actions' : ''}`} aria-label="Primary registry navigation">
           <button className="toolbar-tile nav-button active" onClick={goToRegistrySearch}><Leaf size={21} /><span>Registry</span></button>
-          <button className="toolbar-tile nav-button" onClick={() => setShowImport(true)}><FileSpreadsheet size={21} /><span>Import Excel</span></button>
+          {isAdmin && <button className="toolbar-tile nav-button" onClick={() => setShowImport(true)}><FileSpreadsheet size={21} /><span>Import Excel</span></button>}
           <button className="toolbar-tile toolbar-add" onClick={() => { setEditRecord(null); setShowForm(true); }}><Plus size={22} /><span>Add record</span></button>
+          {isAdmin && <button className="toolbar-tile nav-button toolbar-accounts" onClick={() => openAdminCenter('approvals')} title="Admin Center: approvals and account management"><ShieldCheck size={21} /><span>Admin Center</span></button>}
         </nav>
 
         <button
@@ -569,13 +627,16 @@ export default function App() {
           {offlineSummary.count ? <strong className="toolbar-queue-badge">{offlineSummary.count}</strong> : null}
         </button>
 
-        <div className="toolbar-account-card">
+        <div className={`toolbar-account-card ${isAdmin ? 'admin-account' : 'user-account'}`}>
           <span className="toolbar-avatar" aria-hidden="true">{String(user.name || user.email || 'U').trim().charAt(0).toUpperCase()}</span>
-          <span className="user-chip"><b>{user.name || user.email?.split('@')[0] || 'User'}</b><small>{user.email}</small></span>
+          <span className="user-chip"><b>{user.name || user.email?.split('@')[0] || 'User'}</b><small>{isAdmin ? 'Administrator' : 'User'} • {user.email}</small></span>
+
 
           <details className="toolbar-more">
             <summary className="icon-button" title="More actions"><MoreHorizontal size={19} /></summary>
             <div className="toolbar-more-menu">
+              {isAdmin && <button onClick={() => openAdminCenter('approvals')}><ShieldCheck size={17} /><span>Pending approvals</span></button>}
+              {isAdmin && <button onClick={() => openAdminCenter('accounts')}><Users size={17} /><span>Account management</span></button>}
               <button onClick={() => setShowOfflineQueue(true)}><CloudUpload size={17} /><span>Offline queue</span>{offlineSummary.count ? <b>{offlineSummary.count}</b> : null}</button>
               <button onClick={createBackup} disabled={Boolean(backupState)}><Download size={17} /><span>{backupState || 'Backup'}</span></button>
               <button onClick={handleUpdates}><RefreshCw size={17} /><span>{updateState === 'downloaded' ? 'Restart & update' : updateState === 'checking' ? 'Checking…' : 'Updates'}</span></button>
@@ -600,7 +661,7 @@ export default function App() {
             <span><Leaf size={16} /><b>Establish</b><small>nursery & field</small></span><i />
             <span><Wheat size={16} /><b>Characterize</b><small>varietal traits</small></span>
           </div>
-          <div className="hero-actions"><button className="primary-button" onClick={() => { setEditRecord(null); setShowForm(true); }}><Plus size={17} /> New sugarcane record</button><button className="secondary-button" onClick={() => setShowImport(true)}><FileSpreadsheet size={17} /> Import field workbook</button></div>
+          <div className="hero-actions"><button className="primary-button" onClick={() => { setEditRecord(null); setShowForm(true); }}><Plus size={17} /> New sugarcane record</button>{isAdmin && <button className="secondary-button" onClick={() => setShowImport(true)}><FileSpreadsheet size={17} /> Import field workbook</button>}</div>
         </div>
         <div className="hero-stats agricultural-stats">
           <div><span className="stat-icon"><FileSpreadsheet size={18} /></span><small>Characterization entries</small><strong>{SOURCE_RECORD_COUNT}</strong><span>source sugarcane records</span></div>
@@ -623,9 +684,10 @@ export default function App() {
           {searchInput && <button className="clear-search" onClick={() => { setSearchMatchMode(''); setSearchInput(''); searchInputRef.current?.focus(); }} aria-label="Clear search"><X size={16} /></button>}
           <span>{searchInput.trim().length > 0 && searchInput.trim().length < SEARCH_MIN ? `${SEARCH_MIN - searchInput.trim().length} more character${SEARCH_MIN - searchInput.trim().length === 1 ? '' : 's'} • 0 reads` : searchInput.trim() ? `${SEARCH_SCOPES[searchScope].label} • ${searchScope === 'all' ? 'keyword index' : 'smart index'}` : `Browse first ${PAGE_SIZE}`}</span>
         </div>
+        {submissionNotice && <div className="alert success"><CheckCircle2 size={16} /> {submissionNotice}</div>}
         {!!offlineSummary.count && <div className="offline-queue-banner"><CloudUpload size={18} /><div><strong>{offlineSummary.count} offline entr{offlineSummary.count === 1 ? 'y' : 'ies'} waiting on this device</strong><span>{offlineSummary.photoCount ? `${offlineSummary.photoCount} compressed photo${offlineSummary.photoCount === 1 ? '' : 's'} included. ` : ''}Sync is direct to Appwrite and never routed through Vercel.</span></div><button className="secondary-button" onClick={() => setShowOfflineQueue(true)}>Open queue</button></div>}
         {offlineSyncState && <div className="alert info offline-sync-status"><CloudUpload size={16} /> {offlineSyncState}</div>}
-        <div className="query-policy"><CheckCircle2 size={16} /><span>{PAGE_SIZE} rows/request • {SEARCH_DEBOUNCE_MS} ms debounce • cursor Load More • lean card fields • bounded caching • IndexedDB offline queue • lazy tools/photos • no polling • no Realtime • no totals</span></div>
+        <div className="query-policy"><CheckCircle2 size={16} /><span>{PAGE_SIZE} rows/request • {SEARCH_DEBOUNCE_MS} ms debounce • cursor Load More • lean card fields • bounded caching • admin approval workflow • IndexedDB offline queue • lazy tools/photos • no polling • no Realtime • no totals</span></div>
         {!loading && searchInput.trim().length >= SEARCH_MIN && searchTerm === searchInput.trim() && <div className="search-result-note"><b>{records.length}</b><span>{searchMatchMode === 'exact' ? `Exact ${SEARCH_SCOPES[searchScope].label.toLowerCase()} match` : `${records.length === 1 ? 'match' : 'matches'} loaded`} for “{searchTerm}” in {SEARCH_SCOPES[searchScope].label}.{hasMore ? ` More matches are available with Load ${PAGE_SIZE} more.` : ''}</span></div>}
         {cacheNote && <div className="alert info">{cacheNote}</div>}
         {listError && <div className="alert error">{listError}</div>}
@@ -640,10 +702,11 @@ export default function App() {
       <footer className="app-footer"><span><Sprout size={15} /> {APP_NAME} v{APP_VERSION}</span><span>Static Vite shell • direct Appwrite Web SDK • IndexedDB offline queue • storage-efficient WebP media</span></footer>
 
       <Suspense fallback={<ModalLoading />}>
-        {detailId && <DetailModal recordId={detailId} onClose={() => setDetailId('')} onEdit={openEdit} onDeleted={refreshRegistry} />}
-        {showForm && <RecordFormModal initial={editRecord} ownerId={user.id || user.email} online={online} onClose={() => { setShowForm(false); setEditRecord(null); }} onSaved={refreshRegistry} onQueued={handleQueuedOffline} />}
-        {showImport && <ImportModal onClose={() => setShowImport(false)} onImported={refreshRegistry} />}
-        {showOfflineQueue && <OfflineQueueModal ownerId={user.id || user.email} online={online} onClose={() => setShowOfflineQueue(false)} onSynced={handleOfflineSynced} />}
+        {detailId && <DetailModal recordId={detailId} isAdmin={isAdmin} onClose={() => setDetailId('')} onEdit={openEdit} onDeleted={refreshRegistry} />}
+        {showForm && <RecordFormModal initial={editRecord} actor={user} isAdmin={isAdmin} online={online} onClose={() => { setShowForm(false); setEditRecord(null); }} onSaved={refreshRegistry} onSubmitted={({ type, variety }) => { setSubmissionNotice(`${variety} ${type === 'edit' ? 'edit' : 'registration'} submitted for administrator approval.`); window.setTimeout(() => setSubmissionNotice(''), 6000); }} onQueued={handleQueuedOffline} />}
+        {showImport && isAdmin && <ImportModal onClose={() => setShowImport(false)} onImported={refreshRegistry} />}
+        {showOfflineQueue && <OfflineQueueModal ownerId={user.id || user.email} actor={{ ...user, isAdmin }} online={online} onClose={() => setShowOfflineQueue(false)} onSynced={handleOfflineSynced} />}
+        {showAdminCenter && isAdmin && <AdminCenterModal initialTab={adminCenterTab} currentUser={user} onClose={() => setShowAdminCenter(false)} onRegistryChanged={() => { clearListCache(); refreshRegistry(); }} />}
       </Suspense>
     </main>
   );

@@ -5,7 +5,7 @@ import { GERMINATION_FIELDS } from '../lib/germinationFields';
 import { deleteRecord, fileViewUrl, getRecord } from '../lib/registryApi';
 import { messageFor, pct } from '../lib/registryUi';
 
-export default function DetailModal({ recordId, onClose, onEdit, onDeleted }) {
+export default function DetailModal({ recordId, onClose, onEdit, onDeleted, isAdmin = false }) {
   const [record, setRecord] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -91,9 +91,9 @@ export default function DetailModal({ recordId, onClose, onEdit, onDeleted }) {
           </>}
         </div>
         {record && <footer className="modal-footer">
-          <button className="danger-button" onClick={remove} disabled={deleting}><Trash2 size={16} /> {deleting ? 'Deleting…' : 'Delete'}</button>
+          {isAdmin && <button className="danger-button" onClick={remove} disabled={deleting}><Trash2 size={16} /> {deleting ? 'Deleting…' : 'Delete'}</button>}
           <span className="footer-spacer" />
-          <button className="secondary-button" onClick={() => onEdit(record)}><Pencil size={16} /> Edit</button>
+          <button className="secondary-button" onClick={() => onEdit(record)}><Pencil size={16} /> {isAdmin ? 'Edit' : 'Request edit'}</button>
           <button className="primary-button" onClick={onClose}>Done</button>
         </footer>}
         {record && photoViewIndex >= 0 && photos[photoViewIndex] && (

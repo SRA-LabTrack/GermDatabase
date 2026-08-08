@@ -1,0 +1,6 @@
+v2.5.1 validation passed
+- JSON files parse
+- CSS braces balanced
+- role-aware 2-column user and 4-column admin toolbar rules present
+- once-per-session role refresh present
+- no Appwrite schema migration required
