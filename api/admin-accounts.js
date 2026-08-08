@@ -2,7 +2,15 @@ const endpoint = String(process.env.APPWRITE_ENDPOINT || process.env.VITE_APPWRI
 const fallbackEndpoint = String(process.env.APPWRITE_FALLBACK_ENDPOINT || process.env.VITE_APPWRITE_FALLBACK_ENDPOINT || 'https://cloud.appwrite.io/v1').replace(/\/$/, '');
 const endpoints = [...new Set([endpoint, fallbackEndpoint].filter(Boolean))];
 const projectId = String(process.env.APPWRITE_PROJECT_ID || process.env.VITE_APPWRITE_PROJECT_ID || '6a744cda00030236187b');
-const apiKey = String(process.env.APPWRITE_ADMIN_API_KEY || '');
+// Recommended: APPWRITE_ADMIN_API_KEY with only users.read + users.write.
+// Fallback names are server-side only and exist to make upgrades less brittle.
+const apiKeyCandidates = [
+  ['APPWRITE_ADMIN_API_KEY', process.env.APPWRITE_ADMIN_API_KEY],
+  ['APPWRITE_USERS_API_KEY', process.env.APPWRITE_USERS_API_KEY],
+  ['APPWRITE_API_KEY', process.env.APPWRITE_API_KEY]
+].filter(([, value]) => String(value || '').trim());
+const [apiKeySource = '', apiKeyValue = ''] = apiKeyCandidates[0] || [];
+const apiKey = String(apiKeyValue || '').trim();
 const ADMIN_LABEL = 'canesproutadmin';
 
 function json(res, status, body) {
@@ -51,9 +59,13 @@ async function appwrite(path, { method = 'GET', body, jwt = '', key = '' } = {})
   throw lastError || new Error('Appwrite account-management request failed.');
 }
 
-async function verifiedAdmin(jwt) {
+async function accountFromJwt(jwt) {
   if (!jwt) throw Object.assign(new Error('Missing Appwrite JWT.'), { status: 401 });
-  const account = await appwrite('/account', { jwt });
+  return appwrite('/account', { jwt });
+}
+
+async function verifiedAdmin(jwt) {
+  const account = await accountFromJwt(jwt);
   const user = await appwrite(`/users/${encodeURIComponent(account.$id)}`, { key: apiKey });
   if (!Array.isArray(user.labels) || !user.labels.includes(ADMIN_LABEL)) {
     throw Object.assign(new Error('Administrator authority is required.'), { status: 403 });
@@ -85,14 +97,39 @@ export default async function handler(req, res) {
     return res.end('');
   }
   if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed.' });
-  if (!apiKey) return json(res, 503, { error: 'APPWRITE_ADMIN_API_KEY is not configured on the server.' });
+
+  const body = req.body && typeof req.body === 'object' ? req.body : {};
+  const action = String(body.action || 'list');
+  const auth = String(req.headers.authorization || '');
+  const jwt = auth.startsWith('Bearer ') ? auth.slice(7).trim() : '';
+
+  // Lightweight health check. It never reveals the key itself.
+  // If a JWT is present we validate that it at least belongs to this Appwrite project.
+  if (action === 'status') {
+    try {
+      if (jwt) await accountFromJwt(jwt);
+      return json(res, 200, {
+        configured: Boolean(apiKey),
+        keySource: apiKey ? apiKeySource : '',
+        projectId,
+        message: apiKey
+          ? 'Account-management server credential is configured.'
+          : 'A server-only Appwrite Users API key is required.'
+      });
+    } catch (error) {
+      return json(res, Number(error?.status || 500), { configured: Boolean(apiKey), error: error?.message || 'Status check failed.' });
+    }
+  }
+
+  if (!apiKey) {
+    return json(res, 503, {
+      code: 'admin_key_missing',
+      error: 'Account Management is not configured on the server. Add APPWRITE_ADMIN_API_KEY in Vercel with Appwrite users.read and users.write scopes, then redeploy.'
+    });
+  }
 
   try {
-    const auth = String(req.headers.authorization || '');
-    const jwt = auth.startsWith('Bearer ') ? auth.slice(7).trim() : '';
     const admin = await verifiedAdmin(jwt);
-    const body = req.body && typeof req.body === 'object' ? req.body : {};
-    const action = String(body.action || 'list');
 
     if (action === 'list') {
       const search = String(body.search || '').trim().slice(0, 256);
@@ -137,6 +174,14 @@ export default async function handler(req, res) {
 
     return json(res, 400, { error: 'Unknown account-management action.' });
   } catch (error) {
-    return json(res, Number(error?.status || 500), { error: error?.message || 'Account management failed.' });
+    const message = error?.message || 'Account management failed.';
+    const lowered = String(message).toLowerCase();
+    if (lowered.includes('scope') || lowered.includes('unauthorized') || lowered.includes('permission')) {
+      return json(res, Number(error?.status || 403), {
+        code: 'admin_key_scope',
+        error: `${message} The server key must include Appwrite users.read and users.write scopes.`
+      });
+    }
+    return json(res, Number(error?.status || 500), { error: message });
   }
 }

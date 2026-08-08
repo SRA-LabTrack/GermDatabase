@@ -2179,3 +2179,421 @@ body { overflow-x: hidden; }
     display: none !important;
   }
 }
+
+/* v2.5.6 secure account-management server diagnostics */
+.admin-server-setup {
+  display: grid;
+  grid-template-columns: 52px minmax(0,1fr);
+  gap: 16px;
+  padding: 18px;
+  margin: 8px 0 16px;
+  border: 1px solid rgba(151,115,39,.18);
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(255,250,226,.92), rgba(248,252,240,.88));
+}
+.admin-server-setup-icon {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  color: #406b36;
+  background: linear-gradient(145deg, #e9ef79, #b9dda0);
+}
+.admin-server-setup-copy h3 { margin: 0 0 7px; color: #173f2a; }
+.admin-server-setup-copy p { margin: 0 0 10px; color: #607064; line-height: 1.55; }
+.admin-server-setup-copy ol { margin: 0 0 14px 20px; padding: 0; color: #526458; line-height: 1.65; }
+.admin-server-setup-copy code { padding: 2px 6px; border-radius: 7px; background: rgba(31,91,50,.08); color: #1f5a36; }
+.admin-server-ready {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 12px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  color: #245d38;
+  background: rgba(226,244,216,.82);
+  font-size: 11px;
+  font-weight: 800;
+}
+@media (max-width: 680px) {
+  .admin-server-setup { grid-template-columns: 1fr; }
+}
+
+/* ================================================================
+   v2.5.7 ACCOUNT CARD COMPACT-ROW FIX
+   Never allow account controls to wrap into a hidden second row.
+   ================================================================ */
+.reference-toolbar > .toolbar-account-card {
+  box-sizing: border-box !important;
+  align-items: center !important;
+  grid-auto-flow: column !important;
+  grid-auto-rows: 1fr !important;
+  overflow: visible !important;
+}
+.reference-toolbar > .toolbar-account-card > * {
+  min-width: 0 !important;
+  grid-row: 1 !important;
+}
+.reference-toolbar > .toolbar-account-card .toolbar-more,
+.reference-toolbar > .toolbar-account-card .toolbar-signout {
+  align-self: center !important;
+  justify-self: center !important;
+}
+
+/* Normal desktop/laptop: keep the full identity readable. */
+@media (min-width: 1081px) {
+  .reference-toolbar > .toolbar-account-card {
+    grid-template-columns: 46px minmax(92px,1fr) 38px 38px !important;
+    min-width: 214px !important;
+    max-width: 290px !important;
+  }
+  .reference-toolbar > .toolbar-account-card .toolbar-avatar,
+  .reference-toolbar > .toolbar-account-card .user-chip {
+    display: grid !important;
+  }
+}
+
+/* Compact laptops/tablets: identity text yields first, not the controls. */
+@media (max-width: 1080px) {
+  .reference-toolbar > .toolbar-account-card,
+  .reference-toolbar > .toolbar-account-card.admin-account,
+  .reference-toolbar > .toolbar-account-card.user-account {
+    flex: 0 0 142px !important;
+    width: 142px !important;
+    min-width: 142px !important;
+    max-width: 142px !important;
+    grid-template-columns: 46px 38px 38px !important;
+    gap: 5px !important;
+    padding: 6px 7px !important;
+  }
+  .reference-toolbar > .toolbar-account-card .user-chip {
+    display: none !important;
+  }
+  .reference-toolbar > .toolbar-account-card .toolbar-avatar {
+    display: grid !important;
+    width: 42px !important;
+    height: 42px !important;
+  }
+  .reference-toolbar > .toolbar-account-card .toolbar-more > summary,
+  .reference-toolbar > .toolbar-account-card .toolbar-signout {
+    width: 38px !important;
+    min-width: 38px !important;
+    height: 38px !important;
+  }
+}
+
+/* Small devices: keep only the two essential account controls. */
+@media (max-width: 680px) {
+  .reference-toolbar > .toolbar-account-card,
+  .reference-toolbar > .toolbar-account-card.admin-account,
+  .reference-toolbar > .toolbar-account-card.user-account {
+    flex: 0 0 84px !important;
+    width: 84px !important;
+    min-width: 84px !important;
+    max-width: 84px !important;
+    grid-template-columns: 36px 36px !important;
+    gap: 4px !important;
+    padding: 5px 4px !important;
+  }
+  .reference-toolbar > .toolbar-account-card .toolbar-avatar,
+  .reference-toolbar > .toolbar-account-card .user-chip {
+    display: none !important;
+  }
+  .reference-toolbar > .toolbar-account-card .toolbar-more > summary,
+  .reference-toolbar > .toolbar-account-card .toolbar-signout {
+    width: 36px !important;
+    min-width: 36px !important;
+    height: 36px !important;
+  }
+}
+
+/* Very narrow phones: trim the surrounding toolbar before account controls. */
+@media (max-width: 500px) {
+  .reference-toolbar {
+    gap: 3px !important;
+    padding-inline: 4px !important;
+  }
+  .reference-toolbar > .toolbar-brand-panel {
+    flex-basis: 50px !important;
+    min-width: 50px !important;
+    max-width: 50px !important;
+  }
+  .reference-toolbar > .toolbar-status-card {
+    flex-basis: 44px !important;
+    min-width: 44px !important;
+    max-width: 44px !important;
+  }
+  .reference-toolbar.admin-toolbar > nav.toolbar-main-actions,
+  .reference-toolbar.user-toolbar > nav.toolbar-main-actions {
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+  }
+}
+
+
+/* ================================================================
+   v2.5.8 TOOLBAR WIDTH-BUDGET + ACCOUNT CARD FIX
+   The right-side account card is protected from viewport clipping.
+   Flexible/admin navigation yields space before account controls do.
+   ================================================================ */
+.reference-toolbar {
+  box-sizing: border-box !important;
+  width: calc(100% - 20px) !important;
+  max-width: calc(100vw - 20px) !important;
+  min-width: 0 !important;
+  overflow: visible !important;
+}
+
+/* Brand is useful, but must not steal the account card's right-edge space. */
+.reference-toolbar > .toolbar-brand-panel {
+  flex: 0 1 220px !important;
+  min-width: 150px !important;
+  max-width: 220px !important;
+}
+
+/* Navigation is the elastic section. It is allowed to shrink first. */
+.reference-toolbar > nav.toolbar-main-actions,
+.reference-toolbar.user-toolbar > nav.toolbar-main-actions,
+.reference-toolbar.admin-toolbar > nav.toolbar-main-actions {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  max-width: none !important;
+}
+
+.reference-toolbar > .toolbar-status-card {
+  flex: 0 1 160px !important;
+  min-width: 110px !important;
+  max-width: 160px !important;
+}
+
+/* Keep the full account cluster inside its own rounded card. */
+.reference-toolbar > .toolbar-account-card,
+.reference-toolbar > .toolbar-account-card.admin-account,
+.reference-toolbar > .toolbar-account-card.user-account {
+  box-sizing: border-box !important;
+  flex: 0 0 270px !important;
+  width: 270px !important;
+  min-width: 270px !important;
+  max-width: 270px !important;
+  height: 72px !important;
+  min-height: 72px !important;
+  padding: 8px 10px !important;
+  display: grid !important;
+  grid-template-columns: 48px minmax(0,1fr) 40px 40px !important;
+  grid-template-rows: 1fr !important;
+  gap: 6px !important;
+  align-items: center !important;
+  overflow: visible !important;
+}
+.reference-toolbar > .toolbar-account-card > * {
+  min-width: 0 !important;
+  grid-row: 1 !important;
+}
+.reference-toolbar > .toolbar-account-card .toolbar-avatar {
+  display: grid !important;
+  width: 48px !important;
+  height: 48px !important;
+  flex: none !important;
+}
+.reference-toolbar > .toolbar-account-card .user-chip {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+}
+.reference-toolbar > .toolbar-account-card .user-chip b,
+.reference-toolbar > .toolbar-account-card .user-chip small {
+  display: block !important;
+  width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+.reference-toolbar > .toolbar-account-card .user-chip b {
+  font-size: 13px !important;
+  line-height: 1.2 !important;
+}
+.reference-toolbar > .toolbar-account-card .user-chip small {
+  margin-top: 3px !important;
+  font-size: 9px !important;
+}
+.reference-toolbar > .toolbar-account-card .toolbar-more,
+.reference-toolbar > .toolbar-account-card .toolbar-signout {
+  display: block !important;
+  width: 40px !important;
+  min-width: 40px !important;
+  max-width: 40px !important;
+  justify-self: center !important;
+  align-self: center !important;
+}
+.reference-toolbar > .toolbar-account-card .toolbar-more > summary,
+.reference-toolbar > .toolbar-account-card .toolbar-signout {
+  width: 40px !important;
+  min-width: 40px !important;
+  max-width: 40px !important;
+  height: 40px !important;
+  padding: 0 !important;
+  display: grid !important;
+  place-items: center !important;
+}
+
+/* Admin toolbars need four actions. Collapse their captions before the
+   protected right-side controls are allowed to leave the viewport. */
+@media (max-width: 1500px) {
+  .reference-toolbar.admin-toolbar > nav.toolbar-main-actions > * {
+    padding-inline: 6px !important;
+    gap: 5px !important;
+  }
+  .reference-toolbar.admin-toolbar > nav.toolbar-main-actions > * span {
+    font-size: 10.5px !important;
+  }
+  .reference-toolbar > .toolbar-brand-panel {
+    flex-basis: 190px !important;
+    min-width: 135px !important;
+  }
+  .reference-toolbar > .toolbar-status-card {
+    flex-basis: 140px !important;
+    min-width: 96px !important;
+  }
+  .reference-toolbar > .toolbar-account-card,
+  .reference-toolbar > .toolbar-account-card.admin-account,
+  .reference-toolbar > .toolbar-account-card.user-account {
+    flex-basis: 250px !important;
+    width: 250px !important;
+    min-width: 250px !important;
+    max-width: 250px !important;
+    grid-template-columns: 44px minmax(0,1fr) 38px 38px !important;
+  }
+  .reference-toolbar > .toolbar-account-card .toolbar-avatar {
+    width: 44px !important;
+    height: 44px !important;
+  }
+  .reference-toolbar > .toolbar-account-card .toolbar-more,
+  .reference-toolbar > .toolbar-account-card .toolbar-signout,
+  .reference-toolbar > .toolbar-account-card .toolbar-more > summary,
+  .reference-toolbar > .toolbar-account-card .toolbar-signout {
+    width: 38px !important;
+    min-width: 38px !important;
+    max-width: 38px !important;
+    height: 38px !important;
+  }
+}
+
+@media (max-width: 1220px) {
+  .reference-toolbar > .toolbar-brand-panel {
+    flex: 0 0 64px !important;
+    min-width: 64px !important;
+    max-width: 64px !important;
+    justify-content: center !important;
+    padding-inline: 5px !important;
+  }
+  .reference-toolbar > .toolbar-brand-panel .brand > span:last-child {
+    display: none !important;
+  }
+  .reference-toolbar.admin-toolbar > nav.toolbar-main-actions > * span {
+    display: none !important;
+  }
+  .reference-toolbar.admin-toolbar > nav.toolbar-main-actions > * {
+    padding: 0 !important;
+    gap: 0 !important;
+  }
+  .reference-toolbar > .toolbar-status-card {
+    flex: 0 0 58px !important;
+    min-width: 58px !important;
+    max-width: 58px !important;
+    justify-content: center !important;
+    padding: 0 !important;
+  }
+  .reference-toolbar > .toolbar-status-card > span {
+    display: none !important;
+  }
+  .reference-toolbar > .toolbar-account-card,
+  .reference-toolbar > .toolbar-account-card.admin-account,
+  .reference-toolbar > .toolbar-account-card.user-account {
+    flex: 0 0 220px !important;
+    width: 220px !important;
+    min-width: 220px !important;
+    max-width: 220px !important;
+    grid-template-columns: 42px minmax(0,1fr) 36px 36px !important;
+    gap: 5px !important;
+  }
+  .reference-toolbar > .toolbar-account-card .toolbar-avatar {
+    width: 42px !important;
+    height: 42px !important;
+  }
+  .reference-toolbar > .toolbar-account-card .user-chip small {
+    display: none !important;
+  }
+}
+
+/* Compact tablets: show a complete, tidy avatar + menu + sign-out card.
+   Do not show half a name. */
+@media (max-width: 900px) {
+  .reference-toolbar {
+    gap: 5px !important;
+    padding-inline: 6px !important;
+  }
+  .reference-toolbar > .toolbar-account-card,
+  .reference-toolbar > .toolbar-account-card.admin-account,
+  .reference-toolbar > .toolbar-account-card.user-account {
+    flex: 0 0 126px !important;
+    width: 126px !important;
+    min-width: 126px !important;
+    max-width: 126px !important;
+    grid-template-columns: 42px 36px 36px !important;
+    gap: 3px !important;
+    padding: 5px !important;
+  }
+  .reference-toolbar > .toolbar-account-card .user-chip {
+    display: none !important;
+  }
+  .reference-toolbar > .toolbar-account-card .toolbar-avatar {
+    display: grid !important;
+    width: 42px !important;
+    height: 42px !important;
+  }
+  .reference-toolbar > .toolbar-account-card .toolbar-more,
+  .reference-toolbar > .toolbar-account-card .toolbar-signout,
+  .reference-toolbar > .toolbar-account-card .toolbar-more > summary,
+  .reference-toolbar > .toolbar-account-card .toolbar-signout {
+    width: 36px !important;
+    min-width: 36px !important;
+    max-width: 36px !important;
+    height: 36px !important;
+  }
+}
+
+/* Phones: menu and sign-out remain inside the account card. */
+@media (max-width: 620px) {
+  .reference-toolbar > .toolbar-account-card,
+  .reference-toolbar > .toolbar-account-card.admin-account,
+  .reference-toolbar > .toolbar-account-card.user-account {
+    flex: 0 0 80px !important;
+    width: 80px !important;
+    min-width: 80px !important;
+    max-width: 80px !important;
+    grid-template-columns: 34px 34px !important;
+    gap: 4px !important;
+    padding: 4px !important;
+  }
+  .reference-toolbar > .toolbar-account-card .toolbar-avatar,
+  .reference-toolbar > .toolbar-account-card .user-chip {
+    display: none !important;
+  }
+  .reference-toolbar > .toolbar-account-card .toolbar-more,
+  .reference-toolbar > .toolbar-account-card .toolbar-signout,
+  .reference-toolbar > .toolbar-account-card .toolbar-more > summary,
+  .reference-toolbar > .toolbar-account-card .toolbar-signout {
+    width: 34px !important;
+    min-width: 34px !important;
+    max-width: 34px !important;
+    height: 34px !important;
+  }
+}

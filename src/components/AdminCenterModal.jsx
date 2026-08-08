@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Check, LoaderCircle, Search, ShieldCheck, UserPlus, Users, X, XCircle } from 'lucide-react';
+import { Check, KeyRound, LoaderCircle, RefreshCw, Search, ShieldCheck, UserPlus, Users, X, XCircle } from 'lucide-react';
 import { CHARACTERIZATION_FIELDS } from '../lib/characterizationFields';
 import { GERMINATION_FIELDS } from '../lib/germinationFields';
-import { adminAccountRequest } from '../lib/adminAccountsApi';
+import { adminAccountRequest, adminAccountStatus } from '../lib/adminAccountsApi';
 import { approveChangeRequest, getChangeRequest, listPendingRequests, rejectChangeRequest } from '../lib/approvalApi';
 import { getRecord } from '../lib/registryApi';
 
@@ -111,20 +111,37 @@ function AccountsTab({ currentUser }) {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState('');
   const [form, setForm] = useState({ name: '', email: '', password: '', role: 'user' });
-  const [loading, setLoading] = useState(true);
+  const [server, setServer] = useState({ checking: true, configured: false, keySource: '', error: '' });
+  const [loading, setLoading] = useState(false);
   const [busy, setBusy] = useState('');
   const [error, setError] = useState('');
 
-  async function load(term = '') {
+  async function checkServer(force = false) {
+    setServer((current) => ({ ...current, checking: true, error: '' }));
+    setError('');
+    try {
+      const status = await adminAccountStatus({ force });
+      const next = { checking: false, configured: Boolean(status.configured), keySource: status.keySource || '', error: '' };
+      setServer(next);
+      if (next.configured) await load('', { skipServerCheck: true });
+    } catch (err) {
+      setServer({ checking: false, configured: false, keySource: '', error: err?.message || String(err) });
+    }
+  }
+
+  async function load(term = '', { skipServerCheck = false } = {}) {
+    if (!skipServerCheck && !server.configured) return;
     setLoading(true); setError('');
     try { const result = await adminAccountRequest('list', { search: term }); setUsers(result.users || []); }
     catch (err) { setError(err?.message || String(err)); }
     finally { setLoading(false); }
   }
-  useEffect(() => { load(); }, []);
+  useEffect(() => { checkServer(false); }, []);
 
   async function create(event) {
-    event.preventDefault(); setBusy('create'); setError('');
+    event.preventDefault();
+    if (!server.configured) return;
+    setBusy('create'); setError('');
     try {
       const result = await adminAccountRequest('create', form);
       setUsers((current) => [result.user, ...current.filter((item) => item.id !== result.user.id)]);
@@ -134,6 +151,7 @@ function AccountsTab({ currentUser }) {
   }
 
   async function setRole(user, role) {
+    if (!server.configured) return;
     setBusy(user.id); setError('');
     try {
       const result = await adminAccountRequest('setRole', { userId: user.id, role });
@@ -143,17 +161,38 @@ function AccountsTab({ currentUser }) {
   }
 
   return <div className="admin-tab-body accounts-tab">
-    <div className="admin-tab-intro"><div><h3>Account management</h3><p>Create user/admin accounts and grant or remove administrator authority. These rare privileged actions use the server-only Appwrite Users API.</p></div></div>
-    <form className="account-create-form" onSubmit={create}>
-      <label><span>Name</span><input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Account name" /></label>
-      <label><span>Email</span><input type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="name@example.com" /></label>
-      <label><span>Temporary password</span><input type="password" minLength={8} required value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} /></label>
-      <label><span>Role</span><select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}><option value="user">User</option><option value="admin">Administrator</option></select></label>
-      <button className="primary-button" disabled={busy === 'create'}><UserPlus size={16} /> {busy === 'create' ? 'Creating…' : 'Add account'}</button>
-    </form>
-    <div className="account-search"><Search size={17} /><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search accounts…" /><button className="secondary-button" onClick={() => load(search)} disabled={loading}>Search</button></div>
-    {error && <div className="alert error">{error}</div>}
-    {loading ? <div className="admin-loading"><LoaderCircle className="spin" size={18} /> Loading accounts…</div> : <div className="account-list">{users.map((user) => <div className="account-row" key={user.id}><span className="account-avatar">{String(user.name || user.email || 'U').charAt(0).toUpperCase()}</span><span className="account-identity"><b>{user.name || user.email}</b><small>{user.email}</small></span><span className={`role-pill ${user.role}`}>{user.role === 'admin' ? 'Admin' : 'User'}</span><button className="secondary-button compact" disabled={busy === user.id || user.id === currentUser.id} onClick={() => setRole(user, user.role === 'admin' ? 'user' : 'admin')}>{busy === user.id ? 'Updating…' : user.role === 'admin' ? 'Remove admin' : 'Make admin'}</button></div>)}</div>}
+    <div className="admin-tab-intro"><div><h3>Account management</h3><p>Create user/admin accounts and grant or remove administrator authority. These rare privileged actions use a server-only Appwrite Users API key.</p></div></div>
+
+    {server.checking && <div className="admin-loading"><LoaderCircle className="spin" size={18} /> Checking secure account-management service…</div>}
+
+    {!server.checking && !server.configured && <div className="admin-server-setup">
+      <div className="admin-server-setup-icon"><KeyRound size={24} /></div>
+      <div className="admin-server-setup-copy">
+        <h3>One server credential is still required</h3>
+        <p>CaneSprout can approve registrations and edits without this key. The key is needed only for creating accounts, searching all Appwrite users, and changing administrator authority.</p>
+        <ol>
+          <li>In Appwrite, create a dedicated API key with only <b>users.read</b> and <b>users.write</b>.</li>
+          <li>In Vercel → GermDatabase → Settings → Environment Variables, add it as <code>APPWRITE_ADMIN_API_KEY</code> for Production.</li>
+          <li>Redeploy the Production deployment. Vercel environment-variable changes do not affect an already-built deployment.</li>
+        </ol>
+        {server.error && <div className="alert error">{server.error}</div>}
+        <button className="secondary-button" onClick={() => checkServer(true)}><RefreshCw size={16} /> Check again</button>
+      </div>
+    </div>}
+
+    {!server.checking && server.configured && <>
+      <div className="admin-server-ready"><Check size={15} /><span>Secure Users API ready{server.keySource ? ` • ${server.keySource}` : ''}</span></div>
+      <form className="account-create-form" onSubmit={create}>
+        <label><span>Name</span><input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Account name" /></label>
+        <label><span>Email</span><input type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="name@example.com" /></label>
+        <label><span>Temporary password</span><input type="password" minLength={8} required value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} /></label>
+        <label><span>Role</span><select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}><option value="user">User</option><option value="admin">Administrator</option></select></label>
+        <button className="primary-button" disabled={busy === 'create'}><UserPlus size={16} /> {busy === 'create' ? 'Creating…' : 'Add account'}</button>
+      </form>
+      <div className="account-search"><Search size={17} /><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search accounts…" /><button className="secondary-button" onClick={() => load(search)} disabled={loading}>Search</button></div>
+      {error && <div className="alert error">{error}</div>}
+      {loading ? <div className="admin-loading"><LoaderCircle className="spin" size={18} /> Loading accounts…</div> : <div className="account-list">{users.map((user) => <div className="account-row" key={user.id}><span className="account-avatar">{String(user.name || user.email || 'U').charAt(0).toUpperCase()}</span><span className="account-identity"><b>{user.name || user.email}</b><small>{user.email}</small></span><span className={`role-pill ${user.role}`}>{user.role === 'admin' ? 'Admin' : 'User'}</span><button className="secondary-button compact" disabled={busy === user.id || user.id === currentUser.id} onClick={() => setRole(user, user.role === 'admin' ? 'user' : 'admin')}>{busy === user.id ? 'Updating…' : user.role === 'admin' ? 'Remove admin' : 'Make admin'}</button></div>)}</div>}
+    </>}
   </div>;
 }
 

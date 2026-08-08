@@ -50,7 +50,7 @@ const OfflineQueueModal = lazy(() => import('./components/OfflineQueueModal.jsx'
 const AdminCenterModal = lazy(() => import('./components/AdminCenterModal.jsx'));
 
 const APP_NAME = 'CaneSprout Registry';
-const APP_VERSION = '2.5.4';
+const APP_VERSION = '2.5.8';
 const USER_CACHE_KEY = 'sugarcane-registry-user-v230';
 const ROLE_REFRESH_PREFIX = 'canesprout-role-refresh-v251:';
 const MANUAL_REFRESH_COOLDOWN_MS = 30_000;
