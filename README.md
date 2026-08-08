@@ -1,4 +1,4 @@
-# CaneSprout Registry v2.3.0
+# CaneSprout Registry v2.3.1
 
 Agriculture-first sugarcane germination and varietal characterization registry. This build keeps all 60 Characterization.xlsx traits optional, retains the 933 source records, tracks planting/emergence observations, stores field photos as WebP in Appwrite Storage, and is deliberately tuned for Appwrite Free + Vercel Hobby usage.
 
@@ -68,7 +68,7 @@ npm.cmd run build
 npm.cmd run preview
 ```
 
-v2.3.0 adds no Appwrite attributes, collections, or indexes. If your existing v2.1.5+ schema already works, **do not rerun setup**. For a fresh Appwrite project only:
+v2.3.1 adds no Appwrite attributes, collections, or indexes. If your existing v2.1.5+ schema already works, **do not rerun setup**. For a fresh Appwrite project only:
 
 ```bat
 npm.cmd run setup:appwrite
@@ -86,3 +86,13 @@ git push origin main
 ```
 
 If Vercel is connected to `SRA-LabTrack/GermDatabase`, the push automatically starts the new web deployment. The existing GitHub Actions workflow continues to handle Windows releases.
+
+
+## v2.3.1 fast-start fix
+
+- Raw HTML paints a CaneSprout loading shell before React/Appwrite downloads finish.
+- The main application is lazy-loaded after that first paint.
+- Legacy navigation-caching service workers are retired after paint and the replacement sw.js self-unregisters if discovered by an old registration.
+- HTML revalidates on navigation; hashed Vite assets keep one-year immutable caching.
+- Appwrite UI reads use shorter timeouts and the legacy global fallback is opt-in (`VITE_APPWRITE_ENABLE_FALLBACK=true`) rather than automatically doubling a slow failure path.
+- No Appwrite schema migration is required.

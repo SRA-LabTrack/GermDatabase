@@ -1,40 +1,25 @@
-CaneSprout Registry v2.3.0 Windows commands
+CaneSprout Registry v2.3.1 - Windows CMD
+========================================
 
-CANESPROUT REGISTRY v2.3.0 - WINDOWS COMMANDS
-=============================================
+cd /d C:\Users\kenshennn\Downloads\Germ
 
-IMPORTANT
-These commands are for Windows CMD, so they deliberately use npm.cmd.
-Vercel runs Linux and must keep plain npm in vercel.json.
-
-FIRST INSTALL / AFTER PACKAGE CHANGES
+INSTALL / UPDATE DEPENDENCIES
 npm.cmd install
 
 RUN LOCALLY
 npm.cmd run dev
-Open: http://localhost:5174
 
-BUILD WEBSITE
+PRODUCTION BUILD TEST
 npm.cmd run build
 
 PREVIEW PRODUCTION BUILD
 npm.cmd run preview
 
-APPWRITE SETUP
-npm.cmd run setup:appwrite
-Only needed for a fresh Appwrite project/schema. v2.3.0 adds no new attributes or indexes,
-so an existing working v2.1.5+ database does NOT need setup again.
+APPWRITE SCHEMA
+No setup command is required for v2.3.1 if v2.1.5+ schema is already working.
 
-RUN ELECTRON DESKTOP DEV
-npm.cmd run desktop:dev
-
-BUILD WINDOWS INSTALLER
-npm.cmd run desktop:build:win
-
-PUBLISH UPDATE FROM C:\Users\kenshennn\Downloads\Germ
+PUBLISH TO GITHUB / VERCEL
 git status
 git add -A
-git commit -m "CaneSprout v2.3 agriculture UI and quota optimization"
+git commit -m "CaneSprout v2.3.1 fast startup fix"
 git push origin main
-
-Or double-click PUSH-UPDATE-TO-GITHUB.cmd.

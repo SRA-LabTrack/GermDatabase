@@ -2,8 +2,8 @@ import { Account, Client, Databases, ID, Query, Storage } from 'appwrite';
 
 const DEFAULT_REGION_ENDPOINT = 'https://fra.cloud.appwrite.io/v1';
 const LEGACY_GLOBAL_ENDPOINT = 'https://cloud.appwrite.io/v1';
-const ENDPOINT_CACHE_KEY = 'canesprout-appwrite-endpoint-v220';
-const ENDPOINT_FAILURE_COOLDOWN = 60_000;
+const ENDPOINT_CACHE_KEY = 'canesprout-appwrite-endpoint-v231';
+const ENDPOINT_FAILURE_COOLDOWN = 5 * 60_000;
 
 function normalizeEndpoint(value) {
   const raw = String(value || '').trim().replace(/^['"]|['"]$/g, '');
@@ -17,11 +17,12 @@ function normalizeEndpoint(value) {
   }
 }
 
+const PRIMARY_ENDPOINT = normalizeEndpoint(import.meta.env.VITE_APPWRITE_ENDPOINT || DEFAULT_REGION_ENDPOINT);
+const ALLOW_FALLBACK = String(import.meta.env.VITE_APPWRITE_ENABLE_FALLBACK || '').toLowerCase() === 'true';
 export const APPWRITE_ENDPOINTS = Array.from(new Set([
-  import.meta.env.VITE_APPWRITE_ENDPOINT || DEFAULT_REGION_ENDPOINT,
-  DEFAULT_REGION_ENDPOINT,
-  import.meta.env.VITE_APPWRITE_FALLBACK_ENDPOINT || LEGACY_GLOBAL_ENDPOINT
-].map(normalizeEndpoint)));
+  PRIMARY_ENDPOINT,
+  ...(ALLOW_FALLBACK ? [normalizeEndpoint(import.meta.env.VITE_APPWRITE_FALLBACK_ENDPOINT || LEGACY_GLOBAL_ENDPOINT)] : [])
+]));
 
 function rememberedEndpoint() {
   try {
@@ -75,7 +76,7 @@ export function isNetworkFailure(error) {
  * pass retryTransport:false so a timeout can never cause the same mutation to
  * be replayed against a second endpoint.
  */
-export async function withAppwriteFailover(operation, { timeoutMs = 4500, retryTransport = true } = {}) {
+export async function withAppwriteFailover(operation, { timeoutMs = 3500, retryTransport = true } = {}) {
   const now = Date.now();
   let ordered = [activeEndpoint, ...APPWRITE_ENDPOINTS.filter((endpoint) => endpoint !== activeEndpoint)];
   if (retryTransport) {

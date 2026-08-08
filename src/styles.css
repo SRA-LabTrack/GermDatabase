@@ -716,3 +716,16 @@ body { overflow-x: hidden; }
   .viewport-card, .viewport-card.is-visible, .viewport-card.is-visible:hover { opacity: 1 !important; transform: none !important; transition: none !important; }
   .hero-sun, .hero-field-pattern, .auth-field-lines { animation: none !important; }
 }
+
+
+/* v2.3.1 fast-start shell: rendered while the lazy application chunk loads. */
+.app-boot-screen { min-height: 100vh; display: grid; place-items: center; padding: 24px; box-sizing: border-box; background: radial-gradient(circle at 20% 15%, rgba(182,220,145,.35), transparent 35%), radial-gradient(circle at 80% 20%, rgba(250,225,89,.28), transparent 34%), linear-gradient(135deg,#f9fcf4,#f6f7dc); }
+.app-boot-card { width: min(430px, calc(100vw - 48px)); padding: 24px 26px; border: 1px solid rgba(255,255,255,.82); border-radius: 28px; background: rgba(255,255,255,.74); box-shadow: 0 24px 70px rgba(39,91,55,.12); display: grid; grid-template-columns: 54px 1fr; gap: 14px; align-items: center; }
+.app-boot-mark { width: 54px; height: 54px; border-radius: 18px; display: grid; place-items: center; font-size: 30px; background: linear-gradient(145deg,#e9dc55,#9bd478); color:#17492d; }
+.app-boot-card strong { display:block; font-family: Georgia,"Times New Roman",serif; font-size:24px; line-height:1.05; }
+.app-boot-card span { display:block; margin-top:5px; font-size:13px; color:#6d8173; }
+.app-boot-progress { grid-column:1/-1; height:4px; border-radius:99px; overflow:hidden; background:#e7eddc; position:relative; }
+.app-boot-progress::after { content:""; position:absolute; inset:0; width:38%; border-radius:inherit; background:linear-gradient(90deg,#2a7545,#a4c944,#e0c742); animation:canesprout-boot 1.15s ease-in-out infinite alternate; }
+.app-boot-card button { grid-column:1/-1; border:0; border-radius:14px; padding:11px 16px; font:inherit; font-weight:700; color:white; background:#287544; cursor:pointer; }
+@keyframes canesprout-boot { from { transform:translateX(-8%); } to { transform:translateX(172%); } }
+@media (prefers-reduced-motion: reduce) { .app-boot-progress::after { animation:none; width:75%; } }

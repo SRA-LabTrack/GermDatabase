@@ -1,0 +1,9 @@
+CaneSprout Registry v2.3.1 validation
+
+- JavaScript modules pass Node syntax checks where applicable.
+- JSX files pass TypeScript JSX parser diagnostics.
+- package.json, vercel.json, and public/version.json parse as valid JSON.
+- index.html contains an immediate, dependency-free startup shell.
+- public/sw.js contains no fetch interception and self-unregisters.
+- no Appwrite schema changes were introduced.
+- full npm/Vite build could not be executed inside the ChatGPT sandbox because its private npm mirror does not provide appwrite@26.2.0.

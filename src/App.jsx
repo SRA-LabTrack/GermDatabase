@@ -1,4 +1,5 @@
 import React, { Suspense, lazy, useEffect, useRef, useState } from 'react';
+import './styles.css';
 import {
   ArrowUpRight,
   CheckCircle2,
@@ -42,7 +43,7 @@ const RecordFormModal = lazy(() => import('./components/RecordFormModal.jsx'));
 const ImportModal = lazy(() => import('./components/ImportModal.jsx'));
 
 const APP_NAME = 'CaneSprout Registry';
-const APP_VERSION = '2.3.0';
+const APP_VERSION = '2.3.1';
 const USER_CACHE_KEY = 'sugarcane-registry-user-v230';
 const MANUAL_REFRESH_COOLDOWN_MS = 30_000;
 const STALE_NOTICE_MS = 45 * 60_000;
@@ -91,7 +92,7 @@ function AuthScreen({ onSignedIn }) {
         await withAppwriteFailover(() => account.create({ userId, email: form.email.trim(), password: form.password, name: form.name.trim() || form.email.trim() }), { timeoutMs: 4500, retryTransport: false });
       }
       try {
-        await withAppwriteFailover(() => account.createEmailPasswordSession({ email: form.email.trim(), password: form.password }), { timeoutMs: 4500 });
+        await withAppwriteFailover(() => account.createEmailPasswordSession({ email: form.email.trim(), password: form.password }), { timeoutMs: 3500, retryTransport: false });
       } catch (sessionError) {
         if (String(sessionError?.type || '').toLowerCase() === 'user_session_already_exists') {
           const existing = await withAppwriteFailover(() => account.get(), { timeoutMs: 3500 });
@@ -409,14 +410,16 @@ export default function App() {
     if (!window.germDesktop) {
       setUpdateState('checking');
       try {
-        const registration = await navigator.serviceWorker?.getRegistration?.();
-        await registration?.update?.();
+        if ('serviceWorker' in navigator) {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(registrations.map((registration) => registration.unregister()));
+        }
         if ('caches' in window) {
           const keys = await caches.keys();
-          await Promise.all(keys.filter((key) => key.startsWith('canesprout-')).map((key) => caches.delete(key)));
+          await Promise.all(keys.filter((key) => key.startsWith('canesprout-') || key.startsWith('germination-registry-') || key.startsWith('germdatabase-')).map((key) => caches.delete(key)));
         }
       } catch {}
-      window.location.reload();
+      window.location.replace(`${window.location.pathname}?fresh=${Date.now()}`);
       return;
     }
     if (updateState === 'downloaded') {

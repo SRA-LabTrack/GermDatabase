@@ -1,8 +1,10 @@
 {
-  "version": "2.3.0",
+  "version": "2.3.1",
   "domain": "sugarcane-germination-characterization",
   "pagination": 25,
   "searchDebounceMs": 500,
   "build": "agriculture-ui-lazy-tools-local-drafts-quota-guard",
-  "released": "2026-08-08"
+  "released": "2026-08-08",
+  "name": "CaneSprout Registry",
+  "notes": "Fast-start shell, stale service-worker retirement, lazy application bootstrap, safer Vercel shell caching, and shorter Appwrite wait paths."
 }

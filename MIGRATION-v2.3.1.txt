@@ -1,0 +1,25 @@
+CaneSprout Registry v2.3.1 - FAST START / BLANK PAGE FIX
+
+What changed
+- index.html now paints a lightweight CaneSprout loading shell before React or Appwrite loads.
+- The React application itself is lazy-loaded after the boot shell is visible.
+- The old navigation-caching service worker is retired and stale CaneSprout/GermDatabase caches are removed after paint.
+- sw.js is now a self-destructing cleanup worker for clients that still discover an older registration.
+- HTML is browser-revalidated instead of being pinned for 10 minutes; hashed /assets files remain immutable for one year.
+- Direct Appwrite reads use a 3.5 second UI timeout instead of waiting 6.5 seconds before surfacing cache/offline state.
+- Appwrite global fallback is opt-in with VITE_APPWRITE_ENABLE_FALLBACK=true, preventing a second slow endpoint attempt during ordinary failures.
+- Email/password session creation is never replayed against a second endpoint after a timeout.
+- Web Updates performs a clean cache/service-worker retirement and cache-busted reload.
+
+No Appwrite schema changes are required.
+
+Windows commands
+  npm.cmd install
+  npm.cmd run build
+  npm.cmd run dev
+
+Git update
+  git status
+  git add -A
+  git commit -m "CaneSprout v2.3.1 fast startup fix"
+  git push origin main

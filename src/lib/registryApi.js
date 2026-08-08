@@ -169,7 +169,7 @@ async function fetchList(queries, { ttl = APPWRITE_SEARCH_TTL_SECONDS, bypassCac
     queries,
     total: false,
     ttl: bypassCache ? 0 : ttl
-  }), { timeoutMs: 6500 });
+  }), { timeoutMs: 3500 });
 }
 
 function buildLeanQueries(limit = PAGE_SIZE) {
