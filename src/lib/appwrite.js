@@ -2,7 +2,7 @@ import { Account, Client, Databases, ID, Query, Storage } from 'appwrite';
 
 const DEFAULT_REGION_ENDPOINT = 'https://fra.cloud.appwrite.io/v1';
 const LEGACY_GLOBAL_ENDPOINT = 'https://cloud.appwrite.io/v1';
-const ENDPOINT_CACHE_KEY = 'canesprout-appwrite-endpoint-v231';
+const ENDPOINT_CACHE_KEY = 'canesprout-appwrite-endpoint-v240';
 const ENDPOINT_FAILURE_COOLDOWN = 5 * 60_000;
 
 function normalizeEndpoint(value) {

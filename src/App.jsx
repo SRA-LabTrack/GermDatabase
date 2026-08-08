@@ -5,6 +5,7 @@ import {
   CheckCircle2,
   Cloud,
   CloudOff,
+  CloudUpload,
   Download,
   Droplets,
   FileSpreadsheet,
@@ -14,6 +15,7 @@ import {
   MapPin,
   Maximize2,
   Minimize2,
+  MoreHorizontal,
   Plus,
   RefreshCw,
   Search,
@@ -37,13 +39,15 @@ import {
   listRecords
 } from './lib/registryApi';
 import { loginMessageFor, messageFor, pct } from './lib/registryUi';
+import { getOfflineQueueSummary, subscribeOfflineQueue, syncOfflineQueue } from './lib/offlineQueue';
 
 const DetailModal = lazy(() => import('./components/DetailModal.jsx'));
 const RecordFormModal = lazy(() => import('./components/RecordFormModal.jsx'));
 const ImportModal = lazy(() => import('./components/ImportModal.jsx'));
+const OfflineQueueModal = lazy(() => import('./components/OfflineQueueModal.jsx'));
 
 const APP_NAME = 'CaneSprout Registry';
-const APP_VERSION = '2.3.1';
+const APP_VERSION = '2.4.5';
 const USER_CACHE_KEY = 'sugarcane-registry-user-v230';
 const MANUAL_REFRESH_COOLDOWN_MS = 30_000;
 const STALE_NOTICE_MS = 45 * 60_000;
@@ -236,6 +240,9 @@ export default function App() {
   const [editRecord, setEditRecord] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [showImport, setShowImport] = useState(false);
+  const [showOfflineQueue, setShowOfflineQueue] = useState(false);
+  const [offlineSummary, setOfflineSummary] = useState({ count: 0, pending: 0, errors: 0, photoCount: 0, bytes: 0 });
+  const [offlineSyncState, setOfflineSyncState] = useState('');
   const [backupState, setBackupState] = useState('');
   const [updateState, setUpdateState] = useState('');
 
@@ -245,7 +252,66 @@ export default function App() {
     window.addEventListener('online', goOnline);
     window.addEventListener('offline', goOffline);
     return () => { window.removeEventListener('online', goOnline); window.removeEventListener('offline', goOffline); };
-  }, []);
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) {
+      setOfflineSummary({ count: 0, pending: 0, errors: 0, photoCount: 0, bytes: 0 });
+      return undefined;
+    }
+    const ownerId = user.id || user.email;
+    let live = true;
+    const refreshLocalQueue = () => getOfflineQueueSummary(ownerId).then((summary) => { if (live) setOfflineSummary(summary); }).catch(() => {});
+    refreshLocalQueue();
+    const unsubscribe = subscribeOfflineQueue(refreshLocalQueue);
+    return () => { live = false; unsubscribe?.(); };
+  }, [user]);
+
+  // Offline queue sync is event-driven rather than polled. It runs once when
+  // an authenticated app starts online and once when connectivity returns.
+  // Entries are processed sequentially and the batch stops on a network error,
+  // which avoids request storms against Appwrite or Vercel.
+  useEffect(() => {
+    if (!user || !online || sessionState === 'checking' || sessionState === 'signed-out') return undefined;
+    const ownerId = user.id || user.email;
+    let cancelled = false;
+    const timer = window.setTimeout(async () => {
+      try {
+        const summary = await getOfflineQueueSummary(ownerId);
+        if (cancelled || !summary.count) return;
+        setOfflineSyncState(`Syncing ${summary.count} offline entr${summary.count === 1 ? 'y' : 'ies'}…`);
+        const result = await syncOfflineQueue({
+          ownerId,
+          onProgress: (event) => {
+            if (cancelled) return;
+            const name = event.entry?.form?.variety || event.entry?.form?.germ_trial_code || 'offline record';
+            if (event.phase === 'entry') setOfflineSyncState(`Syncing ${event.index}/${event.total}: ${name}`);
+            if (event.phase === 'photos') setOfflineSyncState(`Uploading compressed photo ${event.done}/${event.total}`);
+            if (event.phase === 'record') setOfflineSyncState(`Saving ${name}…`);
+          }
+        });
+        if (cancelled) return;
+        if (result.synced) {
+          setOfflineSyncState(`${result.synced} offline entr${result.synced === 1 ? 'y' : 'ies'} synced`);
+          clearListCache();
+          // Avoid an automatic post-sync list read. When browsing normally,
+          // merge the just-saved records into the current page locally.
+          if (!searchInput.trim() && result.records?.length) {
+            setRecords((current) => {
+              const merged = [...result.records, ...current];
+              return Array.from(new Map(merged.map((record) => [record.$id, record])).values()).slice(0, PAGE_SIZE);
+            });
+          }
+          window.setTimeout(() => !cancelled && setOfflineSyncState(''), 3500);
+        } else if (result.remaining) {
+          setOfflineSyncState('Offline entries are still waiting safely on this device.');
+        }
+      } catch {
+        if (!cancelled) setOfflineSyncState('Offline queue will retry on the next connection event.');
+      }
+    }, 1800);
+    return () => { cancelled = true; window.clearTimeout(timer); };
+  }, [user, online, sessionState]);
 
   // Returning users do not spend an extra Appwrite account.get() request on
   // every launch. The first real registry query verifies the cookie anyway;
@@ -446,6 +512,22 @@ export default function App() {
     setRefreshKey((value) => value + 1);
   }
 
+  function handleQueuedOffline(entry) {
+    setOfflineSyncState(`${entry?.form?.variety || 'Sugarcane record'} saved offline on this device.`);
+    window.setTimeout(() => setOfflineSyncState(''), 4200);
+  }
+
+  function handleOfflineSynced(result) {
+    if (!result?.synced) return;
+    clearListCache();
+    if (!searchInput.trim() && result.records?.length) {
+      setRecords((current) => {
+        const merged = [...result.records, ...current];
+        return Array.from(new Map(merged.map((record) => [record.$id, record])).values()).slice(0, PAGE_SIZE);
+      });
+    }
+  }
+
   function goToRegistrySearch() {
     searchPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     window.setTimeout(() => {
@@ -467,20 +549,41 @@ export default function App() {
 
   return (
     <main className="app-shell">
-      <header className="topbar">
-        <Brand />
-        <nav>
-          <button className="nav-button active" onClick={goToRegistrySearch}><Leaf size={17} /> Registry</button>
-          <button className="nav-button" onClick={() => setShowImport(true)}><FileSpreadsheet size={17} /> Import Excel</button>
-          <button className="nav-button" onClick={createBackup} disabled={Boolean(backupState)}><Download size={17} /> {backupState || 'Backup'}</button>
-          <button className="nav-button" onClick={handleUpdates}><RefreshCw size={17} /> {updateState === 'downloaded' ? 'Restart & update' : updateState === 'checking' ? 'Checking…' : 'Updates'}</button>
-          <button className="primary-button compact" onClick={() => { setEditRecord(null); setShowForm(true); }}><Plus size={17} /> Add record</button>
+      <header className="topbar reference-toolbar">
+        <div className="toolbar-brand-panel"><Brand /></div>
+
+        <nav className="toolbar-main-actions" aria-label="Primary registry navigation">
+          <button className="toolbar-tile nav-button active" onClick={goToRegistrySearch}><Leaf size={21} /><span>Registry</span></button>
+          <button className="toolbar-tile nav-button" onClick={() => setShowImport(true)}><FileSpreadsheet size={21} /><span>Import Excel</span></button>
+          <button className="toolbar-tile toolbar-add" onClick={() => { setEditRecord(null); setShowForm(true); }}><Plus size={22} /><span>Add record</span></button>
         </nav>
-        <div className="topbar-right">
-          <span className={`connection ${online ? 'online' : 'offline'}`}>{online ? <Cloud size={17} /> : <CloudOff size={17} />}<b>{online ? 'Online' : 'Offline'}</b><small>{sessionState === 'offline' ? 'Device cache available' : 'Direct Appwrite'}</small></span>
+
+        <button
+          type="button"
+          className={`toolbar-status-card connection ${online ? 'online' : 'offline'} ${offlineSummary.count ? 'has-queue' : ''}`}
+          onClick={() => setShowOfflineQueue(true)}
+          title="Open offline queue"
+        >
+          {online ? <Cloud size={23} /> : <CloudOff size={23} />}
+          <span><b>{online ? 'Online' : 'Offline'}</b><small>{offlineSummary.count ? `${offlineSummary.count} offline ${offlineSummary.count === 1 ? 'entry' : 'entries'}` : sessionState === 'offline' ? 'Offline copy ready' : 'Offline copy ready'}</small></span>
+          {offlineSummary.count ? <strong className="toolbar-queue-badge">{offlineSummary.count}</strong> : null}
+        </button>
+
+        <div className="toolbar-account-card">
+          <span className="toolbar-avatar" aria-hidden="true">{String(user.name || user.email || 'U').trim().charAt(0).toUpperCase()}</span>
           <span className="user-chip"><b>{user.name || user.email?.split('@')[0] || 'User'}</b><small>{user.email}</small></span>
-          {window.germDesktop && <div className="desktop-controls"><button className="icon-button" title="Minimize" onClick={() => window.germDesktop.minimize?.()}><Minimize2 size={17} /></button><button className="icon-button" title="Full screen" onClick={() => window.germDesktop.toggleFullscreen?.()}><Maximize2 size={17} /></button></div>}
-          <button className="icon-button" title="Sign out" onClick={signOut}><LogOut size={18} /></button>
+
+          <details className="toolbar-more">
+            <summary className="icon-button" title="More actions"><MoreHorizontal size={19} /></summary>
+            <div className="toolbar-more-menu">
+              <button onClick={() => setShowOfflineQueue(true)}><CloudUpload size={17} /><span>Offline queue</span>{offlineSummary.count ? <b>{offlineSummary.count}</b> : null}</button>
+              <button onClick={createBackup} disabled={Boolean(backupState)}><Download size={17} /><span>{backupState || 'Backup'}</span></button>
+              <button onClick={handleUpdates}><RefreshCw size={17} /><span>{updateState === 'downloaded' ? 'Restart & update' : updateState === 'checking' ? 'Checking…' : 'Updates'}</span></button>
+              {window.germDesktop && <><button onClick={() => window.germDesktop.minimize?.()}><Minimize2 size={17} /><span>Minimize</span></button><button onClick={() => window.germDesktop.toggleFullscreen?.()}><Maximize2 size={17} /><span>Full screen</span></button></>}
+            </div>
+          </details>
+
+          <button className="toolbar-signout icon-button" title="Sign out" onClick={signOut}><LogOut size={21} /></button>
         </div>
       </header>
 
@@ -520,7 +623,9 @@ export default function App() {
           {searchInput && <button className="clear-search" onClick={() => { setSearchMatchMode(''); setSearchInput(''); searchInputRef.current?.focus(); }} aria-label="Clear search"><X size={16} /></button>}
           <span>{searchInput.trim().length > 0 && searchInput.trim().length < SEARCH_MIN ? `${SEARCH_MIN - searchInput.trim().length} more character${SEARCH_MIN - searchInput.trim().length === 1 ? '' : 's'} • 0 reads` : searchInput.trim() ? `${SEARCH_SCOPES[searchScope].label} • ${searchScope === 'all' ? 'keyword index' : 'smart index'}` : `Browse first ${PAGE_SIZE}`}</span>
         </div>
-        <div className="query-policy"><CheckCircle2 size={16} /><span>{PAGE_SIZE} rows/request • {SEARCH_DEBOUNCE_MS} ms debounce • cursor Load More • lean card fields • bounded caching • local drafts • lazy tools/photos • no polling • no Realtime • no totals</span></div>
+        {!!offlineSummary.count && <div className="offline-queue-banner"><CloudUpload size={18} /><div><strong>{offlineSummary.count} offline entr{offlineSummary.count === 1 ? 'y' : 'ies'} waiting on this device</strong><span>{offlineSummary.photoCount ? `${offlineSummary.photoCount} compressed photo${offlineSummary.photoCount === 1 ? '' : 's'} included. ` : ''}Sync is direct to Appwrite and never routed through Vercel.</span></div><button className="secondary-button" onClick={() => setShowOfflineQueue(true)}>Open queue</button></div>}
+        {offlineSyncState && <div className="alert info offline-sync-status"><CloudUpload size={16} /> {offlineSyncState}</div>}
+        <div className="query-policy"><CheckCircle2 size={16} /><span>{PAGE_SIZE} rows/request • {SEARCH_DEBOUNCE_MS} ms debounce • cursor Load More • lean card fields • bounded caching • IndexedDB offline queue • lazy tools/photos • no polling • no Realtime • no totals</span></div>
         {!loading && searchInput.trim().length >= SEARCH_MIN && searchTerm === searchInput.trim() && <div className="search-result-note"><b>{records.length}</b><span>{searchMatchMode === 'exact' ? `Exact ${SEARCH_SCOPES[searchScope].label.toLowerCase()} match` : `${records.length === 1 ? 'match' : 'matches'} loaded`} for “{searchTerm}” in {SEARCH_SCOPES[searchScope].label}.{hasMore ? ` More matches are available with Load ${PAGE_SIZE} more.` : ''}</span></div>}
         {cacheNote && <div className="alert info">{cacheNote}</div>}
         {listError && <div className="alert error">{listError}</div>}
@@ -532,12 +637,13 @@ export default function App() {
         {!loading && hasMore && <div className="load-more-row"><button className="secondary-button load-more" onClick={loadMore} disabled={loadingMore}>{loadingMore ? <><LoaderCircle className="spin" size={17} /> Loading {PAGE_SIZE} more…</> : `Load ${PAGE_SIZE} more`}</button><small>More records are fetched only when requested.</small></div>}
       </section>
 
-      <footer className="app-footer"><span><Sprout size={15} /> {APP_NAME} v{APP_VERSION}</span><span>Static Vite shell • direct Appwrite Web SDK • on-demand chunks • storage-efficient WebP media</span></footer>
+      <footer className="app-footer"><span><Sprout size={15} /> {APP_NAME} v{APP_VERSION}</span><span>Static Vite shell • direct Appwrite Web SDK • IndexedDB offline queue • storage-efficient WebP media</span></footer>
 
       <Suspense fallback={<ModalLoading />}>
         {detailId && <DetailModal recordId={detailId} onClose={() => setDetailId('')} onEdit={openEdit} onDeleted={refreshRegistry} />}
-        {showForm && <RecordFormModal initial={editRecord} onClose={() => { setShowForm(false); setEditRecord(null); }} onSaved={refreshRegistry} />}
+        {showForm && <RecordFormModal initial={editRecord} ownerId={user.id || user.email} online={online} onClose={() => { setShowForm(false); setEditRecord(null); }} onSaved={refreshRegistry} onQueued={handleQueuedOffline} />}
         {showImport && <ImportModal onClose={() => setShowImport(false)} onImported={refreshRegistry} />}
+        {showOfflineQueue && <OfflineQueueModal ownerId={user.id || user.email} online={online} onClose={() => setShowOfflineQueue(false)} onSynced={handleOfflineSynced} />}
       </Suspense>
     </main>
   );

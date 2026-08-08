@@ -1,4 +1,4 @@
-# CaneSprout Registry v2.3.1
+# CaneSprout Registry v2.4.3
 
 Agriculture-first sugarcane germination and varietal characterization registry. This build keeps all 60 Characterization.xlsx traits optional, retains the 933 source records, tracks planting/emergence observations, stores field photos as WebP in Appwrite Storage, and is deliberately tuned for Appwrite Free + Vercel Hobby usage.
 
@@ -68,7 +68,7 @@ npm.cmd run build
 npm.cmd run preview
 ```
 
-v2.3.1 adds no Appwrite attributes, collections, or indexes. If your existing v2.1.5+ schema already works, **do not rerun setup**. For a fresh Appwrite project only:
+v2.4.0 adds no Appwrite attributes, collections, or indexes. If your existing v2.1.5+ schema already works, **do not rerun setup**. For a fresh Appwrite project only:
 
 ```bat
 npm.cmd run setup:appwrite
@@ -88,7 +88,7 @@ git push origin main
 If Vercel is connected to `SRA-LabTrack/GermDatabase`, the push automatically starts the new web deployment. The existing GitHub Actions workflow continues to handle Windows releases.
 
 
-## v2.3.1 fast-start fix
+## v2.4.0 fast-start fix
 
 - Raw HTML paints a CaneSprout loading shell before React/Appwrite downloads finish.
 - The main application is lazy-loaded after that first paint.
@@ -96,3 +96,16 @@ If Vercel is connected to `SRA-LabTrack/GermDatabase`, the push automatically st
 - HTML revalidates on navigation; hashed Vite assets keep one-year immutable caching.
 - Appwrite UI reads use shorter timeouts and the legacy global fallback is opt-in (`VITE_APPWRITE_ENABLE_FALLBACK=true`) rather than automatically doubling a slow failure path.
 - No Appwrite schema migration is required.
+
+## v2.4.0 true offline queue
+
+CaneSprout can now store multiple complete field records in IndexedDB while the device is offline. Newly selected photos are compressed to WebP before they enter the queue, so the original phone-size image is not kept by CaneSprout. Each queued new record and photo pair reserves its final Appwrite IDs locally. When connectivity returns, the queue synchronizes sequentially and uses those deterministic IDs to avoid duplicates after uncertain network failures.
+
+The queue is event-driven: it runs once on an online app start, when connectivity returns, or from the explicit Offline queue controls. There is no continuous polling or Realtime subscription. Normal sync goes directly from the browser to Appwrite and does not use Vercel Functions.
+
+No Appwrite schema migration is required for v2.4.0.
+
+
+## v2.4.3 reference toolbar
+
+The authenticated header now uses one continuous rounded glass toolbar inspired by the supplied AgriRegistry reference: large Registry / Import Excel / Add record tiles, a dedicated online/offline queue status card, and a full account card. Backup, Updates, Offline Queue, and desktop window controls remain available from the compact More menu. This is a UI-only change and adds no Appwrite or Vercel requests.

@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { CheckCircle2, ImagePlus, LoaderCircle, X } from 'lucide-react';
+import { CheckCircle2, CloudOff, HardDrive, ImagePlus, LoaderCircle, X } from 'lucide-react';
 import { CHARACTERIZATION_GROUPS } from '../lib/characterizationFields';
 import { GERMINATION_FIELDS } from '../lib/germinationFields';
 import { formatBytes, prepareImageVariants } from '../lib/imageTools';
+import { queueOfflineRecord } from '../lib/offlineQueue';
 import { deleteStoredFiles, fileViewUrl, saveRecord, uploadPreparedPhotos } from '../lib/registryApi';
 import { emptyForm, messageFor } from '../lib/registryUi';
 
@@ -40,7 +41,7 @@ function writeDraft(key, form) {
   } catch {}
 }
 
-export default function RecordFormModal({ initial, onClose, onSaved }) {
+export default function RecordFormModal({ initial, ownerId, online, onClose, onSaved, onQueued }) {
   const editing = Boolean(initial?.$id);
   const draftKey = `${DRAFT_PREFIX}${initial?.$id || 'new'}`;
   const storedDraft = useMemo(() => readDraft(draftKey), [draftKey]);
@@ -93,17 +94,54 @@ export default function RecordFormModal({ initial, onClose, onSaved }) {
     }));
   }
 
+  async function prepareSelectedPhotos() {
+    const variants = [];
+    for (let index = 0; index < newFiles.length; index += 1) {
+      setProgress(`Compressing field photo ${index + 1} of ${newFiles.length} to WebP…`);
+      variants.push(await prepareImageVariants(newFiles[index]));
+    }
+    return variants;
+  }
+
+  async function saveOffline() {
+    if (busy) return;
+    setBusy(true);
+    setError('');
+    try {
+      const variants = await prepareSelectedPhotos();
+      const queuedBytes = variants.reduce((sum, item) => sum + Number(item.full?.blob?.size || 0) + Number(item.thumb?.blob?.size || 0), 0);
+      setProgress(variants.length ? `Saving ${formatBytes(queuedBytes)} of compressed photos to this device…` : 'Saving complete record to this device…');
+      const entry = await queueOfflineRecord({
+        ownerId,
+        form,
+        recordId: initial?.$id || '',
+        previous: initial || null,
+        removedFileIds,
+        variants
+      });
+      clearDraft();
+      onQueued?.(entry);
+      onClose();
+    } catch (err) {
+      setError(err?.message || String(err || 'Could not save this record offline.'));
+    } finally {
+      setBusy(false);
+      setProgress('');
+    }
+  }
+
   async function submit(event) {
     event.preventDefault();
+    if (!online || !navigator.onLine) {
+      await saveOffline();
+      return;
+    }
+
     setBusy(true);
     setError('');
     let uploaded = [];
     try {
-      const variants = [];
-      for (let index = 0; index < newFiles.length; index += 1) {
-        setProgress(`Compressing field photo ${index + 1} of ${newFiles.length} to WebP…`);
-        variants.push(await prepareImageVariants(newFiles[index]));
-      }
+      const variants = await prepareSelectedPhotos();
       if (variants.length) {
         setProgress('Uploading optimized field images and thumbnails…');
         uploaded = await uploadPreparedPhotos(variants, ({ done, total }) => setProgress(`Uploading photo ${done} of ${total}…`));
@@ -116,7 +154,7 @@ export default function RecordFormModal({ initial, onClose, onSaved }) {
       };
       next.primary_file_id = next.photo_file_ids[0] || '';
       next.thumbnail_file_id = next.thumb_file_ids[0] || '';
-      setProgress('Saving record…');
+      setProgress('Saving record to Appwrite…');
       await saveRecord(next, initial?.$id || '', initial || null);
       if (removedFileIds.length) deleteStoredFiles(removedFileIds).catch(() => {});
       clearDraft();
@@ -143,15 +181,16 @@ export default function RecordFormModal({ initial, onClose, onSaved }) {
           <button type="button" className="icon-button" onClick={closeKeepingDraft} aria-label="Close form"><X size={19} /></button>
         </header>
         <div className="modal-content form-scroll">
-          <div className="optional-banner"><CheckCircle2 size={18} /><div><strong>Every trait is optional.</strong><span>Record only what was actually observed in the nursery, field, or characterization sheet. Cloud writes happen only when you press Save.</span></div></div>
-          {draftRestored && <div className="local-draft-banner"><div><strong>Local draft restored</strong><span>This draft came from this device and used zero Appwrite writes.</span></div><button type="button" className="text-button inline" onClick={() => { clearDraft(); setForm({ ...emptyForm(), ...(initial || {}) }); }}>Discard draft</button></div>}
+          <div className="optional-banner"><CheckCircle2 size={18} /><div><strong>Every trait is optional.</strong><span>Record only what was actually observed. Cloud writes happen only when you press Save record; Save offline uses IndexedDB on this device.</span></div></div>
+          {!online && <div className="offline-form-banner"><CloudOff size={18} /><div><strong>Offline field mode</strong><span>Save offline stores the complete entry plus compressed WebP photos locally. It can sync later when Appwrite is reachable.</span></div></div>}
+          {draftRestored && <div className="local-draft-banner"><div><strong>Local draft restored</strong><span>This lightweight text draft came from this device and used zero Appwrite writes.</span></div><button type="button" className="text-button inline" onClick={() => { clearDraft(); setForm({ ...emptyForm(), ...(initial || {}) }); }}>Discard draft</button></div>}
 
           <section className="form-section germ-section"><div className="form-section-heading"><small>Crop establishment</small><h3>Planting & emergence</h3></div><div className="form-grid">{GERMINATION_FIELDS.map((field) => <Field key={field.key} field={field} value={form[field.key]} onChange={change} />)}</div></section>
           {CHARACTERIZATION_GROUPS.map((group) => <section className="form-section" key={group.title}><div className="form-section-heading"><small>Varietal characterization</small><h3>{group.title}</h3></div><div className="form-grid">{group.fields.map((field) => <Field key={field.key} field={field} value={form[field.key]} onChange={change} />)}</div></section>)}
 
           <section className="form-section">
             <div className="form-section-heading"><small>Field documentation</small><h3>Photos</h3></div>
-            <p className="form-hint">Photos are compressed locally before upload. Cards use tiny WebP thumbnails; full images are fetched only when a photo is opened.</p>
+            <p className="form-hint">Photos are compressed locally first. When saved offline, the compressed full WebP and 320 px thumbnail are stored in IndexedDB, not Appwrite, until sync.</p>
             {!!existingPhotos.length && <div className="edit-photo-grid">{existingPhotos.map((id, index) => <div key={id}><img src={fileViewUrl(form.thumb_file_ids?.[index] || id)} alt="Existing field record" loading="lazy" decoding="async" /><button type="button" onClick={() => removeExisting(index)}><X size={14} /> Remove</button></div>)}</div>}
             <label className="photo-drop"><ImagePlus size={24} /><span><strong>Add field photos</strong><small>JPEG, PNG, WebP, HEIC/HEIF and browser-readable images</small></span><input type="file" accept="image/*,.heic,.heif" multiple onChange={(event) => { setDirty(true); setNewFiles(Array.from(event.target.files || []).slice(0, 8)); }} /></label>
             {!!newFiles.length && <div className="selected-files">{newFiles.map((file) => <span key={`${file.name}-${file.size}`}>{file.name} <small>{formatBytes(file.size)}</small></span>)}</div>}
@@ -160,9 +199,10 @@ export default function RecordFormModal({ initial, onClose, onSaved }) {
           {progress && <div className="alert progress"><LoaderCircle className="spin" size={17} /> {progress}</div>}
         </div>
         <footer className="modal-footer">
-          <button type="button" className="secondary-button" onClick={closeKeepingDraft}>{dirty ? 'Close & keep local draft' : 'Close'}</button>
+          <button type="button" className="secondary-button" onClick={closeKeepingDraft}>{dirty ? 'Close & keep draft' : 'Close'}</button>
           <span className="footer-spacer" />
-          <button className="primary-button" disabled={busy}>{busy ? 'Saving…' : editing ? 'Save changes' : 'Save record'}</button>
+          <button type="button" className="secondary-button offline-save-button" onClick={saveOffline} disabled={busy}><HardDrive size={16} /> {busy && !progress ? 'Saving offline…' : 'Save offline'}</button>
+          <button className="primary-button" disabled={busy}>{busy ? (online ? 'Saving…' : 'Saving offline…') : online ? (editing ? 'Save changes' : 'Save record') : 'Save offline'}</button>
         </footer>
       </form>
     </div>

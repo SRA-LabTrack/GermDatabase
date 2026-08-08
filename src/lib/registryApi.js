@@ -527,7 +527,12 @@ function splitPayload(data) {
   return { core, detail: { traits_json: traitsJson, details_json: detailsJson } };
 }
 
-async function upsertDocument(collectionId, documentId, data, exists) {
+export function validateRecordPayload(data) {
+  splitPayload(data);
+  return true;
+}
+
+async function upsertDocument(collectionId, documentId, data, exists, { idempotentCreate = false } = {}) {
   if (exists) {
     try {
       return await withAppwriteFailover(() => databases.updateDocument({
@@ -540,18 +545,33 @@ async function upsertDocument(collectionId, documentId, data, exists) {
       if (error?.code !== 404 && error?.status !== 404) throw error;
     }
   }
-  return withAppwriteFailover(() => databases.createDocument({
-    databaseId: DATABASE_ID,
-    collectionId,
-    documentId,
-    data
-  }), { retryTransport: false, timeoutMs: 7000 });
+  try {
+    return await withAppwriteFailover(() => databases.createDocument({
+      databaseId: DATABASE_ID,
+      collectionId,
+      documentId,
+      data
+    }), { retryTransport: false, timeoutMs: 7000 });
+  } catch (error) {
+    // Offline queue entries reserve their Appwrite document ID before the
+    // device reconnects. If a previous sync timed out after the server had
+    // actually accepted the create, the deterministic retry receives 409.
+    // Update that same document instead of creating a duplicate record.
+    const code = Number(error?.code || error?.status || 0);
+    if (!idempotentCreate || code !== 409) throw error;
+    return withAppwriteFailover(() => databases.updateDocument({
+      databaseId: DATABASE_ID,
+      collectionId,
+      documentId,
+      data
+    }), { retryTransport: false, timeoutMs: 7000 });
+  }
 }
 
-export async function saveRecord(data, recordId = '', previous = null) {
+export async function saveRecord(data, recordId = '', previous = null, { knownNew = false } = {}) {
   const { core: corePayload, detail: detailPayload } = splitPayload(data);
   const id = recordId || ID.unique();
-  const exists = Boolean(recordId);
+  const exists = Boolean(recordId) && !knownNew;
 
   // Editing should not spend two Appwrite writes when only one half of the
   // split document changed. The already-open full record is compared locally,
@@ -563,13 +583,13 @@ export async function saveRecord(data, recordId = '', previous = null) {
   if (exists && !coreChanged && !detailChanged) return previous;
 
   let detail = { $id: id, ...detailPayload };
-  if (detailChanged) detail = await upsertDocument(COLLECTIONS.details, id, detailPayload, exists);
+  if (detailChanged) detail = await upsertDocument(COLLECTIONS.details, id, detailPayload, exists, { idempotentCreate: knownNew });
 
   let core = { $id: id, ...corePayload };
   try {
-    if (coreChanged) core = await upsertDocument(COLLECTIONS.records, id, corePayload, exists);
+    if (coreChanged) core = await upsertDocument(COLLECTIONS.records, id, corePayload, exists, { idempotentCreate: knownNew });
   } catch (error) {
-    if (!exists && detailChanged) {
+    if (!exists && !knownNew && detailChanged) {
       await Promise.allSettled([
         databases.deleteDocument({ databaseId: DATABASE_ID, collectionId: COLLECTIONS.details, documentId: id })
       ]);
@@ -613,7 +633,7 @@ export async function deleteRecord(record) {
   const ids = [...(record.photo_file_ids || []), ...(record.thumb_file_ids || [])];
   // Delete media first. If Storage is unreachable, keep the database metadata
   // intact so the user can retry instead of creating unreachable orphan files.
-  await Promise.all(ids.filter(Boolean).map(deleteStoredFileIfPresent));
+  for (const fileId of Array.from(new Set(ids.filter(Boolean)))) await deleteStoredFileIfPresent(fileId);
   await deleteDocumentIfPresent(COLLECTIONS.details, record.$id);
   await deleteDocumentIfPresent(COLLECTIONS.records, record.$id);
   clearListCache();
@@ -629,29 +649,52 @@ export function fileViewUrl(fileId) {
   }
 }
 
-export async function uploadPreparedPhotos(variants, onProgress) {
+export async function uploadPreparedPhotos(variants, onProgress, { preserveOnFailure = false } = {}) {
   const uploaded = [];
+  const touchedIds = [];
+
+  async function createFileIdempotent(fileId, file) {
+    try {
+      await storage.createFile({ bucketId: MEDIA_BUCKET_ID, fileId, file });
+    } catch (error) {
+      // Queued photos have deterministic IDs. A 409 means a previous sync
+      // likely completed this upload before the device lost the response.
+      // Treat it as success so retrying never duplicates Storage files.
+      const code = Number(error?.code || error?.status || 0);
+      if (code !== 409) throw error;
+    }
+  }
+
   try {
     for (let index = 0; index < variants.length; index += 1) {
       const item = variants[index];
-      const fullId = ID.unique();
-      const thumbId = ID.unique();
+      const fullId = item.fullId || ID.unique();
+      const thumbId = item.thumbId || ID.unique();
       const fullFile = new File([item.full.blob], `${fullId}.webp`, { type: 'image/webp' });
       const thumbFile = new File([item.thumb.blob], `${thumbId}.webp`, { type: 'image/webp' });
-      await storage.createFile({ bucketId: MEDIA_BUCKET_ID, fileId: fullId, file: fullFile });
-      await storage.createFile({ bucketId: MEDIA_BUCKET_ID, fileId: thumbId, file: thumbFile });
+      touchedIds.push(fullId);
+      await createFileIdempotent(fullId, fullFile);
+      touchedIds.push(thumbId);
+      await createFileIdempotent(thumbId, thumbFile);
       uploaded.push({ fullId, thumbId, name: item.originalName });
       onProgress?.({ done: index + 1, total: variants.length });
     }
     return uploaded;
   } catch (error) {
-    await Promise.allSettled(uploaded.flatMap((item) => [item.fullId, item.thumbId]).map((fileId) => storage.deleteFile({ bucketId: MEDIA_BUCKET_ID, fileId })));
+    // Online one-shot saves clean up immediately. Offline queue sync keeps the
+    // deterministic files because the next reconnect can safely reuse them;
+    // deleting and re-uploading would waste Storage requests and bandwidth.
+    if (!preserveOnFailure) {
+      await Promise.allSettled(touchedIds.map((fileId) => storage.deleteFile({ bucketId: MEDIA_BUCKET_ID, fileId })));
+    }
     throw error;
   }
 }
 
 export async function deleteStoredFiles(fileIds = []) {
-  await Promise.all(fileIds.filter(Boolean).map(deleteStoredFileIfPresent));
+  // Explicit cleanup is sequential to avoid short request bursts against the
+  // free-plan Storage API. The total number of deletes is unchanged.
+  for (const fileId of Array.from(new Set(fileIds.filter(Boolean)))) await deleteStoredFileIfPresent(fileId);
 }
 
 export async function bulkCreateRecords(rows, onProgress) {

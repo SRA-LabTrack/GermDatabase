@@ -1,8 +1,8 @@
 {
   "name": "canesprout-registry",
   "private": true,
-  "version": "2.3.1",
-  "description": "Fast-start sugarcane germination and characterization registry with an instant HTML boot shell, self-healing stale-cache cleanup, lazy React app loading, direct Appwrite access, 25-row cursor pagination, local drafts, optimized WebP media, and Vercel/Appwrite free-plan safeguards",
+  "version": "2.4.5",
+  "description": "Offline-first sugarcane germination and characterization registry with a reference-style single-bar responsive glass toolbar, IndexedDB multi-entry queue, compressed WebP photo persistence, sequential idempotent Appwrite sync, fast-start Vite shell, indexed 25-row search, and Vercel/Appwrite free-plan safeguards",
   "main": "electron/main.cjs",
   "author": "SRA-LabTrack",
   "type": "module",

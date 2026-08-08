@@ -6,7 +6,7 @@ export function messageFor(error) {
   const code = Number(error?.code || error?.status || 0);
   if (code === 401) return 'Your sign-in is no longer valid. Please sign in again.';
   if (code === 404) return 'The sugarcane collection has not been set up yet. Run npm.cmd run setup:appwrite once.';
-  if (isNetworkFailure(error)) return 'Appwrite is unreachable. Cached pages can still be viewed, but saving needs a connection.';
+  if (isNetworkFailure(error)) return 'Appwrite is unreachable. Cached pages can still be viewed, and new records can be stored with Save offline until connectivity returns.';
   return error?.message || String(error || 'Something went wrong.');
 }
 

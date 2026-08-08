@@ -1,0 +1,8 @@
+CaneSprout Registry v2.4.2 toolbar validation
+
+- Complete v2.4.1 source retained
+- v2.4 IndexedDB multi-entry offline queue retained
+- Primary toolbar restructured to reference layout
+- Backup/Updates/Offline Queue remain accessible
+- No Appwrite schema migration required
+- No additional network/API requests introduced by toolbar

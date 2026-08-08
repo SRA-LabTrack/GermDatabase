@@ -1,4 +1,4 @@
-CaneSprout Registry v2.3.1 - Windows CMD
+CaneSprout Registry v2.4.0 - Windows CMD
 ========================================
 
 cd /d C:\Users\kenshennn\Downloads\Germ
@@ -16,10 +16,10 @@ PREVIEW PRODUCTION BUILD
 npm.cmd run preview
 
 APPWRITE SCHEMA
-No setup command is required for v2.3.1 if v2.1.5+ schema is already working.
+No setup command is required for v2.4.0 if v2.1.5+ schema is already working.
 
 PUBLISH TO GITHUB / VERCEL
 git status
 git add -A
-git commit -m "CaneSprout v2.3.1 fast startup fix"
+git commit -m "CaneSprout v2.4.0 true offline queue update"
 git push origin main

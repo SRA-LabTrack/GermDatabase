@@ -1,4 +1,4 @@
-// CaneSprout v2.3.1 cleanup service worker.
+// CaneSprout v2.4.0 cleanup service worker.
 // It intentionally does not intercept requests. If an older CaneSprout service
 // worker discovers this update, this script removes stale shell caches and then
 // unregisters itself so Vercel/browser caching can handle immutable assets.

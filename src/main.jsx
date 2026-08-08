@@ -37,7 +37,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   </RootBoundary>
 );
 
-// v2.3.1 deliberately retires the old navigation-caching service worker.
+// v2.4.0 deliberately retires the old navigation-caching service worker.
 // Vercel already serves hashed assets efficiently; removing the extra app-shell
 // cache avoids stale index.html -> missing chunk white screens. Cleanup is done
 // after first paint and never blocks React or Appwrite startup.

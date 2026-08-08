@@ -1,0 +1,14 @@
+CaneSprout Registry v2.4.2 - REFERENCE TOOLBAR LAYOUT
+
+UI-only update.
+
+- Rebuilds the top toolbar to match the supplied AgriRegistry-style reference.
+- One continuous rounded glass bar.
+- Large visible Registry, Import Excel, and Add record tiles.
+- Online/Offline status is a dedicated clickable card that opens Offline Queue.
+- Account card includes avatar, name/email, More menu, and Sign out.
+- Backup, Updates, Offline Queue, and Electron desktop controls remain available under More.
+- Responsive two-row/tablet and horizontally scrollable mobile primary actions.
+- No Appwrite schema changes.
+- No additional Appwrite/Vercel requests.
+- v2.4 true multi-entry IndexedDB offline queue remains unchanged.

@@ -1,10 +1,10 @@
 {
-  "version": "2.3.1",
+  "version": "2.4.5",
   "domain": "sugarcane-germination-characterization",
   "pagination": 25,
   "searchDebounceMs": 500,
-  "build": "agriculture-ui-lazy-tools-local-drafts-quota-guard",
+  "build": "reference-single-bar-toolbar-offline-indexeddb-queue",
   "released": "2026-08-08",
   "name": "CaneSprout Registry",
-  "notes": "Fast-start shell, stale service-worker retirement, lazy application bootstrap, safer Vercel shell caching, and shorter Appwrite wait paths."
+  "notes": "Reference-style rounded single-bar toolbar with large equal primary action tiles, dedicated online/offline queue status, full account card, and compact overflow for Backup, Updates, Offline Queue, and desktop controls. Offline and quota-safe behavior is unchanged."
 }
