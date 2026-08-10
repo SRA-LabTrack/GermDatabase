@@ -78,8 +78,20 @@
   ],
   "rewrites": [
     {
+      "source": "/canesprout-admin-api",
+      "destination": "/api/admin-accounts-v2"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
-  ]
+  ],
+  "functions": {
+    "api/admin-accounts-v2.js": {
+      "maxDuration": 60
+    },
+    "api/admin-accounts.js": {
+      "maxDuration": 60
+    }
+  }
 }

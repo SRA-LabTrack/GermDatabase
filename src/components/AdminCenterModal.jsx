@@ -111,7 +111,7 @@ function AccountsTab({ currentUser }) {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState('');
   const [form, setForm] = useState({ name: '', email: '', password: '', role: 'user' });
-  const [server, setServer] = useState({ checking: true, configured: false, keySource: '', error: '' });
+  const [server, setServer] = useState({ checking: true, configured: false, keySource: '', apiVersion: '', error: '', errorCode: '' });
   const [loading, setLoading] = useState(false);
   const [busy, setBusy] = useState('');
   const [error, setError] = useState('');
@@ -121,11 +121,11 @@ function AccountsTab({ currentUser }) {
     setError('');
     try {
       const status = await adminAccountStatus({ force });
-      const next = { checking: false, configured: Boolean(status.configured), keySource: status.keySource || '', error: '' };
+      const next = { checking: false, configured: Boolean(status.configured), keySource: status.keySource || '', apiVersion: status.apiVersion || '', error: '', errorCode: '' };
       setServer(next);
       if (next.configured) await load('', { skipServerCheck: true });
     } catch (err) {
-      setServer({ checking: false, configured: false, keySource: '', error: err?.message || String(err) });
+      setServer({ checking: false, configured: false, keySource: '', apiVersion: '', error: err?.message || String(err), errorCode: err?.code || '' });
     }
   }
 
@@ -168,20 +168,29 @@ function AccountsTab({ currentUser }) {
     {!server.checking && !server.configured && <div className="admin-server-setup">
       <div className="admin-server-setup-icon"><KeyRound size={24} /></div>
       <div className="admin-server-setup-copy">
-        <h3>One server credential is still required</h3>
-        <p>CaneSprout can approve registrations and edits without this key. The key is needed only for creating accounts, searching all Appwrite users, and changing administrator authority.</p>
-        <ol>
-          <li>In Appwrite, create a dedicated API key with only <b>users.read</b> and <b>users.write</b>.</li>
-          <li>In Vercel → GermDatabase → Settings → Environment Variables, add it as <code>APPWRITE_ADMIN_API_KEY</code> for Production.</li>
-          <li>Redeploy the Production deployment. Vercel environment-variable changes do not affect an already-built deployment.</li>
-        </ol>
+        <h3>{server.errorCode === 'admin_api_unreachable' || server.errorCode === 'admin_api_route_mismatch' ? 'Account Management route is not reachable' : 'One server credential is still required'}</h3>
+        {server.errorCode === 'admin_api_unreachable' || server.errorCode === 'admin_api_route_mismatch' ? <>
+          <p>Your Appwrite key may already be configured. The browser could not reach the CaneSprout Vercel Function, so the key was never checked.</p>
+          <ol>
+            <li>Deploy <b>CaneSprout v2.6.1 or newer</b> to the same Vercel project.</li>
+            <li>Wait for the Production deployment to finish, then hard-refresh once.</li>
+            <li>Press <b>Check again</b>. The status check now uses a dedicated route that bypasses the SPA catch-all.</li>
+          </ol>
+        </> : <>
+          <p>CaneSprout can approve registrations and edits without this key. The key is needed only for creating accounts, searching all Appwrite users, and changing administrator authority.</p>
+          <ol>
+            <li>In Appwrite, create a dedicated API key with only <b>users.read</b> and <b>users.write</b>.</li>
+            <li>In Vercel → GermDatabase → Settings → Environment Variables, add it as <code>APPWRITE_ADMIN_API_KEY</code> for Production.</li>
+            <li>Redeploy the Production deployment. Vercel environment-variable changes do not affect an already-built deployment.</li>
+          </ol>
+        </>}
         {server.error && <div className="alert error">{server.error}</div>}
         <button className="secondary-button" onClick={() => checkServer(true)}><RefreshCw size={16} /> Check again</button>
       </div>
     </div>}
 
     {!server.checking && server.configured && <>
-      <div className="admin-server-ready"><Check size={15} /><span>Secure Users API ready{server.keySource ? ` • ${server.keySource}` : ''}</span></div>
+      <div className="admin-server-ready"><Check size={15} /><span>Secure Users API ready{server.keySource ? ` • ${server.keySource}` : ''}{server.apiVersion ? ` • ${server.apiVersion}` : ''}</span></div>
       <form className="account-create-form" onSubmit={create}>
         <label><span>Name</span><input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Account name" /></label>
         <label><span>Email</span><input type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="name@example.com" /></label>

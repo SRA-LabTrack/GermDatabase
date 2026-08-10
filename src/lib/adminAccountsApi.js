@@ -23,26 +23,47 @@ export function clearAdminJwtCache() {
 function adminApiUrl() {
   const configured = String(import.meta.env.VITE_ADMIN_API_URL || '').trim();
   if (configured) return configured;
-  // Vite dev does not execute Vercel /api functions. Use the deployed endpoint
-  // automatically for localhost/desktop unless the developer explicitly overrides it.
-  const host = String(window.location?.hostname || '').toLowerCase();
-  if (window.germDesktop || host === 'localhost' || host === '127.0.0.1') {
-    return 'https://germ-database.vercel.app/api/admin-accounts';
-  }
-  return '/api/admin-accounts';
+  // v2.6.1 uses one stable same-origin route in both Vite dev and Vercel.
+  // Vercel rewrites this path explicitly to the server function before the
+  // SPA catch-all; Vite serves the same route through its dev middleware.
+  return '/canesprout-admin-api';
 }
 
 async function postAdmin(body, { jwt = true } = {}) {
   const token = jwt ? await adminJwt() : '';
-  const response = await fetch(adminApiUrl(), {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {})
-    },
-    body: JSON.stringify(body)
-  });
-  const result = await response.json().catch(() => ({}));
+  let response;
+  try {
+    response = await fetch(adminApiUrl(), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(18_000)
+    });
+  } catch (cause) {
+    const error = new Error('Account Management server route could not be reached. Redeploy the current CaneSprout build, then try again.');
+    error.code = 'admin_api_unreachable';
+    error.cause = cause;
+    throw error;
+  }
+
+  const contentType = String(response.headers.get('content-type') || '').toLowerCase();
+  const raw = await response.text().catch(() => '');
+  let result = {};
+  if (raw) {
+    try { result = JSON.parse(raw); }
+    catch {
+      const error = new Error(contentType.includes('text/html')
+        ? 'Account Management was routed to the website HTML instead of the server function. Deploy v2.6.1 or newer.'
+        : `Account Management returned an invalid server response (${response.status}).`);
+      error.code = 'admin_api_route_mismatch';
+      error.status = response.status;
+      throw error;
+    }
+  }
+
   if (!response.ok) {
     if (response.status === 401 || response.status === 403) clearAdminJwtCache();
     const error = new Error(result?.error || `Account management failed (${response.status}).`);
@@ -55,7 +76,10 @@ async function postAdmin(body, { jwt = true } = {}) {
 
 export async function adminAccountStatus({ force = false } = {}) {
   if (!force && cachedStatus && Date.now() < cachedStatusUntil) return cachedStatus;
-  const result = await postAdmin({ action: 'status' });
+  // Status never needs an Appwrite JWT; the server only reports whether a key
+  // exists and never exposes its value. This keeps the check fast and avoids
+  // wasting an Appwrite request every time Admin Center opens.
+  const result = await postAdmin({ action: 'status' }, { jwt: false });
   cachedStatus = result;
   cachedStatusUntil = Date.now() + 10 * 60_000;
   return result;

@@ -1,0 +1,10 @@
+CaneSprout Registry v2.6.1 validation
+
+- Dedicated same-origin Account Management route: /canesprout-admin-api
+- Vercel rewrite sends that route to /api/admin-accounts-v2 before the SPA catch-all.
+- Vite dev middleware serves the exact same route locally.
+- Account-management status check does not contact Appwrite and consumes zero Appwrite reads.
+- Server API reports apiVersion: 2.6.1-stable-server-route.
+- APPWRITE_ADMIN_API_KEY remains server-only; its value is never returned to the browser.
+- Users API requests prefer https://cloud.appwrite.io/v1 with Frankfurt fallback.
+- No Appwrite schema migration required after a successful v2.5.5 migration.

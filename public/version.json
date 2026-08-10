@@ -1,10 +1,5 @@
 {
-  "version": "2.5.8",
-  "domain": "sugarcane-germination-characterization",
-  "pagination": 25,
-  "searchDebounceMs": 500,
-  "build": "toolbar-account-width-budget-fix",
-  "released": "2026-08-08",
+  "version": "2.6.1",
   "name": "CaneSprout Registry",
-  "notes": "Protects the right-side account card from clipping: admin navigation yields space first, account controls remain inside one rounded card, and compact layouts collapse identity text cleanly instead of truncating controls."
+  "notes": "Stable Account Management server route and instant server credential check."
 }
