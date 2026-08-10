@@ -3,6 +3,7 @@ import './styles.css';
 import {
   ArrowUpRight,
   CheckCircle2,
+  Clock3,
   Cloud,
   CloudOff,
   CloudUpload,
@@ -30,6 +31,7 @@ import { CHARACTERIZATION_FIELDS, SOURCE_RECORD_COUNT } from './lib/characteriza
 import { GERMINATION_FIELDS } from './lib/germinationFields';
 import {
   PAGE_SIZE,
+  RECENT_LIMIT,
   SEARCH_DEBOUNCE_MS,
   SEARCH_MIN,
   SEARCH_SCOPES,
@@ -38,6 +40,7 @@ import {
   exportAllRecords,
   fileViewUrl,
   getRecord,
+  listRecentRecords,
   listRecords
 } from './lib/registryApi';
 import { loginMessageFor, messageFor, pct } from './lib/registryUi';
@@ -50,7 +53,7 @@ const OfflineQueueModal = lazy(() => import('./components/OfflineQueueModal.jsx'
 const AdminCenterModal = lazy(() => import('./components/AdminCenterModal.jsx'));
 
 const APP_NAME = 'CaneSprout Registry';
-const APP_VERSION = '2.6.4';
+const APP_VERSION = '2.6.7';
 const USER_CACHE_KEY = 'sugarcane-registry-user-v230';
 const ROLE_REFRESH_PREFIX = 'canesprout-role-refresh-v251:';
 const MANUAL_REFRESH_COOLDOWN_MS = 30_000;
@@ -225,6 +228,7 @@ export default function App() {
   const [searchInput, setSearchInput] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [searchScope, setSearchScope] = useState('variety');
+  const [recentMode, setRecentMode] = useState(false);
   const searchInputRef = useRef(null);
   const searchPanelRef = useRef(null);
   const forceFreshRef = useRef(false);
@@ -304,7 +308,7 @@ export default function App() {
           clearListCache();
           // Avoid an automatic post-sync list read. When browsing normally,
           // merge the just-saved records into the current page locally.
-          if (!searchInput.trim() && result.records?.length) {
+          if (!searchInput.trim() && !recentMode && result.records?.length) {
             setRecords((current) => {
               const merged = [...result.records, ...current];
               return Array.from(new Map(merged.map((record) => [record.$id, record])).values()).slice(0, PAGE_SIZE);
@@ -319,7 +323,7 @@ export default function App() {
       }
     }, 1800);
     return () => { cancelled = true; window.clearTimeout(timer); };
-  }, [user, online, sessionState]);
+  }, [user, online, sessionState, recentMode]);
 
   // Returning users do not spend an extra Appwrite account.get() request on
   // every launch. The first real registry query verifies the cookie anyway;
@@ -417,25 +421,28 @@ export default function App() {
   useEffect(() => {
     if (!user || sessionState === 'checking') return undefined;
     const typed = searchInput.trim();
-    if (typed && typed.length < SEARCH_MIN) {
+    if (!recentMode && typed && typed.length < SEARCH_MIN) {
       setLoading(false);
       setRecords([]);
       return undefined;
     }
-    if (typed.length >= SEARCH_MIN && searchTerm !== typed) {
+    if (!recentMode && typed.length >= SEARCH_MIN && searchTerm !== typed) {
       setLoading(true);
       setRecords([]);
       return undefined;
     }
 
-    const effectiveTerm = typed ? searchTerm : '';
+    const effectiveTerm = recentMode ? '' : (typed ? searchTerm : '');
     let live = true;
     setLoading(true);
     setListError('');
     setCacheNote('');
     const bypassCache = forceFreshRef.current;
     forceFreshRef.current = false;
-    listRecords({ search: effectiveTerm, scope: searchScope, bypassCache }).then((result) => {
+    const request = recentMode
+      ? listRecentRecords({ bypassCache })
+      : listRecords({ search: effectiveTerm, scope: searchScope, bypassCache });
+    request.then((result) => {
       if (!live) return;
       setRecords(result.documents || []);
       setCursor(result.nextCursor || '');
@@ -458,10 +465,10 @@ export default function App() {
       setListError(messageFor(error));
     }).finally(() => live && setLoading(false));
     return () => { live = false; };
-  }, [user, sessionState, searchInput, searchTerm, searchScope, refreshKey]);
+  }, [user, sessionState, searchInput, searchTerm, searchScope, recentMode, refreshKey]);
 
   async function loadMore() {
-    if (!cursor || loadingMore) return;
+    if (recentMode || !cursor || loadingMore) return;
     setLoadingMore(true);
     setListError('');
     try {
@@ -559,7 +566,7 @@ export default function App() {
   function handleOfflineSynced(result) {
     if (!result?.synced) return;
     clearListCache();
-    if (!searchInput.trim() && result.records?.length) {
+    if (!searchInput.trim() && !recentMode && result.records?.length) {
       setRecords((current) => {
         const merged = [...result.records, ...current];
         return Array.from(new Map(merged.map((record) => [record.$id, record])).values()).slice(0, PAGE_SIZE);
@@ -679,23 +686,25 @@ export default function App() {
 
         <div className="search-panel" id="registry-search" ref={searchPanelRef}>
           <Search size={20} />
-          <input ref={searchInputRef} value={searchInput} onChange={(event) => { setSearchMatchMode(''); setSearchInput(event.target.value); }} onKeyDown={(event) => { if (event.key === 'Escape') { setSearchInput(''); event.currentTarget.blur(); } }} placeholder={searchScope === 'all' ? 'Search varietal traits or field keywords…' : `Search ${SEARCH_SCOPES[searchScope].label.toLowerCase()}…`} aria-label="Search sugarcane registry" />
-          <label className="search-scope"><span>Search in</span><select value={searchScope} onChange={(event) => { setSearchScope(event.target.value); setRecords([]); setCursor(''); setHasMore(false); setSearchMatchMode(''); }}>{Object.entries(SEARCH_SCOPES).map(([value, config]) => <option key={value} value={value}>{config.label}</option>)}</select></label>
-          {searchInput && <button className="clear-search" onClick={() => { setSearchMatchMode(''); setSearchInput(''); searchInputRef.current?.focus(); }} aria-label="Clear search"><X size={16} /></button>}
-          <span>{searchInput.trim().length > 0 && searchInput.trim().length < SEARCH_MIN ? `${SEARCH_MIN - searchInput.trim().length} more character${SEARCH_MIN - searchInput.trim().length === 1 ? '' : 's'} • 0 reads` : searchInput.trim() ? `${SEARCH_SCOPES[searchScope].label} • ${searchScope === 'all' ? 'keyword index' : 'smart index'}` : `Browse first ${PAGE_SIZE}`}</span>
+          <input ref={searchInputRef} value={searchInput} onChange={(event) => { setRecentMode(false); setSearchMatchMode(''); setSearchInput(event.target.value); }} onKeyDown={(event) => { if (event.key === 'Escape') { setSearchInput(''); event.currentTarget.blur(); } }} placeholder={recentMode ? `Showing ${RECENT_LIMIT} most recently added records` : searchScope === 'all' ? 'Search varietal traits or field keywords…' : `Search ${SEARCH_SCOPES[searchScope].label.toLowerCase()}…`} aria-label="Search sugarcane registry" />
+          <button type="button" className={`recent-search-button ${recentMode ? 'active' : ''}`} onClick={() => { const next = !recentMode; setRecentMode(next); setSearchInput(''); setSearchTerm(''); setSearchMatchMode(next ? 'recent' : ''); setRecords([]); setCursor(''); setHasMore(false); }} aria-pressed={recentMode} title={`Show the ${RECENT_LIMIT} most recently added records`}><Clock3 size={16} /><span>Recently added</span><b>{RECENT_LIMIT}</b></button>
+          <label className="search-scope"><span>Search in</span><select value={searchScope} disabled={recentMode} onChange={(event) => { setRecentMode(false); setSearchScope(event.target.value); setRecords([]); setCursor(''); setHasMore(false); setSearchMatchMode(''); }}>{Object.entries(SEARCH_SCOPES).map(([value, config]) => <option key={value} value={value}>{config.label}</option>)}</select></label>
+          {searchInput && <button className="clear-search" onClick={() => { setRecentMode(false); setSearchMatchMode(''); setSearchInput(''); searchInputRef.current?.focus(); }} aria-label="Clear search"><X size={16} /></button>}
+          <span>{recentMode ? `Newest ${RECENT_LIMIT} • on-demand lean view` : searchInput.trim().length > 0 && searchInput.trim().length < SEARCH_MIN ? `${SEARCH_MIN - searchInput.trim().length} more character${SEARCH_MIN - searchInput.trim().length === 1 ? '' : 's'} • 0 reads` : searchInput.trim() ? `${SEARCH_SCOPES[searchScope].label} • ${searchScope === 'all' ? 'keyword index' : 'smart index'}` : `Browse first ${PAGE_SIZE}`}</span>
         </div>
         {submissionNotice && <div className="alert success"><CheckCircle2 size={16} /> {submissionNotice}</div>}
         {!!offlineSummary.count && <div className="offline-queue-banner"><CloudUpload size={18} /><div><strong>{offlineSummary.count} offline entr{offlineSummary.count === 1 ? 'y' : 'ies'} waiting on this device</strong><span>{offlineSummary.photoCount ? `${offlineSummary.photoCount} compressed photo${offlineSummary.photoCount === 1 ? '' : 's'} included. ` : ''}Sync is direct to Appwrite and never routed through Vercel.</span></div><button className="secondary-button" onClick={() => setShowOfflineQueue(true)}>Open queue</button></div>}
         {offlineSyncState && <div className="alert info offline-sync-status"><CloudUpload size={16} /> {offlineSyncState}</div>}
-        <div className="query-policy"><CheckCircle2 size={16} /><span>{PAGE_SIZE} rows/request • {SEARCH_DEBOUNCE_MS} ms debounce • cursor Load More • lean card fields • bounded caching • admin approval workflow • IndexedDB offline queue • lazy tools/photos • no polling • no Realtime • no totals</span></div>
-        {!loading && searchInput.trim().length >= SEARCH_MIN && searchTerm === searchInput.trim() && <div className="search-result-note"><b>{records.length}</b><span>{searchMatchMode === 'exact' ? `Exact ${SEARCH_SCOPES[searchScope].label.toLowerCase()} match` : `${records.length === 1 ? 'match' : 'matches'} loaded`} for “{searchTerm}” in {SEARCH_SCOPES[searchScope].label}.{hasMore ? ` More matches are available with Load ${PAGE_SIZE} more.` : ''}</span></div>}
+        <div className="query-policy"><CheckCircle2 size={16} /><span>{PAGE_SIZE} rows/request • recent view capped at {RECENT_LIMIT} • {SEARCH_DEBOUNCE_MS} ms debounce • cursor Load More • lean card fields • bounded caching • admin approval workflow • IndexedDB offline queue • lazy tools/photos • no polling • no Realtime • no totals</span></div>
+        {!loading && recentMode && <div className="search-result-note recent-result-note"><b>{records.length}</b><span>Most recently added sugarcane records, newest first. This view is capped at {RECENT_LIMIT} lean records and does not auto-refresh.</span></div>}
+        {!loading && !recentMode && searchInput.trim().length >= SEARCH_MIN && searchTerm === searchInput.trim() && <div className="search-result-note"><b>{records.length}</b><span>{searchMatchMode === 'exact' ? `Exact ${SEARCH_SCOPES[searchScope].label.toLowerCase()} match` : `${records.length === 1 ? 'match' : 'matches'} loaded`} for “{searchTerm}” in {SEARCH_SCOPES[searchScope].label}.{hasMore ? ` More matches are available with Load ${PAGE_SIZE} more.` : ''}</span></div>}
         {cacheNote && <div className="alert info">{cacheNote}</div>}
         {listError && <div className="alert error">{listError}</div>}
 
         <div className="record-grid">
           {loading ? Array.from({ length: 6 }, (_, index) => <SkeletonCard key={index} />) : records.map((record, index) => <RecordCard key={record.$id} record={record} index={index} onOpen={setDetailId} />)}
         </div>
-        {!loading && !records.length && <div className="empty-state"><Sprout size={34} /><h3>{searchInput.trim() && searchInput.trim().length < SEARCH_MIN ? `Type at least ${SEARCH_MIN} characters` : searchInput.trim() ? 'No matching sugarcane records' : 'No sugarcane records available'}</h3><p>{searchInput.trim() && searchInput.trim().length < SEARCH_MIN ? 'Short searches stay entirely on this device, so Appwrite receives zero requests.' : searchInput.trim() ? `No ${SEARCH_SCOPES[searchScope].label.toLowerCase()} match was returned for “${searchInput.trim()}”. Try another term or search field.` : 'Add or import a sugarcane record to begin.'}</p></div>}
+        {!loading && !records.length && <div className="empty-state"><Sprout size={34} /><h3>{recentMode ? 'No recently added records' : searchInput.trim() && searchInput.trim().length < SEARCH_MIN ? `Type at least ${SEARCH_MIN} characters` : searchInput.trim() ? 'No matching sugarcane records' : 'No sugarcane records available'}</h3><p>{recentMode ? 'No registry entries were returned for the recent-record view.' : searchInput.trim() && searchInput.trim().length < SEARCH_MIN ? 'Short searches stay entirely on this device, so Appwrite receives zero requests.' : searchInput.trim() ? `No ${SEARCH_SCOPES[searchScope].label.toLowerCase()} match was returned for “${searchInput.trim()}”. Try another term or search field.` : 'Add or import a sugarcane record to begin.'}</p></div>}
         {!loading && hasMore && <div className="load-more-row"><button className="secondary-button load-more" onClick={loadMore} disabled={loadingMore}>{loadingMore ? <><LoaderCircle className="spin" size={17} /> Loading {PAGE_SIZE} more…</> : `Load ${PAGE_SIZE} more`}</button><small>More records are fetched only when requested.</small></div>}
       </section>
 

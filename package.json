@@ -1,8 +1,8 @@
 {
   "name": "canesprout-registry",
   "private": true,
-  "version": "2.6.4",
-  "description": "Sugarcane germination and characterization registry with Admin Center approvals/account management, IndexedDB offline submissions, production environment diagnostics, stable eager app-shell boot, and Vercel/Appwrite free-plan safeguards",
+  "version": "2.6.7",
+  "description": "Sugarcane germination and characterization registry with approval review, account management, a 20-record recently-added view, IndexedDB offline submissions, region-safe admin JWT verification, and Vercel/Appwrite free-plan safeguards",
   "main": "electron/main.cjs",
   "author": "SRA-LabTrack",
   "type": "module",

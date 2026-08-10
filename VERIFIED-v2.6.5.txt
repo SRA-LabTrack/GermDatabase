@@ -1,0 +1,9 @@
+CaneSprout Registry v2.6.5 verification
+
+- admin-accounts-v2.js passes node --check.
+- adminAccountsApi.js passes node --check.
+- JWT identity checks prefer the configured regional endpoint.
+- API-key Users operations retain global-first fallback behavior.
+- Admin role uses the canesproutadmin label from authenticated GET /account response.
+- No Appwrite schema changes.
+- No polling or additional routine registry reads added.

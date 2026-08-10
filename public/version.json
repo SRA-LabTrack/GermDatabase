@@ -1,5 +1,5 @@
 {
-  "version": "2.6.4",
+  "version": "2.6.7",
   "channel": "stable",
-  "notes": "Production Vercel environment diagnostics and admin-key repair flow"
+  "notes": "Registry search now includes an on-demand Recently added view capped at the 20 newest lean records, with no polling or full-library download."
 }

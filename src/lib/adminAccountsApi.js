@@ -7,10 +7,24 @@ let cachedStatusUntil = 0;
 
 async function adminJwt() {
   if (cachedJwt && Date.now() < cachedUntil) return cachedJwt;
-  const result = await account.createJWT();
-  cachedJwt = result.jwt;
-  cachedUntil = Date.now() + 10 * 60_000;
-  return cachedJwt;
+  try {
+    const result = await account.createJWT();
+    cachedJwt = result.jwt;
+    // Appwrite JWTs default to 15 minutes. Keep our cache shorter so a token is
+    // never deliberately reused near its expiry boundary.
+    cachedUntil = Date.now() + 8 * 60_000;
+    return cachedJwt;
+  } catch (cause) {
+    const status = Number(cause?.code || cause?.status || 0);
+    if ([401, 403].includes(status) || String(cause?.message || '').toLowerCase().includes('not authorized')) {
+      const error = new Error('Your Appwrite login session has expired or cannot create an administrator JWT. Sign out of CaneSprout and sign in again.');
+      error.code = 'admin_session_invalid';
+      error.status = 401;
+      error.cause = cause;
+      throw error;
+    }
+    throw cause;
+  }
 }
 
 export function clearAdminJwtCache() {
@@ -29,7 +43,7 @@ function adminApiUrl() {
   return '/canesprout-admin-api';
 }
 
-async function postAdmin(body, { jwt = true } = {}) {
+async function postAdmin(body, { jwt = true, retryAuth = true } = {}) {
   const token = jwt ? await adminJwt() : '';
   let response;
   try {
@@ -65,9 +79,27 @@ async function postAdmin(body, { jwt = true } = {}) {
   }
 
   if (!response.ok) {
+    const code = result?.code || '';
     if (response.status === 401 || response.status === 403) clearAdminJwtCache();
+
+    // A JWT can become invalid if the underlying Appwrite session changed. On a
+    // server-confirmed session error, validate the live Account session and retry
+    // exactly once with a newly minted JWT. This is rare and adds no polling.
+    if (jwt && retryAuth && code === 'admin_session_invalid') {
+      try {
+        await account.get();
+        return postAdmin(body, { jwt: true, retryAuth: false });
+      } catch (cause) {
+        const error = new Error('Your Appwrite login session has expired. Sign out of CaneSprout and sign in again before using Account Management.');
+        error.code = 'admin_session_invalid';
+        error.status = 401;
+        error.cause = cause;
+        throw error;
+      }
+    }
+
     const error = new Error(result?.error || `Account management failed (${response.status}).`);
-    error.code = result?.code || '';
+    error.code = code;
     error.status = response.status;
     throw error;
   }

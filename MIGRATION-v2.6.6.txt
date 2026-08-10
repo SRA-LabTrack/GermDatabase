@@ -1,0 +1,11 @@
+CaneSprout Registry v2.6.6
+
+Approval review visibility and completeness fix.
+
+- Approval detail panel now uses an opaque high-contrast surface.
+- Reviews every submitted payload field, not only the predefined field list.
+- Registrations show all non-empty submitted values.
+- Edits show Before and Requested values.
+- Shows request type, field count, photo count, and target record ID.
+- No Appwrite schema migration required.
+- No new polling, Realtime, or background reads.

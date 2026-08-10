@@ -1,5 +1,5 @@
 const ADMIN_LABEL = 'canesproutadmin';
-const API_VERSION = '2.6.3-production-git-redeploy';
+const API_VERSION = '2.6.6-approval-review-fix';
 
 export const config = { maxDuration: 60 };
 
@@ -22,7 +22,11 @@ function serverConfig() {
   return {
     endpoint,
     fallbackEndpoint,
-    endpoints: [...new Set([fallbackEndpoint, endpoint].filter(Boolean))],
+    // User JWTs are minted against the configured regional endpoint, so verify
+    // them there first. Server API-key Users requests may prefer the global
+    // endpoint because it has been more reliable for this project.
+    jwtEndpoints: [...new Set([endpoint, fallbackEndpoint].filter(Boolean))],
+    keyEndpoints: [...new Set([fallbackEndpoint, endpoint].filter(Boolean))],
     projectId,
     apiKeySource: selected[0],
     apiKey: String(selected[1] || '').trim(),
@@ -68,8 +72,11 @@ async function appwrite(path, { method = 'GET', body, jwt = '', key = '' } = {})
   if (jwt) headers['X-Appwrite-JWT'] = jwt;
   if (key) headers['X-Appwrite-Key'] = key;
 
+  const authKind = jwt ? 'jwt' : key ? 'key' : 'none';
+  const endpoints = jwt ? cfg.jwtEndpoints : cfg.keyEndpoints;
   let lastError;
-  for (const base of cfg.endpoints) {
+  for (let index = 0; index < endpoints.length; index += 1) {
+    const base = endpoints[index];
     try {
       const response = await fetch(`${base}${path}`, {
         method,
@@ -87,12 +94,39 @@ async function appwrite(path, { method = 'GET', body, jwt = '', key = '' } = {})
         const error = new Error(parsed?.message || `Appwrite ${response.status}`);
         error.status = response.status;
         error.type = parsed?.type;
+        error.authKind = authKind;
+        error.endpoint = base;
+
+        // JWTs are regional identity credentials. A proxy/endpoint mismatch can
+        // return 401/403 even when the same JWT is valid on the project's region,
+        // so allow the read-only identity check to try the second endpoint once.
+        const canRetryJwtIdentity = authKind === 'jwt'
+          && method === 'GET'
+          && path === '/account'
+          && [401, 403].includes(response.status)
+          && index < endpoints.length - 1;
+        if (canRetryJwtIdentity) {
+          lastError = error;
+          continue;
+        }
+
         if (response.status >= 400 && response.status < 500 && ![408, 429].includes(response.status)) throw error;
         lastError = error;
         continue;
       }
       return parsed;
     } catch (error) {
+      error.authKind ||= authKind;
+      error.endpoint ||= base;
+      const canRetryJwtIdentity = authKind === 'jwt'
+        && method === 'GET'
+        && path === '/account'
+        && [401, 403].includes(Number(error?.status || 0))
+        && index < endpoints.length - 1;
+      if (canRetryJwtIdentity) {
+        lastError = error;
+        continue;
+      }
       if (error?.status >= 400 && error?.status < 500 && ![408, 429].includes(error.status)) throw error;
       lastError = error;
     }
@@ -101,17 +135,39 @@ async function appwrite(path, { method = 'GET', body, jwt = '', key = '' } = {})
 }
 
 async function accountFromJwt(jwt) {
-  if (!jwt) throw Object.assign(new Error('Missing Appwrite JWT.'), { status: 401 });
-  return appwrite('/account', { jwt });
+  if (!jwt) {
+    const error = Object.assign(new Error('Missing Appwrite JWT.'), { status: 401, authKind: 'jwt', code: 'admin_session_invalid' });
+    throw error;
+  }
+  try {
+    return await appwrite('/account', { jwt });
+  } catch (cause) {
+    if ([401, 403].includes(Number(cause?.status || 0))) {
+      const error = Object.assign(new Error('Your Appwrite login session could not be verified. Sign out of CaneSprout and sign in again, then reopen Admin Center.'), {
+        status: 401,
+        authKind: 'jwt',
+        code: 'admin_session_invalid',
+        cause
+      });
+      throw error;
+    }
+    throw cause;
+  }
 }
 
-async function verifiedAdmin(jwt, apiKey) {
+async function verifiedAdmin(jwt) {
   const account = await accountFromJwt(jwt);
-  const user = await appwrite(`/users/${encodeURIComponent(account.$id)}`, { key: apiKey });
-  if (!Array.isArray(user.labels) || !user.labels.includes(ADMIN_LABEL)) {
-    throw Object.assign(new Error('Administrator authority is required.'), { status: 403 });
+  // GET /account already returns the authenticated User model, including labels.
+  // Using those labels avoids an unnecessary Users API read on every admin call.
+  if (!Array.isArray(account.labels) || !account.labels.includes(ADMIN_LABEL)) {
+    const error = Object.assign(new Error(`This signed-in account does not currently have the ${ADMIN_LABEL} administrator label.`), {
+      status: 403,
+      authKind: 'jwt',
+      code: 'admin_label_missing'
+    });
+    throw error;
   }
-  return user;
+  return account;
 }
 
 function publicUser(user) {
@@ -161,7 +217,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const admin = await verifiedAdmin(jwt, cfg.apiKey);
+    const admin = await verifiedAdmin(jwt);
 
     if (action === 'list') {
       const search = String(body.search || '').trim().slice(0, 256);
@@ -232,13 +288,19 @@ export default async function handler(req, res) {
     return json(res, 400, { error: 'Unknown account-management action.' });
   } catch (error) {
     const message = error?.message || 'Account management failed.';
+    if (error?.code === 'admin_session_invalid') {
+      return json(res, 401, { code: 'admin_session_invalid', error: message });
+    }
+    if (error?.code === 'admin_label_missing') {
+      return json(res, 403, { code: 'admin_label_missing', error: message });
+    }
     const lowered = String(message).toLowerCase();
-    if (lowered.includes('scope') || lowered.includes('unauthorized') || lowered.includes('permission')) {
+    if (error?.authKind === 'key' || lowered.includes('scope')) {
       return json(res, Number(error?.status || 403), {
         code: 'admin_key_scope',
-        error: `${message} The server key must include Appwrite users.read and users.write scopes.`
+        error: `${message} Verify that the server API key includes Appwrite users.read and users.write scopes.`
       });
     }
-    return json(res, Number(error?.status || 500), { error: message });
+    return json(res, Number(error?.status || 500), { error: message, code: error?.code || '' });
   }
 }

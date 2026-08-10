@@ -4,9 +4,38 @@ import { CHARACTERIZATION_FIELDS } from '../lib/characterizationFields';
 import { GERMINATION_FIELDS } from '../lib/germinationFields';
 import { adminAccountRequest, adminAccountStatus } from '../lib/adminAccountsApi';
 import { approveChangeRequest, getChangeRequest, listPendingRequests, rejectChangeRequest } from '../lib/approvalApi';
-import { getRecord } from '../lib/registryApi';
+import { fileViewUrl, getRecord } from '../lib/registryApi';
 
 const REVIEW_FIELDS = [...GERMINATION_FIELDS, ...CHARACTERIZATION_FIELDS];
+const REVIEW_FIELD_LABELS = new Map(REVIEW_FIELDS.map((field) => [field.key, field.label]));
+const REVIEW_FIELD_ORDER = REVIEW_FIELDS.map((field) => field.key);
+const HIDDEN_REVIEW_KEYS = new Set([
+  'photo_file_ids', 'thumb_file_ids', 'thumbnail_file_id', 'primary_file_id', 'photo_names'
+]);
+
+function hasReviewValue(value) {
+  if (Array.isArray(value)) return value.length > 0;
+  if (value === null || value === undefined) return false;
+  return String(value).trim() !== '';
+}
+
+function displayReviewValue(value) {
+  if (!hasReviewValue(value)) return 'Not provided';
+  if (Array.isArray(value)) return value.join(', ');
+  if (typeof value === 'object') {
+    try { return JSON.stringify(value); } catch { return String(value); }
+  }
+  return String(value);
+}
+
+function humanizeReviewKey(key) {
+  if (REVIEW_FIELD_LABELS.has(key)) return REVIEW_FIELD_LABELS.get(key);
+  return String(key || '')
+    .replace(/^germ_/, 'Germination ')
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
 
 function friendlyDate(value) {
   if (!value) return 'Unknown time';
@@ -32,11 +61,31 @@ function ApprovalReview({ requestId, currentUser, onClose, onResolved }) {
   }, [requestId]);
 
   const desired = request?.payload?.record || {};
-  const changed = useMemo(() => REVIEW_FIELDS.filter((field) => {
-    const next = String(desired[field.key] ?? '').trim();
-    const prev = String(before?.[field.key] ?? '').trim();
-    return request?.request_type === 'create' ? Boolean(next) : next !== prev;
-  }), [desired, before, request?.request_type]);
+  const reviewEntries = useMemo(() => {
+    if (!request) return [];
+    const desiredKeys = Object.keys(desired).filter((key) => !key.startsWith('$') && !HIDDEN_REVIEW_KEYS.has(key));
+    const orderedKeys = [
+      ...REVIEW_FIELD_ORDER.filter((key) => desiredKeys.includes(key)),
+      ...desiredKeys.filter((key) => !REVIEW_FIELD_LABELS.has(key)).sort((a, b) => a.localeCompare(b))
+    ];
+    return orderedKeys
+      .filter((key) => {
+        if (request.request_type === 'create') return hasReviewValue(desired[key]);
+        return displayReviewValue(desired[key]) !== displayReviewValue(before?.[key]);
+      })
+      .map((key) => ({
+        key,
+        label: humanizeReviewKey(key),
+        before: before?.[key],
+        requested: desired[key]
+      }));
+  }, [desired, before, request]);
+
+  const photoIds = Array.isArray(desired.photo_file_ids) ? desired.photo_file_ids.filter(Boolean) : [];
+  const thumbIds = Array.isArray(desired.thumb_file_ids) ? desired.thumb_file_ids.filter(Boolean) : [];
+  const photoNames = Array.isArray(desired.photo_names) ? desired.photo_names : [];
+  const photoCount = photoIds.length;
+  const requestKind = request?.request_type === 'edit' ? 'Edit request' : 'Registration request';
 
   async function approve() {
     setBusy('approve'); setError('');
@@ -60,10 +109,41 @@ function ApprovalReview({ requestId, currentUser, onClose, onResolved }) {
       </div>
       {!request && !error && <div className="admin-loading"><LoaderCircle className="spin" size={18} /> Loading request…</div>}
       {request && <>
-        <div className="approval-meta"><span>Submitted by <b>{request.submitted_name || request.submitted_email || request.submitted_by}</b></span><span>{friendlyDate(request.submitted_at)}</span></div>
+        <div className="approval-meta">
+          <span>Submitted by <b>{request.submitted_name || request.submitted_email || request.submitted_by}</b></span>
+          <span>{friendlyDate(request.submitted_at)}</span>
+        </div>
+        <div className="approval-review-summary">
+          <span><small>Request</small><b>{requestKind}</b></span>
+          <span><small>Submitted values</small><b>{reviewEntries.length}</b></span>
+          <span><small>Attached photos</small><b>{photoCount}</b></span>
+          {request.target_id && <span><small>Target record</small><b className="mono-value">{request.target_id}</b></span>}
+        </div>
         <div className="approval-diff-list">
-          {!changed.length && <div className="approval-empty">No changed values were detected.</div>}
-          {changed.map((field) => <div className="approval-diff" key={field.key}><small>{field.label}</small>{request.request_type === 'edit' && <span className="before-value">Before: {String(before?.[field.key] || 'Not provided')}</span>}<strong>Requested: {String(desired[field.key] || 'Not provided')}</strong></div>)}
+          <div className="approval-list-title">
+            <div><small>{request.request_type === 'edit' ? 'Requested changes' : 'Submitted record'}</small><strong>{reviewEntries.length ? `${reviewEntries.length} field${reviewEntries.length === 1 ? '' : 's'} to review` : 'No field values submitted'}</strong></div>
+            {photoCount > 0 && <span>{photoCount} photo{photoCount === 1 ? '' : 's'}</span>}
+          </div>
+          {photoCount > 0 && <div className="approval-photo-section">
+            <div className="approval-photo-heading"><small>Submitted photos</small><span>Compressed thumbnails • full image opens on click</span></div>
+            <div className="approval-photo-grid">
+              {photoIds.map((fileId, index) => {
+                const previewId = thumbIds[index] || fileId;
+                return <a key={fileId} href={fileViewUrl(fileId)} target="_blank" rel="noreferrer" title={photoNames[index] || `Photo ${index + 1}`}>
+                  <img src={fileViewUrl(previewId)} alt={photoNames[index] || `Submitted photo ${index + 1}`} loading="lazy" decoding="async" />
+                  <span>{photoNames[index] || `Photo ${index + 1}`}</span>
+                </a>;
+              })}
+            </div>
+          </div>}
+          {!reviewEntries.length && <div className="approval-empty"><strong>No visible field values were included in this request.</strong><span>You can reject it, or approve it only if an intentionally blank record is valid.</span></div>}
+          {reviewEntries.map((field) => <div className="approval-diff" key={field.key}>
+            <small>{field.label}</small>
+            {request.request_type === 'edit' ? <div className="approval-values">
+              <span className="before-value"><em>Before</em><b>{displayReviewValue(field.before)}</b></span>
+              <span className="requested-value"><em>Requested</em><b>{displayReviewValue(field.requested)}</b></span>
+            </div> : <strong>{displayReviewValue(field.requested)}</strong>}
+          </div>)}
         </div>
       </>}
       {error && <div className="alert error">{error}</div>}
@@ -172,7 +252,7 @@ function AccountsTab({ currentUser }) {
         {server.errorCode === 'admin_api_unreachable' || server.errorCode === 'admin_api_route_mismatch' ? <>
           <p>Your Appwrite key may already be configured, but this browser could not reach the CaneSprout Vercel Function.</p>
           <ol>
-            <li>Deploy <b>CaneSprout v2.6.4 or newer</b> to the same Vercel project.</li>
+            <li>Deploy <b>CaneSprout v2.6.6 or newer</b> to the same Vercel project.</li>
             <li>Wait for the Production deployment to finish, then hard-refresh once.</li>
             <li>Open <code>/canesprout-admin-api</code> on your production domain. It should show safe JSON diagnostics.</li>
           </ol>
