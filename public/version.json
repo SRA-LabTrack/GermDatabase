@@ -1,5 +1,5 @@
 {
-  "version": "2.6.3",
+  "version": "2.6.4",
   "channel": "stable",
   "notes": "Production Vercel environment diagnostics and admin-key repair flow"
 }

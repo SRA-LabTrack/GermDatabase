@@ -172,7 +172,7 @@ function AccountsTab({ currentUser }) {
         {server.errorCode === 'admin_api_unreachable' || server.errorCode === 'admin_api_route_mismatch' ? <>
           <p>Your Appwrite key may already be configured, but this browser could not reach the CaneSprout Vercel Function.</p>
           <ol>
-            <li>Deploy <b>CaneSprout v2.6.3 or newer</b> to the same Vercel project.</li>
+            <li>Deploy <b>CaneSprout v2.6.4 or newer</b> to the same Vercel project.</li>
             <li>Wait for the Production deployment to finish, then hard-refresh once.</li>
             <li>Open <code>/canesprout-admin-api</code> on your production domain. It should show safe JSON diagnostics.</li>
           </ol>
