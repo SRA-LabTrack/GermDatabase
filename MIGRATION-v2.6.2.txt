@@ -1,0 +1,19 @@
+CaneSprout v2.6.2 - Production Account Management Environment Fix
+==================================================================
+
+WHY LOCALHOST WORKED BUT VERCEL DID NOT
+Local Vite loads .env/.env.local from the PC. Those files are intentionally
+not committed or uploaded to Vercel. Vercel Functions receive only Environment
+Variables configured for the deployment target (Production/Preview/Development).
+
+V2.6.2 ADDS
+- Safe GET /canesprout-admin-api diagnostics. No secret value is exposed.
+- Production/Preview/local runtime name in diagnostics.
+- Names of supported server variables that are present (values never returned).
+- Short retry cache when Production is not configured.
+- Accurate Admin Center message for local-vs-production mismatch.
+- REPAIR-VERCEL-PRODUCTION-ADMIN-KEY.cmd.
+- Production verification via `vercel env run -e production` before deploy.
+- Fresh `vercel --prod --force --yes` deployment after verification.
+
+NO APPWRITE SCHEMA MIGRATION IS REQUIRED.

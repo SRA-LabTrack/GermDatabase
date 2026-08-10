@@ -81,7 +81,9 @@ export async function adminAccountStatus({ force = false } = {}) {
   // wasting an Appwrite request every time Admin Center opens.
   const result = await postAdmin({ action: 'status' }, { jwt: false });
   cachedStatus = result;
-  cachedStatusUntil = Date.now() + 10 * 60_000;
+  // Cache healthy configuration longer. Missing production configuration gets a
+  // short cache so a redeploy/fixed Environment Variable is detected quickly.
+  cachedStatusUntil = Date.now() + (result?.configured ? 10 * 60_000 : 30_000);
   return result;
 }
 

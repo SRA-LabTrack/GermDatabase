@@ -1,5 +1,5 @@
 {
-  "version": "2.6.1",
-  "name": "CaneSprout Registry",
-  "notes": "Stable Account Management server route and instant server credential check."
+  "version": "2.6.3",
+  "channel": "stable",
+  "notes": "Production Vercel environment diagnostics and admin-key repair flow"
 }

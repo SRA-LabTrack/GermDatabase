@@ -111,7 +111,7 @@ function AccountsTab({ currentUser }) {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState('');
   const [form, setForm] = useState({ name: '', email: '', password: '', role: 'user' });
-  const [server, setServer] = useState({ checking: true, configured: false, keySource: '', apiVersion: '', error: '', errorCode: '' });
+  const [server, setServer] = useState({ checking: true, configured: false, keySource: '', apiVersion: '', environment: '', deploymentHost: '', detectedServerVariables: [], error: '', errorCode: '' });
   const [loading, setLoading] = useState(false);
   const [busy, setBusy] = useState('');
   const [error, setError] = useState('');
@@ -121,11 +121,11 @@ function AccountsTab({ currentUser }) {
     setError('');
     try {
       const status = await adminAccountStatus({ force });
-      const next = { checking: false, configured: Boolean(status.configured), keySource: status.keySource || '', apiVersion: status.apiVersion || '', error: '', errorCode: '' };
+      const next = { checking: false, configured: Boolean(status.configured), keySource: status.keySource || '', apiVersion: status.apiVersion || '', environment: status.vercelEnvironment || '', deploymentHost: status.deploymentHost || '', detectedServerVariables: status.detectedServerVariables || [], error: '', errorCode: '' };
       setServer(next);
       if (next.configured) await load('', { skipServerCheck: true });
     } catch (err) {
-      setServer({ checking: false, configured: false, keySource: '', apiVersion: '', error: err?.message || String(err), errorCode: err?.code || '' });
+      setServer({ checking: false, configured: false, keySource: '', apiVersion: '', environment: '', deploymentHost: '', detectedServerVariables: [], error: err?.message || String(err), errorCode: err?.code || '' });
     }
   }
 
@@ -170,19 +170,21 @@ function AccountsTab({ currentUser }) {
       <div className="admin-server-setup-copy">
         <h3>{server.errorCode === 'admin_api_unreachable' || server.errorCode === 'admin_api_route_mismatch' ? 'Account Management route is not reachable' : 'One server credential is still required'}</h3>
         {server.errorCode === 'admin_api_unreachable' || server.errorCode === 'admin_api_route_mismatch' ? <>
-          <p>Your Appwrite key may already be configured. The browser could not reach the CaneSprout Vercel Function, so the key was never checked.</p>
+          <p>Your Appwrite key may already be configured, but this browser could not reach the CaneSprout Vercel Function.</p>
           <ol>
-            <li>Deploy <b>CaneSprout v2.6.1 or newer</b> to the same Vercel project.</li>
+            <li>Deploy <b>CaneSprout v2.6.3 or newer</b> to the same Vercel project.</li>
             <li>Wait for the Production deployment to finish, then hard-refresh once.</li>
-            <li>Press <b>Check again</b>. The status check now uses a dedicated route that bypasses the SPA catch-all.</li>
+            <li>Open <code>/canesprout-admin-api</code> on your production domain. It should show safe JSON diagnostics.</li>
           </ol>
         </> : <>
-          <p>CaneSprout can approve registrations and edits without this key. The key is needed only for creating accounts, searching all Appwrite users, and changing administrator authority.</p>
+          <p><b>Localhost working does not mean Vercel has the same secret.</b> Local <code>.env</code> and <code>.env.local</code> files stay on your PC and are not uploaded to Production.</p>
+          {server.environment && <div className="admin-runtime-note">Runtime checked: <b>{server.environment}</b>{server.deploymentHost ? ` • ${server.deploymentHost}` : ''}</div>}
           <ol>
-            <li>In Appwrite, create a dedicated API key with only <b>users.read</b> and <b>users.write</b>.</li>
-            <li>In Vercel → GermDatabase → Settings → Environment Variables, add it as <code>APPWRITE_ADMIN_API_KEY</code> for Production.</li>
-            <li>Redeploy the Production deployment. Vercel environment-variable changes do not affect an already-built deployment.</li>
+            <li>In Vercel, open the exact project serving this domain and confirm a supported server-only key exists under <b>Production</b>. <code>APPWRITE_ADMIN_API_KEY</code> is preferred; <code>APPWRITE_API_KEY</code> is also supported for compatibility.</li>
+            <li>If it exists only under Development or Preview, add/update it under Production.</li>
+            <li>Create a <b>new Production deployment</b>. Existing deployments do not inherit later Environment Variable changes.</li>
           </ol>
+          <p>The ZIP includes <code>REPAIR-VERCEL-PRODUCTION-ADMIN-KEY.cmd</code>, which verifies the linked project's Production environment and triggers a fresh Production deployment through your existing GitHub → Vercel integration. It does not use the Vercel CLI deploy command.</p>
         </>}
         {server.error && <div className="alert error">{server.error}</div>}
         <button className="secondary-button" onClick={() => checkServer(true)}><RefreshCw size={16} /> Check again</button>

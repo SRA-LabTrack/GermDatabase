@@ -15,15 +15,15 @@ function localAdminApiPlugin() {
           res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
           return res.end('');
         }
-        if (req.method !== 'POST') {
+        if (!['GET', 'POST'].includes(req.method || '')) {
           res.statusCode = 405;
           res.setHeader('Content-Type', 'application/json');
           return res.end(JSON.stringify({ error: 'Method not allowed.' }));
         }
         try {
           let raw = '';
-          for await (const chunk of req) raw += chunk;
-          req.body = raw ? JSON.parse(raw) : {};
+          if (req.method === 'POST') for await (const chunk of req) raw += chunk;
+          req.body = req.method === 'GET' ? { action: 'status' } : (raw ? JSON.parse(raw) : {});
           const { default: handler } = await import('./api/admin-accounts-v2.js');
           const reply = {
             status(code) { res.statusCode = code; return reply; },

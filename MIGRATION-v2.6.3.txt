@@ -1,0 +1,21 @@
+CaneSprout v2.6.3 - Production Git Redeploy Repair
+
+WHY THIS VERSION EXISTS
+- The Production secret verification succeeded, but `vercel --prod --force` failed because the Vercel project Root Directory value was rejected by the CLI.
+- D:\Germ is a valid local project path. The failure was not caused by the Windows path.
+
+CHANGES
+- REPAIR-VERCEL-PRODUCTION-ADMIN-KEY.cmd no longer calls `vercel --prod`.
+- After verifying the Production server key, it uses the existing GitHub -> Vercel integration: git add, commit, push origin main.
+- If there are no file changes, it creates an empty commit to force a fresh deployment so Environment Variable changes are injected.
+- Server Account Management explicitly supports APPWRITE_ADMIN_API_KEY, APPWRITE_USERS_API_KEY, APPWRITE_ADMIN_KEY, and APPWRITE_API_KEY.
+- APPWRITE_ADMIN_API_KEY remains the preferred least-privilege production secret.
+- No Appwrite database migration is needed.
+
+RUN FROM D:\Germ
+REPAIR-VERCEL-PRODUCTION-ADMIN-KEY.cmd
+
+After Vercel reports Ready, open:
+https://germ-database.vercel.app/canesprout-admin-api
+
+Expected: configured=true and apiVersion=2.6.3-production-git-redeploy.
