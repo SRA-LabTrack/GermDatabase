@@ -191,7 +191,7 @@ function AccountsTab({ currentUser }) {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState('');
   const [form, setForm] = useState({ name: '', email: '', password: '', role: 'user' });
-  const [server, setServer] = useState({ checking: true, configured: false, keySource: '', apiVersion: '', environment: '', deploymentHost: '', detectedServerVariables: [], error: '', errorCode: '' });
+  const [server, setServer] = useState({ checking: true, configured: false, keySource: '', apiVersion: '', environment: '', deploymentHost: '', detectedServerVariables: [], validated: false, error: '', errorCode: '' });
   const [loading, setLoading] = useState(false);
   const [busy, setBusy] = useState('');
   const [error, setError] = useState('');
@@ -201,18 +201,22 @@ function AccountsTab({ currentUser }) {
     setError('');
     try {
       const status = await adminAccountStatus({ force });
-      const next = { checking: false, configured: Boolean(status.configured), keySource: status.keySource || '', apiVersion: status.apiVersion || '', environment: status.vercelEnvironment || '', deploymentHost: status.deploymentHost || '', detectedServerVariables: status.detectedServerVariables || [], error: '', errorCode: '' };
+      const next = { checking: false, configured: Boolean(status.configured), keySource: status.keySource || '', apiVersion: status.apiVersion || '', environment: status.vercelEnvironment || '', deploymentHost: status.deploymentHost || '', detectedServerVariables: status.detectedServerVariables || [], validated: Boolean(status.keyValidated), error: '', errorCode: '' };
       setServer(next);
       if (next.configured) await load('', { skipServerCheck: true });
     } catch (err) {
-      setServer({ checking: false, configured: false, keySource: '', apiVersion: '', environment: '', deploymentHost: '', detectedServerVariables: [], error: err?.message || String(err), errorCode: err?.code || '' });
+      setServer({ checking: false, configured: false, keySource: '', apiVersion: '', environment: '', deploymentHost: '', detectedServerVariables: [], validated: false, error: err?.message || String(err), errorCode: err?.code || '' });
     }
   }
 
   async function load(term = '', { skipServerCheck = false } = {}) {
     if (!skipServerCheck && !server.configured) return;
     setLoading(true); setError('');
-    try { const result = await adminAccountRequest('list', { search: term }); setUsers(result.users || []); }
+    try {
+      const result = await adminAccountRequest('list', { search: term });
+      setUsers(result.users || []);
+      setServer((current) => ({ ...current, keySource: result.keySource || current.keySource, validated: true }));
+    }
     catch (err) { setError(err?.message || String(err)); }
     finally { setLoading(false); }
   }
@@ -225,6 +229,7 @@ function AccountsTab({ currentUser }) {
     try {
       const result = await adminAccountRequest('create', form);
       setUsers((current) => [result.user, ...current.filter((item) => item.id !== result.user.id)]);
+      setServer((current) => ({ ...current, keySource: result.keySource || current.keySource, validated: true }));
       setForm({ name: '', email: '', password: '', role: 'user' });
     } catch (err) { setError(err?.message || String(err)); }
     finally { setBusy(''); }
@@ -236,6 +241,7 @@ function AccountsTab({ currentUser }) {
     try {
       const result = await adminAccountRequest('setRole', { userId: user.id, role });
       setUsers((current) => current.map((item) => item.id === user.id ? result.user : item));
+      setServer((current) => ({ ...current, keySource: result.keySource || current.keySource, validated: true }));
     } catch (err) { setError(err?.message || String(err)); }
     finally { setBusy(''); }
   }
@@ -252,16 +258,16 @@ function AccountsTab({ currentUser }) {
         {server.errorCode === 'admin_api_stale_backend' ? <>
           <p>The website frontend is newer than the Vercel Account Management function currently answering requests.</p>
           <ol>
-            <li>Push the complete CaneSprout v2.6.8 project to <b>main</b>.</li>
+            <li>Push the complete CaneSprout v2.6.9 project to <b>main</b>.</li>
             <li>Wait for the Production deployment to finish.</li>
             <li>Hard-refresh once, then click <b>Check again</b>.</li>
           </ol>
         </> : server.errorCode === 'admin_api_unreachable' || server.errorCode === 'admin_api_route_mismatch' ? <>
           <p>Your Appwrite key may already be configured, but this browser could not reach the CaneSprout Vercel Function.</p>
           <ol>
-            <li>Deploy <b>CaneSprout v2.6.8 or newer</b> to the same Vercel project.</li>
+            <li>Deploy <b>CaneSprout v2.6.9 or newer</b> to the same Vercel project.</li>
             <li>Wait for the Production deployment to finish, then hard-refresh once.</li>
-            <li>Open <code>/canesprout-admin-api-v268</code> on your production domain. It should show safe JSON diagnostics.</li>
+            <li>Open <code>/canesprout-admin-api-v269</code> on your production domain. It should show safe JSON diagnostics.</li>
           </ol>
         </> : <>
           <p><b>Localhost working does not mean Vercel has the same secret.</b> Local <code>.env</code> and <code>.env.local</code> files stay on your PC and are not uploaded to Production.</p>
@@ -279,7 +285,7 @@ function AccountsTab({ currentUser }) {
     </div>}
 
     {!server.checking && server.configured && <>
-      <div className="admin-server-ready"><Check size={15} /><span>Secure Users API ready{server.keySource ? ` • ${server.keySource}` : ''}{server.apiVersion ? ` • ${server.apiVersion}` : ''}</span></div>
+      <div className="admin-server-ready"><Check size={15} /><span>{server.validated ? 'Secure Users API ready' : 'Server credential detected'}{server.keySource ? ` • ${server.keySource}` : ''}{server.apiVersion ? ` • ${server.apiVersion}` : ''}</span></div>
       <form className="account-create-form" onSubmit={create}>
         <label><span>Name</span><input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Account name" /></label>
         <label><span>Email</span><input type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="name@example.com" /></label>

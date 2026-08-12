@@ -1,7 +1,7 @@
 import { defineConfig, loadEnv } from 'vite';
 
 function localAdminApiPlugin() {
-  const adminPaths = new Set(['/canesprout-admin-api-v268', '/canesprout-admin-api', '/api/canesprout-admin-v268', '/api/admin-accounts-v2', '/api/admin-accounts']);
+  const adminPaths = new Set(['/canesprout-admin-api-v269', '/api/canesprout-admin-v269', '/canesprout-admin-api-v268', '/canesprout-admin-api', '/api/canesprout-admin-v268', '/api/admin-accounts-v2', '/api/admin-accounts']);
   return {
     name: 'canesprout-local-admin-api',
     configureServer(server) {
@@ -24,7 +24,7 @@ function localAdminApiPlugin() {
           let raw = '';
           if (req.method === 'POST') for await (const chunk of req) raw += chunk;
           req.body = req.method === 'GET' ? { action: 'status' } : (raw ? JSON.parse(raw) : {});
-          const { default: handler } = await import('./api/canesprout-admin-v268.js');
+          const { default: handler } = await import('./api/canesprout-admin-v269.js');
           const reply = {
             status(code) { res.statusCode = code; return reply; },
             setHeader(name, value) { res.setHeader(name, value); return reply; },

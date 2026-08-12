@@ -40,7 +40,7 @@ function adminApiUrl() {
   // v2.6.1 uses one stable same-origin route in both Vite dev and Vercel.
   // Vercel rewrites this path explicitly to the server function before the
   // SPA catch-all; Vite serves the same route through its dev middleware.
-  return '/canesprout-admin-api-v268';
+  return '/canesprout-admin-api-v269';
 }
 
 async function postAdmin(body, { jwt = true, retryAuth = true } = {}) {
@@ -112,8 +112,8 @@ export async function adminAccountStatus({ force = false } = {}) {
   // exists and never exposes its value. This keeps the check fast and avoids
   // wasting an Appwrite request every time Admin Center opens.
   const result = await postAdmin({ action: 'status' }, { jwt: false });
-  if (result?.configured && result?.apiVersion !== '2.6.8-node-sdk-admin-auth') {
-    const error = new Error(`Account Management reached an outdated backend (${result?.apiVersion || 'unknown'}). Deploy CaneSprout v2.6.8 so the new versioned server route is active.`);
+  if (result?.configured && result?.apiVersion !== '2.6.9-adaptive-users-key') {
+    const error = new Error(`Account Management reached an outdated backend (${result?.apiVersion || 'unknown'}). Deploy CaneSprout v2.6.9 so the adaptive credential server route is active.`);
     error.code = 'admin_api_stale_backend';
     throw error;
   }

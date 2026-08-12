@@ -1,5 +1,5 @@
 {
-  "version": "2.6.8",
+  "version": "2.6.9",
   "channel": "stable",
-  "notes": "Registry search now includes an on-demand Recently added view capped at the 20 newest lean records, with no polling or full-library download."
+  "notes": "Account Management now validates and automatically falls back across configured server API keys/endpoints, using the first credential that actually has Appwrite Users API access."
 }

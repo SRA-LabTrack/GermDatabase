@@ -78,6 +78,10 @@
   ],
   "rewrites": [
     {
+      "source": "/canesprout-admin-api-v269",
+      "destination": "/api/canesprout-admin-v269"
+    },
+    {
       "source": "/canesprout-admin-api-v268",
       "destination": "/api/canesprout-admin-v268"
     },
@@ -98,6 +102,9 @@
       "maxDuration": 60
     },
     "api/canesprout-admin-v268.js": {
+      "maxDuration": 60
+    },
+    "api/canesprout-admin-v269.js": {
       "maxDuration": 60
     }
   }
