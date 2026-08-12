@@ -1,30 +1,20 @@
 import { defineConfig, loadEnv } from 'vite';
 
 function localAdminApiPlugin() {
-  const adminPaths = new Set(['/canesprout-admin-api', '/api/admin-accounts-v2', '/api/admin-accounts']);
   return {
     name: 'canesprout-local-admin-api',
     configureServer(server) {
-      server.middlewares.use(async (req, res, next) => {
-        const pathname = String(req.url || '').split('?')[0];
-        if (!adminPaths.has(pathname)) return next();
-        if (req.method === 'OPTIONS') {
-          res.statusCode = 204;
-          res.setHeader('Access-Control-Allow-Origin', '*');
-          res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-          res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-          return res.end('');
-        }
-        if (!['GET', 'POST'].includes(req.method || '')) {
+      server.middlewares.use('/api/admin-accounts', async (req, res) => {
+        if (req.method !== 'POST') {
           res.statusCode = 405;
-          res.setHeader('Content-Type', 'application/json');
-          return res.end(JSON.stringify({ error: 'Method not allowed.' }));
+          res.end(JSON.stringify({ error: 'Method not allowed.' }));
+          return;
         }
         try {
           let raw = '';
-          if (req.method === 'POST') for await (const chunk of req) raw += chunk;
-          req.body = req.method === 'GET' ? { action: 'status' } : (raw ? JSON.parse(raw) : {});
-          const { default: handler } = await import('./api/admin-accounts-v2.js');
+          for await (const chunk of req) raw += chunk;
+          req.body = raw ? JSON.parse(raw) : {};
+          const { default: handler } = await import('./api/admin-accounts.js');
           const reply = {
             status(code) { res.statusCode = code; return reply; },
             setHeader(name, value) { res.setHeader(name, value); return reply; },

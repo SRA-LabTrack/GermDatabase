@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App.jsx';
+
+const LazyApp = lazy(() => import('./App.jsx'));
 
 function BootScreen({ failed = false }) {
   return (
@@ -30,7 +31,9 @@ class RootBoundary extends React.Component {
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <RootBoundary>
-    <App />
+    <Suspense fallback={<BootScreen />}>
+      <LazyApp />
+    </Suspense>
   </RootBoundary>
 );
 

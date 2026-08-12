@@ -62,7 +62,7 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "no-store, max-age=0, must-revalidate"
+          "value": "public, max-age=0, s-maxage=300, stale-while-revalidate=600, must-revalidate"
         }
       ]
     },
@@ -71,27 +71,15 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "no-store, max-age=0, must-revalidate"
+          "value": "public, max-age=0, s-maxage=300, stale-while-revalidate=600, must-revalidate"
         }
       ]
     }
   ],
   "rewrites": [
     {
-      "source": "/canesprout-admin-api",
-      "destination": "/api/admin-accounts-v2"
-    },
-    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
-  ],
-  "functions": {
-    "api/admin-accounts-v2.js": {
-      "maxDuration": 60
-    },
-    "api/admin-accounts.js": {
-      "maxDuration": 60
-    }
-  }
+  ]
 }
