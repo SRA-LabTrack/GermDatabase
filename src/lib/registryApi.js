@@ -14,6 +14,7 @@ import {
 import { CHARACTERIZATION_FIELDS } from './characterizationFields';
 
 export const PAGE_SIZE = 25;
+export const RECENT_LIMIT = 20;
 export const SEARCH_MIN = 3;
 export const SEARCH_DEBOUNCE_MS = 500;
 export const LIST_FIELDS = [
@@ -270,6 +271,49 @@ async function strategyPage(term, scopeConfig, cursor, strategy, bypassCache) {
     hasMore: documents.length === PAGE_SIZE,
     nextCursor: documents.at(-1)?.$id || ''
   };
+}
+
+
+export async function listRecentRecords({ bypassCache = false } = {}) {
+  const key = `recent::${RECENT_LIMIT}::first`;
+  if (!bypassCache) {
+    const hit = memoryCache.get(key);
+    if (hit && Date.now() - hit.savedAt < CACHE_TTL) {
+      rememberCore(hit.value.documents);
+      return { ...hit.value, fromCache: true };
+    }
+    const sessionHit = readSessionCache(key);
+    if (sessionHit) {
+      memoryCache.set(key, { savedAt: Date.now(), value: sessionHit });
+      rememberCore(sessionHit.documents);
+      return { ...sessionHit, fromCache: true };
+    }
+  }
+
+  if (!bypassCache && inflightCache.has(key)) return inflightCache.get(key);
+
+  const execute = async () => {
+    const result = await fetchList([
+      ...buildLeanQueries(RECENT_LIMIT),
+      Query.orderDesc('$sequence')
+    ], { ttl: APPWRITE_BROWSE_TTL_SECONDS, bypassCache });
+    const documents = result.documents || [];
+    const value = {
+      documents,
+      nextCursor: '',
+      hasMore: false,
+      skippedForShortSearch: false,
+      matchMode: 'recent'
+    };
+    rememberCore(documents);
+    memoryCache.set(key, { savedAt: Date.now(), value });
+    writeSessionCache(key, value);
+    return { ...value, fromCache: false };
+  };
+
+  const promise = execute().finally(() => inflightCache.delete(key));
+  if (!bypassCache) inflightCache.set(key, promise);
+  return promise;
 }
 
 export async function listRecords({ search = '', scope = 'variety', cursor = '', strategy = 'auto', bypassCache = false } = {}) {

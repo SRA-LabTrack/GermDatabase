@@ -1,10 +1,5 @@
 {
-  "version": "2.5.7",
-  "domain": "sugarcane-germination-characterization",
-  "pagination": 25,
-  "searchDebounceMs": 500,
-  "build": "account-card-single-row-responsive-fix",
-  "released": "2026-08-08",
-  "name": "CaneSprout Registry",
-  "notes": "Fixes compact toolbar account-card wrapping/clipping: identity text collapses before controls, account elements never wrap to a hidden second row, and narrow devices preserve menu/sign-out without overlap."
+  "version": "2.6.8",
+  "channel": "stable",
+  "notes": "Registry search now includes an on-demand Recently added view capped at the 20 newest lean records, with no polling or full-library download."
 }

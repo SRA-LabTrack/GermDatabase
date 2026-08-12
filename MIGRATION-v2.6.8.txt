@@ -1,0 +1,33 @@
+CaneSprout Registry v2.6.8
+==========================
+
+ADMIN AUTHORIZATION FIX
+- Account Management now uses the official node-appwrite Server SDK.
+- Browser creates the normal short-lived Appwrite JWT.
+- Vercel verifies that JWT with Client.setJWT() + Account.get().
+- The verified account must contain the alphanumeric label: canesproutadmin
+- A separate server API-key client performs Users API operations.
+- Account listing remains capped at 25 and total counts stay disabled.
+- No polling or Realtime subscription was added.
+
+VERSIONED SERVER ROUTE
+- New production route: /canesprout-admin-api-v268
+- It maps to: /api/canesprout-admin-v268
+- This prevents a newly deployed frontend from silently talking to an older
+  Account Management function.
+
+REQUIREMENTS
+- APPWRITE_ADMIN_API_KEY in Vercel Production with users.read + users.write.
+- The administrator account must have the canesproutadmin Appwrite label.
+- No database/storage schema migration is required.
+
+After replacing the project files run:
+  npm.cmd install
+  npm.cmd run build
+  npm.cmd run dev
+
+Then publish:
+  git status
+  git add -A
+  git commit -m "CaneSprout v2.6.8 official Appwrite admin auth fix"
+  git push origin main

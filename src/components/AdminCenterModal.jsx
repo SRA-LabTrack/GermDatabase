@@ -4,9 +4,38 @@ import { CHARACTERIZATION_FIELDS } from '../lib/characterizationFields';
 import { GERMINATION_FIELDS } from '../lib/germinationFields';
 import { adminAccountRequest, adminAccountStatus } from '../lib/adminAccountsApi';
 import { approveChangeRequest, getChangeRequest, listPendingRequests, rejectChangeRequest } from '../lib/approvalApi';
-import { getRecord } from '../lib/registryApi';
+import { fileViewUrl, getRecord } from '../lib/registryApi';
 
 const REVIEW_FIELDS = [...GERMINATION_FIELDS, ...CHARACTERIZATION_FIELDS];
+const REVIEW_FIELD_LABELS = new Map(REVIEW_FIELDS.map((field) => [field.key, field.label]));
+const REVIEW_FIELD_ORDER = REVIEW_FIELDS.map((field) => field.key);
+const HIDDEN_REVIEW_KEYS = new Set([
+  'photo_file_ids', 'thumb_file_ids', 'thumbnail_file_id', 'primary_file_id', 'photo_names'
+]);
+
+function hasReviewValue(value) {
+  if (Array.isArray(value)) return value.length > 0;
+  if (value === null || value === undefined) return false;
+  return String(value).trim() !== '';
+}
+
+function displayReviewValue(value) {
+  if (!hasReviewValue(value)) return 'Not provided';
+  if (Array.isArray(value)) return value.join(', ');
+  if (typeof value === 'object') {
+    try { return JSON.stringify(value); } catch { return String(value); }
+  }
+  return String(value);
+}
+
+function humanizeReviewKey(key) {
+  if (REVIEW_FIELD_LABELS.has(key)) return REVIEW_FIELD_LABELS.get(key);
+  return String(key || '')
+    .replace(/^germ_/, 'Germination ')
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
 
 function friendlyDate(value) {
   if (!value) return 'Unknown time';
@@ -32,11 +61,31 @@ function ApprovalReview({ requestId, currentUser, onClose, onResolved }) {
   }, [requestId]);
 
   const desired = request?.payload?.record || {};
-  const changed = useMemo(() => REVIEW_FIELDS.filter((field) => {
-    const next = String(desired[field.key] ?? '').trim();
-    const prev = String(before?.[field.key] ?? '').trim();
-    return request?.request_type === 'create' ? Boolean(next) : next !== prev;
-  }), [desired, before, request?.request_type]);
+  const reviewEntries = useMemo(() => {
+    if (!request) return [];
+    const desiredKeys = Object.keys(desired).filter((key) => !key.startsWith('$') && !HIDDEN_REVIEW_KEYS.has(key));
+    const orderedKeys = [
+      ...REVIEW_FIELD_ORDER.filter((key) => desiredKeys.includes(key)),
+      ...desiredKeys.filter((key) => !REVIEW_FIELD_LABELS.has(key)).sort((a, b) => a.localeCompare(b))
+    ];
+    return orderedKeys
+      .filter((key) => {
+        if (request.request_type === 'create') return hasReviewValue(desired[key]);
+        return displayReviewValue(desired[key]) !== displayReviewValue(before?.[key]);
+      })
+      .map((key) => ({
+        key,
+        label: humanizeReviewKey(key),
+        before: before?.[key],
+        requested: desired[key]
+      }));
+  }, [desired, before, request]);
+
+  const photoIds = Array.isArray(desired.photo_file_ids) ? desired.photo_file_ids.filter(Boolean) : [];
+  const thumbIds = Array.isArray(desired.thumb_file_ids) ? desired.thumb_file_ids.filter(Boolean) : [];
+  const photoNames = Array.isArray(desired.photo_names) ? desired.photo_names : [];
+  const photoCount = photoIds.length;
+  const requestKind = request?.request_type === 'edit' ? 'Edit request' : 'Registration request';
 
   async function approve() {
     setBusy('approve'); setError('');
@@ -60,10 +109,41 @@ function ApprovalReview({ requestId, currentUser, onClose, onResolved }) {
       </div>
       {!request && !error && <div className="admin-loading"><LoaderCircle className="spin" size={18} /> Loading request…</div>}
       {request && <>
-        <div className="approval-meta"><span>Submitted by <b>{request.submitted_name || request.submitted_email || request.submitted_by}</b></span><span>{friendlyDate(request.submitted_at)}</span></div>
+        <div className="approval-meta">
+          <span>Submitted by <b>{request.submitted_name || request.submitted_email || request.submitted_by}</b></span>
+          <span>{friendlyDate(request.submitted_at)}</span>
+        </div>
+        <div className="approval-review-summary">
+          <span><small>Request</small><b>{requestKind}</b></span>
+          <span><small>Submitted values</small><b>{reviewEntries.length}</b></span>
+          <span><small>Attached photos</small><b>{photoCount}</b></span>
+          {request.target_id && <span><small>Target record</small><b className="mono-value">{request.target_id}</b></span>}
+        </div>
         <div className="approval-diff-list">
-          {!changed.length && <div className="approval-empty">No changed values were detected.</div>}
-          {changed.map((field) => <div className="approval-diff" key={field.key}><small>{field.label}</small>{request.request_type === 'edit' && <span className="before-value">Before: {String(before?.[field.key] || 'Not provided')}</span>}<strong>Requested: {String(desired[field.key] || 'Not provided')}</strong></div>)}
+          <div className="approval-list-title">
+            <div><small>{request.request_type === 'edit' ? 'Requested changes' : 'Submitted record'}</small><strong>{reviewEntries.length ? `${reviewEntries.length} field${reviewEntries.length === 1 ? '' : 's'} to review` : 'No field values submitted'}</strong></div>
+            {photoCount > 0 && <span>{photoCount} photo{photoCount === 1 ? '' : 's'}</span>}
+          </div>
+          {photoCount > 0 && <div className="approval-photo-section">
+            <div className="approval-photo-heading"><small>Submitted photos</small><span>Compressed thumbnails • full image opens on click</span></div>
+            <div className="approval-photo-grid">
+              {photoIds.map((fileId, index) => {
+                const previewId = thumbIds[index] || fileId;
+                return <a key={fileId} href={fileViewUrl(fileId)} target="_blank" rel="noreferrer" title={photoNames[index] || `Photo ${index + 1}`}>
+                  <img src={fileViewUrl(previewId)} alt={photoNames[index] || `Submitted photo ${index + 1}`} loading="lazy" decoding="async" />
+                  <span>{photoNames[index] || `Photo ${index + 1}`}</span>
+                </a>;
+              })}
+            </div>
+          </div>}
+          {!reviewEntries.length && <div className="approval-empty"><strong>No visible field values were included in this request.</strong><span>You can reject it, or approve it only if an intentionally blank record is valid.</span></div>}
+          {reviewEntries.map((field) => <div className="approval-diff" key={field.key}>
+            <small>{field.label}</small>
+            {request.request_type === 'edit' ? <div className="approval-values">
+              <span className="before-value"><em>Before</em><b>{displayReviewValue(field.before)}</b></span>
+              <span className="requested-value"><em>Requested</em><b>{displayReviewValue(field.requested)}</b></span>
+            </div> : <strong>{displayReviewValue(field.requested)}</strong>}
+          </div>)}
         </div>
       </>}
       {error && <div className="alert error">{error}</div>}
@@ -111,7 +191,7 @@ function AccountsTab({ currentUser }) {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState('');
   const [form, setForm] = useState({ name: '', email: '', password: '', role: 'user' });
-  const [server, setServer] = useState({ checking: true, configured: false, keySource: '', error: '' });
+  const [server, setServer] = useState({ checking: true, configured: false, keySource: '', apiVersion: '', environment: '', deploymentHost: '', detectedServerVariables: [], error: '', errorCode: '' });
   const [loading, setLoading] = useState(false);
   const [busy, setBusy] = useState('');
   const [error, setError] = useState('');
@@ -121,11 +201,11 @@ function AccountsTab({ currentUser }) {
     setError('');
     try {
       const status = await adminAccountStatus({ force });
-      const next = { checking: false, configured: Boolean(status.configured), keySource: status.keySource || '', error: '' };
+      const next = { checking: false, configured: Boolean(status.configured), keySource: status.keySource || '', apiVersion: status.apiVersion || '', environment: status.vercelEnvironment || '', deploymentHost: status.deploymentHost || '', detectedServerVariables: status.detectedServerVariables || [], error: '', errorCode: '' };
       setServer(next);
       if (next.configured) await load('', { skipServerCheck: true });
     } catch (err) {
-      setServer({ checking: false, configured: false, keySource: '', error: err?.message || String(err) });
+      setServer({ checking: false, configured: false, keySource: '', apiVersion: '', environment: '', deploymentHost: '', detectedServerVariables: [], error: err?.message || String(err), errorCode: err?.code || '' });
     }
   }
 
@@ -168,20 +248,38 @@ function AccountsTab({ currentUser }) {
     {!server.checking && !server.configured && <div className="admin-server-setup">
       <div className="admin-server-setup-icon"><KeyRound size={24} /></div>
       <div className="admin-server-setup-copy">
-        <h3>One server credential is still required</h3>
-        <p>CaneSprout can approve registrations and edits without this key. The key is needed only for creating accounts, searching all Appwrite users, and changing administrator authority.</p>
-        <ol>
-          <li>In Appwrite, create a dedicated API key with only <b>users.read</b> and <b>users.write</b>.</li>
-          <li>In Vercel → GermDatabase → Settings → Environment Variables, add it as <code>APPWRITE_ADMIN_API_KEY</code> for Production.</li>
-          <li>Redeploy the Production deployment. Vercel environment-variable changes do not affect an already-built deployment.</li>
-        </ol>
+        <h3>{server.errorCode === 'admin_api_stale_backend' ? 'Production Account Management backend is outdated' : server.errorCode === 'admin_api_unreachable' || server.errorCode === 'admin_api_route_mismatch' ? 'Account Management route is not reachable' : 'One server credential is still required'}</h3>
+        {server.errorCode === 'admin_api_stale_backend' ? <>
+          <p>The website frontend is newer than the Vercel Account Management function currently answering requests.</p>
+          <ol>
+            <li>Push the complete CaneSprout v2.6.8 project to <b>main</b>.</li>
+            <li>Wait for the Production deployment to finish.</li>
+            <li>Hard-refresh once, then click <b>Check again</b>.</li>
+          </ol>
+        </> : server.errorCode === 'admin_api_unreachable' || server.errorCode === 'admin_api_route_mismatch' ? <>
+          <p>Your Appwrite key may already be configured, but this browser could not reach the CaneSprout Vercel Function.</p>
+          <ol>
+            <li>Deploy <b>CaneSprout v2.6.8 or newer</b> to the same Vercel project.</li>
+            <li>Wait for the Production deployment to finish, then hard-refresh once.</li>
+            <li>Open <code>/canesprout-admin-api-v268</code> on your production domain. It should show safe JSON diagnostics.</li>
+          </ol>
+        </> : <>
+          <p><b>Localhost working does not mean Vercel has the same secret.</b> Local <code>.env</code> and <code>.env.local</code> files stay on your PC and are not uploaded to Production.</p>
+          {server.environment && <div className="admin-runtime-note">Runtime checked: <b>{server.environment}</b>{server.deploymentHost ? ` • ${server.deploymentHost}` : ''}</div>}
+          <ol>
+            <li>In Vercel, open the exact project serving this domain and confirm a supported server-only key exists under <b>Production</b>. <code>APPWRITE_ADMIN_API_KEY</code> is preferred; <code>APPWRITE_API_KEY</code> is also supported for compatibility.</li>
+            <li>If it exists only under Development or Preview, add/update it under Production.</li>
+            <li>Create a <b>new Production deployment</b>. Existing deployments do not inherit later Environment Variable changes.</li>
+          </ol>
+          <p>The ZIP includes <code>REPAIR-VERCEL-PRODUCTION-ADMIN-KEY.cmd</code>, which verifies the linked project's Production environment and triggers a fresh Production deployment through your existing GitHub → Vercel integration. It does not use the Vercel CLI deploy command.</p>
+        </>}
         {server.error && <div className="alert error">{server.error}</div>}
         <button className="secondary-button" onClick={() => checkServer(true)}><RefreshCw size={16} /> Check again</button>
       </div>
     </div>}
 
     {!server.checking && server.configured && <>
-      <div className="admin-server-ready"><Check size={15} /><span>Secure Users API ready{server.keySource ? ` • ${server.keySource}` : ''}</span></div>
+      <div className="admin-server-ready"><Check size={15} /><span>Secure Users API ready{server.keySource ? ` • ${server.keySource}` : ''}{server.apiVersion ? ` • ${server.apiVersion}` : ''}</span></div>
       <form className="account-create-form" onSubmit={create}>
         <label><span>Name</span><input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Account name" /></label>
         <label><span>Email</span><input type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="name@example.com" /></label>
