@@ -1,0 +1,164 @@
+{
+  "generated_at": "2026-08-13T01:51:23.157Z",
+  "scanned_records": 953,
+  "canonical_duplicate_groups": 6,
+  "duplicate_records": 12,
+  "groups": [
+    {
+      "canonical": "PHIL56226",
+      "formatting_variant": true,
+      "records": [
+        {
+          "id": "6a7d1fa400119ddf6216",
+          "variety": "PHIL 56226",
+          "created_at": "2026-08-13T01:36:38.508+00:00",
+          "updated_at": "2026-08-13T01:36:38.508+00:00",
+          "trial_code": "",
+          "location": "",
+          "status": "",
+          "source_name": "SRA-HYVs  Charac-LR.xls"
+        },
+        {
+          "id": "sc_08aec3304c3c182490a191ba2f",
+          "variety": "Phil 56-226",
+          "created_at": "2026-08-07T13:56:20.164+00:00",
+          "updated_at": "2026-08-07T13:56:20.164+00:00",
+          "trial_code": "",
+          "location": "",
+          "status": "",
+          "source_name": "Characterization.xlsx"
+        }
+      ]
+    },
+    {
+      "canonical": "PHIL58260",
+      "formatting_variant": true,
+      "records": [
+        {
+          "id": "6a7d1f9f001a74872585",
+          "variety": "PHIL 58260",
+          "created_at": "2026-08-13T01:36:34.258+00:00",
+          "updated_at": "2026-08-13T01:36:34.258+00:00",
+          "trial_code": "",
+          "location": "",
+          "status": "",
+          "source_name": "SRA-HYVs  Charac-LR.xls"
+        },
+        {
+          "id": "sc_c3db6cd8e11a514f3eec35d828",
+          "variety": "Phil 58-260",
+          "created_at": "2026-08-07T13:56:20.767+00:00",
+          "updated_at": "2026-08-07T13:56:20.767+00:00",
+          "trial_code": "",
+          "location": "",
+          "status": "",
+          "source_name": "Characterization.xlsx"
+        }
+      ]
+    },
+    {
+      "canonical": "PHIL931902349",
+      "formatting_variant": false,
+      "records": [
+        {
+          "id": "sc_6ebd25a1527a580a02a8e59b31",
+          "variety": "Phil 93-190-2349",
+          "created_at": "2026-08-07T13:57:22.144+00:00",
+          "updated_at": "2026-08-13T01:24:41.099+00:00",
+          "trial_code": "",
+          "location": "",
+          "status": "",
+          "source_name": "Characterization.xlsx"
+        },
+        {
+          "id": "sc_6f170c3b3a3ea55e1bae92ccc5",
+          "variety": "Phil 93-190-2349",
+          "created_at": "2026-08-07T13:57:20.896+00:00",
+          "updated_at": "2026-08-13T01:24:38.859+00:00",
+          "trial_code": "",
+          "location": "",
+          "status": "",
+          "source_name": "Characterization.xlsx"
+        }
+      ]
+    },
+    {
+      "canonical": "PHIL98010007",
+      "formatting_variant": false,
+      "records": [
+        {
+          "id": "sc_b52b29aa350887b53d4785418a",
+          "variety": "PHIL 98-01-0007",
+          "created_at": "2026-08-07T13:58:55.236+00:00",
+          "updated_at": "2026-08-07T13:58:55.236+00:00",
+          "trial_code": "",
+          "location": "",
+          "status": "",
+          "source_name": "Characterization.xlsx"
+        },
+        {
+          "id": "sc_b570165eabbdd88bc0f9d571e2",
+          "variety": "Phil 98-01-0007",
+          "created_at": "2026-08-07T13:58:41.028+00:00",
+          "updated_at": "2026-08-07T13:58:41.028+00:00",
+          "trial_code": "",
+          "location": "",
+          "status": "",
+          "source_name": "Characterization.xlsx"
+        }
+      ]
+    },
+    {
+      "canonical": "PHIL992641",
+      "formatting_variant": true,
+      "records": [
+        {
+          "id": "6a7d1eeb00286cde0834",
+          "variety": "PHIL-99-2641",
+          "created_at": "2026-08-13T01:33:33.507+00:00",
+          "updated_at": "2026-08-13T01:33:33.507+00:00",
+          "trial_code": "",
+          "location": "",
+          "status": "",
+          "source_name": "SRA-HYVs  Charac-LR.xls"
+        },
+        {
+          "id": "sc_1ee81bd54cced9588090d8bedc",
+          "variety": "Phil 99-2641",
+          "created_at": "2026-08-07T13:58:45.929+00:00",
+          "updated_at": "2026-08-07T13:58:45.929+00:00",
+          "trial_code": "",
+          "location": "",
+          "status": "",
+          "source_name": "Characterization.xlsx"
+        }
+      ]
+    },
+    {
+      "canonical": "VMC73229",
+      "formatting_variant": false,
+      "records": [
+        {
+          "id": "sc_a816c6fdac1dbe0de67811b90a",
+          "variety": "VMC 73-229",
+          "created_at": "2026-08-07T13:58:22.854+00:00",
+          "updated_at": "2026-08-07T13:58:22.854+00:00",
+          "trial_code": "",
+          "location": "",
+          "status": "",
+          "source_name": "Characterization.xlsx"
+        },
+        {
+          "id": "sc_f944598cfa956b448997221642",
+          "variety": "VMC 73-229",
+          "created_at": "2026-08-07T13:58:22.071+00:00",
+          "updated_at": "2026-08-07T13:58:22.071+00:00",
+          "trial_code": "",
+          "location": "",
+          "status": "",
+          "source_name": "Characterization.xlsx"
+        }
+      ]
+    }
+  ]
+}

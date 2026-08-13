@@ -1,0 +1,23 @@
+CaneSprout Registry v2.7.8
+
+Purpose
+- Close every known duplicate-creation path using a central canonical variety identity guard.
+- Safely repair verified SRA shorthand aliases stored in details.traits_json so detail Variety matches the canonical core Variety.
+- Keep the one blank Characterization.xlsx source row untouched for manual identification.
+- Keep conflicting-observation duplicate groups untouched for scientific review.
+
+Recommended sequence
+1. npm.cmd run dedupe:safe-migration-variants
+2. npm.cmd run dedupe:safe-migration-variants -- --apply
+3. npm.cmd run repair:registry-safe
+4. npm.cmd run repair:registry-safe -- --apply
+5. npm.cmd run audit:registry-full
+
+Or double-click REPAIR-REGISTRY-SAFE.cmd for steps 3-5.
+
+Safety
+- repair:registry-safe is dry-run by default.
+- --apply updates only details.traits_json Variety when a verified legacy alias maps exactly to the core Variety.
+- It never deletes records.
+- It never invents a cultivar name for blank source rows.
+- It never merges records with conflicting characterization observations.

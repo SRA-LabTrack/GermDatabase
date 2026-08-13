@@ -1,0 +1,16 @@
+CaneSprout v2.7.4 - resilient SRA HYV migration
+
+Fixes intermittent `fetch failed` errors during `npm.cmd run migrate:sra-hyv`.
+
+Changes:
+- retries transient Appwrite/network failures with exponential backoff
+- automatically falls back from the FRA endpoint to https://cloud.appwrite.io/v1
+- verifies potentially committed create operations before replaying them
+- adds a 250 ms pause between source rows
+- remains idempotent, so it is safe to rerun after the partial v2.7.3 migration
+
+After applying this patch, run:
+  npm.cmd install
+  npm.cmd run migrate:sra-hyv
+
+Do not delete the records already created by v2.7.3. The migration will match and update them on rerun.

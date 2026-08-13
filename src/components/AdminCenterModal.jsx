@@ -5,12 +5,13 @@ import { GERMINATION_FIELDS } from '../lib/germinationFields';
 import { adminAccountRequest, adminAccountStatus } from '../lib/adminAccountsApi';
 import { approveChangeRequest, getChangeRequest, listPendingRequests, rejectChangeRequest } from '../lib/approvalApi';
 import { fileViewUrl, getRecord } from '../lib/registryApi';
+import { normalizedPhotoCategories, photoCategoryLabel } from '../lib/photoSections';
 
 const REVIEW_FIELDS = [...GERMINATION_FIELDS, ...CHARACTERIZATION_FIELDS];
 const REVIEW_FIELD_LABELS = new Map(REVIEW_FIELDS.map((field) => [field.key, field.label]));
 const REVIEW_FIELD_ORDER = REVIEW_FIELDS.map((field) => field.key);
 const HIDDEN_REVIEW_KEYS = new Set([
-  'photo_file_ids', 'thumb_file_ids', 'thumbnail_file_id', 'primary_file_id', 'photo_names'
+  'photo_file_ids', 'thumb_file_ids', 'thumbnail_file_id', 'primary_file_id', 'photo_names', 'photo_categories'
 ]);
 
 function hasReviewValue(value) {
@@ -84,6 +85,7 @@ function ApprovalReview({ requestId, currentUser, onClose, onResolved }) {
   const photoIds = Array.isArray(desired.photo_file_ids) ? desired.photo_file_ids.filter(Boolean) : [];
   const thumbIds = Array.isArray(desired.thumb_file_ids) ? desired.thumb_file_ids.filter(Boolean) : [];
   const photoNames = Array.isArray(desired.photo_names) ? desired.photo_names : [];
+  const photoCategories = normalizedPhotoCategories(desired.photo_categories, photoIds.length);
   const photoCount = photoIds.length;
   const requestKind = request?.request_type === 'edit' ? 'Edit request' : 'Registration request';
 
@@ -131,7 +133,7 @@ function ApprovalReview({ requestId, currentUser, onClose, onResolved }) {
                 const previewId = thumbIds[index] || fileId;
                 return <a key={fileId} href={fileViewUrl(fileId)} target="_blank" rel="noreferrer" title={photoNames[index] || `Photo ${index + 1}`}>
                   <img src={fileViewUrl(previewId)} alt={photoNames[index] || `Submitted photo ${index + 1}`} loading="lazy" decoding="async" />
-                  <span>{photoNames[index] || `Photo ${index + 1}`}</span>
+                  <span>{photoCategoryLabel(photoCategories[index])} • {photoNames[index] || `Photo ${index + 1}`}</span>
                 </a>;
               })}
             </div>

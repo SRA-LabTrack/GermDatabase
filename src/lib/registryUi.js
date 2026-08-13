@@ -37,6 +37,7 @@ export function emptyForm() {
     photo_file_ids: [],
     thumb_file_ids: [],
     photo_names: [],
+    photo_categories: [],
     thumbnail_file_id: '',
     primary_file_id: '',
     source_name: 'Manual entry',

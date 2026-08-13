@@ -81,6 +81,7 @@ function queuedPhoto(variant) {
     fullId: variant.fullId || ID.unique(),
     thumbId: variant.thumbId || ID.unique(),
     originalName: variant.originalName || 'field-photo',
+    category: variant.category || 'overview',
     originalSize: Number(variant.originalSize || 0),
     full: {
       blob: variant.full.blob,
@@ -201,14 +202,18 @@ function buildSyncRecord(entry, uploaded) {
   const existingFull = Array.isArray(form.photo_file_ids) ? form.photo_file_ids : [];
   const existingThumbs = Array.isArray(form.thumb_file_ids) ? form.thumb_file_ids : [];
   const existingNames = Array.isArray(form.photo_names) ? form.photo_names : [];
+  const existingCategories = Array.isArray(form.photo_categories) ? form.photo_categories : [];
   const next = {
     ...form,
     photo_file_ids: [...existingFull, ...uploaded.map((item) => item.fullId)],
     thumb_file_ids: [...existingThumbs, ...uploaded.map((item) => item.thumbId)],
-    photo_names: [...existingNames, ...uploaded.map((item) => item.name)]
+    photo_names: [...existingNames, ...uploaded.map((item) => item.name)],
+    photo_categories: [...existingCategories, ...uploaded.map((item) => item.category || 'overview')]
   };
-  next.primary_file_id = next.photo_file_ids[0] || '';
-  next.thumbnail_file_id = next.thumb_file_ids[0] || '';
+  const overview = next.photo_categories.findIndex((value) => value === 'overview');
+  const primaryIndex = overview >= 0 ? overview : 0;
+  next.primary_file_id = next.photo_file_ids[primaryIndex] || next.photo_file_ids[0] || '';
+  next.thumbnail_file_id = next.thumb_file_ids[primaryIndex] || next.thumb_file_ids[0] || '';
   return next;
 }
 

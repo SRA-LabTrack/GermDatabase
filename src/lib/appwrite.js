@@ -3,7 +3,7 @@ import { Account, Client, Databases, ID, Permission, Query, Role, Storage } from
 const DEFAULT_REGION_ENDPOINT = 'https://fra.cloud.appwrite.io/v1';
 const LEGACY_GLOBAL_ENDPOINT = 'https://cloud.appwrite.io/v1';
 const ENDPOINT_CACHE_KEY = 'canesprout-appwrite-endpoint-v240';
-const ENDPOINT_FAILURE_COOLDOWN = 5 * 60_000;
+const ENDPOINT_FAILURE_COOLDOWN = 60_000;
 
 function normalizeEndpoint(value) {
   const raw = String(value || '').trim().replace(/^['"]|['"]$/g, '');
@@ -79,7 +79,7 @@ export function isNetworkFailure(error) {
  * pass retryTransport:false so a timeout can never cause the same mutation to
  * be replayed against a second endpoint.
  */
-export async function withAppwriteFailover(operation, { timeoutMs = 3500, retryTransport = true } = {}) {
+export async function withAppwriteFailover(operation, { timeoutMs = 7000, retryTransport = true } = {}) {
   const now = Date.now();
   let ordered = [activeEndpoint, ...APPWRITE_ENDPOINTS.filter((endpoint) => endpoint !== activeEndpoint)];
   if (retryTransport) {
@@ -90,7 +90,11 @@ export async function withAppwriteFailover(operation, { timeoutMs = 3500, retryT
   }
 
   let lastError;
-  for (const endpoint of ordered) {
+  // Read operations get one retry on the same regional endpoint. Mutations pass
+  // retryTransport:false and are never replayed, preventing duplicate writes.
+  const attemptPlan = retryTransport ? ordered.flatMap((endpoint) => [endpoint, endpoint]) : ordered;
+  for (let attemptIndex = 0; attemptIndex < attemptPlan.length; attemptIndex += 1) {
+    const endpoint = attemptPlan[attemptIndex];
     setActiveAppwriteEndpoint(endpoint);
     let timer;
     try {
@@ -106,6 +110,9 @@ export async function withAppwriteFailover(operation, { timeoutMs = 3500, retryT
       if (!isNetworkFailure(error)) throw error;
       failedUntil.set(endpoint, Date.now() + ENDPOINT_FAILURE_COOLDOWN);
       if (!retryTransport) throw error;
+      if (attemptIndex < attemptPlan.length - 1) {
+        await new Promise((resolve) => setTimeout(resolve, 300));
+      }
     } finally {
       if (timer) clearTimeout(timer);
     }

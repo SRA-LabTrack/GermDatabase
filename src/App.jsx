@@ -3,6 +3,7 @@ import './styles.css';
 import {
   ArrowUpRight,
   CheckCircle2,
+  ChevronDown,
   Clock3,
   Cloud,
   CloudOff,
@@ -10,10 +11,8 @@ import {
   Download,
   Droplets,
   FileSpreadsheet,
-  Leaf,
   LoaderCircle,
   LogOut,
-  MapPin,
   Maximize2,
   Minimize2,
   MoreHorizontal,
@@ -21,8 +20,6 @@ import {
   RefreshCw,
   Search,
   ShieldCheck,
-  Sprout,
-  Wheat,
   Users,
   X
 } from 'lucide-react';
@@ -43,17 +40,20 @@ import {
   listRecentRecords,
   listRecords
 } from './lib/registryApi';
-import { loginMessageFor, messageFor, pct } from './lib/registryUi';
+import { loginMessageFor, messageFor } from './lib/registryUi';
 import { getOfflineQueueSummary, subscribeOfflineQueue, syncOfflineQueue } from './lib/offlineQueue';
+import SugarcaneIcon from './components/SugarcaneIcon.jsx';
 
 const DetailModal = lazy(() => import('./components/DetailModal.jsx'));
 const RecordFormModal = lazy(() => import('./components/RecordFormModal.jsx'));
 const ImportModal = lazy(() => import('./components/ImportModal.jsx'));
+const ExportExcelModal = lazy(() => import('./components/ExportExcelModal.jsx'));
 const OfflineQueueModal = lazy(() => import('./components/OfflineQueueModal.jsx'));
 const AdminCenterModal = lazy(() => import('./components/AdminCenterModal.jsx'));
+const SpreadsheetEditorModal = lazy(() => import('./components/SpreadsheetEditorModal.jsx'));
 
-const APP_NAME = 'CaneSprout Registry';
-const APP_VERSION = '2.6.8';
+const APP_NAME = 'Sugarcane Germplasm Resource Database';
+const APP_VERSION = '2.9.14';
 const USER_CACHE_KEY = 'sugarcane-registry-user-v230';
 const ROLE_REFRESH_PREFIX = 'canesprout-role-refresh-v251:';
 const MANUAL_REFRESH_COOLDOWN_MS = 30_000;
@@ -89,8 +89,14 @@ function markRoleRefreshed(user) {
 function Brand() {
   return (
     <div className="brand">
-      <span className="brand-badge"><Sprout size={24} /></span>
-      <span><strong>{APP_NAME}</strong><small>Sugarcane germination & characterization</small></span>
+      <span className="brand-badge"><SugarcaneIcon size={27} /></span>
+      <span className="brand-copy">
+        <strong>
+          <span>Sugarcane Germplasm</span>
+          <span>Resource Database</span>
+        </strong>
+        <small>Genetic resource repository</small>
+      </span>
     </div>
   );
 }
@@ -106,11 +112,11 @@ function AuthScreen({ onSignedIn }) {
     setError('');
     try {
       try {
-        await withAppwriteFailover(() => account.createEmailPasswordSession({ email: form.email.trim(), password: form.password }), { timeoutMs: 3500, retryTransport: false });
+        await withAppwriteFailover(() => account.createEmailPasswordSession({ email: form.email.trim(), password: form.password }), { timeoutMs: 9000, retryTransport: false });
       } catch (sessionError) {
         if (String(sessionError?.type || '').toLowerCase() !== 'user_session_already_exists') throw sessionError;
       }
-      const existing = await withAppwriteFailover(() => account.get(), { timeoutMs: 3500 });
+      const existing = await withAppwriteFailover(() => account.get(), { timeoutMs: 9000 });
       markRoleRefreshed(existing);
       onSignedIn(saveCachedUser(existing));
     } catch (err) {
@@ -127,14 +133,14 @@ function AuthScreen({ onSignedIn }) {
         <div className="auth-orb orb-two" />
         <div className="auth-field-lines" aria-hidden="true" />
         <div className="auth-copy">
-          <span className="eyebrow"><Wheat size={15} /> SRA sugarcane field records</span>
-          <h1>From planted bud to established cane.</h1>
-          <p>Document sugarcane emergence, nursery observations, field performance, varietal traits, and photos without loading the whole registry at once.</p>
+          <span className="eyebrow"><SugarcaneIcon size={16} /> Sugarcane genetic resources</span>
+          <h1>Exploring the Genetic Wealth of Sugarcane Diversity</h1>
+          <p>A Digital Repository for Characterization, Conservation, and Utilization of Sugarcane Genetic Resources.</p>
           <div className="crop-flow compact-flow" aria-label="Sugarcane record workflow">
-            <span><Sprout size={15} /> Planting</span><i />
+            <span><SugarcaneIcon size={15} /> Characterization</span><i />
             <span><Droplets size={15} /> Emergence</span><i />
-            <span><Leaf size={15} /> Establishment</span><i />
-            <span><Wheat size={15} /> Characterization</span>
+            <span><SugarcaneIcon size={15} /> Conservation</span><i />
+            <span><SugarcaneIcon size={15} /> Utilization</span>
           </div>
           <div className="auth-metrics">
             <span><strong>{SOURCE_RECORD_COUNT}</strong> characterization entries</span>
@@ -145,14 +151,14 @@ function AuthScreen({ onSignedIn }) {
       <section className="auth-panel">
         <div className="auth-card">
           <Brand />
-          <div className="auth-heading"><small>Welcome back</small><h2>Sign in to the field registry</h2></div>
+          <div className="auth-heading"><small>Welcome back</small><h2>Sign in to the germplasm database</h2></div>
           <form onSubmit={submit}>
             <label><span>Email</span><input type="email" required value={form.email} onChange={(event) => { setError(''); setForm({ ...form, email: event.target.value }); }} /></label>
             <label><span>Password</span><input type="password" required minLength={8} value={form.password} onChange={(event) => { setError(''); setForm({ ...form, password: event.target.value }); }} /></label>
             {error && <div className="alert error">{error}</div>}
             <button className="primary-button full" disabled={busy}>{busy ? <><LoaderCircle className="spin" size={17} /> Connecting…</> : 'Sign in'}</button>
           </form>
-          <p className="auth-admin-note">Accounts are created and assigned roles by a CaneSprout administrator.</p>
+          <p className="auth-admin-note">Accounts are created and assigned roles by a Sugarcane Germplasm Resource Database administrator.</p>
         </div>
       </section>
     </main>
@@ -183,41 +189,77 @@ function useViewportReveal() {
 
 function RecordCard({ record, onOpen, index }) {
   const image = fileViewUrl(record.thumbnail_file_id);
-  const germPct = pct(record);
   const [cardRef, visible] = useViewportReveal();
+  const [profilePreview, setProfilePreview] = useState(record.__bundledSnapshot ? record : null);
+
+  useEffect(() => {
+    let live = true;
+    if (!visible) return () => { live = false; };
+    if (record.__bundledSnapshot) {
+      setProfilePreview(record);
+      return () => { live = false; };
+    }
+    setProfilePreview(null);
+    getRecord(record.$id)
+      .then((full) => { if (live && full) setProfilePreview(full); })
+      .catch(() => { if (live) setProfilePreview({ ...record, __previewFailed: true }); });
+    return () => { live = false; };
+  }, [visible, record.$id]);
+
+  const preview = profilePreview || record;
+  const missing = !profilePreview && !record.__bundledSnapshot ? 'Loading…' : 'Not recorded';
+  const parentals = [preview.parentage_female, preview.parentage_male].filter(Boolean).join(' × ') || missing;
+  const tcHa = preview.yield_tc_ha || missing;
+  const lkgTc = preview.yield_lkg_tc || missing;
+  const recommended = preview.recommended_locations || preview.tested_location || missing;
+  const disease = preview.disease_reaction || missing;
+
   return (
     <article
       ref={cardRef}
-      className={`record-card viewport-card ${visible ? 'is-visible' : ''}`}
+      className={`record-card germplasm-card viewport-card ${visible ? 'is-visible' : ''}`}
       style={{ '--card-delay': `${Math.min(index % 6, 5) * 34}ms` }}
-      onClick={() => onOpen(record.$id)}
     >
       <div className={`record-image ${image ? 'has-image' : ''}`}>
-        {image ? <img src={image} alt={record.variety || 'Sugarcane'} loading="lazy" decoding="async" fetchPriority="low" /> : <div className="record-placeholder"><Sprout size={38} /><span>Field photo optional</span></div>}
-        <span className="record-status">{record.germ_status || 'Characterized'}</span>
-        {germPct !== null && <span className="rate-chip">{germPct.toFixed(1)}% germinated</span>}
+        {image ? <img src={image} alt={record.variety || 'Sugarcane germplasm'} loading="lazy" decoding="async" fetchPriority="low" /> : <div className="record-placeholder"><SugarcaneIcon size={44} /><span>Germplasm photo optional</span></div>}
+        <span className="record-status">Germplasm accession</span>
       </div>
       <div className="record-body">
-        <div className="record-kicker"><span>Sugarcane variety</span><ArrowUpRight size={16} /></div>
+        <div className="record-kicker"><span>Variety Name</span><SugarcaneIcon size={18} /></div>
         <h3>{record.variety || 'Unnamed variety'}</h3>
-        <div className="trait-mini-grid agri-mini-grid">
-          <span><small>Plant habit</small><b>{record.stool_plant_habit || 'Not provided'}</b></span>
-          <span><small>Leaf color</small><b>{record.leaf_color || 'Not provided'}</b></span>
-          <span><small>Trial / batch</small><b>{record.germ_trial_code || 'Not recorded'}</b></span>
-          <span><small>Nursery / field</small><b>{record.germ_location || 'Not recorded'}</b></span>
+        <div className="germplasm-preview-grid">
+          <span><small>Accession Number</small><b>{preview.accession_number || missing}</b></span>
+          <span><small>Origin</small><b>{preview.origin || missing}</b></span>
+          <span><small>Collection Year</small><b>{preview.collection_year || missing}</b></span>
+          <span><small>Species</small><b>{preview.species || missing}</b></span>
+          <span className="preview-wide"><small>Parentals</small><b>{parentals}</b></span>
+          <span className="preview-yield"><small>Yield Potential</small><b><em>TC/Ha</em> {tcHa}<i /> <em>LKg/TC</em> {lkgTc}</b></span>
+          <span className="preview-wide"><small>Recommended Locations</small><b>{recommended}</b></span>
+          <span className="preview-wide preview-disease"><small>Reaction to Diseases</small><b>{disease}</b></span>
         </div>
-        <footer><span>Open germination & characterization record</span><span className="card-open-icon"><ArrowUpRight size={16} /></span></footer>
+        <footer className="germplasm-card-footer">
+          <span>Preview only. Open the profile for complete characterization data.</span>
+          <button type="button" className="primary-button view-profile-button" onClick={() => onOpen(record.$id)}>View Profile <ArrowUpRight size={16} /></button>
+        </footer>
       </div>
     </article>
   );
 }
-
 function SkeletonCard() {
   return <div className="record-card skeleton"><div className="record-image" /><div className="record-body"><i /><i /><i /></div></div>;
 }
 
 function ModalLoading() {
   return <div className="modal-backdrop"><div className="lazy-modal-loader"><LoaderCircle className="spin" size={22} /><span>Opening tool…</span></div></div>;
+}
+
+function excelCellValue(value) {
+  if (value === null || value === undefined) return '';
+  if (Array.isArray(value)) return value.map((item) => String(item ?? '')).filter(Boolean).join('; ');
+  if (typeof value === 'object') {
+    try { return JSON.stringify(value); } catch { return String(value); }
+  }
+  return value;
 }
 
 export default function App() {
@@ -231,9 +273,13 @@ export default function App() {
   const [recentMode, setRecentMode] = useState(false);
   const searchInputRef = useRef(null);
   const searchPanelRef = useRef(null);
+  const aboutSectionRef = useRef(null);
+  const collectionSectionRef = useRef(null);
+  const excelMenuRef = useRef(null);
   const forceFreshRef = useRef(false);
   const lastManualRefreshRef = useRef(0);
   const lastFreshDataRef = useRef(Date.now());
+  const toolbarRef = useRef(null);
   const [records, setRecords] = useState([]);
   const [cursor, setCursor] = useState('');
   const [hasMore, setHasMore] = useState(false);
@@ -247,14 +293,59 @@ export default function App() {
   const [editRecord, setEditRecord] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [showImport, setShowImport] = useState(false);
+  const [showExportExcel, setShowExportExcel] = useState(false);
+  const [showExcelMenu, setShowExcelMenu] = useState(false);
+  const [excelExportState, setExcelExportState] = useState('');
   const [showOfflineQueue, setShowOfflineQueue] = useState(false);
   const [showAdminCenter, setShowAdminCenter] = useState(false);
+  const [showSpreadsheetEditor, setShowSpreadsheetEditor] = useState(false);
   const [adminCenterTab, setAdminCenterTab] = useState('approvals');
   const [submissionNotice, setSubmissionNotice] = useState('');
   const [offlineSummary, setOfflineSummary] = useState({ count: 0, pending: 0, errors: 0, photoCount: 0, bytes: 0 });
   const [offlineSyncState, setOfflineSyncState] = useState('');
   const [backupState, setBackupState] = useState('');
   const [updateState, setUpdateState] = useState('');
+  const [toolbarBottom, setToolbarBottom] = useState(108);
+
+  useEffect(() => {
+    let frame = 0;
+
+    const measureToolbar = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const rect = toolbarRef.current?.getBoundingClientRect();
+        if (!rect) return;
+        setToolbarBottom(Math.max(0, Math.round(rect.bottom)));
+      });
+    };
+
+    measureToolbar();
+    window.addEventListener('resize', measureToolbar);
+    window.addEventListener('orientationchange', measureToolbar);
+
+    const observer = typeof ResizeObserver !== 'undefined' && toolbarRef.current
+      ? new ResizeObserver(measureToolbar)
+      : null;
+    observer?.observe(toolbarRef.current);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      observer?.disconnect();
+      window.removeEventListener('resize', measureToolbar);
+      window.removeEventListener('orientationchange', measureToolbar);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!showExcelMenu) return undefined;
+
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') setShowExcelMenu(false);
+    };
+
+    document.addEventListener('keydown', closeOnEscape);
+    return () => document.removeEventListener('keydown', closeOnEscape);
+  }, [showExcelMenu]);
 
   useEffect(() => {
     const goOnline = () => { setOnline(true); setSessionState((state) => state === 'offline' ? 'ready' : state); };
@@ -337,7 +428,7 @@ export default function App() {
     }
     let live = true;
     setSessionState('checking');
-    withAppwriteFailover(() => account.get(), { timeoutMs: 3500 }).then((value) => {
+    withAppwriteFailover(() => account.get(), { timeoutMs: 9000 }).then((value) => {
       if (!live) return;
       setUser(saveCachedUser(value));
       setSessionState('ready');
@@ -368,7 +459,7 @@ export default function App() {
     } catch {}
 
     let live = true;
-    withAppwriteFailover(() => account.get(), { timeoutMs: 3500 }).then((fresh) => {
+    withAppwriteFailover(() => account.get(), { timeoutMs: 9000 }).then((fresh) => {
       if (!live) return;
       const next = saveCachedUser(fresh);
       markRoleRefreshed(next);
@@ -449,7 +540,8 @@ export default function App() {
       setHasMore(Boolean(result.hasMore));
       setSearchMatchMode(result.matchMode || '');
       if (!result.fromCache) lastFreshDataRef.current = Date.now();
-      if (result.offlineFallback) setCacheNote('Showing the last saved browse page because Appwrite is currently unreachable.');
+      if (result.bundledSnapshot) setCacheNote(`Appwrite did not respond in time. Showing the bundled ${SOURCE_RECORD_COUNT}-record registry snapshot read-only; press Refresh when connectivity returns to switch back to live records.`);
+      else if (result.offlineFallback) setCacheNote('Showing the last saved browse page because Appwrite is currently unreachable.');
       else if (result.persistentCache) setCacheNote('Loaded a recent field page from this device: 0 Appwrite reads. Use Refresh only when you need newer data.');
       else if (result.fromCache) setCacheNote('Loaded from bounded local cache: 0 additional Appwrite reads.');
     }).catch((error) => {
@@ -501,7 +593,7 @@ export default function App() {
     setListError('');
     try {
       const documents = await exportAllRecords(({ pages, records: count }) => setBackupState(`Reading page ${pages} • ${count} records`));
-      const payload = { exportedAt: new Date().toISOString(), appVersion: APP_VERSION, source: 'CaneSprout Registry direct Appwrite export', records: documents };
+      const payload = { exportedAt: new Date().toISOString(), appVersion: APP_VERSION, source: 'Sugarcane Germplasm Resource Database direct Appwrite export', records: documents };
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement('a');
@@ -517,6 +609,7 @@ export default function App() {
       setListError(messageFor(error));
     }
   }
+
 
   async function handleUpdates() {
     if (!window.germDesktop) {
@@ -582,6 +675,14 @@ export default function App() {
     }, 180);
   }
 
+  function goToGermplasmCollection() {
+    collectionSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function goToAboutGermplasm() {
+    aboutSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
   async function signOut() {
     account.deleteSession({ sessionId: 'current' }).catch(() => {});
     clearCachedUser();
@@ -595,7 +696,7 @@ export default function App() {
 
   async function openAdminCenter(tab = 'approvals') {
     try {
-      const fresh = await withAppwriteFailover(() => account.get(), { timeoutMs: 3500 });
+      const fresh = await withAppwriteFailover(() => account.get(), { timeoutMs: 9000 });
       const next = saveCachedUser(fresh);
       setUser(next);
       if (!Array.isArray(next.labels) || !next.labels.includes(ADMIN_LABEL)) {
@@ -613,14 +714,53 @@ export default function App() {
 
   return (
     <main className="app-shell">
-      <header className={`topbar reference-toolbar ${isAdmin ? 'admin-toolbar' : 'user-toolbar'}`}>
+      <header ref={toolbarRef} className={`topbar reference-toolbar ${isAdmin ? 'admin-toolbar' : 'user-toolbar'}`}>
         <div className="toolbar-brand-panel"><Brand /></div>
 
-        <nav className={`toolbar-main-actions ${isAdmin ? 'admin-actions' : ''}`} aria-label="Primary registry navigation">
-          <button className="toolbar-tile nav-button active" onClick={goToRegistrySearch}><Leaf size={21} /><span>Registry</span></button>
-          {isAdmin && <button className="toolbar-tile nav-button" onClick={() => setShowImport(true)}><FileSpreadsheet size={21} /><span>Import Excel</span></button>}
-          <button className="toolbar-tile toolbar-add" onClick={() => { setEditRecord(null); setShowForm(true); }}><Plus size={22} /><span>Add record</span></button>
-          {isAdmin && <button className="toolbar-tile nav-button toolbar-accounts" onClick={() => openAdminCenter('approvals')} title="Admin Center: approvals and account management"><ShieldCheck size={21} /><span>Admin Center</span></button>}
+        <nav className={`toolbar-main-actions segmented-toolbar ${isAdmin ? 'admin-actions' : ''}`} aria-label="Primary registry navigation">
+          <button
+            className={`toolbar-tile nav-button ${!showImport && !showExcelMenu && !showExportExcel && !showSpreadsheetEditor && !showForm && !showAdminCenter ? 'active' : ''}`}
+            aria-current={!showImport && !showExcelMenu && !showExportExcel && !showSpreadsheetEditor && !showForm && !showAdminCenter ? 'page' : undefined}
+            onClick={() => { setShowExcelMenu(false); goToGermplasmCollection(); }}
+          >
+            <SugarcaneIcon size={22} /><span>Germplasm</span>
+          </button>
+          {isAdmin && (
+            <div
+              className={`excel-tools-segment ${showExcelMenu || showImport || showExportExcel || showSpreadsheetEditor || excelExportState ? 'active' : ''}`}
+            >
+              <button
+                type="button"
+                className="excel-tools-toggle"
+                aria-expanded={showExcelMenu}
+                aria-controls="excel-tools-expansion"
+                onClick={() => setShowExcelMenu((open) => !open)}
+              >
+                <FileSpreadsheet size={21} />
+                <span>Import Excel</span>
+                <ChevronDown className={`excel-tools-chevron ${showExcelMenu ? 'open' : ''}`} size={15} />
+              </button>
+
+
+            </div>
+          )}
+          <button
+            className={`toolbar-tile nav-button toolbar-add ${showForm ? 'active' : ''}`}
+            aria-pressed={showForm}
+            onClick={() => { setShowExcelMenu(false); setEditRecord(null); setShowForm(true); }}
+          >
+            <Plus size={22} /><span>Add record</span>
+          </button>
+          {isAdmin && (
+            <button
+              className={`toolbar-tile nav-button toolbar-accounts ${showAdminCenter ? 'active' : ''}`}
+              aria-pressed={showAdminCenter}
+              onClick={() => { setShowExcelMenu(false); openAdminCenter('approvals'); }}
+              title="Admin Center: approvals and account management"
+            >
+              <ShieldCheck size={21} /><span>Admin Center</span>
+            </button>
+          )}
         </nav>
 
         <button
@@ -655,32 +795,111 @@ export default function App() {
         </div>
       </header>
 
-      <section className="hero agricultural-hero">
+      {isAdmin && showExcelMenu && (
+        <section
+          id="excel-tools-expansion"
+          className="excel-tools-expansion excel-tools-viewport"
+          aria-label="Excel tools"
+          style={{ top: `${toolbarBottom + 8}px` }}
+        >
+          <div className="excel-tools-expansion-label">
+            <FileSpreadsheet size={20} />
+            <span><strong>Excel Tools</strong><small>Work with one variety or the complete registry</small></span>
+          </div>
+
+          <div className="excel-tools-expansion-actions">
+            <button
+              type="button"
+              className="excel-action excel-action-primary"
+              onClick={() => {
+                setShowExcelMenu(false);
+                setShowImport(true);
+              }}
+            >
+              <FileSpreadsheet size={18} />
+              <span><strong>Import Excel</strong><small>Specific variety or whole registry</small></span>
+            </button>
+
+            <button
+              type="button"
+              className="excel-action"
+              onClick={() => {
+                setShowExcelMenu(false);
+                setShowExportExcel(true);
+              }}
+            >
+              <Download size={18} />
+              <span><strong>Export Excel</strong><small>Specific variety or whole registry</small></span>
+            </button>
+
+            <button
+              type="button"
+              className="excel-action"
+              onClick={() => {
+                setShowExcelMenu(false);
+                setShowSpreadsheetEditor(true);
+              }}
+            >
+              <FileSpreadsheet size={18} />
+              <span><strong>Edit in Excel format</strong><small>Open bulk spreadsheet editor</small></span>
+            </button>
+          </div>
+        </section>
+      )}
+
+
+      <section className="hero agricultural-hero germplasm-hero">
         <div className="hero-sun" aria-hidden="true" />
         <div className="hero-field-pattern" aria-hidden="true" />
         <div className="hero-copy">
-          <span className="eyebrow"><Wheat size={15} /> Sugarcane germination & varietal records</span>
-          <h1>Follow sugarcane from planting material to field-ready establishment.</h1>
-          <p>Keep germination trials, nursery locations, emergence observations, varietal characterization, and field photos together in one searchable record without loading the whole library at once.</p>
-          <div className="crop-flow">
-            <span><Sprout size={16} /><b>Plant</b><small>setts & bud chips</small></span><i />
-            <span><Droplets size={16} /><b>Observe</b><small>emergence & vigor</small></span><i />
-            <span><Leaf size={16} /><b>Establish</b><small>nursery & field</small></span><i />
-            <span><Wheat size={16} /><b>Characterize</b><small>varietal traits</small></span>
-          </div>
-          <div className="hero-actions"><button className="primary-button" onClick={() => { setEditRecord(null); setShowForm(true); }}><Plus size={17} /> New sugarcane record</button>{isAdmin && <button className="secondary-button" onClick={() => setShowImport(true)}><FileSpreadsheet size={17} /> Import field workbook</button>}</div>
+          <span className="eyebrow"><SugarcaneIcon size={17} /> A Digital Repository for Characterization, Conservation, and Utilization of Sugarcane Genetic Resources</span>
+          <h1>Discover the Genetic Diversity of Sugarcane</h1>
+          <p className="hero-subtitle">A comprehensive platform showcasing sugarcane germplasm collections, characteristics, and valuable genetic resources for research and crop improvement.</p>
         </div>
-        <div className="hero-stats agricultural-stats">
-          <div><span className="stat-icon"><FileSpreadsheet size={18} /></span><small>Characterization entries</small><strong>{SOURCE_RECORD_COUNT}</strong><span>source sugarcane records</span></div>
-          <div><span className="stat-icon"><Leaf size={18} /></span><small>Varietal traits</small><strong>{CHARACTERIZATION_FIELDS.length}</strong><span>optional traits available</span></div>
-          <div><span className="stat-icon"><Droplets size={18} /></span><small>Germination tracking</small><strong>{GERMINATION_FIELDS.length}</strong><span>optional planting & emergence fields</span></div>
-          <div><span className="stat-icon"><MapPin size={18} /></span><small>Lean field browsing</small><strong>{PAGE_SIZE}</strong><span>records maximum per page</span></div>
+        <div className="hero-stats agricultural-stats germplasm-stats germplasm-category-cards" aria-label="Sugarcane germplasm collection categories">
+          <div>
+            <span className="stat-icon"><SugarcaneIcon size={20} /></span>
+            <small>Germplasm Collection</small>
+            <strong>Accession</strong>
+            <span>Documented sugarcane accessions maintained in the resource database.</span>
+          </div>
+          <div>
+            <span className="stat-icon"><SugarcaneIcon size={20} /></span>
+            <small>Germplasm Collection</small>
+            <strong>SRA Developed Varieties</strong>
+            <span>Sugarcane varieties developed and documented through SRA breeding programs.</span>
+          </div>
+          <div>
+            <span className="stat-icon"><SugarcaneIcon size={20} /></span>
+            <small>Germplasm Collection</small>
+            <strong>Local Collection</strong>
+            <span>Locally collected and maintained sugarcane genetic resources.</span>
+          </div>
+          <div>
+            <span className="stat-icon"><SugarcaneIcon size={20} /></span>
+            <small>Germplasm Collection</small>
+            <strong>International Collection</strong>
+            <span>Introduced and internationally sourced sugarcane germplasm resources.</span>
+          </div>
         </div>
       </section>
 
-      <section className="registry-section" id="registry">
+      <section className="about-germplasm-section" id="about-germplasm" ref={aboutSectionRef}>
+        <div className="about-germplasm-copy">
+          <span className="eyebrow"><SugarcaneIcon size={17} /> About Germplasm</span>
+          <h2>What is Sugarcane Germplasm?</h2>
+          <p>Sugarcane germplasm represents the diverse genetic resources preserved for research, conservation, and breeding. These collections provide valuable traits that support the development of improved sugarcane varieties with higher productivity, resilience, and adaptability.</p>
+        </div>
+        <div className="about-germplasm-pillars" aria-label="Germplasm resource priorities">
+          <article><SugarcaneIcon size={30} /><div><strong>Characterization</strong><span>Compare morphological, agronomic, yield, parentage, and disease-response traits.</span></div></article>
+          <article><SugarcaneIcon size={30} /><div><strong>Conservation</strong><span>Preserve valuable sugarcane genetic resources and their documented identity.</span></div></article>
+          <article><SugarcaneIcon size={30} /><div><strong>Utilization</strong><span>Support research, breeding, crop improvement, and informed variety selection.</span></div></article>
+        </div>
+      </section>
+
+      <section className="registry-section germplasm-collection-section" id="registry" ref={collectionSectionRef}>
         <div className="registry-toolbar">
-          <div><span className="eyebrow">Sugarcane field library</span><h2>Germination & characterization records</h2><p>Browse lean field summaries first. Full optional traits and full-resolution photos are requested only when you open a record, keeping routine monitoring light on Appwrite and Vercel.</p></div>
+          <div><span className="eyebrow"><SugarcaneIcon size={16} /> SUGARCANE GERMPLASM LIBRARY</span><h2>Explore Our Germplasm Collection</h2><p>Browse focused germplasm previews with key passport, parentage, yield, location, and disease-response information. Select <strong>View Profile</strong> to open the complete characterization record.</p></div>
           <div className="toolbar-actions"><button className="icon-button bordered" title="Refresh current page" onClick={() => refreshRegistry({ manual: true })}><RefreshCw size={18} /></button></div>
         </div>
 
@@ -695,7 +914,7 @@ export default function App() {
         {submissionNotice && <div className="alert success"><CheckCircle2 size={16} /> {submissionNotice}</div>}
         {!!offlineSummary.count && <div className="offline-queue-banner"><CloudUpload size={18} /><div><strong>{offlineSummary.count} offline entr{offlineSummary.count === 1 ? 'y' : 'ies'} waiting on this device</strong><span>{offlineSummary.photoCount ? `${offlineSummary.photoCount} compressed photo${offlineSummary.photoCount === 1 ? '' : 's'} included. ` : ''}Sync is direct to Appwrite and never routed through Vercel.</span></div><button className="secondary-button" onClick={() => setShowOfflineQueue(true)}>Open queue</button></div>}
         {offlineSyncState && <div className="alert info offline-sync-status"><CloudUpload size={16} /> {offlineSyncState}</div>}
-        <div className="query-policy"><CheckCircle2 size={16} /><span>{PAGE_SIZE} rows/request • recent view capped at {RECENT_LIMIT} • {SEARCH_DEBOUNCE_MS} ms debounce • cursor Load More • lean card fields • bounded caching • admin approval workflow • IndexedDB offline queue • lazy tools/photos • no polling • no Realtime • no totals</span></div>
+        <div className="query-policy"><CheckCircle2 size={16} /><span>{PAGE_SIZE} rows/request • recent view capped at {RECENT_LIMIT} • {SEARCH_DEBOUNCE_MS} ms debounce • cursor Load More • lazy germplasm preview traits • bounded caching • admin approval workflow • IndexedDB offline queue • lazy tools/photos • no polling • no Realtime • no totals</span></div>
         {!loading && recentMode && <div className="search-result-note recent-result-note"><b>{records.length}</b><span>Most recently added sugarcane records, newest first. This view is capped at {RECENT_LIMIT} lean records and does not auto-refresh.</span></div>}
         {!loading && !recentMode && searchInput.trim().length >= SEARCH_MIN && searchTerm === searchInput.trim() && <div className="search-result-note"><b>{records.length}</b><span>{searchMatchMode === 'exact' ? `Exact ${SEARCH_SCOPES[searchScope].label.toLowerCase()} match` : `${records.length === 1 ? 'match' : 'matches'} loaded`} for “{searchTerm}” in {SEARCH_SCOPES[searchScope].label}.{hasMore ? ` More matches are available with Load ${PAGE_SIZE} more.` : ''}</span></div>}
         {cacheNote && <div className="alert info">{cacheNote}</div>}
@@ -704,17 +923,19 @@ export default function App() {
         <div className="record-grid">
           {loading ? Array.from({ length: 6 }, (_, index) => <SkeletonCard key={index} />) : records.map((record, index) => <RecordCard key={record.$id} record={record} index={index} onOpen={setDetailId} />)}
         </div>
-        {!loading && !records.length && <div className="empty-state"><Sprout size={34} /><h3>{recentMode ? 'No recently added records' : searchInput.trim() && searchInput.trim().length < SEARCH_MIN ? `Type at least ${SEARCH_MIN} characters` : searchInput.trim() ? 'No matching sugarcane records' : 'No sugarcane records available'}</h3><p>{recentMode ? 'No registry entries were returned for the recent-record view.' : searchInput.trim() && searchInput.trim().length < SEARCH_MIN ? 'Short searches stay entirely on this device, so Appwrite receives zero requests.' : searchInput.trim() ? `No ${SEARCH_SCOPES[searchScope].label.toLowerCase()} match was returned for “${searchInput.trim()}”. Try another term or search field.` : 'Add or import a sugarcane record to begin.'}</p></div>}
+        {!loading && !records.length && <div className="empty-state"><SugarcaneIcon size={38} /><h3>{recentMode ? 'No recently added records' : searchInput.trim() && searchInput.trim().length < SEARCH_MIN ? `Type at least ${SEARCH_MIN} characters` : searchInput.trim() ? 'No matching sugarcane records' : 'No sugarcane records available'}</h3><p>{recentMode ? 'No registry entries were returned for the recent-record view.' : searchInput.trim() && searchInput.trim().length < SEARCH_MIN ? 'Short searches stay entirely on this device, so Appwrite receives zero requests.' : searchInput.trim() ? `No ${SEARCH_SCOPES[searchScope].label.toLowerCase()} match was returned for “${searchInput.trim()}”. Try another term or search field.` : 'Add or import a sugarcane record to begin.'}</p></div>}
         {!loading && hasMore && <div className="load-more-row"><button className="secondary-button load-more" onClick={loadMore} disabled={loadingMore}>{loadingMore ? <><LoaderCircle className="spin" size={17} /> Loading {PAGE_SIZE} more…</> : `Load ${PAGE_SIZE} more`}</button><small>More records are fetched only when requested.</small></div>}
       </section>
 
-      <footer className="app-footer"><span><Sprout size={15} /> {APP_NAME} v{APP_VERSION}</span><span>Static Vite shell • direct Appwrite Web SDK • IndexedDB offline queue • storage-efficient WebP media</span></footer>
+      <footer className="app-footer"><span><SugarcaneIcon size={17} /> {APP_NAME} v{APP_VERSION}</span><span>Static Vite shell • direct Appwrite Web SDK • IndexedDB offline queue • storage-efficient WebP media</span></footer>
 
       <Suspense fallback={<ModalLoading />}>
         {detailId && <DetailModal recordId={detailId} isAdmin={isAdmin} onClose={() => setDetailId('')} onEdit={openEdit} onDeleted={refreshRegistry} />}
         {showForm && <RecordFormModal initial={editRecord} actor={user} isAdmin={isAdmin} online={online} onClose={() => { setShowForm(false); setEditRecord(null); }} onSaved={refreshRegistry} onSubmitted={({ type, variety }) => { setSubmissionNotice(`${variety} ${type === 'edit' ? 'edit' : 'registration'} submitted for administrator approval.`); window.setTimeout(() => setSubmissionNotice(''), 6000); }} onQueued={handleQueuedOffline} />}
         {showImport && isAdmin && <ImportModal onClose={() => setShowImport(false)} onImported={refreshRegistry} />}
+        {showExportExcel && isAdmin && <ExportExcelModal onClose={() => setShowExportExcel(false)} onExported={(message) => setSubmissionNotice(message)} />}
         {showOfflineQueue && <OfflineQueueModal ownerId={user.id || user.email} actor={{ ...user, isAdmin }} online={online} onClose={() => setShowOfflineQueue(false)} onSynced={handleOfflineSynced} />}
+        {showSpreadsheetEditor && isAdmin && <SpreadsheetEditorModal onClose={() => setShowSpreadsheetEditor(false)} onSaved={() => { clearListCache(); refreshRegistry(); }} />}
         {showAdminCenter && isAdmin && <AdminCenterModal initialTab={adminCenterTab} currentUser={user} onClose={() => setShowAdminCenter(false)} onRegistryChanged={() => { clearListCache(); refreshRegistry(); }} />}
       </Suspense>
     </main>

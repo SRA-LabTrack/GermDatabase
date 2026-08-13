@@ -7,6 +7,7 @@ import { queueOfflineRecord } from '../lib/offlineQueue';
 import { submitChangeRequest } from '../lib/approvalApi';
 import { deleteStoredFiles, fileViewUrl, saveRecord, uploadPreparedPhotos } from '../lib/registryApi';
 import { emptyForm, messageFor } from '../lib/registryUi';
+import { PHOTO_DOCUMENTATION_SECTIONS, normalizedPhotoCategories, primaryPhotoIndex } from '../lib/photoSections';
 
 const DRAFT_PREFIX = 'canesprout-local-draft-v230:';
 const DRAFT_SAVE_DELAY_MS = 900;
@@ -50,7 +51,7 @@ export default function RecordFormModal({ initial, actor, isAdmin = false, onlin
   const [form, setForm] = useState(() => ({ ...emptyForm(), ...(initial || {}), ...(storedDraft?.form || {}) }));
   const [draftRestored, setDraftRestored] = useState(Boolean(storedDraft));
   const [dirty, setDirty] = useState(Boolean(storedDraft));
-  const [newFiles, setNewFiles] = useState([]);
+  const [newPhotoItems, setNewPhotoItems] = useState([]);
   const [removedFileIds, setRemovedFileIds] = useState([]);
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState('');
@@ -83,26 +84,41 @@ export default function RecordFormModal({ initial, actor, isAdmin = false, onlin
     const full = [...(form.photo_file_ids || [])];
     const thumbs = [...(form.thumb_file_ids || [])];
     const names = [...(form.photo_names || [])];
+    const categories = normalizedPhotoCategories(form.photo_categories, full.length);
     const deleted = [full[index], thumbs[index]].filter(Boolean);
-    full.splice(index, 1); thumbs.splice(index, 1); names.splice(index, 1);
+    full.splice(index, 1); thumbs.splice(index, 1); names.splice(index, 1); categories.splice(index, 1);
     setRemovedFileIds((ids) => [...ids, ...deleted]);
     setForm((current) => ({
       ...current,
       photo_file_ids: full,
       thumb_file_ids: thumbs,
       photo_names: names,
-      primary_file_id: full[0] || '',
-      thumbnail_file_id: thumbs[0] || ''
+      photo_categories: categories,
+      primary_file_id: full[primaryPhotoIndex(categories, full.length)] || full[0] || '',
+      thumbnail_file_id: thumbs[primaryPhotoIndex(categories, thumbs.length)] || thumbs[0] || ''
     }));
   }
 
   async function prepareSelectedPhotos() {
     const variants = [];
-    for (let index = 0; index < newFiles.length; index += 1) {
-      setProgress(`Compressing field photo ${index + 1} of ${newFiles.length} to WebP…`);
-      variants.push(await prepareImageVariants(newFiles[index]));
+    for (let index = 0; index < newPhotoItems.length; index += 1) {
+      const item = newPhotoItems[index];
+      setProgress(`Compressing field photo ${index + 1} of ${newPhotoItems.length} to WebP…`);
+      variants.push({ ...(await prepareImageVariants(item.file)), category: item.category });
     }
     return variants;
+  }
+
+  function addPhotos(category, files) {
+    const picked = Array.from(files || []).slice(0, 4);
+    if (!picked.length) return;
+    setDirty(true);
+    setNewPhotoItems((current) => [...current, ...picked.map((file) => ({ file, category }))].slice(0, 12));
+  }
+
+  function removeNewPhoto(index) {
+    setDirty(true);
+    setNewPhotoItems((current) => current.filter((_, itemIndex) => itemIndex !== index));
   }
 
   async function saveOffline() {
@@ -156,10 +172,12 @@ export default function RecordFormModal({ initial, actor, isAdmin = false, onlin
         ...form,
         photo_file_ids: [...(form.photo_file_ids || []), ...uploaded.map((item) => item.fullId)],
         thumb_file_ids: [...(form.thumb_file_ids || []), ...uploaded.map((item) => item.thumbId)],
-        photo_names: [...(form.photo_names || []), ...uploaded.map((item) => item.name)]
+        photo_names: [...(form.photo_names || []), ...uploaded.map((item) => item.name)],
+        photo_categories: [...normalizedPhotoCategories(form.photo_categories, (form.photo_file_ids || []).length), ...uploaded.map((item) => item.category || 'overview')]
       };
-      next.primary_file_id = next.photo_file_ids[0] || '';
-      next.thumbnail_file_id = next.thumb_file_ids[0] || '';
+      const primaryIndex = primaryPhotoIndex(next.photo_categories, next.photo_file_ids.length);
+      next.primary_file_id = next.photo_file_ids[primaryIndex] || next.photo_file_ids[0] || '';
+      next.thumbnail_file_id = next.thumb_file_ids[primaryIndex] || next.thumb_file_ids[0] || '';
       if (isAdmin) {
         setProgress('Saving approved record to Appwrite…');
         await saveRecord(next, initial?.$id || '', initial || null);
@@ -193,6 +211,7 @@ export default function RecordFormModal({ initial, actor, isAdmin = false, onlin
   }
 
   const existingPhotos = form.photo_file_ids || [];
+  const existingCategories = normalizedPhotoCategories(form.photo_categories, existingPhotos.length);
   return (
     <div className="modal-backdrop">
       <form className="modal record-form-modal" onSubmit={submit}>
@@ -206,14 +225,23 @@ export default function RecordFormModal({ initial, actor, isAdmin = false, onlin
           {draftRestored && <div className="local-draft-banner"><div><strong>Local draft restored</strong><span>This lightweight text draft came from this device and used zero Appwrite writes.</span></div><button type="button" className="text-button inline" onClick={() => { clearDraft(); setForm({ ...emptyForm(), ...(initial || {}) }); }}>Discard draft</button></div>}
 
           <section className="form-section germ-section"><div className="form-section-heading"><small>Crop establishment</small><h3>Planting & emergence</h3></div><div className="form-grid">{GERMINATION_FIELDS.map((field) => <Field key={field.key} field={field} value={form[field.key]} onChange={change} />)}</div></section>
-          {CHARACTERIZATION_GROUPS.map((group) => <section className="form-section" key={group.title}><div className="form-section-heading"><small>Varietal characterization</small><h3>{group.title}</h3></div><div className="form-grid">{group.fields.map((field) => <Field key={field.key} field={field} value={form[field.key]} onChange={change} />)}</div></section>)}
+          {CHARACTERIZATION_GROUPS.map((group) => <section className="form-section" key={group.title}><div className="form-section-heading"><small>{group.title === 'Germplasm Passport' ? 'Germplasm identity' : 'Varietal characterization'}</small><h3>{group.title}</h3></div><div className="form-grid">{group.fields.map((field) => <Field key={field.key} field={field} value={form[field.key]} onChange={change} />)}</div></section>)}
 
-          <section className="form-section">
-            <div className="form-section-heading"><small>Field documentation</small><h3>Photos</h3></div>
-            <p className="form-hint">Photos are compressed locally first. When saved offline, the compressed full WebP and 320 px thumbnail are stored in IndexedDB, not Appwrite, until sync.</p>
-            {!!existingPhotos.length && <div className="edit-photo-grid">{existingPhotos.map((id, index) => <div key={id}><img src={fileViewUrl(form.thumb_file_ids?.[index] || id)} alt="Existing field record" loading="lazy" decoding="async" /><button type="button" onClick={() => removeExisting(index)}><X size={14} /> Remove</button></div>)}</div>}
-            <label className="photo-drop"><ImagePlus size={24} /><span><strong>Add field photos</strong><small>JPEG, PNG, WebP, HEIC/HEIF and browser-readable images</small></span><input type="file" accept="image/*,.heic,.heif" multiple onChange={(event) => { setDirty(true); setNewFiles(Array.from(event.target.files || []).slice(0, 8)); }} /></label>
-            {!!newFiles.length && <div className="selected-files">{newFiles.map((file) => <span key={`${file.name}-${file.size}`}>{file.name} <small>{formatBytes(file.size)}</small></span>)}</div>}
+          <section className="form-section photo-documentation-section">
+            <div className="form-section-heading"><small>Field documentation</small><h3>Photo documentation</h3></div>
+            <p className="form-hint">Photos are compressed locally first. Each image is tagged to its documentation section so pest/disease evidence, crop stages, detailed characteristics, and variety overviews stay organized. Overview photos are preferred automatically for registry-card thumbnails.</p>
+            <div className="photo-category-list">
+              {PHOTO_DOCUMENTATION_SECTIONS.map((section) => {
+                const existing = existingPhotos.map((id, index) => ({ id, index })).filter(({ index }) => existingCategories[index] === section.key);
+                const selected = newPhotoItems.map((item, index) => ({ ...item, index })).filter((item) => item.category === section.key);
+                return <div className="photo-category-card" key={section.key}>
+                  <div className="photo-category-heading"><div><strong>{section.label}</strong><small>{section.hint}</small></div><span>{existing.length + selected.length} photo{existing.length + selected.length === 1 ? '' : 's'}</span></div>
+                  {!!existing.length && <div className="edit-photo-grid">{existing.map(({ id, index }) => <div key={id}><img src={fileViewUrl(form.thumb_file_ids?.[index] || id)} alt={section.label} loading="lazy" decoding="async" /><button type="button" onClick={() => removeExisting(index)}><X size={14} /> Remove</button></div>)}</div>}
+                  <label className="photo-drop compact-photo-drop"><ImagePlus size={21} /><span><strong>Add {section.label}</strong><small>Up to 4 at a time • WebP compression before upload/offline save</small></span><input type="file" accept="image/*,.heic,.heif" multiple onChange={(event) => { addPhotos(section.key, event.target.files); event.target.value = ''; }} /></label>
+                  {!!selected.length && <div className="selected-files">{selected.map(({ file, index }) => <span key={`${file.name}-${file.size}-${index}`}>{file.name} <small>{formatBytes(file.size)}</small><button type="button" onClick={() => removeNewPhoto(index)} aria-label={`Remove ${file.name}`}><X size={12} /></button></span>)}</div>}
+                </div>;
+              })}
+            </div>
           </section>
           {error && <div className="alert error">{error}</div>}
           {progress && <div className="alert progress"><LoaderCircle className="spin" size={17} /> {progress}</div>}

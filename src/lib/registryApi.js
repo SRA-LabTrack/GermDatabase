@@ -9,14 +9,20 @@ import {
   Role,
   databases,
   storage,
-  withAppwriteFailover
+  withAppwriteFailover,
+  isNetworkFailure
 } from './appwrite';
 import { CHARACTERIZATION_FIELDS } from './characterizationFields';
+import { normalizedPhotoCategories, primaryPhotoIndex } from './photoSections';
+import { canonicalLegacyVariety, normalizeVarietyIdentity } from './legacyHyv';
+import bundledCharacterization from '../../seed/characterization.json';
+import bundledHyvCharacteristics from '../../seed/sra_hyv_characteristics_v273.json';
 
 export const PAGE_SIZE = 25;
 export const RECENT_LIMIT = 20;
+export const SHEET_PAGE_SIZE = 20;
 export const SEARCH_MIN = 3;
-export const SEARCH_DEBOUNCE_MS = 500;
+export const SEARCH_DEBOUNCE_MS = 250;
 export const LIST_FIELDS = [
   'variety',
   'stool_plant_habit',
@@ -28,11 +34,78 @@ export const LIST_FIELDS = [
   'thumbnail_file_id'
 ];
 
+
+const BUNDLED_RECORD_ID_PREFIX = 'bundled-record:';
+const BUNDLED_CURSOR_PREFIX = 'bundled-offset:';
+const BUNDLED_SOURCE_RECORDS = Array.isArray(bundledCharacterization?.records)
+  ? bundledCharacterization.records
+  : [];
+const BUNDLED_HYV_RECORDS = Array.isArray(bundledHyvCharacteristics?.records)
+  ? bundledHyvCharacteristics.records
+  : [];
+const BUNDLED_HYV_MAP = new Map(
+  BUNDLED_HYV_RECORDS.map((record) => [normalizeVarietyIdentity(record.variety), record])
+);
+const BUNDLED_RECORDS = BUNDLED_SOURCE_RECORDS.map((record, index) => ({
+  ...(BUNDLED_HYV_MAP.get(normalizeVarietyIdentity(record.variety)) || {}),
+  ...record,
+  $id: `${BUNDLED_RECORD_ID_PREFIX}${String(index + 1).padStart(4, '0')}`,
+  __bundledSnapshot: true,
+  __bundledIndex: index
+}));
+const BUNDLED_RECORD_MAP = new Map(BUNDLED_RECORDS.map((record) => [record.$id, record]));
+
+function bundledText(value) {
+  return String(value ?? '').trim().toLowerCase();
+}
+
+function bundledMatches(record, term, scope) {
+  if (!term) return true;
+  const needle = bundledText(term);
+  if (!needle) return true;
+  const config = SEARCH_SCOPES[scope] || SEARCH_SCOPES.variety;
+  if (config.mode !== 'fulltext') return bundledText(record?.[config.attribute]).includes(needle);
+  return Object.values(record || {}).some((value) =>
+    (typeof value === 'string' || typeof value === 'number') && bundledText(value).includes(needle)
+  );
+}
+
+function bundledOffset(cursor) {
+  if (!String(cursor || '').startsWith(BUNDLED_CURSOR_PREFIX)) return 0;
+  const value = Number(String(cursor).slice(BUNDLED_CURSOR_PREFIX.length));
+  return Number.isFinite(value) && value >= 0 ? Math.floor(value) : 0;
+}
+
+function bundledPage({ search = '', scope = 'variety', cursor = '', limit = PAGE_SIZE, recent = false } = {}) {
+  const normalizedScope = normalizeScope(scope);
+  const filtered = BUNDLED_RECORDS
+    .filter((record) => bundledMatches(record, search, normalizedScope))
+    .sort((a, b) => bundledText(a.variety).localeCompare(bundledText(b.variety)));
+  const source = recent ? filtered.slice(0, RECENT_LIMIT) : filtered;
+  const offset = recent ? 0 : bundledOffset(cursor);
+  const documents = source.slice(offset, offset + limit);
+  const nextOffset = offset + documents.length;
+  const hasMore = !recent && nextOffset < source.length;
+  return {
+    documents,
+    nextCursor: hasMore ? `${BUNDLED_CURSOR_PREFIX}${nextOffset}` : '',
+    hasMore,
+    skippedForShortSearch: false,
+    matchMode: recent ? 'bundled-recent' : (search ? 'bundled-search' : 'bundled-browse'),
+    bundledSnapshot: true,
+    offlineFallback: true,
+    bundledTotal: filtered.length,
+    fromCache: true
+  };
+}
+
 const memoryCache = new Map();
 const inflightCache = new Map();
 const detailCache = new Map();
 const detailInflight = new Map();
 const coreCache = new Map();
+let identityGuardCache = { savedAt: 0, index: null };
+const IDENTITY_GUARD_TTL = 2 * 60_000;
 const CACHE_TTL = 15 * 60_000;
 const DETAIL_TTL = 45 * 60_000;
 const PERSISTENT_BROWSE_TTL = 45 * 60_000;
@@ -56,6 +129,11 @@ export const SEARCH_SCOPES = Object.freeze({
   status: { label: 'Status', attribute: 'germ_status', mode: 'smart' },
   all: { label: 'All traits & keywords', attribute: 'search_text', mode: 'fulltext' }
 });
+
+
+const OPTIONAL_TRAIT_DEFAULTS = Object.freeze(
+  Object.fromEntries(CHARACTERIZATION_FIELDS.map((field) => [field.key, '']))
+);
 
 function normalizeScope(scope) {
   return SEARCH_SCOPES[scope] ? scope : 'variety';
@@ -127,6 +205,7 @@ function writeDetailSession(recordId, value) {
 export function clearListCache() {
   memoryCache.clear();
   inflightCache.clear();
+  identityGuardCache = { savedAt: 0, index: null };
   try {
     Object.keys(sessionStorage)
       .filter((key) => key.startsWith(`${CACHE_NAMESPACE}:q:`))
@@ -173,7 +252,7 @@ async function fetchList(queries, { ttl = APPWRITE_SEARCH_TTL_SECONDS, bypassCac
     queries,
     total: false,
     ttl: bypassCache ? 0 : ttl
-  }), { timeoutMs: 3500 });
+  }), { timeoutMs: 8000 });
 }
 
 function buildLeanQueries(limit = PAGE_SIZE) {
@@ -293,22 +372,27 @@ export async function listRecentRecords({ bypassCache = false } = {}) {
   if (!bypassCache && inflightCache.has(key)) return inflightCache.get(key);
 
   const execute = async () => {
-    const result = await fetchList([
-      ...buildLeanQueries(RECENT_LIMIT),
-      Query.orderDesc('$sequence')
-    ], { ttl: APPWRITE_BROWSE_TTL_SECONDS, bypassCache });
-    const documents = result.documents || [];
-    const value = {
-      documents,
-      nextCursor: '',
-      hasMore: false,
-      skippedForShortSearch: false,
-      matchMode: 'recent'
-    };
-    rememberCore(documents);
-    memoryCache.set(key, { savedAt: Date.now(), value });
-    writeSessionCache(key, value);
-    return { ...value, fromCache: false };
+    try {
+      const result = await fetchList([
+        ...buildLeanQueries(RECENT_LIMIT),
+        Query.orderDesc('$sequence')
+      ], { ttl: APPWRITE_BROWSE_TTL_SECONDS, bypassCache });
+      const documents = result.documents || [];
+      const value = {
+        documents,
+        nextCursor: '',
+        hasMore: false,
+        skippedForShortSearch: false,
+        matchMode: 'recent'
+      };
+      rememberCore(documents);
+      memoryCache.set(key, { savedAt: Date.now(), value });
+      writeSessionCache(key, value);
+      return { ...value, fromCache: false };
+    } catch (error) {
+      if (isNetworkFailure(error)) return bundledPage({ recent: true, limit: RECENT_LIMIT });
+      throw error;
+    }
   };
 
   const promise = execute().finally(() => inflightCache.delete(key));
@@ -320,6 +404,9 @@ export async function listRecords({ search = '', scope = 'variety', cursor = '',
   const term = String(search || '').trim();
   const normalizedScope = normalizeScope(scope);
   const scopeConfig = SEARCH_SCOPES[normalizedScope];
+  if (String(cursor || '').startsWith(BUNDLED_CURSOR_PREFIX)) {
+    return bundledPage({ search: term, scope: normalizedScope, cursor });
+  }
   if (term && term.length < SEARCH_MIN) {
     return { documents: [], nextCursor: '', hasMore: false, skippedForShortSearch: true, fromCache: false, matchMode: '' };
   }
@@ -393,6 +480,9 @@ export async function listRecords({ search = '', scope = 'variety', cursor = '',
           return { ...offline, offlineFallback: true, fromCache: true };
         }
       }
+      if (isNetworkFailure(error)) {
+        return bundledPage({ search: term, scope: normalizedScope, cursor });
+      }
       throw error;
     }
   };
@@ -404,6 +494,180 @@ export async function listRecords({ search = '', scope = 'variety', cursor = '',
   } finally {
     if (inflightCache.get(key) === pending) inflightCache.delete(key);
   }
+}
+
+let spreadsheetBatchIdQuerySupported = true;
+
+function sheetPhaseError(error, phase) {
+  try { error.spreadsheetPhase = phase; return error; } catch {
+    const wrapped = new Error(error?.message || String(error));
+    wrapped.spreadsheetPhase = phase;
+    wrapped.cause = error;
+    return wrapped;
+  }
+}
+
+async function getSpreadsheetDetailsIndividually(ids = []) {
+  const detailMap = new Map();
+  const failures = [];
+  const queue = [...ids];
+  const workerCount = Math.min(4, queue.length);
+
+  async function worker() {
+    while (queue.length) {
+      const id = queue.shift();
+      try {
+        const detail = await withAppwriteFailover(() => databases.getDocument({
+          databaseId: DATABASE_ID,
+          collectionId: COLLECTIONS.details,
+          documentId: id,
+          queries: [Query.select(['traits_json', 'details_json'])]
+        }), { timeoutMs: 9000 });
+        detailMap.set(id, detail);
+      } catch (error) {
+        const code = Number(error?.code || error?.status || 0);
+        // Older imported rows can legitimately predate the split details
+        // collection. Treat a missing details document as an empty detail row.
+        if (code === 404) detailMap.set(id, { $id: id, traits_json: '{}', details_json: '{}' });
+        else failures.push({ id, error });
+      }
+    }
+  }
+
+  await Promise.all(Array.from({ length: workerCount }, () => worker()));
+  if (failures.length) throw failures[0].error;
+  return detailMap;
+}
+
+async function fetchSpreadsheetDetails(ids = []) {
+  if (!ids.length) return new Map();
+  const detailMap = new Map();
+  const batches = [];
+  for (let index = 0; index < ids.length; index += 5) batches.push(ids.slice(index, index + 5));
+
+  async function fetchBatch(batch) {
+    if (!spreadsheetBatchIdQuerySupported) {
+      const fallback = await getSpreadsheetDetailsIndividually(batch);
+      fallback.forEach((value, key) => detailMap.set(key, value));
+      return;
+    }
+    try {
+      const result = await withAppwriteFailover(() => databases.listDocuments({
+        databaseId: DATABASE_ID,
+        collectionId: COLLECTIONS.details,
+        queries: [
+          Query.equal('$id', batch),
+          Query.limit(batch.length),
+          Query.select(['traits_json', 'details_json'])
+        ],
+        total: false,
+        ttl: 0
+      }), { timeoutMs: 9000 });
+      const found = new Map((result.documents || []).map((item) => [item.$id, item]));
+      batch.forEach((id) => {
+        if (found.has(id)) detailMap.set(id, found.get(id));
+        else detailMap.set(id, { $id: id, traits_json: '{}', details_json: '{}' });
+      });
+      return;
+    } catch (error) {
+      const code = Number(error?.code || error?.status || 0);
+      const type = String(error?.type || '').toLowerCase();
+      const message = String(error?.message || '').toLowerCase();
+      if (code === 400 || type.includes('query') || message.includes('invalid query')) spreadsheetBatchIdQuerySupported = false;
+      const fallback = await getSpreadsheetDetailsIndividually(batch);
+      fallback.forEach((value, key) => detailMap.set(key, value));
+    }
+  }
+
+  // Keep the burst deliberately small. Four five-ID requests are far less
+  // likely to time out than one large full-detail query, while still avoiding
+  // twenty individual reads in the normal path.
+  await Promise.all(batches.map((batch) => fetchBatch(batch)));
+  return detailMap;
+}
+
+export async function listSpreadsheetRecords({ cursor = '', search = '', scope = 'variety' } = {}) {
+  const term = String(search || '').trim();
+  const normalizedScope = normalizeScope(scope);
+  const scopeConfig = SEARCH_SCOPES[normalizedScope];
+  if (term && term.length < SEARCH_MIN) {
+    return { documents: [], nextCursor: '', hasMore: false, skippedForShortSearch: true };
+  }
+
+  const coreQueries = [
+    Query.limit(SHEET_PAGE_SIZE),
+    Query.select([...LIST_FIELDS, 'source_name', 'source_row'])
+  ];
+
+  if (term) {
+    if (scopeConfig.mode === 'fulltext') {
+      const appwriteTerm = term.includes('-') ? `"${term.replace(/"/g, '')}"` : term;
+      coreQueries.push(Query.search(scopeConfig.attribute, appwriteTerm));
+    } else {
+      coreQueries.push(Query.contains(scopeConfig.attribute, term));
+    }
+  } else {
+    coreQueries.push(Query.orderAsc('variety'));
+  }
+  if (cursor) coreQueries.push(Query.cursorAfter(cursor));
+
+  let coreResult;
+  try {
+    coreResult = await withAppwriteFailover(() => databases.listDocuments({
+      databaseId: DATABASE_ID,
+      collectionId: COLLECTIONS.records,
+      queries: coreQueries,
+      total: false,
+      // A short cache makes repeated spreadsheet searches cheaper without
+      // leaving bulk-edit data stale for long periods.
+      ttl: term ? 60 : 120
+    }), { timeoutMs: 9000 });
+  } catch (error) {
+    throw sheetPhaseError(error, 'core');
+  }
+
+  const cores = coreResult.documents || [];
+  if (!cores.length) return { documents: [], nextCursor: '', hasMore: false, skippedForShortSearch: false };
+
+  const ids = cores.map((item) => item.$id);
+  let detailMap;
+  try {
+    detailMap = await fetchSpreadsheetDetails(ids);
+  } catch (error) {
+    throw sheetPhaseError(error, 'details');
+  }
+
+  const documents = cores.map((core) => expandRecord(core, detailMap.get(core.$id)));
+  documents.forEach((document) => {
+    if (!document?.$id) return;
+    detailCache.set(document.$id, { savedAt: Date.now(), value: document });
+    writeDetailSession(document.$id, document);
+  });
+
+  return {
+    documents,
+    nextCursor: cores.at(-1)?.$id || '',
+    hasMore: cores.length === SHEET_PAGE_SIZE,
+    skippedForShortSearch: false
+  };
+}
+
+export async function saveSpreadsheetRecords(changes = [], onProgress) {
+  const saved = [];
+  const errors = [];
+  // Explicit Apply is the only write point. Sequential rows avoid write bursts
+  // against Appwrite while splitPayload still skips unchanged core/detail halves.
+  for (let index = 0; index < changes.length; index += 1) {
+    const item = changes[index];
+    try {
+      const value = await saveRecord(item.record, item.record.$id, item.previous || null);
+      saved.push(value);
+    } catch (error) {
+      errors.push({ id: item.record?.$id, variety: item.record?.variety || '', message: error?.message || String(error) });
+    }
+    onProgress?.({ done: index + 1, total: changes.length, errors: errors.length });
+  }
+  return { saved, errors };
 }
 
 function parseJsonObject(value) {
@@ -420,7 +684,11 @@ function expandRecord(core, detail) {
   if (!core && !detail) return null;
   const traits = parseJsonObject(detail?.traits_json);
   const extra = parseJsonObject(detail?.details_json);
-  return { ...traits, ...extra, ...(core || {}), $id: core?.$id || detail?.$id };
+  // Hydrate every canonical optional trait locally. Older records therefore
+  // gain the red-font template fields immediately without spending hundreds
+  // of Appwrite writes just to persist empty strings. When a user enters a
+  // value, splitPayload stores only that populated trait as before.
+  return { ...OPTIONAL_TRAIT_DEFAULTS, ...traits, ...extra, ...(core || {}), $id: core?.$id || detail?.$id };
 }
 
 async function listAllCollection(collectionId, { orderByVariety = false, onProgress } = {}) {
@@ -450,15 +718,50 @@ async function listAllCollection(collectionId, { orderByVariety = false, onProgr
 }
 
 export async function exportAllRecords(onProgress) {
-  // Backup is explicit and rare. 100-row pages minimize API request overhead
-  // while preserving a complete export. Reads still count per returned row.
-  const cores = await listAllCollection(COLLECTIONS.records, { orderByVariety: true, onProgress });
-  const details = await listAllCollection(COLLECTIONS.details);
+  // Full Excel/backup exports read the two independent collections concurrently.
+  // This keeps the same number of returned documents but removes the old
+  // records-then-details serial wait.
+  let coreProgress = { pages: 0, records: 0 };
+  let detailProgress = { pages: 0, records: 0 };
+
+  const [cores, details] = await Promise.all([
+    listAllCollection(COLLECTIONS.records, {
+      orderByVariety: true,
+      onProgress: (progress) => {
+        coreProgress = progress;
+        onProgress?.({
+          stage: 'core',
+          pages: progress.pages,
+          records: progress.records,
+          detailPages: detailProgress.pages,
+          detailRecords: detailProgress.records
+        });
+      }
+    }),
+    listAllCollection(COLLECTIONS.details, {
+      onProgress: (progress) => {
+        detailProgress = progress;
+        onProgress?.({
+          stage: 'details',
+          pages: coreProgress.pages,
+          records: coreProgress.records,
+          detailPages: progress.pages,
+          detailRecords: progress.records
+        });
+      }
+    })
+  ]);
+
   const detailMap = new Map(details.map((document) => [document.$id, document]));
   return cores.map((core) => expandRecord(core, detailMap.get(core.$id)));
 }
 
 export async function getRecord(recordId, { bypassCache = false } = {}) {
+  if (String(recordId || '').startsWith(BUNDLED_RECORD_ID_PREFIX)) {
+    const snapshot = BUNDLED_RECORD_MAP.get(recordId);
+    if (!snapshot) throw new Error('Bundled registry snapshot record was not found.');
+    return { ...OPTIONAL_TRAIT_DEFAULTS, ...snapshot };
+  }
   const hit = detailCache.get(recordId);
   if (!bypassCache && hit && Date.now() - hit.savedAt < DETAIL_TTL) return hit.value;
   if (!bypassCache) {
@@ -511,8 +814,12 @@ export async function getRecord(recordId, { bypassCache = false } = {}) {
 }
 
 function makeTraits(data) {
+  // Store only populated optional traits. This leaves room for the extra red-font
+  // attributes without inflating traits_json with dozens of empty strings.
   return Object.fromEntries(
-    CHARACTERIZATION_FIELDS.map((field) => [field.key, String(data[field.key] ?? '').trim()])
+    CHARACTERIZATION_FIELDS
+      .map((field) => [field.key, String(data[field.key] ?? '').trim()])
+      .filter(([, value]) => value !== '')
   );
 }
 
@@ -538,6 +845,11 @@ function splitPayload(data) {
     ? String(Math.max(0, Math.min(100, (germinated / planted) * 100)))
     : '';
 
+  const photoIds = Array.isArray(data.photo_file_ids) ? data.photo_file_ids : [];
+  const thumbIds = Array.isArray(data.thumb_file_ids) ? data.thumb_file_ids : [];
+  const photoCategories = normalizedPhotoCategories(data.photo_categories, photoIds.length);
+  const preferredPhotoIndex = primaryPhotoIndex(photoCategories, photoIds.length);
+
   const core = {
     variety: traits.variety || '',
     stool_plant_habit: traits.stool_plant_habit || '',
@@ -548,7 +860,7 @@ function splitPayload(data) {
     germ_location: String(data.germ_location ?? '').trim(),
     germ_status: String(data.germ_status ?? '').trim(),
     germination_pct: germinationPct,
-    thumbnail_file_id: String(data.thumbnail_file_id || data.thumb_file_ids?.[0] || ''),
+    thumbnail_file_id: String(thumbIds[preferredPhotoIndex] || data.thumbnail_file_id || thumbIds[0] || ''),
     source_name: String(data.source_name || 'Manual entry'),
     source_row: data.source_row == null ? '' : String(data.source_row).trim(),
     search_text: makeSearchText(data, traits)
@@ -561,10 +873,11 @@ function splitPayload(data) {
     germ_germinated_count: germinatedText,
     germ_observation_date: String(data.germ_observation_date ?? '').trim(),
     germ_notes: String(data.germ_notes ?? '').trim(),
-    photo_file_ids: Array.isArray(data.photo_file_ids) ? data.photo_file_ids : [],
-    thumb_file_ids: Array.isArray(data.thumb_file_ids) ? data.thumb_file_ids : [],
+    photo_file_ids: photoIds,
+    thumb_file_ids: thumbIds,
     photo_names: Array.isArray(data.photo_names) ? data.photo_names : [],
-    primary_file_id: String(data.primary_file_id || data.photo_file_ids?.[0] || '')
+    photo_categories: photoCategories,
+    primary_file_id: String(photoIds[preferredPhotoIndex] || data.primary_file_id || photoIds[0] || '')
   };
 
   const traitsJson = JSON.stringify(traits);
@@ -615,10 +928,22 @@ async function upsertDocument(collectionId, documentId, data, exists, { idempote
   }
 }
 
-export async function saveRecord(data, recordId = '', previous = null, { knownNew = false } = {}) {
+export async function saveRecord(data, recordId = '', previous = null, { knownNew = false, skipDuplicateGuard = false } = {}) {
   const { core: corePayload, detail: detailPayload } = splitPayload(data);
   const id = recordId || ID.unique();
   const exists = Boolean(recordId) && !knownNew;
+
+  // Every normal creation path now shares one canonical identity gate. This
+  // protects manual admin creates, approved user CREATE requests, offline
+  // CREATE sync, and renames. The comparison ignores punctuation/case and also
+  // understands the verified legacy SRA shorthand aliases.
+  const previousKeys = new Set(varietyIdentityKeys(previous?.variety));
+  const nextKeys = varietyIdentityKeys(corePayload.variety);
+  const sameIdentity = nextKeys.some((key) => previousKeys.has(key));
+  const identityMayChange = !exists || !previous || !sameIdentity;
+  if (!skipDuplicateGuard && identityMayChange) {
+    await assertUniqueVarietyIdentity(corePayload.variety, { excludeId: id, force: true });
+  }
 
   // Editing should not spend two Appwrite writes when only one half of the
   // split document changed. The already-open full record is compared locally,
@@ -729,7 +1054,7 @@ export async function uploadPreparedPhotos(variants, onProgress, { preserveOnFai
       await createFileIdempotent(fullId, fullFile);
       touchedIds.push(thumbId);
       await createFileIdempotent(thumbId, thumbFile);
-      uploaded.push({ fullId, thumbId, name: item.originalName });
+      uploaded.push({ fullId, thumbId, name: item.originalName, category: item.category || 'overview' });
       onProgress?.({ done: index + 1, total: variants.length });
     }
     return uploaded;
@@ -791,46 +1116,149 @@ export async function deleteStoredFiles(fileIds = []) {
   for (const fileId of Array.from(new Set(fileIds.filter(Boolean)))) await deleteStoredFileIfPresent(fileId);
 }
 
-export async function bulkCreateRecords(rows, onProgress) {
-  let next = 0;
-  let completed = 0;
-  const errors = [];
-  const worker = async () => {
-    while (true) {
-      const index = next++;
-      if (index >= rows.length) return;
-      const id = ID.unique();
-      try {
-        const { core, detail } = splitPayload({ ...rows[index], source_name: rows[index].source_name || 'Excel import' });
-        await withAppwriteFailover(() => databases.createDocument({
-          databaseId: DATABASE_ID,
-          collectionId: COLLECTIONS.details,
-          documentId: id,
-          data: detail
-        }), { retryTransport: false, timeoutMs: 9000 });
-        try {
-          await withAppwriteFailover(() => databases.createDocument({
-            databaseId: DATABASE_ID,
-            collectionId: COLLECTIONS.records,
-            documentId: id,
-            data: core
-          }), { retryTransport: false, timeoutMs: 9000 });
-        } catch (error) {
-          await Promise.allSettled([
-            databases.deleteDocument({ databaseId: DATABASE_ID, collectionId: COLLECTIONS.details, documentId: id })
-          ]);
-          throw error;
-        }
-      } catch (error) {
-        errors.push({ index, message: error?.message || String(error) });
-      }
-      completed += 1;
-      onProgress?.({ done: completed, total: rows.length, errors: errors.length });
+
+function varietyIdentityKeys(value) {
+  const original = String(value || '').trim();
+  if (!original) return [];
+  const canonical = canonicalLegacyVariety(original);
+  return Array.from(new Set([
+    normalizeVarietyIdentity(original),
+    normalizeVarietyIdentity(canonical)
+  ].filter(Boolean)));
+}
+
+function addCoreToIdentityIndex(index, core) {
+  if (!core?.$id) return;
+  for (const key of varietyIdentityKeys(core.variety)) {
+    const rows = index.get(key) || [];
+    if (!rows.some((row) => row.$id === core.$id)) rows.push(core);
+    index.set(key, rows);
+  }
+}
+
+async function loadCanonicalIdentityIndex({ force = false } = {}) {
+  if (!force && identityGuardCache.index && Date.now() - identityGuardCache.savedAt < IDENTITY_GUARD_TTL) {
+    return identityGuardCache.index;
+  }
+  const index = new Map();
+  let cursor = '';
+  while (true) {
+    const queries = [Query.limit(100), Query.orderAsc('$id'), Query.select(['variety'])];
+    if (cursor) queries.push(Query.cursorAfter(cursor));
+    const page = await withAppwriteFailover(() => databases.listDocuments({
+      databaseId: DATABASE_ID,
+      collectionId: COLLECTIONS.records,
+      queries,
+      total: false,
+      ttl: 0
+    }), { timeoutMs: 7000 });
+    const batch = page.documents || [];
+    batch.forEach((document) => addCoreToIdentityIndex(index, document));
+    if (batch.length < 100) break;
+    cursor = batch.at(-1)?.$id || '';
+    if (!cursor) break;
+  }
+  identityGuardCache = { savedAt: Date.now(), index };
+  return index;
+}
+
+export async function findCanonicalVarietyMatches(variety, { excludeId = '', force = false } = {}) {
+  const index = await loadCanonicalIdentityIndex({ force });
+  const found = new Map();
+  for (const key of varietyIdentityKeys(variety)) {
+    for (const document of index.get(key) || []) {
+      if (excludeId && document.$id === excludeId) continue;
+      found.set(document.$id, document);
     }
-  };
-  // Two workers stay comfortably below the Web SDK write-rate ceiling while
-  // still making large workbook imports reasonably quick.
-  await Promise.all(Array.from({ length: Math.min(2, rows.length) }, worker));
+  }
+  return [...found.values()];
+}
+
+export async function assertUniqueVarietyIdentity(variety, { excludeId = '', force = false } = {}) {
+  const display = String(variety || '').trim();
+  if (!display) throw new Error('Variety is required before creating or renaming a registry record.');
+  const matches = await findCanonicalVarietyMatches(display, { excludeId, force });
+  if (!matches.length) return true;
+  const examples = matches.slice(0, 3).map((item) => item.variety || item.$id).join(', ');
+  throw new Error(`Duplicate variety blocked: “${display}” matches ${matches.length} existing record${matches.length === 1 ? '' : 's'} (${examples}). Formatting differences such as spaces, hyphens, and capitalization are treated as the same variety.`);
+}
+
+
+async function loadImportIdentityIndex() {
+  // Reuse the canonical duplicate-guard index. It selects only `variety`
+  // (plus Appwrite system metadata such as $id), which is dramatically smaller
+  // than the old import scan that downloaded every list-card field and provenance
+  // column. Force a fresh read for import safety, then all workbook matching is local.
+  return loadCanonicalIdentityIndex({ force: true });
+}
+
+function indexImportedCore(identityIndex, core) {
+  addCoreToIdentityIndex(identityIndex, core);
+}
+
+function findImportMatches(variety, identityIndex) {
+  const found = new Map();
+  for (const key of varietyIdentityKeys(variety)) {
+    for (const document of identityIndex.get(key) || []) found.set(document.$id, document);
+  }
+  return [...found.values()];
+}
+
+function mergeImportedValues(existing, incoming, { clearBlankCells = false } = {}) {
+  const next = { ...existing };
+  CHARACTERIZATION_FIELDS.forEach((field) => {
+    if (!(field.key in incoming)) return;
+    const value = String(incoming[field.key] ?? '').trim();
+    if (value !== '' || clearBlankCells) next[field.key] = value;
+  });
+  // Keep the original live record provenance when updating. New records still
+  // carry the workbook source metadata through bulkUpsertRecords below.
+  return next;
+}
+
+export async function bulkUpsertRecords(rows, onProgress, { clearBlankCells = false } = {}) {
+  let completed = 0;
+  let created = 0;
+  let updated = 0;
+  const errors = [];
+
+  const identityIndex = await loadImportIdentityIndex();
+
+  // Sequential writes keep the import deterministic. Duplicate matching is now
+  // local against the complete lean canonical identity index, so formatting
+  // differences cannot accidentally create a second variety record.
+  for (let index = 0; index < rows.length; index += 1) {
+    const incoming = rows[index];
+    try {
+      const variety = String(incoming?.variety || '').trim();
+      if (!variety) throw new Error('Variety is blank.');
+      const matches = findImportMatches(variety, identityIndex);
+      if (!matches.length) {
+        const createdRecord = await saveRecord({ ...incoming, source_name: incoming.source_name || 'Excel import' }, '', null, { knownNew: true, skipDuplicateGuard: true });
+        indexImportedCore(identityIndex, createdRecord);
+        created += 1;
+      } else if (matches.length === 1) {
+        const core = matches[0];
+        const previous = await getRecord(core.$id, { bypassCache: true });
+        const merged = mergeImportedValues(previous, incoming, { clearBlankCells });
+        const saved = await saveRecord(merged, core.$id, previous);
+        indexImportedCore(identityIndex, saved);
+        updated += 1;
+      } else {
+        throw new Error(`Duplicate conflict: ${matches.length} existing records already normalize to this variety. Run the duplicate audit before importing this row.`);
+      }
+    } catch (error) {
+      errors.push({ index, variety: incoming?.variety || '', message: error?.message || String(error) });
+    }
+    completed += 1;
+    onProgress?.({ done: completed, total: rows.length, errors: errors.length, created, updated });
+  }
   clearListCache();
-  return { imported: rows.length - errors.length, errors };
+  return { imported: rows.length - errors.length, created, updated, errors };
+}
+
+export async function bulkCreateRecords(rows, onProgress) {
+  // Backward-compatible alias. Older callers now inherit the duplicate-safe
+  // canonical upsert behavior instead of blindly creating every workbook row.
+  return bulkUpsertRecords(rows, onProgress);
 }

@@ -1,15 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
+import SugarcaneIcon from './components/SugarcaneIcon.jsx';
+import "./backgroundSlideshow.js";
 
 function BootScreen({ failed = false }) {
   return (
     <main className="app-boot-screen" role="status" aria-live="polite">
       <div className="app-boot-card">
-        <span className="app-boot-mark" aria-hidden="true">🌱</span>
+        <span className="app-boot-mark" aria-hidden="true"><SugarcaneIcon size={32} /></span>
         <div>
-          <strong>CaneSprout Registry</strong>
-          <span>{failed ? 'The app shell could not start cleanly.' : 'Preparing the sugarcane field registry…'}</span>
+          <strong>Sugarcane Germplasm Resource Database</strong>
+          <span>{failed ? 'The app shell could not start cleanly.' : 'Preparing the sugarcane germplasm collection…'}</span>
         </div>
         {!failed && <i className="app-boot-progress" aria-hidden="true" />}
         {failed && <button onClick={() => window.location.replace(`${window.location.pathname}?fresh=${Date.now()}`)}>Reload cleanly</button>}
@@ -24,7 +26,7 @@ class RootBoundary extends React.Component {
     this.state = { failed: false };
   }
   static getDerivedStateFromError() { return { failed: true }; }
-  componentDidCatch(error) { console.error('CaneSprout startup error:', error); }
+  componentDidCatch(error) { console.error('Sugarcane Germplasm Resource Database startup error:', error); }
   render() { return this.state.failed ? <BootScreen failed /> : this.props.children; }
 }
 

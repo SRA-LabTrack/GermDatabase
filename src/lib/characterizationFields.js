@@ -1,13 +1,14 @@
 // Generated from Characterization(2).xlsx. Keep keys stable: Appwrite indexes and seeded rows depend on them.
 export const CHARACTERIZATION_GROUPS = [
   {
-    "title": "Identity",
+    "title": "Germplasm Passport",
     "fields": [
-      {
-        "key": "variety",
-        "label": "Variety",
-        "type": "text"
-      }
+      { "key": "variety", "label": "Variety Name", "type": "text" },
+      { "key": "accession_number", "label": "Accession Number", "type": "text" },
+      { "key": "origin", "label": "Origin", "type": "text" },
+      { "key": "collection_year", "label": "Collection Year", "type": "text" },
+      { "key": "species", "label": "Species", "type": "text" },
+      { "key": "recommended_locations", "label": "Recommended Locations", "type": "textarea" }
     ]
   },
   {
@@ -344,8 +345,67 @@ export const CHARACTERIZATION_GROUPS = [
         "type": "text"
       }
     ]
+  }  ,
+  {
+    "title": "Parentage",
+    "fields": [
+      { "key": "parentage_female", "label": "Female", "type": "text" },
+      { "key": "parentage_male", "label": "Male", "type": "text" }
+    ]
+  },
+  {
+    "title": "Yield Potential",
+    "fields": [
+      { "key": "yield_lkg_tc", "label": "LKg/TC", "type": "text" },
+      { "key": "yield_tc_ha", "label": "TC/HA", "type": "text" }
+    ]
+  },
+  {
+    "title": "Agronomic Characteristics",
+    "fields": [
+      { "key": "agronomic_germination", "label": "Germination", "type": "text" },
+      { "key": "agronomic_growth_habit", "label": "Growth Habit", "type": "text" },
+      { "key": "agronomic_flowering_habit", "label": "Flowering Habit", "type": "text" },
+      { "key": "agronomic_stalk_diameter", "label": "Stalk Diameter", "type": "text" },
+      { "key": "agronomic_stalk_length", "label": "Stalk Length", "type": "text" },
+      { "key": "agronomic_stalk_weight", "label": "Stalk Weight", "type": "text" },
+      { "key": "agronomic_number_of_tiller", "label": "Number of Tiller", "type": "text" },
+      { "key": "agronomic_millable_stalk", "label": "Average No. of Millable Stalks", "type": "text" },
+      { "key": "agronomic_maturity", "label": "Maturity (Months)", "type": "text" },
+      { "key": "agronomic_characteristics_summary", "label": "SRA HYV Agronomic Description", "type": "textarea" }
+    ]
+  },
+  {
+    "title": "Pest and Diseases",
+    "fields": [
+      { "key": "disease_reaction", "label": "Reaction Diseases", "type": "textarea" }
+    ]
+  },
+  {
+    "title": "Tested Location",
+    "fields": [
+      { "key": "tested_location", "label": "Tested Location", "type": "text" }
+    ]
   }
+
 ];
 
-export const CHARACTERIZATION_FIELDS = CHARACTERIZATION_GROUPS.flatMap((group) => group.fields);
-export const SOURCE_RECORD_COUNT = 933;
+
+
+// Red-font attributes introduced by the canonical
+// "Characterization and other attributes" workbook. These groups are
+// hydrated for every existing record even when the older Appwrite row has
+// never stored a value for them yet.
+export const NEW_TEMPLATE_GROUP_TITLES = Object.freeze([
+  'Germplasm Passport',
+  'Parentage',
+  'Yield Potential',
+  'Agronomic Characteristics',
+  'Pest and Diseases',
+  'Tested Location'
+]);
+
+export const CHARACTERIZATION_FIELDS = CHARACTERIZATION_GROUPS.flatMap((group) =>
+  group.fields.map((field) => ({ ...field, group: group.title }))
+);
+export const SOURCE_RECORD_COUNT = 950;

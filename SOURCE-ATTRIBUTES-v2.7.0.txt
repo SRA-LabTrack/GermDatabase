@@ -1,0 +1,33 @@
+Source workbook: Characterization and other attributes.xlsx
+Red-font attributes mapped from BI:BW:
+
+Parentage
+- BI Female -> parentage_female
+- BJ Male -> parentage_male
+
+Yield Potential
+- BK LKg/TC -> yield_lkg_tc
+- BL TC/HA -> yield_tc_ha
+
+Agronomic Characteristics
+- BM Germination -> agronomic_germination
+- BN Growth Habit -> agronomic_growth_habit
+- BO Flowering Habit -> agronomic_flowering_habit
+- BP Stalk Diameter -> agronomic_stalk_diameter
+- BQ Stalk length -> agronomic_stalk_length
+- BR Stalk weight -> agronomic_stalk_weight
+- BS Number of tiller -> agronomic_number_of_tiller
+- BT Millable stalk -> agronomic_millable_stalk
+- BU Maturity -> agronomic_maturity
+
+Pest and Diseases
+- BV Reaction Diseases -> disease_reaction
+
+Tested Location
+- BW Tested Location -> tested_location
+
+Photo and Documentation columns BX:CA are implemented as categorized image sections in the app instead of plain text traits:
+- BX Pests & diseases incidence
+- BY Growth stages (Germination / Tillering / Stalk elongation / Maturity)
+- BZ Characteristics (Leaf, Stalks/Buds)
+- CA Overview picture of the variety

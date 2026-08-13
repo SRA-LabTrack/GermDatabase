@@ -1,0 +1,8 @@
+CaneSprout Registry v2.8.5
+
+- Background slideshow now always uses proportional full-screen COVER/FILL with a subtle zoom; no letterboxing or contain mode.
+- Wallpaper recalculates automatically with viewport/device size.
+- Appwrite read timeout increased and idempotent reads retry once before being considered unreachable.
+- If Appwrite is genuinely unavailable, the bundled 950-record characterization snapshot is shown read-only instead of an empty registry.
+- Refresh automatically returns to live Appwrite records when connectivity is restored.
+- Bundled snapshot records cannot be edited/deleted, preventing accidental writes with local fallback IDs.

@@ -1,0 +1,636 @@
+{
+  "generated_at": "2026-08-13T02:56:03.608Z",
+  "mode": "read-only",
+  "scanned": {
+    "core_records": 950,
+    "detail_records": 950
+  },
+  "summary": {
+    "canonical_duplicate_groups": 3,
+    "canonical_duplicate_records": 6,
+    "exact_display_duplicate_groups": 3,
+    "numeric_format_equivalent_groups": 0,
+    "repeated_trial_code_groups": 0,
+    "repeated_source_row_groups": 0,
+    "blank_varieties": 1,
+    "missing_details_documents": 0,
+    "orphan_details_documents": 0,
+    "invalid_traits_json": 0,
+    "invalid_details_json": 0,
+    "core_detail_variety_mismatches": 0,
+    "total_issue_rows": 7
+  },
+  "canonical_duplicates": [
+    {
+      "canonical": "PHIL931902349",
+      "classification": "SAME_IDENTITY_CONFLICTING_OBSERVATIONS",
+      "variants": [
+        "Phil 93-190-2349"
+      ],
+      "source_names": [
+        "Characterization.xlsx"
+      ],
+      "core_conflicts": [
+        {
+          "field": "stool_plant_habit",
+          "values": [
+            "RECUMBENT",
+            "ERECT"
+          ]
+        },
+        {
+          "field": "leaf_color",
+          "values": [
+            "N138B",
+            "137C"
+          ]
+        },
+        {
+          "field": "stalk_exposed_color",
+          "values": [
+            "195C",
+            "N200A"
+          ]
+        },
+        {
+          "field": "bud_shape",
+          "values": [
+            "SQUAT RHOMBOID",
+            "OVATE WITH EMARGINATED WINGS"
+          ]
+        }
+      ],
+      "trait_conflicts": [
+        {
+          "field": "stool_plant_habit",
+          "values": [
+            "RECUMBENT",
+            "ERECT"
+          ]
+        },
+        {
+          "field": "stool_tillering_habit",
+          "values": [
+            "INTERMEDIATE",
+            "COMPACT"
+          ]
+        },
+        {
+          "field": "stool_tillering_density",
+          "values": [
+            "LIGHT",
+            "INTERMEDIATE"
+          ]
+        },
+        {
+          "field": "stool_trashiness",
+          "values": [
+            "PARTIAL DETRASHING",
+            "SELF-DESTRASHING"
+          ]
+        },
+        {
+          "field": "leaf_color",
+          "values": [
+            "N138B",
+            "137C"
+          ]
+        },
+        {
+          "field": "leaf_texture",
+          "values": [
+            "SMOOTH",
+            "ROUGH"
+          ]
+        },
+        {
+          "field": "leaf_length_cm",
+          "values": [
+            "150.6",
+            "148.844"
+          ]
+        },
+        {
+          "field": "leaf_width_cm",
+          "values": [
+            "5.37",
+            "5.09"
+          ]
+        },
+        {
+          "field": "leaf_midrib_color",
+          "values": [
+            "192C",
+            "192A"
+          ]
+        },
+        {
+          "field": "sheath_waxiness",
+          "values": [
+            "MEDIUM",
+            "HEAVY"
+          ]
+        },
+        {
+          "field": "sheath_primary_color",
+          "values": [
+            "138B",
+            "148C"
+          ]
+        },
+        {
+          "field": "sheath_secondary_color",
+          "values": [
+            "N144D",
+            "139D"
+          ]
+        },
+        {
+          "field": "dewlap_primary_color",
+          "values": [
+            "197A",
+            "178A"
+          ]
+        },
+        {
+          "field": "dewlap_secondary_color",
+          "values": [
+            "149D",
+            "148A"
+          ]
+        },
+        {
+          "field": "dewlap_shape",
+          "values": [
+            "TRIANGULAR WITH HORIZONTAL BASAL MARGIN",
+            "SQUARISH"
+          ]
+        },
+        {
+          "field": "ligule_shape",
+          "values": [
+            "CRESCENT WITH BROAD LOZENGE",
+            "CRESCENT WITH LOZENGE"
+          ]
+        },
+        {
+          "field": "stalk_exposed_color",
+          "values": [
+            "195C",
+            "N200A"
+          ]
+        },
+        {
+          "field": "stalk_unexposed_color",
+          "values": [
+            "148D",
+            "148A"
+          ]
+        },
+        {
+          "field": "stalk_growth_cracks",
+          "values": [
+            "PRESENT",
+            "ABSENT"
+          ]
+        },
+        {
+          "field": "stalk_node_swelling",
+          "values": [
+            "NOT SWOLLEN",
+            "SWOLLEN"
+          ]
+        },
+        {
+          "field": "stalk_growth_ring_width",
+          "values": [
+            "NARROW",
+            "BROAD"
+          ]
+        },
+        {
+          "field": "stalk_root_band_shape",
+          "values": [
+            "OBCONOIDAL",
+            "TUMESCENT"
+          ]
+        },
+        {
+          "field": "bud_shape",
+          "values": [
+            "SQUAT RHOMBOID",
+            "OVATE WITH EMARGINATED WINGS"
+          ]
+        },
+        {
+          "field": "bud_length_mm",
+          "values": [
+            "9.9",
+            "1.24"
+          ]
+        },
+        {
+          "field": "bud_width_mm",
+          "values": [
+            "9.1",
+            "1.11"
+          ]
+        },
+        {
+          "field": "bud_germ_position",
+          "values": [
+            "MEDIAN",
+            "APICAL"
+          ]
+        },
+        {
+          "field": "bud_groove_expression",
+          "values": [
+            "ABSENT",
+            "HIGH"
+          ]
+        },
+        {
+          "field": "bud_tip_position",
+          "values": [
+            "ON GROWTH RING",
+            "ABOVE GROWTH RING"
+          ]
+        }
+      ],
+      "invalid_detail_ids": [],
+      "records": [
+        {
+          "id": "sc_6ebd25a1527a580a02a8e59b31",
+          "variety": "Phil 93-190-2349",
+          "source_name": "Characterization.xlsx",
+          "source_row": "360",
+          "trial_code": "",
+          "location": "",
+          "status": "",
+          "created_at": "2026-08-07T13:57:22.144+00:00",
+          "updated_at": "2026-08-13T01:24:41.099+00:00"
+        },
+        {
+          "id": "sc_6f170c3b3a3ea55e1bae92ccc5",
+          "variety": "Phil 93-190-2349",
+          "source_name": "Characterization.xlsx",
+          "source_row": "353",
+          "trial_code": "",
+          "location": "",
+          "status": "",
+          "created_at": "2026-08-07T13:57:20.896+00:00",
+          "updated_at": "2026-08-13T01:24:38.859+00:00"
+        }
+      ]
+    },
+    {
+      "canonical": "PHIL98010007",
+      "classification": "SAME_IDENTITY_CONFLICTING_OBSERVATIONS",
+      "variants": [
+        "PHIL 98-01-0007",
+        "Phil 98-01-0007"
+      ],
+      "source_names": [
+        "Characterization.xlsx"
+      ],
+      "core_conflicts": [],
+      "trait_conflicts": [
+        {
+          "field": "leaf_width_cm",
+          "values": [
+            "6.6",
+            "6.7"
+          ]
+        },
+        {
+          "field": "bud_length_mm",
+          "values": [
+            "8.1",
+            "7.2"
+          ]
+        },
+        {
+          "field": "bud_width_mm",
+          "values": [
+            "6.8",
+            "5.1"
+          ]
+        }
+      ],
+      "invalid_detail_ids": [],
+      "records": [
+        {
+          "id": "sc_b52b29aa350887b53d4785418a",
+          "variety": "PHIL 98-01-0007",
+          "source_name": "Characterization.xlsx",
+          "source_row": "885",
+          "trial_code": "",
+          "location": "",
+          "status": "",
+          "created_at": "2026-08-07T13:58:55.236+00:00",
+          "updated_at": "2026-08-07T13:58:55.236+00:00"
+        },
+        {
+          "id": "sc_b570165eabbdd88bc0f9d571e2",
+          "variety": "Phil 98-01-0007",
+          "source_name": "Characterization.xlsx",
+          "source_row": "807",
+          "trial_code": "",
+          "location": "",
+          "status": "",
+          "created_at": "2026-08-07T13:58:41.028+00:00",
+          "updated_at": "2026-08-07T13:58:41.028+00:00"
+        }
+      ]
+    },
+    {
+      "canonical": "VMC73229",
+      "classification": "SAME_IDENTITY_CONFLICTING_OBSERVATIONS",
+      "variants": [
+        "VMC 73-229"
+      ],
+      "source_names": [
+        "Characterization.xlsx"
+      ],
+      "core_conflicts": [
+        {
+          "field": "leaf_color",
+          "values": [
+            "138A",
+            "N138B"
+          ]
+        },
+        {
+          "field": "stalk_exposed_color",
+          "values": [
+            "177C",
+            "N148A"
+          ]
+        }
+      ],
+      "trait_conflicts": [
+        {
+          "field": "stool_trashiness",
+          "values": [
+            "NOT SELF DETRASHING",
+            "PARTIAL DESTRASHING"
+          ]
+        },
+        {
+          "field": "leaf_color",
+          "values": [
+            "138A",
+            "N138B"
+          ]
+        },
+        {
+          "field": "leaf_length_cm",
+          "values": [
+            "143.4",
+            "128.7"
+          ]
+        },
+        {
+          "field": "leaf_width_cm",
+          "values": [
+            "3.17",
+            "3.92"
+          ]
+        },
+        {
+          "field": "leaf_midrib_color",
+          "values": [
+            "192D",
+            "159C"
+          ]
+        },
+        {
+          "field": "sheath_waxiness",
+          "values": [
+            "LIGHT",
+            "MEDIUM"
+          ]
+        },
+        {
+          "field": "sheath_primary_color",
+          "values": [
+            "139D",
+            "143A"
+          ]
+        },
+        {
+          "field": "sheath_secondary_color",
+          "values": [
+            "N77B",
+            "139D"
+          ]
+        },
+        {
+          "field": "auricle_outer_shape",
+          "values": [
+            "DELTOID",
+            "LONG LANCEOLATE"
+          ]
+        },
+        {
+          "field": "auricle_inner_shape",
+          "values": [
+            "ASCENDING TRANSITIONAL",
+            "SLOPING TRANSITIONAL"
+          ]
+        },
+        {
+          "field": "dewlap_primary_color",
+          "values": [
+            "152A",
+            "N144A"
+          ]
+        },
+        {
+          "field": "dewlap_secondary_color",
+          "values": [
+            "152D",
+            "N144B"
+          ]
+        },
+        {
+          "field": "dewlap_shape",
+          "values": [
+            "TRIANGULAR WITH HORIZONTAL BASAL MARGIN",
+            "VERY SLOPING NARROW, TRIANGULAR LIGULATE"
+          ]
+        },
+        {
+          "field": "ligule_shape",
+          "values": [
+            "CRESCENT WITH BOARD LOZENGE",
+            "CRESCENT WITH LOZENGE"
+          ]
+        },
+        {
+          "field": "stalk_exposed_color",
+          "values": [
+            "177C",
+            "N148A"
+          ]
+        },
+        {
+          "field": "stalk_unexposed_color",
+          "values": [
+            "145D",
+            "N144A"
+          ]
+        },
+        {
+          "field": "stalk_growth_cracks",
+          "values": [
+            "ABSENT",
+            "PRESENT"
+          ]
+        },
+        {
+          "field": "stalk_corky_patch",
+          "values": [
+            "ABSENT",
+            "PRESENT"
+          ]
+        },
+        {
+          "field": "stalk_alignment",
+          "values": [
+            "STRAIGHT",
+            "ZIGZAG"
+          ]
+        },
+        {
+          "field": "stalk_root_primordia_rows",
+          "values": [
+            "2R",
+            "3R"
+          ]
+        },
+        {
+          "field": "stalk_root_band_shape",
+          "values": [
+            "STRAIGHT",
+            "OBCONOIDAL"
+          ]
+        },
+        {
+          "field": "stalk_pith_bottom",
+          "values": [
+            "HALLOW",
+            "SOLID"
+          ]
+        },
+        {
+          "field": "stalk_pith_middle",
+          "values": [
+            "HALLOW",
+            "SOLID"
+          ]
+        },
+        {
+          "field": "stalk_pith_top",
+          "values": [
+            "HOLLOW",
+            "SOLID"
+          ]
+        },
+        {
+          "field": "bud_prominence",
+          "values": [
+            "FLAT",
+            "FLAT TO BULGING"
+          ]
+        },
+        {
+          "field": "bud_length_mm",
+          "values": [
+            "7.5",
+            "8.9"
+          ]
+        },
+        {
+          "field": "bud_width_mm",
+          "values": [
+            "7.7",
+            "8.7"
+          ]
+        },
+        {
+          "field": "bud_germ_position",
+          "values": [
+            "SUB-APICAL",
+            "APICAL"
+          ]
+        },
+        {
+          "field": "bud_groove_expression",
+          "values": [
+            "ABSENT",
+            "LOW"
+          ]
+        },
+        {
+          "field": "bud_base_position",
+          "values": [
+            "AT LEAF SCAR",
+            "ABOVE LEAF SCAR"
+          ]
+        }
+      ],
+      "invalid_detail_ids": [],
+      "records": [
+        {
+          "id": "sc_a816c6fdac1dbe0de67811b90a",
+          "variety": "VMC 73-229",
+          "source_name": "Characterization.xlsx",
+          "source_row": "717",
+          "trial_code": "",
+          "location": "",
+          "status": "",
+          "created_at": "2026-08-07T13:58:22.854+00:00",
+          "updated_at": "2026-08-07T13:58:22.854+00:00"
+        },
+        {
+          "id": "sc_f944598cfa956b448997221642",
+          "variety": "VMC 73-229",
+          "source_name": "Characterization.xlsx",
+          "source_row": "712",
+          "trial_code": "",
+          "location": "",
+          "status": "",
+          "created_at": "2026-08-07T13:58:22.071+00:00",
+          "updated_at": "2026-08-07T13:58:22.071+00:00"
+        }
+      ]
+    }
+  ],
+  "numeric_format_equivalent": [],
+  "repeated_trial_codes": [],
+  "repeated_source_rows": [],
+  "blank_varieties": [
+    {
+      "id": "sc_c247fbc716d6b747b5380ae7d7",
+      "source_name": "Characterization.xlsx",
+      "source_row": "895"
+    }
+  ],
+  "missing_details_ids": [],
+  "orphan_details_ids": [],
+  "invalid_traits_json_ids": [],
+  "invalid_details_json_ids": [],
+  "core_detail_variety_mismatches": [],
+  "creation_path_review": {
+    "protected": [
+      "SRA HYV migration v2.7.5+ uses a complete canonical identity index and refuses multi-match conflicts.",
+      "Excel bulk upsert v2.7.6+ uses a complete canonical identity index and refuses multi-match conflicts.",
+      "General saveRecord v2.7.8+ enforces canonical identity uniqueness for manual admin creates, approved normal-user CREATE publication, offline CREATE sync, and variety renames.",
+      "Legacy bulkCreateRecords is redirected to the duplicate-safe bulk upsert path."
+    ],
+    "still_requires_duplicate_guard": [],
+    "note": "All known registry creation paths now share canonical duplicate protection. Existing conflicting-observation groups are intentionally reported for scientific review rather than auto-merged."
+  }
+}

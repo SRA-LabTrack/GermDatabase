@@ -1,0 +1,72 @@
+CANESPROUT REGISTRY v2.9.14 COMPLETE OVERHAUL
+
+This is a fresh, standalone source folder.
+It is NOT an incremental patch.
+
+IMPORTANT
+- The real .env file is intentionally NOT included.
+- Copy your existing .env into this folder, or create one from .env.example.
+- node_modules is intentionally NOT included. Run npm.cmd install once.
+
+WINDOWS - FIRST RUN
+
+1. Open Command Prompt in this extracted folder.
+
+2. Install dependencies:
+   npm.cmd install
+
+3. Start the website:
+   npm.cmd run dev
+
+4. Open the Local URL Vite prints.
+   It will normally be:
+   http://localhost:5174/
+
+If 5174 is already occupied, Vite may automatically select another free port.
+Use the exact Local URL printed in the terminal.
+
+PRODUCTION BUILD
+
+   npm.cmd run build
+
+GITHUB - RECOMMENDED CLEAN REPO WORKFLOW
+
+Do NOT run Git commands from an older nested CaneSprout folder.
+
+Either:
+A) make this extracted folder its own Git repository, or
+B) replace the contents of the actual Git repository root with this clean build.
+
+Fresh repository setup:
+   git init
+   git branch -M main
+   git remote add origin https://github.com/SRA-LabTrack/GermDatabase.git
+   git add .
+   git commit -m "CaneSprout Registry v2.9.14 complete overhaul"
+
+If the remote already contains history, use the safer existing-repo instructions
+provided by ChatGPT rather than force-pushing blindly.
+
+Release highlights:
+- Sugarcane Germplasm Resource Database branding
+- SUGARCANE GERMPLASM LIBRARY label
+- Accession / SRA Developed Varieties / Local Collection / International Collection cards
+- Compact View Profile preview:
+  Accession Number
+  Origin
+  Collection Year
+  Species
+  Parentals
+  Yield Potential (TC/Ha and LKg/TC)
+  Recommended locations
+  Reaction to Diseases
+- Other fields hidden behind Additional traits
+- Scoped Excel import
+- Multi-variety Excel export
+- Excel-style registry editor with visible Close control
+- Improved sugarcane icon
+- Viewport-anchored Excel tools
+- Admin Center / Online modal overlap fixes
+- Brand title containment fixes
+- 5-second slideshow / 2.5-second cross-fade preserved
+- Appwrite + bundled registry fallback preserved

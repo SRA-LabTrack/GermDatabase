@@ -1,0 +1,52 @@
+CaneSprout live registry integrity report review
+Based on registry-integrity-v2.7.7.json generated 2026-08-13
+
+LIVE COUNTS
+- Core records: 953
+- Detail records: 953
+- Canonical duplicate identity groups: 6 (12 records)
+- Numeric-format equivalent review groups: 0
+- Repeated trial-code groups: 0
+- Repeated source-row groups: 0
+- Blank varieties: 1
+- Missing detail documents: 0
+- Orphan detail documents: 0
+- Invalid traits_json: 0
+- Invalid details_json: 0
+- Core/detail Variety mismatches: 7
+
+SAFE MIGRATION FORMAT DUPLICATES
+Use the existing v2.7.6 dedupe:safe-migration-variants command for these only:
+- PHIL56226: new PHIL 56226 + older Phil 56-226
+- PHIL58260: new PHIL 58260 + older Phil 58-260
+- PHIL992641: new PHIL-99-2641 + older Phil 99-2641
+The audit found no core or trait conflicts in these pairs.
+
+SCIENTIFIC OBSERVATION DUPLICATES - DO NOT AUTO-MERGE
+- Phil 93-190-2349: conflicting core and trait observations
+- PHIL/Phil 98-01-0007: conflicting trait observations
+- VMC 73-229: conflicting core and trait observations
+These remain separate records until the data model is upgraded to represent multiple observations under one cultivar identity.
+
+VERIFIED CORE/DETAIL ALIAS MISMATCHES
+The following seven details.traits_json Variety values are legacy SRA shorthand aliases of the canonical core Variety. v2.7.8 repair:registry-safe can align only the detail-side Variety text to the existing core value without changing measurements:
+- Phil 00-185-1419 <- PHIL 00-1419
+- Phil 93-227-3155 <- Phil 93-3155
+- Phil 93-190-2349 <- Phil 93-2349 (two observation records)
+- Phil 03-154-1389 <- PHIL 03-1389
+- Phil 98-37-0255 <- PHIL 98-0255
+- Phil 00-278-1893 <- PHIL 00-1893
+
+BLANK SOURCE RECORD
+- sc_c247fbc716d6b747b5380ae7d7
+- Characterization.xlsx source row 895
+- Variety is blank in the source, but the row contains substantial characterization measurements.
+Decision: do not delete it and do not invent a cultivar name. Keep it quarantined for source identification/manual review.
+
+PREVENTION ADDED IN v2.7.8
+- General saveRecord canonical duplicate guard protects manual administrator creation.
+- The same guard protects approved normal-user CREATE publication.
+- The same guard protects offline queued CREATE synchronization.
+- Variety renames are blocked when the new identity matches another existing record.
+- The identity check ignores punctuation, spacing, capitalization, and the six verified legacy SRA shorthand aliases.
+- Excel bulk upsert keeps its complete canonical identity index and legacy bulkCreateRecords is redirected to that safe path.

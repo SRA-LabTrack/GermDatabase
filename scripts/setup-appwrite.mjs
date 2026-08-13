@@ -391,7 +391,7 @@ async function seedRecords() {
 }
 
 async function main() {
-  console.log('\nSugarcane Germination & Characterization Registry setup v2.5.0');
+  console.log('\nSugarcane Germination & Characterization Registry setup v2.7.3');
   console.log(`Endpoint: ${endpoint}`);
   console.log(`Project:  ${projectId}`);
   console.log(`Database: ${databaseId}\n`);
@@ -484,7 +484,7 @@ async function main() {
   console.log('\nDone.');
   console.log(`• Lean list/search collection: ${coreCollection}`);
   console.log(`• On-demand trait/photo collection: ${detailsCollection}`);
-  console.log('• All 60 Characterization.xlsx traits remain optional and are preserved in traits_json.');
+  console.log('• Characterization.xlsx + SRA HYV traits remain optional and are preserved in traits_json; the form hydrates the full canonical trait set locally.');
   console.log('• Registry pages read only 25 lean core rows; the heavy detail document is fetched only when a record is opened.');
   console.log('• Variety, trial code, location, and status use exact/prefix/contains key indexes; all-trait keywords use one full-text index.');
   console.log(`• Failed legacy collections (${legacyCollections.join(', ')}) are ignored and were not modified.`);

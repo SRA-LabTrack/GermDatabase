@@ -1,6 +1,6 @@
 # CaneSprout Registry v2.4.3
 
-Agriculture-first sugarcane germination and varietal characterization registry. This build keeps all 60 Characterization.xlsx traits optional, retains the 933 source records, tracks planting/emergence observations, stores field photos as WebP in Appwrite Storage, and is deliberately tuned for Appwrite Free + Vercel Hobby usage.
+Agriculture-first sugarcane germination and varietal characterization registry. This build keeps the Characterization.xlsx traits optional, enriches the registry with 60 SRA HYV legacy characterization rows, carries 950 seed varieties after safe matching/addition, tracks planting/emergence observations, stores field photos as WebP in Appwrite Storage, and is deliberately tuned for Appwrite Free + Vercel Hobby usage.
 
 ## Agriculture-focused interface
 

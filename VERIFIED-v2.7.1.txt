@@ -1,0 +1,9 @@
+CaneSprout Registry v2.7.1 verification
+
+Static checks performed in the generated package:
+- package/version JSON parses successfully.
+- Excel editor imports only exported registry API symbols.
+- Search scopes reuse the indexed registry fields already provisioned by setup-appwrite.
+- No new Appwrite attributes, indexes, collections, or buckets are required.
+- Spreadsheet writes still occur only when Apply changes is pressed.
+- Search uses max 20 full records per page, min 3 characters, 500 ms debounce, and no polling/realtime.
