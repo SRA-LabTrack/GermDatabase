@@ -1,0 +1,34 @@
+CaneSprout Registry v2.7.3 - SRA HYV legacy characteristics
+
+Source workbooks
+- SRA-HYVs  Charac-LR.xls
+- SRA-HYVs  Charac-LG.xls
+
+LR is the newer overlapping source. LG is used only to fill values that are missing in LR.
+The extraction contains 60 unique SRA HYV varieties.
+
+New/updated fields
+- Parentage: Female / Male
+- Yield Potential: LKg/TC / TC/HA (text-capable so ranges such as "2.15 & up" are preserved)
+- Agronomic Characteristics: SRA HYV Agronomic Description
+- Agronomic Characteristics: Average No. of Millable Stalks
+- Agronomic Characteristics: Maturity (Months)
+- Pest and Diseases: Reaction Diseases
+
+Fresh setups
+- seed/characterization.json now contains 950 records: the prior 933 characterization rows enriched where safely matched, plus 17 SRA HYV varieties that were absent from the prior seed.
+- Six shorthand SRA codes are mapped only when year + trailing code identify one unique existing variety. No fuzzy matching is used.
+
+Existing Appwrite deployments
+Run once from the project root:
+  npm.cmd run migrate:sra-hyv
+
+The migration is idempotent. It updates matching records and creates only varieties that still have no safe match. Run it with a temporary APPWRITE_API_KEY that can read/write database documents, then revoke the key.
+
+Excel Import
+- The official template is now A:CB v2.7.3.
+- A:BX = traits.
+- BY:CB = categorized Photo and Documentation headings.
+- Legacy SRA-BRED HIGH YIELDING VARIETIES A:H .xls files are detected directly.
+- Import Excel now updates matching varieties and creates missing varieties instead of blindly creating duplicates.
+- Blank cells do not clear existing values unless the administrator explicitly enables that option.

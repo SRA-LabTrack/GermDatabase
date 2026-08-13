@@ -1,0 +1,15 @@
+Canonical source workbook: Characterization and other attributes(1).xlsx
+
+A:BW = 75 optional varietal characterization traits.
+BI:BJ = Parentage (Female, Male)
+BK:BL = Yield Potential (LKg/TC, TC/HA)
+BM:BU = Agronomic Characteristics
+BV = Reaction Diseases
+BW = Tested Location
+BX:CA = Photo and Documentation categories:
+- Peast and Diseases Incidense
+- Growth Stages (Germination/Tillering/Stalk elongation/Maturity)
+- Characteristics (Leaf, Staks/buds)
+- Overview picture of the variety
+
+The template preserves the terminology and structure supplied by the user. Photo columns are documentation categories; image files themselves are uploaded through CaneSprout so they can be compressed to WebP and stored efficiently.

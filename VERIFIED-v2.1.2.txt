@@ -1,0 +1,14 @@
+CANESPROUT REGISTRY v2.1.2 - VALIDATION NOTES
+==============================================
+
+- Uses sugarcane_registry_core for lean 30-row list/search requests.
+- Uses sugarcane_registry_details for on-demand traits_json + details_json.
+- All 60 Characterization.xlsx traits remain preserved and optional.
+- All 933 seed rows retain deterministic document IDs across both collections.
+- The largest seeded traits_json is checked to fit the 4096-character detail field.
+- Registry uses 400 ms search debounce and a 3-character minimum.
+- Full-text search remains Appwrite-side; no whole-database browser filtering.
+- Photos remain WebP in Appwrite Storage; registry cards request only thumbnails.
+- No polling or Realtime subscription was added.
+- Failed sugarcane_characterizations and sugarcane_registry collections are ignored.
+- Windows documentation uses npm.cmd; Vercel/Linux configuration intentionally uses npm.

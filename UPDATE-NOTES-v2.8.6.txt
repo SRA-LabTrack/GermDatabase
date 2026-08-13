@@ -1,0 +1,17 @@
+CaneSprout Registry v2.8.6
+
+VISUAL UPDATE
+- Wallpaper is clearer and less washed out.
+- Main hero remains glassy but more transparent.
+- Headings/body text use stronger contrast for readability.
+- Search panel and small content surfaces retain enough opacity for clear text.
+- Background images now use a 1.35-second true cross-fade.
+- Outgoing image fades out while the incoming image fades in.
+- Next image is preloaded before transition to prevent blank flashes.
+- Subtle slow zoom makes the slideshow feel more fluid.
+- 3-second slideshow cadence is unchanged.
+- Full-screen crop preserves aspect ratio with no stretching.
+
+REGISTRY
+- Keeps all v2.8.5 registry fallback/live Appwrite behavior.
+- Bundled 950-record snapshot remains included.

@@ -1,0 +1,38 @@
+CANESPROUT REGISTRY v2.1.2 - APPWRITE SPLIT-SCHEMA FIX
+======================================================
+
+WHY v2.1.2 EXISTS
+v2.1.0 and v2.1.1 could hit Appwrite's collection schema/row-size budget.
+v2.1.2 fixes this by splitting each sugarcane record across two small collections:
+
+  sugarcane_registry_core
+    - only fields used by 30-row registry pages and indexed search
+
+  sugarcane_registry_details
+    - traits_json with every Characterization.xlsx trait
+    - details_json with germination details and photo metadata
+
+The two documents use the same Appwrite document ID. Opening a card normally costs
+only one additional detail read because its core row is already cached from the list.
+
+FAILED OLD COLLECTIONS
+You do NOT need to delete or repair:
+  sugarcane_characterizations
+  sugarcane_registry
+
+v2.1.2 ignores both.
+
+AFTER COPYING THIS UPDATE INTO YOUR GIT FOLDER
+
+  npm.cmd install
+  npm.cmd run setup:appwrite
+  npm.cmd run dev
+
+When working, publish:
+
+  git status
+  git add -A
+  git commit -m "Fix Appwrite split schema v2.1.2"
+  git push origin main
+
+After setup succeeds, revoke/delete the temporary APPWRITE_API_KEY.

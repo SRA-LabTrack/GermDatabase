@@ -1,0 +1,15 @@
+CaneSprout Registry v2.4.1
+
+RESPONSIVE TOOLBAR FIX
+- Brand and account/sign-out controls can no longer be pushed off-screen by navigation.
+- Navigation is the flexible/scrollable region on constrained wide layouts.
+- Laptop widths automatically use a clean two-row glass toolbar.
+- Mobile toolbar remains compact and horizontally scrollable for actions.
+- No Appwrite schema changes.
+- No extra Appwrite or Vercel requests.
+
+Windows test commands:
+npm.cmd install
+npm.cmd run dev
+
+No setup:appwrite run is required for this update.

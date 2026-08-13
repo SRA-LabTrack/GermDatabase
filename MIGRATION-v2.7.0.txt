@@ -1,0 +1,14 @@
+CaneSprout Registry v2.7.0
+
+No Appwrite schema migration is required.
+
+New optional attributes from the red-font columns are stored inside the existing traits_json field:
+- Parentage: Female, Male
+- Yield Potential: LKg/TC, TC/HA
+- Agronomic Characteristics: Germination, Growth Habit, Flowering Habit, Stalk Diameter, Stalk Length, Stalk Weight, Number of Tiller, Millable Stalk, Maturity
+- Pest and Diseases: Reaction Diseases
+- Tested Location
+
+Photo categories are stored as photo_categories inside the existing details_json document, parallel to photo_file_ids. Existing uncategorized photos automatically appear under Overview picture of the variety.
+
+The Excel-style editor is administrator-only, loads 20 full records per explicit page, writes nothing while typing, and saves only changed rows when Apply changes is pressed.

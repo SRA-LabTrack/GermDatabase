@@ -1,0 +1,161 @@
+{
+  "generated_at": "2026-08-13T02:50:39.737Z",
+  "mode": "safe-format-only-dedupe",
+  "source_audit": "D:\\Germ\\CaneSprout-Registry-v2.7.3-COMPLETE-FLAT\\reports\\registry-integrity-v2.7.7.json",
+  "database_id": "germdatabase",
+  "groups": [
+    {
+      "canonical": "PHIL56226",
+      "keep_id": "sc_08aec3304c3c182490a191ba2f",
+      "remove_id": "6a7d1fa400119ddf6216",
+      "collections": [
+        {
+          "collection_id": "sugarcane_registry_core",
+          "keeper": {
+            "variety": "Phil 56-226",
+            "stool_plant_habit": "Erect",
+            "leaf_color": "N138",
+            "stalk_exposed_color": "199A",
+            "bud_shape": "Roundish with wings",
+            "germ_trial_code": "",
+            "germ_location": "",
+            "germ_status": "",
+            "germination_pct": "",
+            "thumbnail_file_id": "",
+            "source_name": "Characterization.xlsx",
+            "source_row": "11",
+            "search_text": "Phil 56-226 Erect Intermediate Light Open Self-Detrashing N138 Smooth Curved near tip 138.43 3.85 Absent 192A Phil 56-226 Light N138C 144C Many Hard Deciduous Sloping transitional Sloping transitional Phil 56-226 Light 148B 152C Very sloping narrow, triangular ligulate Present Broad Subarcuate Not prominent Phil 56-226 Heavy, throughout internode 199A 148A Absent Present Present Present Phil 56-226 Cylindrical Straight Not Swollen Broad 2R Prominent Straight Pithy Solid Solid Phil 56-226 Roundish with wings Bulging 7.6 7.4 Apical low Not Prominent Below growth ring Above leaf scar"
+          },
+          "duplicate": {
+            "variety": "PHIL 56226",
+            "stool_plant_habit": "",
+            "leaf_color": "",
+            "stalk_exposed_color": "",
+            "bud_shape": "",
+            "germ_trial_code": "",
+            "germ_location": "",
+            "germ_status": "",
+            "germination_pct": "",
+            "thumbnail_file_id": "",
+            "source_name": "SRA-HYVs  Charac-LR.xls",
+            "source_row": "392",
+            "search_text": "PHIL 56226 POJ 2878 CP 36-105 2.15 & up 100 & up Slow grower, open growth habit when young, erect to recumbent at maturity; leaves narrow with drooping tips ; sheath purple w/ trichomes; Stalks bobbin, medium to thick-sized, greenish red with corky patches; no bud groove, cracks present; buds round with wings. Self-trashing and profuse flowering cane. 6.0 and above 10-12 Susceptible to leaf scorch, susceptible to smut, downy mildew & yellow spot."
+          }
+        },
+        {
+          "collection_id": "sugarcane_registry_details",
+          "keeper": {
+            "traits_json": "{\"variety\":\"Phil 56-226\",\"stool_plant_habit\":\"Erect\",\"stool_tillering_habit\":\"Intermediate\",\"stool_tillering_density\":\"Light\",\"stool_leaf_carriage\":\"Open\",\"stool_trashiness\":\"Self-Detrashing\",\"leaf_color\":\"N138\",\"leaf_texture\":\"Smooth\",\"leaf_erectness\":\"Curved near tip\",\"leaf_length_cm\":\"138.43\",\"leaf_width_cm\":\"3.85\",\"leaf_margin_pubescence\":\"Absent\",\"leaf_midrib_color\":\"192A\",\"leaf_variety\":\"Phil 56-226\",\"sheath_waxiness\":\"Light\",\"sheath_primary_color\":\"N138C\",\"sheath_secondary_color\":\"144C\",\"sheath_trichome_presence\":\"Many\",\"sheath_trichome_quality\":\"Hard\",\"sheath_trichome_persist\":\"Deciduous\",\"auricle_outer_shape\":\"Sloping transitional\",\"auricle_inner_shape\":\"Sloping transitional\",\"auricle_variety\":\"Phil 56-226\",\"dewlap_waxiness\":\"Light\",\"dewlap_primary_color\":\"148B\",\"dewlap_secondary_color\":\"152C\",\"dewlap_shape\":\"Very sloping narrow, triangular ligulate\",\"dewlap_margin_undulation\":\"Present\",\"ligule_shape\":\"Broad Subarcuate\",\"ligule_hairiness\":\"Not prominent\",\"ligule_source_ae\":\"\",\"ligule_variety\":\"Phil 56-226\",\"stalk_waxiness\":\"Heavy, throughout internode\",\"stalk_exposed_color\":\"199A\",\"stalk_unexposed_color\":\"148A\",\"stalk_stripes\":\"Absent\",\"stalk_growth_cracks\":\"Present\",\"stalk_corky_cracks\":\"Present\",\"stalk_corky_patch\":\"Present\",\"stalk_variety_a\":\"Phil 56-226\",\"stalk_internode_shape\":\"Cylindrical\",\"stalk_alignment\":\"Straight\",\"stalk_node_swelling\":\"Not Swollen\",\"stalk_growth_ring_width\":\"Broad\",\"stalk_root_primordia_rows\":\"2R\",\"stalk_leaf_scar_prominence\":\"Prominent\",\"stalk_root_band_shape\":\"Straight\",\"stalk_pith_bottom\":\"Pithy\",\"stalk_pith_middle\":\"Solid\",\"stalk_pith_top\":\"Solid\",\"stalk_variety_b\":\"Phil 56-226\",\"bud_shape\":\"Roundish with wings\",\"bud_prominence\":\"Bulging\",\"bud_length_mm\":\"7.6\",\"bud_width_mm\":\"7.4\",\"bud_germ_position\":\"Apical\",\"bud_groove_expression\":\"low\",\"bud_hair\":\"Not Prominent\",\"bud_tip_position\":\"Below growth ring\",\"bud_base_position\":\"Above leaf scar\"}",
+            "details_json": "{\"germ_planting_date\":\"\",\"germ_material_type\":\"\",\"germ_buds_planted\":\"\",\"germ_germinated_count\":\"\",\"germ_observation_date\":\"\",\"germ_notes\":\"\",\"photo_file_ids\":[],\"thumb_file_ids\":[],\"photo_names\":[],\"primary_file_id\":\"\"}"
+          },
+          "duplicate": {
+            "traits_json": "{\"variety\":\"PHIL 56226\",\"parentage_female\":\"POJ 2878\",\"parentage_male\":\"CP 36-105\",\"yield_lkg_tc\":\"2.15 & up\",\"yield_tc_ha\":\"100 & up\",\"agronomic_characteristics_summary\":\"Slow grower, open growth habit when young, erect to recumbent at maturity; leaves narrow with drooping tips ; sheath purple w/ trichomes; Stalks bobbin, medium to thick-sized, greenish red with corky patches; no bud groove, cracks present; buds round with wings. Self-trashing and profuse flowering cane.\",\"agronomic_millable_stalk\":\"6.0 and above\",\"agronomic_maturity\":\"10-12\",\"disease_reaction\":\"Susceptible to leaf scorch, susceptible to smut, downy mildew & yellow spot.\"}",
+            "details_json": "{\"germ_planting_date\":\"\",\"germ_material_type\":\"\",\"germ_buds_planted\":\"\",\"germ_germinated_count\":\"\",\"germ_observation_date\":\"\",\"germ_notes\":\"\",\"photo_file_ids\":[],\"thumb_file_ids\":[],\"photo_names\":[],\"photo_categories\":[],\"primary_file_id\":\"\"}"
+          }
+        }
+      ]
+    },
+    {
+      "canonical": "PHIL58260",
+      "keep_id": "sc_c3db6cd8e11a514f3eec35d828",
+      "remove_id": "6a7d1f9f001a74872585",
+      "collections": [
+        {
+          "collection_id": "sugarcane_registry_core",
+          "keeper": {
+            "variety": "Phil 58-260",
+            "stool_plant_habit": "Erect",
+            "leaf_color": "137B",
+            "stalk_exposed_color": "144C",
+            "bud_shape": "Roundish with wings",
+            "germ_trial_code": "",
+            "germ_location": "",
+            "germ_status": "",
+            "germination_pct": "",
+            "thumbnail_file_id": "",
+            "source_name": "Characterization.xlsx",
+            "source_row": "14",
+            "search_text": "Phil 58-260 Erect Intermediate Light Open Partial Destrahing 137B Smooth Curved near tip 148 4.4 Absent 193A Phil 58-260 Medium 138D 191A Absent Absent Absent Deltoid Short Lanceolate Phil 58-260 Medium 152B N148A Very sloping, more or less ligulate Present Crescent with broad lozenge Not prominent Phil 58-260 light, throughout internode 144C 144B Absent Absent Absent Absent Phil 58-260 Cylindrical Zigzag Not Swollen Narrow 2R Prominent Straight Pithy Solid Solid Phil 58-260 Roundish with wings Bulging 6.9 8.2 Apical low Not Prominent Below growth ring Above leaf scar"
+          },
+          "duplicate": {
+            "variety": "PHIL 58260",
+            "stool_plant_habit": "",
+            "leaf_color": "",
+            "stalk_exposed_color": "",
+            "bud_shape": "",
+            "germ_trial_code": "",
+            "germ_location": "",
+            "germ_status": "",
+            "germination_pct": "",
+            "thumbnail_file_id": "",
+            "source_name": "SRA-HYVs  Charac-LR.xls",
+            "source_row": "385",
+            "search_text": "PHIL 58260 Q 47 POJ 3016 2.15 & up 80-99 Early starter, fast grower, erect; medium leaves drooping; light green sheath, long auricle, no trichomes, stalks medium to thick-sized, greenish red to green in color , cylindrical, waxy with bud groove, cracks and corky patches; buds round; trashy and profuse flowering cane. - 12.0 Susceptible to leaf scorch, smut, downy downy mildew and yellow spot."
+          }
+        },
+        {
+          "collection_id": "sugarcane_registry_details",
+          "keeper": {
+            "traits_json": "{\"variety\":\"Phil 58-260\",\"stool_plant_habit\":\"Erect\",\"stool_tillering_habit\":\"Intermediate\",\"stool_tillering_density\":\"Light\",\"stool_leaf_carriage\":\"Open\",\"stool_trashiness\":\"Partial Destrahing\",\"leaf_color\":\"137B\",\"leaf_texture\":\"Smooth\",\"leaf_erectness\":\"Curved near tip\",\"leaf_length_cm\":\"148\",\"leaf_width_cm\":\"4.4\",\"leaf_margin_pubescence\":\"Absent\",\"leaf_midrib_color\":\"193A\",\"leaf_variety\":\"Phil 58-260\",\"sheath_waxiness\":\"Medium\",\"sheath_primary_color\":\"138D\",\"sheath_secondary_color\":\"191A\",\"sheath_trichome_presence\":\"Absent\",\"sheath_trichome_quality\":\"Absent\",\"sheath_trichome_persist\":\"Absent\",\"auricle_outer_shape\":\"Deltoid\",\"auricle_inner_shape\":\"Short Lanceolate\",\"auricle_variety\":\"Phil 58-260\",\"dewlap_waxiness\":\"Medium\",\"dewlap_primary_color\":\"152B\",\"dewlap_secondary_color\":\"N148A\",\"dewlap_shape\":\"Very sloping, more or less ligulate\",\"dewlap_margin_undulation\":\"Present\",\"ligule_shape\":\"Crescent with broad lozenge\",\"ligule_hairiness\":\"Not prominent\",\"ligule_source_ae\":\"\",\"ligule_variety\":\"Phil 58-260\",\"stalk_waxiness\":\"light, throughout internode\",\"stalk_exposed_color\":\"144C\",\"stalk_unexposed_color\":\"144B\",\"stalk_stripes\":\"Absent\",\"stalk_growth_cracks\":\"Absent\",\"stalk_corky_cracks\":\"Absent\",\"stalk_corky_patch\":\"Absent\",\"stalk_variety_a\":\"Phil 58-260\",\"stalk_internode_shape\":\"Cylindrical\",\"stalk_alignment\":\"Zigzag\",\"stalk_node_swelling\":\"Not Swollen\",\"stalk_growth_ring_width\":\"Narrow\",\"stalk_root_primordia_rows\":\"2R\",\"stalk_leaf_scar_prominence\":\"Prominent\",\"stalk_root_band_shape\":\"Straight\",\"stalk_pith_bottom\":\"Pithy\",\"stalk_pith_middle\":\"Solid\",\"stalk_pith_top\":\"Solid\",\"stalk_variety_b\":\"Phil 58-260\",\"bud_shape\":\"Roundish with wings\",\"bud_prominence\":\"Bulging\",\"bud_length_mm\":\"6.9\",\"bud_width_mm\":\"8.2\",\"bud_germ_position\":\"Apical\",\"bud_groove_expression\":\"low\",\"bud_hair\":\"Not Prominent\",\"bud_tip_position\":\"Below growth ring\",\"bud_base_position\":\"Above leaf scar\"}",
+            "details_json": "{\"germ_planting_date\":\"\",\"germ_material_type\":\"\",\"germ_buds_planted\":\"\",\"germ_germinated_count\":\"\",\"germ_observation_date\":\"\",\"germ_notes\":\"\",\"photo_file_ids\":[],\"thumb_file_ids\":[],\"photo_names\":[],\"primary_file_id\":\"\"}"
+          },
+          "duplicate": {
+            "traits_json": "{\"variety\":\"PHIL 58260\",\"parentage_female\":\"Q 47\",\"parentage_male\":\"POJ 3016\",\"yield_lkg_tc\":\"2.15 & up\",\"yield_tc_ha\":\"80-99\",\"agronomic_characteristics_summary\":\"Early starter, fast grower, erect; medium leaves drooping; light green sheath, long auricle, no trichomes, stalks medium to thick-sized, greenish red to green in color , cylindrical, waxy with bud groove, cracks and corky patches; buds round; trashy and profuse flowering cane.\",\"agronomic_millable_stalk\":\"-\",\"agronomic_maturity\":\"12.0\",\"disease_reaction\":\"Susceptible to leaf scorch, smut, downy downy mildew and yellow spot.\"}",
+            "details_json": "{\"germ_planting_date\":\"\",\"germ_material_type\":\"\",\"germ_buds_planted\":\"\",\"germ_germinated_count\":\"\",\"germ_observation_date\":\"\",\"germ_notes\":\"\",\"photo_file_ids\":[],\"thumb_file_ids\":[],\"photo_names\":[],\"photo_categories\":[],\"primary_file_id\":\"\"}"
+          }
+        }
+      ]
+    },
+    {
+      "canonical": "PHIL992641",
+      "keep_id": "sc_1ee81bd54cced9588090d8bedc",
+      "remove_id": "6a7d1eeb00286cde0834",
+      "collections": [
+        {
+          "collection_id": "sugarcane_registry_core",
+          "keeper": {
+            "variety": "Phil 99-2641",
+            "stool_plant_habit": "Erect to recumbent",
+            "leaf_color": "N138B",
+            "stalk_exposed_color": "83A",
+            "bud_shape": "Ovate with emarginated wings",
+            "germ_trial_code": "",
+            "germ_location": "",
+            "germ_status": "",
+            "germination_pct": "",
+            "thumbnail_file_id": "",
+            "source_name": "Characterization.xlsx",
+            "source_row": "834",
+            "search_text": "Phil 99-2641 Erect to recumbent Intermediate Intermediate Open Partial detrashing N138B Rough Curved near middle 145.4 9.1 Absent 130D Phil 99-2641 Light 138B 139D Many Hard Deciduous Ascending Transitional Straight Transition Phil 99-2641 Meduim 144C N144D Tall, triangular, with convex upper and lower margins Present Broad Crescent Prominent Phil 99-2641 Heavy, throughout internode 83A 54C Absent Absent Present Present Phil 99-2641 Cylindrical Straight 2R Prominent Obconoidal Solid Solid Solid Phil 99-2641 Ovate with emarginated wings Bulging 9.4 7.8 Sub-apical Absent Not Prominent On growth ring At leaf scar"
+          },
+          "duplicate": {
+            "variety": "PHIL-99-2641",
+            "stool_plant_habit": "",
+            "leaf_color": "",
+            "stalk_exposed_color": "",
+            "bud_shape": "",
+            "germ_trial_code": "",
+            "germ_location": "",
+            "germ_status": "",
+            "germination_pct": "",
+            "thumbnail_file_id": "",
+            "source_name": "SRA-HYVs  Charac-LR.xls",
+            "source_row": "119",
+            "search_text": "PHIL-99-2641 Phil 83-129-3401 Phil 80-13 2.28 142.01 Good germinator, fast grower and is erect to recumbent Very sparse flowering; brood drooping leaf blades, Leaf sheaths are green with heavy trichomes with no auricles. It is semi- self detrashing; medium size , waxy, cylinder, yellowish purples stalks with sparse corky/cracks patches and minimal aerial roots. It has slightly protruding big round eyebuds. 12.0 Very highly resistant to smut, downy mildew and yellow spot, susceptible to leaf scorch"
+          }
+        },
+        {
+          "collection_id": "sugarcane_registry_details",
+          "keeper": {
+            "traits_json": "{\"variety\":\"Phil 99-2641\",\"stool_plant_habit\":\"Erect to recumbent\",\"stool_tillering_habit\":\"Intermediate\",\"stool_tillering_density\":\"Intermediate\",\"stool_leaf_carriage\":\"Open\",\"stool_trashiness\":\"Partial detrashing\",\"leaf_color\":\"N138B\",\"leaf_texture\":\"Rough\",\"leaf_erectness\":\"Curved near middle\",\"leaf_length_cm\":\"145.4\",\"leaf_width_cm\":\"9.1\",\"leaf_margin_pubescence\":\"Absent\",\"leaf_midrib_color\":\"130D\",\"leaf_variety\":\"Phil 99-2641\",\"sheath_waxiness\":\"Light\",\"sheath_primary_color\":\"138B\",\"sheath_secondary_color\":\"139D\",\"sheath_trichome_presence\":\"Many\",\"sheath_trichome_quality\":\"Hard\",\"sheath_trichome_persist\":\"Deciduous\",\"auricle_outer_shape\":\"Ascending Transitional\",\"auricle_inner_shape\":\"Straight Transition\",\"auricle_variety\":\"Phil 99-2641\",\"dewlap_waxiness\":\"Meduim\",\"dewlap_primary_color\":\"144C\",\"dewlap_secondary_color\":\"N144D\",\"dewlap_shape\":\"Tall, triangular, with convex upper and lower margins\",\"dewlap_margin_undulation\":\"Present\",\"ligule_shape\":\"Broad Crescent\",\"ligule_hairiness\":\"Prominent\",\"ligule_source_ae\":\"\",\"ligule_variety\":\"Phil 99-2641\",\"stalk_waxiness\":\"Heavy, throughout internode\",\"stalk_exposed_color\":\"83A\",\"stalk_unexposed_color\":\"54C\",\"stalk_stripes\":\"Absent\",\"stalk_growth_cracks\":\"Absent\",\"stalk_corky_cracks\":\"Present\",\"stalk_corky_patch\":\"Present\",\"stalk_variety_a\":\"Phil 99-2641\",\"stalk_internode_shape\":\"Cylindrical\",\"stalk_alignment\":\"Straight\",\"stalk_node_swelling\":\"\",\"stalk_growth_ring_width\":\"\",\"stalk_root_primordia_rows\":\"2R\",\"stalk_leaf_scar_prominence\":\"Prominent\",\"stalk_root_band_shape\":\"Obconoidal\",\"stalk_pith_bottom\":\"Solid\",\"stalk_pith_middle\":\"Solid\",\"stalk_pith_top\":\"Solid\",\"stalk_variety_b\":\"Phil 99-2641\",\"bud_shape\":\"Ovate with emarginated wings\",\"bud_prominence\":\"Bulging\",\"bud_length_mm\":\"9.4\",\"bud_width_mm\":\"7.8\",\"bud_germ_position\":\"Sub-apical\",\"bud_groove_expression\":\"Absent\",\"bud_hair\":\"Not Prominent\",\"bud_tip_position\":\"On growth ring\",\"bud_base_position\":\"At leaf scar\"}",
+            "details_json": "{\"germ_planting_date\":\"\",\"germ_material_type\":\"\",\"germ_buds_planted\":\"\",\"germ_germinated_count\":\"\",\"germ_observation_date\":\"\",\"germ_notes\":\"\",\"photo_file_ids\":[],\"thumb_file_ids\":[],\"photo_names\":[],\"primary_file_id\":\"\"}"
+          },
+          "duplicate": {
+            "traits_json": "{\"variety\":\"PHIL-99-2641\",\"parentage_female\":\"Phil 83-129-3401\",\"parentage_male\":\"Phil 80-13\",\"yield_lkg_tc\":\"2.28\",\"yield_tc_ha\":\"142.01\",\"agronomic_characteristics_summary\":\"Good germinator, fast grower and is erect to recumbent Very sparse flowering; brood drooping leaf blades, Leaf sheaths are green with heavy trichomes with no auricles. It is semi- self detrashing; medium size , waxy, cylinder, yellowish purples stalks with sparse corky/cracks patches and minimal aerial roots. It has slightly protruding big round eyebuds.\",\"agronomic_maturity\":\"12.0\",\"disease_reaction\":\"Very highly resistant to smut, downy mildew and yellow spot, susceptible to leaf scorch\"}",
+            "details_json": "{\"germ_planting_date\":\"\",\"germ_material_type\":\"\",\"germ_buds_planted\":\"\",\"germ_germinated_count\":\"\",\"germ_observation_date\":\"\",\"germ_notes\":\"\",\"photo_file_ids\":[],\"thumb_file_ids\":[],\"photo_names\":[],\"photo_categories\":[],\"primary_file_id\":\"\"}"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+CaneSprout v2.11.0 Combination Registry Data Audit
+====================================================
+
+Source workbook
+---------------
+File: Cross combination.xlsx
+SHA-256: 995ab02e2fe11801e8b1cc1885df9a917ef574322a0a81194bb14b6a287092a8
+
+Extraction totals
+-----------------
+Workbook sheets: 259
+Sheets with at least one combination record: 171
+Sheets without a combination record: 88
+Source rows containing combination entries: 841
+Combination source-cell records imported: 2293
+Distinct female sheet labels with records: 171
+Distinct male labels: 297
+
+Accuracy rules
+--------------
+- Every nonblank male-variety cell after the Date/Male Varieties header and before Characterization was imported.
+- Female variety is preserved exactly from the worksheet name.
+- Male variety is preserved exactly from the source cell.
+- Source date text is preserved exactly as written in the workbook.
+- A normalized ISO date is stored only when the workbook date is a valid parseable calendar date.
+- Missing or invalid workbook dates are NOT silently corrected.
+- Exact repeated entries are preserved because deleting them would alter the source data.
+- Every imported entry stores its source sheet, source row, source column, source cell and SHA-256 content hash.
+
+Source anomalies preserved exactly
+----------------------------------
+Invalid calendar/date-text source records: 6 records across 3 source rows
+Missing-date source records: 6 records across 2 source rows
+Exact repeated female + male + date tuples: 8 groups (8 additional source entries)
+
+Invalid date source cells:
+- VMC 74-527!B4: VMC 74-527 × 99-1793 | source date = 'Nov. 31, 2018'
+- VMC 74-527!C4: VMC 74-527 × 00-2569 | source date = 'Nov. 31, 2018'
+- VMC 74-527!D4: VMC 74-527 × 95-1029 | source date = 'Nov. 31, 2018'
+- Phil 95-249-1051!B4: Phil 95-249-1051 × 06-2191 | source date = 'Noov.4,2013'
+- Phil 95-249-1051!C4: Phil 95-249-1051 × 04-1011 | source date = 'Noov.4,2013'
+- Phil 98-138-1661!B3: Phil 98-138-1661 × 04-1011 | source date = 'No. 20, 2015'
+
+Missing date source cells:
+- Phil 92- 44-0751!B7: Phil 92- 44-0751 × Q102 | source date is blank
+- Phil 92- 44-0751!C7: Phil 92- 44-0751 × 86-120-1119 | source date is blank
+- Phil 92- 44-0751!D7: Phil 92- 44-0751 × 93-2349 | source date is blank
+- Phil 92- 44-0751!E7: Phil 92- 44-0751 × 90-0085 | source date is blank
+- Phil 93- 123- 1373!B3: Phil 93- 123- 1373 × 99-1793 | source date is blank
+- Phil 93- 123- 1373!C3: Phil 93- 123- 1373 × 04-1011 | source date is blank
+
+Exact repeated source entries:
+- Phil 6607 × 94-0913 | 'Nov. 2, 2014' | count 2 | cells D4, E4
+- Phil 88-121-0363 × 92-14-1589 | 'Oct. 23, 2021' | count 2 | cells D12, H12
+- Phil 88-121-0363 × 00-89-0599 | 'Oct. 23, 2021' | count 2 | cells E12, I12
+- Phil 88-121-0363 × 10-0149 | 'Oct. 23, 2021' | count 2 | cells F12, J12
+- Phil 88-121-0363 × 93-68-0821 | 'Oct. 23, 2021' | count 2 | cells G12, K12
+- Phil 8837 Phil 88-626-1691 × 06-2299 | 'Oct. 23, 2013' | count 2 | cells C4, E4
+- Phil 93-190-2349 × 2005-1197 | 'Oct.23,2014' | count 2 | cells B5, E5
+- Phil 96-2691 × 2010-0419 | 'Oct. 22, 2022' | count 2 | cells B4, C4

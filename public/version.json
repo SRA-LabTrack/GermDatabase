@@ -1,0 +1,7 @@
+{
+  "version": "2.13.0",
+  "channel": "stable",
+  "notes": "Electron desktop-first offline edition with one-login local device access, OS-protected sync credential, installed local app/data shell, persistent offline queues, and automatic paced Appwrite sync on reconnect.",
+  "migration": "combination-registry-v2100",
+  "updated": "2026-08-14"
+}

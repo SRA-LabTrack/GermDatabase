@@ -1,0 +1,55 @@
+CaneSprout Registry v2.4.0 - offline-first quota safeguards
+============================================================
+
+1. OFFLINE WRITES
+Save offline stores records and compressed photos in browser IndexedDB.
+No Appwrite or Vercel request is made during the offline save.
+
+2. MULTIPLE ENTRIES
+The IndexedDB queue supports many independent records. Queue capacity is based
+on the browser/device storage quota, not a hard-coded one-record draft slot.
+
+3. EVENT-DRIVEN SYNC
+There is no sync polling loop. CaneSprout attempts the queue when the app starts
+online, when the browser reports that connectivity returned, or when the user
+presses Sync / Sync all.
+
+4. SEQUENTIAL REQUESTS
+Queued records are synchronized one at a time with a small inter-entry gap.
+Network failures stop the current batch so a poor connection cannot repeatedly
+hammer Appwrite.
+
+5. IDEMPOTENT RETRIES
+New records reserve an Appwrite document ID while still offline. Compressed
+photos also reserve final Storage IDs. A later retry continues those same IDs.
+This prevents duplicate queued records/files after uncertain network failures.
+
+6. DIRECT APPWRITE
+Queue synchronization uses the Appwrite Web SDK directly. It does not route
+through a Vercel API function, so routine sync does not consume Vercel Function
+invocations or server CPU.
+
+7. MEDIA
+Photos are encoded locally as WebP before being stored in IndexedDB. Cloud sync
+uploads only those compressed WebP files plus the small card thumbnail.
+
+8. EXISTING SAFEGUARDS RETAINED
+- 25 rows per registry request
+- cursor-based Load More
+- search starts after 3 characters
+- 500 ms search debounce
+- indexed Appwrite queries
+- lean list field selection
+- detail-on-open
+- bounded local/Appwrite caching
+- no total calculations
+- no continuous polling
+- no Realtime subscription
+- no writes on keystrokes
+- lazy heavy chunks and photos
+
+9. NO AUTOMATIC POST-SYNC LIST READ
+After successful queue synchronization, the newly saved records are merged into
+the visible browse page locally. CaneSprout clears stale query caches but does
+not automatically spend another 25-row Appwrite list read just to repaint the
+page. A later user search/refresh can request fresh server data when needed.

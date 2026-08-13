@@ -1,0 +1,8 @@
+v2.7.0 validation targets
+- uploaded Characterization and other attributes.xlsx red-font columns BI:BW mapped in source order
+- A:BW two-header Excel import mapping
+- categorized WebP photos persist online and in IndexedDB offline queue
+- overview photo preferred for card thumbnail
+- Excel-style editor is lazy-loaded and admin-only
+- 20 full records per editor page, two Appwrite list requests per page, no polling
+- changed spreadsheet rows only are written on explicit Apply changes

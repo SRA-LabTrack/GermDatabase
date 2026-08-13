@@ -1,0 +1,11 @@
+CaneSprout Registry v2.10.1
+
+UI fixes
+- Toolbar now uses five actual navigation columns for five admin tools.
+- Combination Registry label no longer collides with adjacent toolbar items.
+- Combination Registry icon changed from merge/branch to DNA.
+- Combination Registry opens as a contained workspace below the measured sticky toolbar.
+- Header can no longer hide behind the toolbar.
+- Added a persistent text-labelled Close button.
+- Combination search input, role selector, and Search button use a non-overlapping responsive grid.
+- Medium and small widths compact account/status areas before tool labels are sacrificed.

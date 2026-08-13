@@ -1,0 +1,8 @@
+CaneSprout Registry v2.9.15
+
+- Adds a fixed viewport success notification after an administrator creates or edits a variety.
+- Adds a fixed completion notification after successful Excel import with added/updated counts.
+- Keeps user approval submission confirmations in the same visible notification system.
+- Keeps export completion notices in the same visible notification system.
+- Reworks the toolbar brand card so both title lines and the Genetic resource repository subtitle fit without cropping.
+- Preserves Appwrite behavior, Excel tools, registry fallback data, slideshow timing, and existing database functions.

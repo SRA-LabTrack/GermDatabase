@@ -1,0 +1,26 @@
+CaneSprout Registry v2.9.17
+
+Fixes in this build
+1. Brand title no longer crops.
+   It renders the complete title:
+   Sugarcane
+   Germplasm Resource
+   Database
+   Genetic resource repository
+
+2. Manual Add Record creation now uses the same canonical registry identity
+   gate used by Excel import, then performs an idempotent Appwrite create.
+
+3. Manual create retries reuse the same client-side document ID, protecting
+   against duplicate/ghost records after an uncertain network response.
+
+4. Variety Name is required. Other fields remain optional.
+
+5. The form displays live save progress and a visible success/error result.
+
+FIRST RUN
+  npm.cmd install
+  npm.cmd run dev
+
+The real .env file is intentionally excluded.
+Copy your existing .env into this folder before running if needed.

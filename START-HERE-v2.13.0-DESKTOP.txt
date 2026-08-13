@@ -1,0 +1,19 @@
+CaneSprout Registry v2.13.0 DESKTOP OFFLINE
+
+FASTEST WINDOWS BUILD
+  BUILD-WINDOWS-DESKTOP-OFFLINE.cmd
+
+DEVELOPMENT RUN
+  START-DESKTOP-OFFLINE.cmd
+
+After installing the generated .exe:
+1. First device enrollment: connect to internet and sign in once.
+2. Close CaneSprout.
+3. Turn Wi-Fi off.
+4. Open CaneSprout again. The installed app and local workspace still load.
+5. Add/edit/delete a test record or record a combination.
+6. Close/reopen the desktop app while still offline. The pending work remains.
+7. Turn Wi-Fi back on while CaneSprout is open. The queue syncs in paced batches.
+
+No Vercel connection is needed to launch or operate the installed app offline.
+Appwrite is contacted only for online authentication/sync/live refresh actions.

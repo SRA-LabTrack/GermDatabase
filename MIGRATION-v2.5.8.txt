@@ -1,0 +1,9 @@
+CaneSprout Registry v2.5.8
+
+Toolbar/account-card responsive repair only.
+- Protects account card from right-edge clipping.
+- Navigation becomes the flexible width section.
+- Admin action labels collapse before account controls.
+- Compact widths show avatar + menu + sign-out in one row.
+- Phone widths show menu + sign-out in one row.
+- No Appwrite schema or permission changes.

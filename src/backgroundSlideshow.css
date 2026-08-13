@@ -1,0 +1,676 @@
+:root {
+  --cs-bg-transition: 2500ms;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+html {
+  background: #07130d;
+}
+
+body,
+#root {
+  background: transparent !important;
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+.cs-background-slideshow {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: linear-gradient(145deg, #0b1f13, #10291a 55%, #07130d);
+}
+
+.cs-bg-frame {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition:
+    opacity var(--cs-bg-transition) cubic-bezier(.4, 0, .2, 1),
+    visibility 0s linear var(--cs-bg-transition);
+  will-change: opacity;
+}
+
+.cs-bg-frame--active {
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s, 0s;
+}
+
+.cs-bg-frame--instant {
+  transition: none !important;
+}
+
+.cs-bg-ambient,
+.cs-bg-foreground {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  inset: 0;
+  user-select: none;
+}
+
+.cs-bg-ambient {
+  object-fit: cover;
+  transform: scale(1.08);
+  filter: blur(30px) saturate(0.92) brightness(0.70);
+  opacity: 0;
+}
+
+.cs-bg-foreground {
+  object-fit: cover;
+  object-position: center center;
+  transform: scale(1.026);
+  transform-origin: center center;
+  transition: transform 8.5s cubic-bezier(.18,.72,.24,1);
+  will-change: transform;
+}
+
+.cs-bg-frame--active .cs-bg-foreground {
+  transform: scale(1.052);
+}
+
+/* v2.8.5: no letterboxing. Every wallpaper fills the device while keeping
+   its original proportions. Edges may crop, exactly like Windows Fill. */
+.cs-bg-frame .cs-bg-ambient {
+  opacity: 0 !important;
+}
+.cs-bg-frame .cs-bg-foreground {
+  object-fit: cover !important;
+}
+
+.cs-bg-veil {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(242, 249, 239, 0.12), rgba(239, 247, 234, 0.17) 48%, rgba(255, 248, 217, 0.14)),
+    radial-gradient(circle at 50% 22%, rgba(255, 255, 255, 0.06), transparent 48%);
+}
+
+.cs-bg-dots {
+  position: absolute;
+  left: 50%;
+  bottom: max(18px, env(safe-area-inset-bottom));
+  display: flex;
+  gap: 7px;
+  transform: translateX(-50%);
+}
+
+.cs-bg-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.45);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
+  transition: width 220ms ease, background 220ms ease;
+}
+
+.cs-bg-dot--active {
+  width: 18px;
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.cs-bg-settings-button {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 2147483000;
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 13px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 12px;
+  background: rgba(8, 29, 16, 0.76);
+  color: white;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(16px) saturate(135%);
+  -webkit-backdrop-filter: blur(16px) saturate(135%);
+  cursor: pointer;
+}
+
+.cs-bg-settings-button:hover {
+  background: rgba(13, 49, 27, 0.90);
+}
+
+.cs-bg-settings-button svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+.cs-bg-settings-button:focus-visible,
+.cs-bg-close:focus-visible,
+.cs-bg-primary:focus-visible,
+.cs-bg-secondary:focus-visible,
+.cs-bg-library-choice:focus-visible,
+.cs-bg-delete-custom:focus-visible {
+  outline: 3px solid rgba(116, 208, 138, 0.75);
+  outline-offset: 2px;
+}
+
+.cs-bg-modal[hidden] {
+  display: none;
+}
+
+.cs-bg-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483640;
+  display: grid;
+  place-items: center;
+  padding:
+    max(16px, env(safe-area-inset-top))
+    max(16px, env(safe-area-inset-right))
+    max(16px, env(safe-area-inset-bottom))
+    max(16px, env(safe-area-inset-left));
+}
+
+.cs-bg-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(2, 11, 6, 0.66);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.cs-bg-panel {
+  position: relative;
+  z-index: 1;
+  width: min(820px, 100%);
+  max-height: min(820px, calc(100dvh - 32px));
+  overflow: auto;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 18px;
+  background: rgba(247, 250, 248, 0.97);
+  color: #14231a;
+  box-shadow: 0 28px 72px rgba(0, 0, 0, 0.34);
+  overscroll-behavior: contain;
+}
+
+.cs-bg-panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 22px 22px 18px;
+  border-bottom: 1px solid rgba(20, 35, 26, 0.10);
+}
+
+.cs-bg-kicker {
+  margin: 0 0 4px;
+  color: #28713d;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.cs-bg-panel h2 {
+  margin: 0;
+  font-size: clamp(21px, 4vw, 27px);
+  line-height: 1.15;
+}
+
+.cs-bg-panel-header p:last-child {
+  max-width: 620px;
+  margin: 8px 0 0;
+  color: #58665e;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.cs-bg-close {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 11px;
+  background: rgba(20, 35, 26, 0.07);
+  color: #14231a;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.cs-bg-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 17px 22px;
+}
+
+.cs-bg-toolbar > div:first-child {
+  display: grid;
+  gap: 2px;
+}
+
+.cs-bg-toolbar small {
+  color: #69766f;
+}
+
+.cs-bg-toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.cs-bg-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.cs-bg-primary,
+.cs-bg-secondary {
+  min-height: 39px;
+  border-radius: 10px;
+  padding: 8px 13px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.cs-bg-primary {
+  border: 1px solid #236e39;
+  background: #287a40;
+  color: white;
+}
+
+.cs-bg-secondary {
+  border: 1px solid rgba(20, 35, 26, 0.14);
+  background: white;
+  color: #24352b;
+}
+
+.cs-bg-gallery {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 11px;
+  padding: 0 22px 18px;
+}
+
+.cs-bg-library-item {
+  min-width: 0;
+}
+
+.cs-bg-library-choice {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  display: block;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 13px;
+  background: #dce7df;
+  cursor: pointer;
+}
+
+.cs-bg-library-item--selected .cs-bg-library-choice {
+  border-color: #2b7e42;
+  box-shadow: 0 0 0 2px rgba(43, 126, 66, 0.14);
+}
+
+.cs-bg-library-choice img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.cs-bg-library-shade {
+  position: absolute;
+  inset: 44% 0 0;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.68));
+}
+
+.cs-bg-library-check {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 27px;
+  height: 27px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 999px;
+  background: rgba(3, 20, 9, 0.70);
+  color: white;
+  font-size: 16px;
+  font-weight: 800;
+  backdrop-filter: blur(8px);
+}
+
+.cs-bg-library-item--selected .cs-bg-library-check {
+  background: #287a40;
+}
+
+.cs-bg-library-name {
+  position: absolute;
+  left: 9px;
+  right: 9px;
+  bottom: 8px;
+  overflow: hidden;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cs-bg-custom-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 3px 0;
+  color: #647168;
+  font-size: 11px;
+}
+
+.cs-bg-delete-custom {
+  border: 0;
+  padding: 3px 5px;
+  background: transparent;
+  color: #8a2b2b;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cs-bg-fit-note {
+  margin: 0 22px;
+  padding: 12px 14px;
+  border-radius: 11px;
+  background: rgba(39, 119, 63, 0.07);
+  color: #53635a;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.cs-bg-status {
+  min-height: 38px;
+  margin: 12px 22px 22px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(20, 35, 26, 0.05);
+  color: #4b5951;
+  font-size: 13px;
+}
+
+.cs-bg-status[data-tone="success"] {
+  background: rgba(37, 122, 64, 0.09);
+  color: #1f6936;
+}
+
+.cs-bg-status[data-tone="error"] {
+  background: rgba(145, 43, 43, 0.09);
+  color: #8a2b2b;
+}
+
+body.cs-bg-modal-open {
+  overflow: hidden;
+}
+
+@media (max-width: 720px) {
+  .cs-bg-gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cs-bg-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .cs-bg-toolbar-actions {
+    justify-content: stretch;
+  }
+
+  .cs-bg-primary,
+  .cs-bg-secondary {
+    flex: 1 1 130px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cs-bg-settings-button {
+    width: 44px;
+    height: 44px;
+    justify-content: center;
+    padding: 0;
+    border-radius: 13px;
+  }
+
+  .cs-bg-settings-button span {
+    display: none;
+  }
+
+  .cs-bg-panel {
+    border-radius: 15px;
+  }
+
+  .cs-bg-panel-header,
+  .cs-bg-toolbar {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .cs-bg-gallery {
+    gap: 9px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .cs-bg-fit-note,
+  .cs-bg-status {
+    margin-left: 16px;
+    margin-right: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cs-bg-frame {
+    transition-duration: 0.01ms;
+  }
+
+  .cs-bg-dot {
+    transition: none;
+  }
+}
+
+
+/* ===============================================================
+   v2.8.4 COMPLETE BACKGROUND INTEGRATION
+   The slideshow lives behind #root. CaneSprout's historical app-shell
+   gradient used to cover it, so the actual shell is intentionally
+   transparent while interface surfaces remain glassy/readable.
+   =============================================================== */
+html.cs-background-enabled,
+html.cs-background-enabled body,
+html.cs-background-enabled #root,
+html.cs-background-enabled #root > .app-shell {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+html.cs-background-enabled body {
+  min-height: 100vh;
+}
+
+html.cs-background-enabled #root {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+}
+
+html.cs-background-enabled #root > .app-shell {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+}
+
+/* The hero becomes a true glass surface instead of an opaque page-sized wash. */
+html.cs-background-enabled .hero.agricultural-hero {
+  background:
+    linear-gradient(120deg, rgba(255,255,255,.58), rgba(247,250,220,.43) 54%, rgba(255,247,194,.40)),
+    radial-gradient(circle at 8% 15%, rgba(125,186,101,.10), transparent 30%) !important;
+  border-color: rgba(255,255,255,.70);
+  box-shadow:
+    0 24px 70px rgba(24,65,37,.15),
+    inset 0 1px 0 rgba(255,255,255,.72);
+  backdrop-filter: blur(10px) saturate(108%);
+  -webkit-backdrop-filter: blur(10px) saturate(108%);
+}
+
+html.cs-background-enabled .hero.agricultural-hero::after {
+  opacity: .62;
+}
+
+html.cs-background-enabled .hero-sun { opacity: .52; }
+html.cs-background-enabled .hero-field-pattern { opacity: .20; }
+
+/* Preserve readability over detailed photos without hiding the wallpaper. */
+html.cs-background-enabled .registry-toolbar > div:first-child {
+  padding: 14px 18px;
+  border: 1px solid rgba(255,255,255,.45);
+  border-radius: 18px;
+  background: rgba(249,252,246,.74);
+  box-shadow: 0 10px 28px rgba(20,58,32,.08);
+  backdrop-filter: blur(8px) saturate(106%);
+  -webkit-backdrop-filter: blur(8px) saturate(106%);
+}
+
+html.cs-background-enabled .app-footer {
+  margin-bottom: 18px;
+  padding: 12px 16px;
+  border: 1px solid rgba(255,255,255,.42);
+  border-radius: 15px;
+  background: rgba(249,252,246,.58);
+  backdrop-filter: blur(9px);
+  -webkit-backdrop-filter: blur(9px);
+}
+
+/* Keep the wallpaper pinned to the real device viewport. */
+html.cs-background-enabled body > .cs-background-slideshow {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  min-height: 100vh !important;
+  z-index: 0 !important;
+}
+
+@supports (height: 100dvh) {
+  html.cs-background-enabled body > .cs-background-slideshow {
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+  }
+}
+
+@media (max-width: 760px) {
+  html.cs-background-enabled .hero.agricultural-hero {
+    background: rgba(249,252,244,.64) !important;
+  }
+
+  html.cs-background-enabled .registry-toolbar > div:first-child {
+    padding: 12px 14px;
+    background: rgba(249,252,246,.70);
+  }
+}
+
+/* v2.8.5 responsive wallpaper fill */
+@media (max-width: 700px) {
+  .cs-bg-foreground { transform: scale(1.052); }
+}
+
+/* ===============================================================
+   v2.8.6 READABILITY + CLEARER WALLPAPER
+   Keep typography crisp without washing out the field photography.
+   =============================================================== */
+html.cs-background-enabled .agricultural-hero h1,
+html.cs-background-enabled .registry-toolbar h2,
+html.cs-background-enabled .record-card h3,
+html.cs-background-enabled .topbar {
+  text-shadow: 0 1px 0 rgba(255,255,255,.58);
+}
+
+html.cs-background-enabled .agricultural-hero h1 {
+  color: #0f351f;
+}
+
+html.cs-background-enabled .agricultural-hero .eyebrow,
+html.cs-background-enabled .registry-toolbar .eyebrow {
+  color: #315f3b;
+  font-weight: 800;
+}
+
+html.cs-background-enabled .agricultural-hero p {
+  color: #3f5e49;
+  font-weight: 500;
+}
+
+html.cs-background-enabled .crop-flow > span,
+html.cs-background-enabled .agricultural-stats > div {
+  background: rgba(252,254,249,.74);
+  border-color: rgba(255,255,255,.82);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.82),
+    0 8px 24px rgba(24,65,37,.06);
+}
+
+html.cs-background-enabled .search-panel {
+  background: rgba(250,253,248,.78);
+  border-color: rgba(255,255,255,.78);
+  backdrop-filter: blur(10px) saturate(108%);
+  -webkit-backdrop-filter: blur(10px) saturate(108%);
+}
+
+html.cs-background-enabled .record-card {
+  background: linear-gradient(
+    145deg,
+    rgba(255,255,255,.95),
+    rgba(248,252,241,.92)
+  );
+}
+
+/* The photography stays more visible outside content surfaces. */
+html.cs-background-enabled #root > .app-shell::before,
+html.cs-background-enabled #root > .app-shell::after {
+  opacity: .34;
+}
+
+@media (max-width: 760px) {
+  html.cs-background-enabled .agricultural-hero p {
+    color: #365541;
+  }
+
+  html.cs-background-enabled .search-panel {
+    background: rgba(250,253,248,.84);
+  }
+}

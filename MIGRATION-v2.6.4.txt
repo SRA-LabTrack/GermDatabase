@@ -1,0 +1,19 @@
+CaneSprout v2.6.4 - Production App Shell Reliability Fix
+
+What changed
+- The root App is imported eagerly by src/main.jsx instead of being a lazy startup chunk.
+- index.html and / now use Cache-Control: no-store so a new Vercel deployment cannot serve an old HTML shell that references obsolete startup chunks.
+- Hashed /assets files remain immutable for one year, preserving static CDN efficiency.
+- The existing /canesprout-admin-api rewrite and production account-management credential support remain unchanged.
+- No Appwrite schema migration is required.
+
+Deploy
+1. Replace project files in D:\Germ while keeping .git, .env, and .env.local.
+2. Run: npm.cmd install
+3. Run: npm.cmd run build
+4. Run: git status
+5. Run: git add -A
+6. Run: git commit -m "CaneSprout v2.6.4 production app shell fix"
+7. Run: git push origin main
+
+After Vercel reports Ready, refresh the production site once.

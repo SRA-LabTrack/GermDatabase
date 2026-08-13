@@ -1,0 +1,17 @@
+CaneSprout Registry v2.7.2
+
+Canonical import workbook
+- The user-supplied "Characterization and other attributes" A:CA structure is now the official variety-import template.
+- Trait values occupy A:BW.
+- Red-font additions are Parentage, Yield Potential, Agronomic Characteristics, Reaction Diseases, and Tested Location.
+- BX:CA identify the four categorized Photo and Documentation sections and are handled by CaneSprout's WebP photo uploader rather than stored as text paths.
+- Import Excel now offers a direct Download template button.
+
+Existing records
+- No bulk Appwrite migration is required.
+- Every existing record is hydrated locally with the canonical optional trait keys when read.
+- New-template groups are therefore visible and editable on old records immediately, with missing values shown as Not provided.
+- Empty values are NOT written back to Appwrite. Only populated/changed fields are stored, avoiding hundreds of unnecessary writes and keeping traits_json compact.
+
+Appwrite schema
+- No new Appwrite collection attributes are required because optional traits remain inside traits_json.

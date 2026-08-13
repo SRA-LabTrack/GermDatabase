@@ -1,0 +1,15 @@
+CaneSprout Registry v2.6.0
+
+ACCOUNT MANAGEMENT SEARCH HARDENING
+
+- Frontend now calls a new versioned endpoint: /api/admin-accounts-v2
+- The endpoint never generates or sends queries[] values to Appwrite Users API.
+- Empty account lists use bare GET /users.
+- Typed account searches use only Appwrite's documented search= parameter.
+- If Appwrite still rejects search on a specific backend, CaneSprout falls back to GET /users and filters the returned bounded page server-side.
+- Maximum 25 accounts are returned to the browser.
+- No polling or per-keystroke account searches.
+- Existing APPWRITE_ADMIN_API_KEY remains valid.
+- No Appwrite schema migration is required.
+
+After replacing files, redeploy Vercel so the new /api/admin-accounts-v2 function exists.

@@ -1,0 +1,45 @@
+CaneSprout Registry v2.5.0 — ADMIN APPROVAL + ACCOUNT MANAGEMENT
+================================================================
+
+This update changes security permissions and MUST run Appwrite setup once.
+
+WHAT CHANGES
+- Appwrite label `canesproutadmin` is the administrator authority.
+- Live sugarcane records are readable by signed-in users.
+- Only users carrying `canesproutadmin` can create/update/delete live records.
+- Normal users submit new registrations and edits into `registry_change_requests`.
+- Administrators approve/reject requests from Admin Center.
+- Only administrators see Delete on live records.
+- Administrators can create user/admin accounts and promote/demote users.
+- Self-signup is disabled; accounts are administered centrally.
+- Multiple offline entries still work. User offline entries sync into the approval queue; admin offline entries can publish directly.
+
+ONE-TIME APPWRITE MIGRATION
+1. Keep your existing browser VITE_* values.
+2. Put a temporary setup API key in local .env as APPWRITE_API_KEY. It needs databases.read/write, rows.read/write, columns.read/write, indexes.read/write, buckets.read/write, files.read/write, and users.read/write for this one migration.
+3. Set INITIAL_ADMIN_EMAIL to the existing account that should become the first admin.
+4. If that email does not exist yet, optionally set INITIAL_ADMIN_PASSWORD (8+ chars) so setup can create it.
+5. Run:
+   npm.cmd run setup:appwrite
+6. After setup says Done, revoke the temporary setup key.
+
+VERCEL SERVER-ONLY VARIABLE
+Account creation and role promotion require the Appwrite Users API, which cannot safely run in browser JavaScript.
+Create a separate least-privilege Appwrite API key with only users.read + users.write for user-management operations and add it ONLY to Vercel as:
+
+APPWRITE_ADMIN_API_KEY=<secret server key>
+APPWRITE_ENDPOINT=https://fra.cloud.appwrite.io/v1
+APPWRITE_PROJECT_ID=6a744cda00030236187b
+
+Never prefix the secret key with VITE_. Never commit it to GitHub.
+
+FREE-PLAN DESIGN
+- Routine registry reads/searches/writes still go directly Browser -> Appwrite.
+- Vercel server function is invoked only when an administrator opens account management or creates/promotes an account.
+- Approval queue does not poll and uses no Realtime subscription.
+- Pending requests load 25 at a time with total=false.
+- Normal users cannot generate live-record write traffic by typing; only an explicit submission creates one pending request.
+
+ROLE REFRESH
+- A newly promoted/demoted account receives its new UI role on its next sign-in.
+- Security does not depend on cached UI state: Appwrite collection permissions and the server endpoint verify the current label.

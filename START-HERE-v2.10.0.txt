@@ -1,0 +1,44 @@
+CaneSprout Registry v2.10.0 COMPLETE OVERHAUL
+Combination Registry release
+
+NEW
+- Toolbar module: Combination Registry
+- Record male variety + female variety + combination date + optional notes
+- Bidirectional history:
+  * Search a male -> see every recorded female counterpart and date
+  * Search a female -> see every recorded male counterpart and date
+- Role filters: Both roles / As male / As female
+- Result filters: All / Combined / Not yet combined
+- Search inside the result list
+- Repeated crosses on different dates remain separate history events
+- Same male + female + same date is duplicate-protected
+- Admins can add/delete combination records
+- Authenticated users can search/view combination history
+- Both varieties must already exist in the Germplasm Registry
+
+APPWRITE UPGRADE FOR AN EXISTING DATABASE
+This release adds one collection:
+  sugarcane_combination_registry
+
+The rest of your germplasm database is not replaced.
+
+1. Put a temporary Appwrite server API key into your local .env:
+   APPWRITE_API_KEY=YOUR_TEMPORARY_KEY
+
+2. From this project folder run:
+   npm.cmd install
+   npm.cmd run setup:combinations
+
+3. When the script says Combination Registry is ready, revoke/delete
+   the temporary APPWRITE_API_KEY in Appwrite.
+
+4. Start CaneSprout:
+   npm.cmd run dev
+
+For a completely fresh Appwrite project, npm.cmd run setup:appwrite also
+creates the Combination Registry in v2.10.0.
+
+SECURITY
+- Real .env is intentionally excluded from this ZIP.
+- Combination history is readable by signed-in CaneSprout users.
+- Only users with the canesproutadmin label can create/update/delete it.

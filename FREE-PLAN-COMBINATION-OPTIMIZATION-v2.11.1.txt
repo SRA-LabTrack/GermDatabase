@@ -1,0 +1,13 @@
+CaneSprout v2.11.1 Combination Registry efficiency
+
+- Cross combination.xlsx history is searched from the bundled static dataset.
+- Opening Combination Registry no longer scans the live Appwrite germplasm collection.
+- Can still combine uses the bundled baseline germplasm catalog instead of paging through ~950 live documents on every search.
+- A manual Refresh latest varieties button performs the live registry scan only when you actually need newly-added germplasm varieties.
+- Live/manual combination lookups are cached in memory for 15 minutes.
+- Manual create/delete clears that cache so same-session edits refresh immediately.
+- Result rendering is progressive: 80 rows at a time instead of mounting ~900 result cards at once.
+- Vite serves the workbook-derived data as static client assets; Combination Registry search does not require a Vercel Function.
+
+Freshness behavior:
+- Newly-created germplasm varieties that are not in the bundled baseline appear after you click Refresh latest varieties. This avoids repeating the full live registry scan on every search. Manual combination creation still validates against live Appwrite.

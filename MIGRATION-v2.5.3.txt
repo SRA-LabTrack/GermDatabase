@@ -1,0 +1,27 @@
+CaneSprout Registry v2.5.3
+
+Bootstrap administrator connection fix
+=====================================
+
+The one-time admin grant helper now:
+- uses IPv4-first DNS on Windows/Node,
+- uses an exact indexed email query before broad search,
+- waits up to 45 seconds per endpoint attempt,
+- retries reads through the configured global Appwrite fallback endpoint,
+- verifies an uncertain timed-out label write before retrying it,
+- avoids duplicate label writes,
+- repairs accidentally Markdown-formatted endpoint values,
+- prints a manual Appwrite Console fallback if both network paths are unavailable.
+
+Run on Windows:
+  npm.cmd run grant:bootstrap-admin
+
+Default bootstrap email:
+  ncrowsboosting@gmail.com
+
+Required temporary APPWRITE_API_KEY scopes:
+  Users Read
+  Users Write
+
+After success, sign out/in and revoke the temporary API key.
+No database reseed or schema migration is required for this patch if v2.5 setup already succeeded.

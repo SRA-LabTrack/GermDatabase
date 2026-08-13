@@ -1,0 +1,39 @@
+CaneSprout Registry v2.12.2
+Combination Registry Data Integrity Fix
+
+THOROUGH DUPLICATE AUDIT
+- Cross combination.xlsx source: 259 worksheets checked.
+- Raw source entries: 2,293.
+- Exact duplicate combination-event groups found: 8.
+- Duplicate extra entries removed from canonical/runtime data: 8.
+- Canonical unique combination events: 2,285.
+- Duplicate canonical runtime events after cleanup: 0.
+- Duplicate document IDs: 0.
+- Duplicate source hashes: 0.
+- Duplicate source sheet+cell addresses: 0.
+
+DEFINITION
+A duplicate is the same normalized female variety + same normalized male variety + same combination date.
+Male/female direction remains significant. The same parents crossed on different dates remain separate historical events.
+
+APP FIXES
+- Combination search now deduplicates bundled, local, and live/cloud rows by canonical event identity.
+- Runtime history now contains only the 2,285 unique events.
+- Raw 2,293-entry workbook audit is preserved in seed/combination_registry.json.
+- Canonical 2,285-entry Appwrite seed is stored in seed/combination_registry_canonical.json.
+- setup:combinations now imports canonical events and safely removes the 8 known duplicate cloud documents from older imports.
+- audit:combination-duplicates performs a local integrity audit with zero Appwrite requests.
+- cleanup:combination-duplicates safely removes only the 8 audited duplicate cloud documents. It verifies the keeper and duplicate still describe the exact same event before deleting anything.
+
+APPWRITE CLOUD CLEANUP
+If the old 2,293 workbook entries were previously imported into Appwrite, add a temporary APPWRITE_API_KEY to .env and run:
+
+  npm.cmd run cleanup:combination-duplicates
+
+Then revoke the temporary key.
+
+You can verify the local dataset anytime with:
+
+  npm.cmd run audit:combination-duplicates
+
+No new Appwrite schema migration is required.

@@ -1,0 +1,20 @@
+CaneSprout Registry v2.10.1 COMPLETE OVERHAUL
+
+Fixes in this release:
+- Toolbar now allocates five real navigation columns for the five admin tools.
+- No toolbar label overlap/collision.
+- Combination Registry uses a DNA breeding icon.
+- Combination Registry workspace begins below the measured sticky toolbar.
+- Combination Registry header is always visible.
+- Added a visible Close button with text + X icon.
+- Search field, role selector, and Search button cannot overlap.
+- Responsive compaction prioritizes tool labels before account/status text.
+
+RUN
+  npm.cmd install
+  npm.cmd run dev
+
+For an existing v2.10.0 Appwrite setup, no new database migration is needed for v2.10.1.
+The Combination Registry collection introduced in v2.10.0 remains unchanged.
+
+The real .env file is intentionally excluded.

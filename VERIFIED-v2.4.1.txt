@@ -1,0 +1,8 @@
+CaneSprout Registry v2.4.1 responsive toolbar validation
+
+- CSS brace structure: balanced
+- package.json / version.json / vercel.json: valid JSON
+- Toolbar preserves all existing actions and introduces no API calls
+- No Appwrite schema changes
+- No new dependencies
+- v2.4 IndexedDB offline queue and free-plan safeguards retained

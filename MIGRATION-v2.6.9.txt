@@ -1,0 +1,29 @@
+CaneSprout Registry v2.6.9
+==========================
+
+ADAPTIVE USERS API CREDENTIAL FIX
+- Production no longer blindly trusts the first configured server key.
+- Account Management tries supported server-only credentials in this order:
+  APPWRITE_ADMIN_API_KEY, APPWRITE_USERS_API_KEY, APPWRITE_ADMIN_KEY, APPWRITE_API_KEY.
+- Duplicate key values are tested only once.
+- Each credential is tested against the configured regional endpoint and fallback endpoint.
+- A 401/403 from Appwrite safely advances to the next credential.
+- The first successful credential is cached in the warm Vercel Function instance.
+- List operations themselves act as the read-scope probe, so there is no extra background poll.
+- Writes are retried only after an explicit 401/403 rejection; ambiguous timeout/write failures are never replayed.
+- If no configured key has access, the error names the rejected ENV variable names without exposing any secret value.
+
+UI STATUS
+- 'Server credential detected' means Vercel has a key but it has not yet passed a Users API call.
+- 'Secure Users API ready' appears only after a real Users API request succeeds.
+- The successful key source is shown without revealing the key itself.
+
+VERSIONED ROUTE
+- /canesprout-admin-api-v269 -> /api/canesprout-admin-v269
+
+APPWRITE REQUIREMENT
+At least one Production API key must have:
+  users.read
+  users.write
+
+No database/storage migration is required.

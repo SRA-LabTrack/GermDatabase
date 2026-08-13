@@ -1,0 +1,23 @@
+CaneSprout v2.11.2 Combination Registry optimization
+
+RECORD COMBINATION
+- Local-first save: the record is written to browser storage immediately.
+- Appwrite receives at most one create request for a new combination.
+- The document ID is deterministic from male + female + date, so a retry cannot create a duplicate.
+- No full-registry Appwrite identity scan happens before saving.
+- If Appwrite is missing/offline/permission-blocked, the record stays pending locally instead of being lost.
+- After one backend failure, automatic write attempts pause for 10 minutes to prevent repeated failing requests.
+- Sync pending is explicit and sends at most 5 records per click, stopping after the first failure.
+
+SEARCH / AUTOCOMPLETE
+- Clicking a male/female/search field shows no giant registry list.
+- Suggestions begin only after 2 typed characters.
+- Maximum 12 suggestions are rendered, all filtered locally.
+- Normal combination Search uses bundled Cross combination.xlsx history + local manual records only.
+- Appwrite is contacted only by the explicit Check live changes button for the selected variety.
+- Refresh latest varieties remains an explicit heavier action for newly-added germplasm records.
+
+LOADING
+- Combination runtime data is reduced from the full audit JSON to a compact runtime JSON.
+- Registry autocomplete uses a lightweight variety-only JSON instead of importing the full characterization fallback into the Combination Registry module.
+- The full audit seed remains untouched for setup/migration and traceability.

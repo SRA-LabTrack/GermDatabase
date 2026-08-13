@@ -1,0 +1,16 @@
+CaneSprout Registry v2.2.1 validation
+====================================
+
+Validated in packaging environment:
+- package.json, vercel.json, version.json and seed JSON parse successfully.
+- seed still contains 933 records and all 60 characterization fields.
+- frontend characterization metadata still contains all 60 fields.
+- frontend field metadata contains zero Excel column-letter properties.
+- no field.column rendering remains in App.jsx.
+- server-side/non-JSX JavaScript syntax checks pass for registryApi.js, imageTools.js, appwrite.js and setup-appwrite.mjs.
+- v2.2.1 version is consistent in package.json and public/version.json.
+- Appwrite schema IDs are unchanged from v2.1.2+; no schema migration is required.
+
+The sandbox cannot run the complete Vite build because its private npm mirror does not contain all public project dependencies. Run on Windows with:
+  npm.cmd install
+  npm.cmd run build

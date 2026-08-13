@@ -1,0 +1,35 @@
+CaneSprout Registry v2.12.0 — Persistent Offline-First Workspace
+
+GOAL
+After one successful online login on a device, CaneSprout can reopen and remain useful when Wi-Fi disappears. The browser stores the production app shell, cached tool sections, the audited registry baseline, live record snapshots seen on that device, and every safe pending mutation locally.
+
+HOW IT WORKS
+1. One successful login stores only a safe cached identity/profile locally. Passwords are never stored by CaneSprout.
+2. A versioned Service Worker caches index.html plus the production main JS/CSS bundle. Appwrite requests are never intercepted or cached by the Service Worker.
+3. All lazy CaneSprout sections are pre-warmed once per app version after login, not on every page load. Assets that loaded just before the Service Worker gained control are captured once too.
+4. IndexedDB stores live record snapshots as they are browsed/opened/saved.
+5. The audited bundled 950-record germplasm baseline fills offline gaps without downloading the entire live Appwrite database.
+6. Preview cards use bundled/IndexedDB data and no longer auto-fetch one Appwrite detail document per visible card. Full live details are requested only when View Profile is opened.
+7. Create/edit/delete actions save locally if offline or if connectivity dies during a save.
+8. Excel imports can be queued locally. Spreadsheet edits can also be queued locally.
+9. Combination Registry remains local-first and its pending create/delete queue is automatically drained on reconnect.
+10. Reconnect sync is paced: up to 6 registry mutations per batch and 5 combination mutations per batch, with an 8-second gap between batches.
+11. A failed batch stops instead of retrying repeatedly. Auto-sync is triggered by login/reconnect, not by UI browsing or polling.
+
+FREE-PLAN BEHAVIOR
+- No polling.
+- No Appwrite Realtime subscription.
+- No Appwrite reads while the browser is actually offline.
+- Normal offline registry search uses local/bundled data.
+- Registry preview cards do not perform background Appwrite detail reads.
+- Lazy section pre-warm happens once per release version.
+- Same-origin Vite assets are served from Cache Storage after first cache, reducing repeat Vercel asset requests.
+- Appwrite writes are still required to sync actual cloud changes; CaneSprout spaces these writes instead of bursting them.
+- The app does not automatically download all live Appwrite records just to prepare offline mode. This avoids a large read spike. The 950-record bundled baseline plus incrementally cached live records provide offline coverage.
+- Offline upsert sync reuses one in-memory canonical variety index through the paced queue instead of rescanning the whole registry for every queued row.
+
+SERVER-ONLY EXCEPTION
+Privileged identity actions such as creating accounts or approving/rejecting server-side requests cannot safely execute with no network connection. Admin Center still opens from the cached app shell, but those privileged actions wait for an online Appwrite session. Registry operations themselves remain queueable offline.
+
+UPDATE SAFETY
+The previous working offline app cache is retained until the new version finishes pre-warming its lazy sections. Only then does CaneSprout prune older app-shell caches, reducing the chance of an update leaving a half-cached offline build.

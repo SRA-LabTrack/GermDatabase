@@ -1,0 +1,15 @@
+CaneSprout Registry v2.11.3
+
+REGISTERED COMBINATION DELETION
+- New admin header button: Manage registered.
+- Local manual list opens with zero Appwrite requests.
+- Check cloud registered is explicit and performs one Appwrite list request, max 50 manual records.
+- Delete button available on manual combination result rows and Manage registered rows.
+- Workbook-source Cross combination.xlsx records remain protected/read-only.
+- Unsynced manual creates delete locally with zero backend requests.
+- Synced records use local-first deletion plus one Appwrite delete request.
+- Failed cloud deletion becomes Deletion pending and is retried only through Sync pending.
+- Sync pending processes at most five changes per click and stops after the first failure.
+- Pending deletion records are hidden from normal search immediately and cannot reappear during live checks.
+
+No Appwrite schema migration is required.

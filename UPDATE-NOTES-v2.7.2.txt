@@ -1,0 +1,20 @@
+CaneSprout v2.7.1 -> v2.7.2 PATCH ONLY
+
+1. Extract this ZIP directly into D:\Germ
+2. Choose Replace files in the destination.
+3. Keep your existing .git, .env and .env.local.
+4. Run:
+   cd /d D:\Germ
+   npm.cmd install
+   npm.cmd run build
+   npm.cmd run dev
+
+What this patch changes
+- Makes Characterization and other attributes(1).xlsx structure the canonical A:CA upload template.
+- Adds a Download template button to Import Excel.
+- Hydrates Parentage, Yield Potential, Agronomic Characteristics, Reaction Diseases and Tested Location on all existing records without bulk blank Appwrite writes.
+- Existing records show these new groups as Not provided until values are entered.
+- Editing any of these fields saves only the populated values.
+- Keeps BX:CA as categorized Photo and Documentation sections handled by CaneSprout's WebP photo uploader.
+
+No Appwrite schema migration is required.

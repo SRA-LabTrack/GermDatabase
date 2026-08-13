@@ -1,0 +1,30 @@
+CaneSprout Registry v2.12.1
+Excel Tools Restore
+
+RESTORED
+- Permanent Excel Tools toolbar item
+- Import Excel
+- Export Excel
+- Edit in Excel format
+- Excel Tools fallback inside the (...) More menu
+
+PERMISSIONS
+- Export Excel: available to signed-in users
+- Import Excel: administrator
+- Edit in Excel format: administrator
+
+OFFLINE-FIRST PRESERVED
+- v2.12.0 local identity cache
+- IndexedDB offline registry workspace
+- queued create/edit/delete
+- offline Excel import queue
+- offline Excel-format edits
+- Combination Registry offline queue
+- paced Appwrite synchronization
+- Service Worker app-shell cache
+
+The Service Worker cache version was bumped to v2.12.1 so deployed browsers
+will fetch and cache the restored Excel modules instead of retaining the old
+v2.12.0 shell.
+
+No Appwrite migration required.

@@ -1,0 +1,39 @@
+CaneSprout Registry v2.11.2
+Combination Registry reliability + free-plan optimization
+
+RECORD COMBINATION
+- Local-first: saving a combination immediately creates a durable browser copy.
+- CaneSprout then attempts exactly one Appwrite create request.
+- No full germplasm Appwrite scan happens before the write.
+- Male + female + date generate a deterministic document ID, so retries cannot create duplicates.
+- If Appwrite is offline, the collection is not set up, or permissions reject the write:
+    the combination remains visible as Pending cloud sync.
+- After one failed backend attempt, automatic writes pause for 10 minutes.
+- "Sync pending" is explicit and processes at most 5 records per click.
+- It stops after the first backend failure instead of repeatedly hitting Appwrite.
+
+SEARCH / DROPDOWNS
+- Clicking male/female/search fields does NOT display the full registry.
+- Suggestions begin only after 2 typed characters.
+- Only 12 local suggestions are shown.
+- Typing performs zero Appwrite requests.
+- Normal Search uses the bundled Cross combination.xlsx history plus local manual records.
+- "Check live changes" explicitly fetches only the currently selected variety's live history.
+- "Refresh latest varieties" is still the explicit heavier action for newly-added germplasm.
+
+LOADING
+- Combination runtime history was reduced from ~1.46 MB source JSON to ~0.82 MB runtime JSON.
+- Variety autocomplete uses a ~13 KB variety-only catalog instead of loading the full germplasm fallback through the Combination module.
+- The original full combination audit JSON remains included and unchanged for migration/auditing.
+
+APPWRITE
+- If your Combination Registry collection already exists, there is no new schema migration for v2.11.2.
+- If cloud writes show Pending cloud sync because the collection has never been created, run:
+    npm.cmd run setup:combinations
+  once with the temporary server API key, revoke that key afterward, then click Sync pending.
+
+RUN
+  npm.cmd install
+  npm.cmd run dev
+
+The real .env file is intentionally excluded from this package.

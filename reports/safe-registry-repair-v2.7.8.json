@@ -1,0 +1,169 @@
+{
+  "generated_at": "2026-08-13T02:35:07.993Z",
+  "mode": "apply",
+  "safe_mismatch_repairs": [
+    {
+      "id": "sc_02697a38a0b8505cebb125e6b8",
+      "coreVariety": "Phil 99-0925",
+      "detailVariety": "PHIL 99-0925"
+    },
+    {
+      "id": "sc_0cac43d549a2ba742454ddee76",
+      "coreVariety": "Phil 7544",
+      "detailVariety": "PHIL 7544"
+    },
+    {
+      "id": "sc_0e7629e5b66789ec7b09e76cf8",
+      "coreVariety": "Phil 8477",
+      "detailVariety": "PHIL 8477"
+    },
+    {
+      "id": "sc_1bb880811000ee74c3366c2eb3",
+      "coreVariety": "Phil 00-185-1419",
+      "detailVariety": "PHIL 00-1419"
+    },
+    {
+      "id": "sc_1c5d57b1e5bfc8adef82826fc8",
+      "coreVariety": "Phil 04-0827",
+      "detailVariety": "PHIL 04-0827"
+    },
+    {
+      "id": "sc_1eb8ef7becdb92f1c7fc0e2bda",
+      "coreVariety": "Phil 7464",
+      "detailVariety": "PHIL 7464"
+    },
+    {
+      "id": "sc_208b8c4e01752dafafeff683ca",
+      "coreVariety": "Phil 8583",
+      "detailVariety": "PHIL 8583"
+    },
+    {
+      "id": "sc_24bad2cd93d6501b4412986317",
+      "coreVariety": "Phil 8839",
+      "detailVariety": "PHIL 8839"
+    },
+    {
+      "id": "sc_2a8871f480ea6f48e47251ecff",
+      "coreVariety": "Phil 6723",
+      "detailVariety": "PHIL 6723"
+    },
+    {
+      "id": "sc_46fe3ff6f36dcc7d652df11000",
+      "coreVariety": "Phil 99-1793",
+      "detailVariety": "PHIL 99-1793"
+    },
+    {
+      "id": "sc_48095a3b7eec2c81070228942c",
+      "coreVariety": "Phil 7779",
+      "detailVariety": "PHIL 7779"
+    },
+    {
+      "id": "sc_4a2dd24baf4efdc0f75597aa5d",
+      "coreVariety": "Phil 04-1011",
+      "detailVariety": "PHIL 04-1011"
+    },
+    {
+      "id": "sc_5ea616fbff07c029302f4df21e",
+      "coreVariety": "Phil 93-227-3155",
+      "detailVariety": "Phil 93-3155"
+    },
+    {
+      "id": "sc_64de1f6456f16c6a825a0d720e",
+      "coreVariety": "Phil 97-2041",
+      "detailVariety": "PHIL 97-2041"
+    },
+    {
+      "id": "sc_6ebd25a1527a580a02a8e59b31",
+      "coreVariety": "Phil 93-190-2349",
+      "detailVariety": "Phil 93-2349"
+    },
+    {
+      "id": "sc_6f170c3b3a3ea55e1bae92ccc5",
+      "coreVariety": "Phil 93-190-2349",
+      "detailVariety": "Phil 93-2349"
+    },
+    {
+      "id": "sc_6f666f74a9cfcbd165e66fdb76",
+      "coreVariety": "Phil 03-154-1389",
+      "detailVariety": "PHIL 03-1389"
+    },
+    {
+      "id": "sc_71cf6e0b2c5ecca0d1c1aeea1d",
+      "coreVariety": "Phil 7270",
+      "detailVariety": "PHIL 7270"
+    },
+    {
+      "id": "sc_7958464a69feb82252b0817947",
+      "coreVariety": "Phil 00-0791",
+      "detailVariety": "PHIL 00-0791"
+    },
+    {
+      "id": "sc_867d241519cf3e6985c8f4da60",
+      "coreVariety": "Phil 8727",
+      "detailVariety": "PHIL 8727"
+    },
+    {
+      "id": "sc_896b6cb5218e2668beaae8438a",
+      "coreVariety": "Phil 6607",
+      "detailVariety": "PHIL 6607"
+    },
+    {
+      "id": "sc_897a7c555c90b16f0cc0839d74",
+      "coreVariety": "Phil 7228",
+      "detailVariety": "PHIL 7228"
+    },
+    {
+      "id": "sc_901fdaaa85ff8dd4db320ee5d8",
+      "coreVariety": "Phil 8013",
+      "detailVariety": "PHIL 8013"
+    },
+    {
+      "id": "sc_a932580e5dcd7efdc716c48ecc",
+      "coreVariety": "Phil 8361",
+      "detailVariety": "PHIL 8361"
+    },
+    {
+      "id": "sc_b1fcf71a8cb49dfde2a137a3f4",
+      "coreVariety": "Phil 8835",
+      "detailVariety": "PHIL 8835"
+    },
+    {
+      "id": "sc_bfa0c9109e30407fb265c65f16",
+      "coreVariety": "Phil 97-1123",
+      "detailVariety": "PHIL 97-1123"
+    },
+    {
+      "id": "sc_d63371011300aaaed50aef5eec",
+      "coreVariety": "Phil 98-37-0255",
+      "detailVariety": "PHIL 98-0255"
+    },
+    {
+      "id": "sc_da6b18203bd1b20daff19497ec",
+      "coreVariety": "Phil 00-2569",
+      "detailVariety": "PHIL 00-2569"
+    },
+    {
+      "id": "sc_e2f6068d7610c4f6423aaf1f49",
+      "coreVariety": "Phil 00-278-1893",
+      "detailVariety": "PHIL 00-1893"
+    },
+    {
+      "id": "sc_ea63d0ad6af989d2839095d6bf",
+      "coreVariety": "Phil 8715",
+      "detailVariety": "PHIL 8715"
+    },
+    {
+      "id": "sc_ed564d24beaae1c61245b07ff1",
+      "coreVariety": "Phil 8093",
+      "detailVariety": "PHIL 8093"
+    }
+  ],
+  "unsafe_mismatches": [],
+  "blank_varieties": [
+    {
+      "id": "sc_c247fbc716d6b747b5380ae7d7",
+      "source_name": "Characterization.xlsx",
+      "source_row": "895"
+    }
+  ]
+}

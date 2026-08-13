@@ -1,0 +1,31 @@
+CaneSprout Registry v2.11.3
+Registered Combination Deletion
+
+NEW ADMIN FUNCTION
+- Combination Registry now has a "Manage registered" button.
+- The local manual-record list opens with zero Appwrite requests.
+- "Check cloud registered" is explicit and performs one Appwrite list request,
+  loading at most 50 manually registered cloud records.
+- Each manually registered combination has a Delete button.
+- Manual combination result cards also keep their quick Delete button.
+
+SAFE DELETE BEHAVIOR
+- Cross combination.xlsx historical records are protected and cannot be deleted
+  from the UI.
+- A local unsynced create can be deleted with zero backend requests.
+- A synced manual record is hidden locally immediately and CaneSprout attempts
+  exactly one Appwrite delete request.
+- If Appwrite is unavailable, the record becomes "Deletion pending".
+- Pending deletions are retried only through "Sync pending".
+- Sync pending processes at most five changes per click and stops after the
+  first backend failure.
+- Pending-deletion records stay hidden from normal searches and live checks.
+
+No Appwrite schema migration is required for v2.11.3.
+
+RUN
+  npm.cmd install
+  npm.cmd run dev
+
+Then hard refresh:
+  Ctrl + Shift + R

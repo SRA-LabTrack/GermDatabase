@@ -1,0 +1,22 @@
+CaneSprout Registry v2.4.0 validation
+====================================
+
+Validated in the ChatGPT build environment:
+- 14 JavaScript/JSX source modules parsed with the TypeScript transpiler: 0 syntax errors
+- setup-appwrite.mjs: Node syntax check passed
+- electron/main.cjs and preload.cjs: Node syntax check passed
+- package.json, vercel.json, public/version.json: valid JSON
+- styles.css opening/closing brace count matched
+- Existing characterization seed retained
+- Appwrite schema IDs unchanged; v2.4.0 requires no schema migration
+- Offline queue is IndexedDB-based and supports multiple owner-scoped entries
+- Offline queue photos are stored as already-compressed WebP Blobs
+- New queued records/photos reserve deterministic Appwrite IDs before sync
+- Sync is event-driven/sequential and contains no polling or Realtime subscription
+- Successful queue sync does not force an additional list read
+
+Environment limitation:
+A complete npm/Vite production build could not be executed because dependency
+installation timed out in this sandbox. Run `npm.cmd install` then
+`npm.cmd run build` on Windows before publishing if you want a local production
+build check.

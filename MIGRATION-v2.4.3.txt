@@ -1,0 +1,9 @@
+CaneSprout Registry v2.4.3 - STRICT SINGLE-ROW RESPONSIVE TOOLBAR
+
+- Toolbar never wraps to a second row at any viewport width.
+- Removed the absolute-position responsive toolbar workaround.
+- Brand, Registry, Import Excel, Add record, Online/Offline status, account/menu/sign-out remain in one horizontal row.
+- Secondary text progressively hides at narrower widths before controls can collide.
+- Small phones use icon-only primary actions while retaining every function.
+- No Appwrite schema or network behavior changes.
+- No additional Vercel or Appwrite requests.

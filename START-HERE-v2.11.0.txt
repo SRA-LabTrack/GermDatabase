@@ -1,0 +1,45 @@
+CaneSprout Registry v2.11.0
+Combination Registry complete workbook-data release
+
+This build includes the verified data extracted from:
+  Cross combination.xlsx
+  SHA-256: 995ab02e2fe11801e8b1cc1885df9a917ef574322a0a81194bb14b6a287092a8
+
+Data included
+-------------
+- 2,293 source-cell combination records
+- 259 workbook sheets
+- 841 source rows containing combinations
+- Bidirectional female -> male and male -> female history
+- Exact source date text preserved
+- "Can still combine" list uses registered germplasm varieties with no recorded cross
+- Source sheet/cell shown on historical results for auditing
+
+IMPORTANT: The workbook contains a few source date anomalies.
+They are preserved exactly rather than silently corrected.
+See COMBINATION-DATA-AUDIT-v2.11.0.txt.
+
+READ-ONLY USE
+-------------
+The complete workbook history is bundled into the site, so searching works
+even before the Appwrite import.
+
+SYNC ALL 2,293 RECORDS TO APPWRITE
+------------------------------------------------------------
+1. Copy your normal .env into this folder.
+2. Temporarily add:
+     APPWRITE_API_KEY=YOUR_TEMPORARY_SERVER_KEY
+3. Run:
+     npm.cmd install
+     npm.cmd run setup:combinations
+4. Wait for:
+     ✓ Combination Registry workbook import complete.
+5. Revoke/delete the temporary APPWRITE_API_KEY.
+6. Start:
+     npm.cmd run dev
+
+setup:combinations is idempotent. It uses deterministic source-position IDs,
+so running it again does not duplicate the workbook records.
+
+Manual combination entries remain separate and editable.
+Workbook-source records are protected from deletion in the UI.

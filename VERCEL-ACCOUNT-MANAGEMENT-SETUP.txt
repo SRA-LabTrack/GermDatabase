@@ -1,0 +1,36 @@
+CaneSprout v2.5.6 - Account Management Server Setup
+====================================================
+
+WHY THIS EXISTS
+Account creation, global user search, and changing Appwrite user labels use the Appwrite Users API.
+Appwrite requires the Users API to run server-side with an API key. The browser must never receive that key.
+
+RECOMMENDED APPWRITE KEY
+Create a dedicated API key in Appwrite with ONLY:
+  users.read
+  users.write
+
+Do not reuse a broad setup/database key long-term.
+
+VERCEL
+Project: GermDatabase
+Settings -> Environment Variables
+
+Add:
+  APPWRITE_ADMIN_API_KEY=<your dedicated Appwrite Users API key>
+
+Environment:
+  Production
+
+Then redeploy Production. Environment variable changes do not alter old deployments.
+
+OPTIONAL FALLBACK NAMES SUPPORTED BY v2.5.6
+The server can also read APPWRITE_USERS_API_KEY or APPWRITE_API_KEY if already configured,
+but APPWRITE_ADMIN_API_KEY is recommended because it should be least-privilege.
+
+VERIFY
+After redeploying, open CaneSprout -> Admin Center -> Account Management.
+It should say "Secure Users API ready".
+
+Local Vite development automatically calls the deployed Vercel admin endpoint because normal `npm.cmd run dev`
+does not run Vercel Functions. You can override it with VITE_ADMIN_API_URL if needed.

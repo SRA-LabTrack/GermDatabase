@@ -1,0 +1,12 @@
+CaneSprout Registry v2.12.0 OFFLINE-FIRST
+
+- Remembered local identity after one successful online login. Passwords are never stored.
+- Versioned production Service Worker caches the app shell and all lazy tool sections.
+- IndexedDB live registry snapshot cache layered over the audited 950-record bundled baseline.
+- Create/edit/delete, Excel import, spreadsheet edits and combination mutations can survive connectivity loss and queue locally.
+- Mid-save network failures fall back to the local queue.
+- Automatic reconnect sync is event-driven and paced: 6 registry changes / 5 combination changes per batch with 8-second gaps.
+- No polling and no Realtime subscription.
+- Registry cards use local preview data instead of auto-reading an Appwrite detail document for every visible card.
+- Admin Center shell remains available offline; account creation and server approval decisions wait for a network session.
+- No Appwrite schema migration required from v2.11.3.

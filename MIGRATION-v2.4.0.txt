@@ -1,0 +1,44 @@
+CaneSprout Registry v2.4.0 - TRUE OFFLINE QUEUE
+================================================
+
+WHAT CHANGED
+- Multiple complete sugarcane records can be saved while offline.
+- Offline records are stored in IndexedDB, not Appwrite or Vercel.
+- Newly selected photos are compressed to WebP before they enter the queue.
+- Both the full WebP and small thumbnail are stored locally with the record.
+- Each queued new record reserves its final Appwrite document ID locally.
+- Each queued photo reserves deterministic Appwrite Storage file IDs locally.
+- When connectivity returns, CaneSprout syncs queued entries sequentially.
+- Network failure stops the batch instead of continuously retrying.
+- No polling and no Realtime subscription are used for offline sync.
+- A visible Offline queue panel supports multiple entries, manual Sync all,
+  per-entry Retry, queue size, photo count, and browser storage estimate.
+
+FREE-PLAN SAFEGUARDS
+- Offline field work creates 0 Appwrite reads/writes until synchronization.
+- Offline field work creates 0 Vercel API/function requests.
+- Sync talks directly to Appwrite using the Web SDK.
+- Photos are compressed before local storage and before cloud upload.
+- Queue sync is sequential with a small gap between entries.
+- A transport timeout is not blindly replayed.
+- Deterministic record/file IDs make retries idempotent after uncertain network
+  failures and reduce the risk of duplicate records or duplicate Storage files.
+- Existing 25-record cursor pagination, 500 ms search debounce, bounded caches,
+  lazy details/photos, no totals, no polling, and no Realtime remain enabled.
+
+APPWRITE SETUP
+No new Appwrite collection, attribute, or index is required for v2.4.0.
+If the current v2.1.5+ split schema works, DO NOT rerun setup.
+
+WINDOWS TEST
+npm.cmd install
+npm.cmd run dev
+
+PRODUCTION BUILD CHECK
+npm.cmd run build
+
+GITHUB UPDATE
+git status
+git add -A
+git commit -m "CaneSprout v2.4 true offline queue"
+git push origin main

@@ -1,0 +1,166 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "source_workbook": "Cross combination.xlsx",
+    "source_sha256": "995ab02e2fe11801e8b1cc1885df9a917ef574322a0a81194bb14b6a287092a8",
+    "raw_records_checked": 2293,
+    "unique_events": 2285,
+    "duplicate_groups": 8,
+    "duplicate_extra_records": 8,
+    "rule": "same female_key + male_key + normalized combination date; keep earliest workbook source position"
+  },
+  "groups": [
+    {
+      "female_variety": "Phil 6607",
+      "female_key": "6607",
+      "male_variety": "94-0913",
+      "male_key": "940913",
+      "combination_date": "2014-11-02",
+      "source_date_text": "Nov. 2, 2014",
+      "keep_document_id": "cmb_06c550a7e4fa20b5810ec71bec31",
+      "keep_source_sheet": "Phil 6607",
+      "keep_source_cell": "D4",
+      "removed": [
+        {
+          "document_id": "cmb_71b08c79c7de66a55e977fcb253c",
+          "source_sheet": "Phil 6607",
+          "source_cell": "E4",
+          "source_hash": "48be3854ece9c8e26a23003e26b05b1e7bc556cb54f4a6afdc347a718e2d4eae"
+        }
+      ]
+    },
+    {
+      "female_variety": "Phil 88-121-0363",
+      "female_key": "881210363",
+      "male_variety": "92-14-1589",
+      "male_key": "92141589",
+      "combination_date": "2021-10-23",
+      "source_date_text": "Oct. 23, 2021",
+      "keep_document_id": "cmb_d513da3b3625574d67b2dc31130d",
+      "keep_source_sheet": "Phil 88-121-0363",
+      "keep_source_cell": "D12",
+      "removed": [
+        {
+          "document_id": "cmb_f6cd4da70d86dce8db566f9168df",
+          "source_sheet": "Phil 88-121-0363",
+          "source_cell": "H12",
+          "source_hash": "8e75a1a8806bb57ae419a406ef5aa7c4eec7e0359384eaa307f84ba6cf962a9c"
+        }
+      ]
+    },
+    {
+      "female_variety": "Phil 88-121-0363",
+      "female_key": "881210363",
+      "male_variety": "00-89-0599",
+      "male_key": "00890599",
+      "combination_date": "2021-10-23",
+      "source_date_text": "Oct. 23, 2021",
+      "keep_document_id": "cmb_4576e165ea1ec0e3f2cf1ccbde09",
+      "keep_source_sheet": "Phil 88-121-0363",
+      "keep_source_cell": "E12",
+      "removed": [
+        {
+          "document_id": "cmb_a1b587a3f85fff9df749cbad6ef1",
+          "source_sheet": "Phil 88-121-0363",
+          "source_cell": "I12",
+          "source_hash": "abae6d0de0c81fc780c2be7da385a19a0b80bd08359e7e6a1fe9b316e1eba529"
+        }
+      ]
+    },
+    {
+      "female_variety": "Phil 88-121-0363",
+      "female_key": "881210363",
+      "male_variety": "10-0149",
+      "male_key": "100149",
+      "combination_date": "2021-10-23",
+      "source_date_text": "Oct. 23, 2021",
+      "keep_document_id": "cmb_5d0f2656a04dff595b0d5b6b7b30",
+      "keep_source_sheet": "Phil 88-121-0363",
+      "keep_source_cell": "F12",
+      "removed": [
+        {
+          "document_id": "cmb_a0503ad6b47deb0813f4a3a77ca4",
+          "source_sheet": "Phil 88-121-0363",
+          "source_cell": "J12",
+          "source_hash": "a7de9aabb2c21a4c4d54b704ebd2dae8bbe36cf7171f1431421ce05adbccc279"
+        }
+      ]
+    },
+    {
+      "female_variety": "Phil 88-121-0363",
+      "female_key": "881210363",
+      "male_variety": "93-68-0821",
+      "male_key": "93680821",
+      "combination_date": "2021-10-23",
+      "source_date_text": "Oct. 23, 2021",
+      "keep_document_id": "cmb_8229716cd8204feb74f6581bcb84",
+      "keep_source_sheet": "Phil 88-121-0363",
+      "keep_source_cell": "G12",
+      "removed": [
+        {
+          "document_id": "cmb_bbca57b56f8b99df9af3365ee1c8",
+          "source_sheet": "Phil 88-121-0363",
+          "source_cell": "K12",
+          "source_hash": "1e442e2ef82acc77429a94722ef25d65f3afc2a5fd0e3d4f3e84f383efce980c"
+        }
+      ]
+    },
+    {
+      "female_variety": "Phil 8837 Phil 88-626-1691",
+      "female_key": "8837886261691",
+      "male_variety": "06-2299",
+      "male_key": "062299",
+      "combination_date": "2013-10-23",
+      "source_date_text": "Oct. 23, 2013",
+      "keep_document_id": "cmb_b039848a216482b3e92a7de8f320",
+      "keep_source_sheet": "Phil 8837 Phil 88-626-1691",
+      "keep_source_cell": "C4",
+      "removed": [
+        {
+          "document_id": "cmb_33ef83d451ea6f26d214eca5cf81",
+          "source_sheet": "Phil 8837 Phil 88-626-1691",
+          "source_cell": "E4",
+          "source_hash": "de5f8cee9948beb66ed132299869fa155b4bb9383b645b6b616faa9164ee2f00"
+        }
+      ]
+    },
+    {
+      "female_variety": "Phil 93-190-2349",
+      "female_key": "931902349",
+      "male_variety": "2005-1197",
+      "male_key": "20051197",
+      "combination_date": "2014-10-23",
+      "source_date_text": "Oct.23,2014",
+      "keep_document_id": "cmb_cfaf1a2a43290465486e5a8321f0",
+      "keep_source_sheet": "Phil 93-190-2349",
+      "keep_source_cell": "B5",
+      "removed": [
+        {
+          "document_id": "cmb_95ea04abf369062d95dd8b367385",
+          "source_sheet": "Phil 93-190-2349",
+          "source_cell": "E5",
+          "source_hash": "ef250f8b641502cb16e3508adb4beacd19d61e3ec699171390e248337c4ba13c"
+        }
+      ]
+    },
+    {
+      "female_variety": "Phil 96-2691",
+      "female_key": "962691",
+      "male_variety": "2010-0419",
+      "male_key": "20100419",
+      "combination_date": "2022-10-22",
+      "source_date_text": "Oct. 22, 2022",
+      "keep_document_id": "cmb_40e4bfdd5e459beac0367f90e61e",
+      "keep_source_sheet": "Phil 96-2691",
+      "keep_source_cell": "B4",
+      "removed": [
+        {
+          "document_id": "cmb_1055552527bc3baac4c14a503d04",
+          "source_sheet": "Phil 96-2691",
+          "source_cell": "C4",
+          "source_hash": "636a030617e2257357cca8b59e4da4a9fa6b2ca92febe514b96cbc8089e90e37"
+        }
+      ]
+    }
+  ]
+}

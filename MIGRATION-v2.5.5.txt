@@ -1,0 +1,17 @@
+CaneSprout Registry v2.5.5
+
+Fixes the administrator migration when registry_change_requests was never created.
+
+The one-time command now self-heals the approval workflow by creating/checking:
+- registry_change_requests collection
+- all approval request attributes
+- status and submitter indexes
+- germ-media bucket if missing
+- valid canesproutadmin permissions
+- bootstrap administrator label
+
+Run on Windows:
+  npm.cmd install
+  npm.cmd run migrate:admin-label
+
+The command is idempotent. Existing collections/fields/indexes are reused. It does not reseed the 933 sugarcane records.

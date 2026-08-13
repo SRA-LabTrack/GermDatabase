@@ -1,0 +1,25 @@
+CaneSprout Registry v2.1.5 - precise indexed field search
+
+WHY
+v2.1.4 used Appwrite full-text search for Variety. Full-text tokenization made a query such as "Phil 5001" match unrelated "Phil ..." varieties.
+
+FIX
+- Variety, Trial code, Location, and Status now use Query.contains() against normal key indexes.
+- All traits & keywords remains full-text.
+- Exact field matches suppress looser substring matches on the loaded page.
+- Search cache namespace was bumped so old broad results cannot be reused.
+- The result badge shows loaded records only; totals are intentionally not calculated.
+
+ONE-TIME INDEX UPDATE
+Run in Windows CMD after replacing files:
+  npm.cmd install
+  npm.cmd run setup:appwrite
+
+Then test:
+  npm.cmd run dev
+
+Publish:
+  git status
+  git add -A
+  git commit -m "CaneSprout v2.1.5 precise registry search"
+  git push origin main

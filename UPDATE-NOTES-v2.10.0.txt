@@ -1,0 +1,25 @@
+CaneSprout Registry v2.10.0 - Combination Registry
+
+New toolbar module: Combination Registry
+
+FUNCTIONS
+- Record male variety + female variety + combination date + optional notes.
+- Search any registered variety.
+- If the query variety was used as a male, every recorded female counterpart and date is returned.
+- If the query variety was used as a female, every recorded male counterpart and date is returned.
+- Role filter: Both roles / As male / As female.
+- Result filter: All / Combined / Not yet combined.
+- Not yet combined compares the selected variety against the live germplasm variety catalog and excludes every counterpart already found in its combination history.
+- Admins can add and delete combination history. Authenticated users can search and view it.
+- Duplicate male × female entries on the same date are blocked.
+- Both male and female values must already exist in the germplasm registry.
+
+APPWRITE SETUP
+A new collection is required: sugarcane_combination_registry
+
+Existing project upgrade:
+1. Add a temporary APPWRITE_API_KEY to .env.
+2. Run: npm.cmd run setup:combinations
+3. Revoke the temporary key after setup succeeds.
+
+Fresh installations can use npm.cmd run setup:appwrite; v2.10.0 creates the combination collection as part of the full setup.

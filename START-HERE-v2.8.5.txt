@@ -1,0 +1,32 @@
+CaneSprout Registry v2.8.5
+
+IMPORTANT
+=========
+This ZIP is packaged with package.json at the ZIP root.
+Extract ALL files into one folder, for example:
+
+D:\Germ\CaneSprout-Registry-v2.8.5-COMPLETE
+
+Then run:
+
+cd /d "D:\Germ\CaneSprout-Registry-v2.8.5-COMPLETE"
+npm.cmd install
+npm.cmd run dev
+
+Open:
+http://localhost:5174
+
+v2.8.5 fixes
+============
+- Wallpapers always fill/zoom to the full device viewport without stretching.
+- No more "contain" letterbox mode for panoramic images.
+- Smooth 3-second slideshow remains enabled.
+- Appwrite reads now wait longer and retry once.
+- If Appwrite cannot be reached, CaneSprout shows the bundled 950-record
+  registry snapshot read-only instead of an empty registry.
+- Press Refresh after connectivity returns to switch back to live Appwrite.
+- The live Appwrite project/database configuration from the supplied source
+  remains included.
+
+The bundled snapshot is safety fallback data. It cannot be edited or deleted.
+Live records remain in Appwrite.

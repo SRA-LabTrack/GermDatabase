@@ -1,0 +1,53 @@
+CaneSprout Combination Registry Duplicate Audit v2.12.2
+
+Source checked: Cross combination.xlsx
+SHA-256: 995ab02e2fe11801e8b1cc1885df9a917ef574322a0a81194bb14b6a287092a8
+Sheets checked: 259
+Raw combination entries checked: 2293
+Exact duplicate event groups found: 8
+Duplicate extra entries removed: 8
+Canonical unique combination events: 2285
+
+Duplicate definition used:
+  Same normalized female variety key + same normalized male variety key + same normalized combination date.
+  If a normalized date is unavailable, the exact normalized source date text is used.
+  Male/female direction is preserved. Reversed parent roles are NOT treated as duplicates.
+  The same male/female pair on different dates is preserved as separate historical events.
+
+Checks:
+  Duplicate document IDs in raw seed: 0
+  Duplicate source hashes in raw seed: 0
+  Duplicate source sheet+cell addresses: 0
+  Exact duplicate event groups in raw seed: 8
+  Exact duplicate event groups in canonical runtime: 0
+
+Removed duplicate source entries:
+1. Phil 6607 (female) × 94-0913 (male) — 2014-11-02
+   KEEP:   Phil 6607!D4  [cmb_06c550a7e4fa20b5810ec71bec31]
+   REMOVE: Phil 6607!E4  [cmb_71b08c79c7de66a55e977fcb253c]
+2. Phil 88-121-0363 (female) × 00-89-0599 (male) — 2021-10-23
+   KEEP:   Phil 88-121-0363!E12  [cmb_4576e165ea1ec0e3f2cf1ccbde09]
+   REMOVE: Phil 88-121-0363!I12  [cmb_a1b587a3f85fff9df749cbad6ef1]
+3. Phil 88-121-0363 (female) × 10-0149 (male) — 2021-10-23
+   KEEP:   Phil 88-121-0363!F12  [cmb_5d0f2656a04dff595b0d5b6b7b30]
+   REMOVE: Phil 88-121-0363!J12  [cmb_a0503ad6b47deb0813f4a3a77ca4]
+4. Phil 88-121-0363 (female) × 92-14-1589 (male) — 2021-10-23
+   KEEP:   Phil 88-121-0363!D12  [cmb_d513da3b3625574d67b2dc31130d]
+   REMOVE: Phil 88-121-0363!H12  [cmb_f6cd4da70d86dce8db566f9168df]
+5. Phil 88-121-0363 (female) × 93-68-0821 (male) — 2021-10-23
+   KEEP:   Phil 88-121-0363!G12  [cmb_8229716cd8204feb74f6581bcb84]
+   REMOVE: Phil 88-121-0363!K12  [cmb_bbca57b56f8b99df9af3365ee1c8]
+6. Phil 8837 Phil 88-626-1691 (female) × 06-2299 (male) — 2013-10-23
+   KEEP:   Phil 8837 Phil 88-626-1691!C4  [cmb_b039848a216482b3e92a7de8f320]
+   REMOVE: Phil 8837 Phil 88-626-1691!E4  [cmb_33ef83d451ea6f26d214eca5cf81]
+7. Phil 93-190-2349 (female) × 2005-1197 (male) — 2014-10-23
+   KEEP:   Phil 93-190-2349!B5  [cmb_cfaf1a2a43290465486e5a8321f0]
+   REMOVE: Phil 93-190-2349!E5  [cmb_95ea04abf369062d95dd8b367385]
+8. Phil 96-2691 (female) × 2010-0419 (male) — 2022-10-22
+   KEEP:   Phil 96-2691!B4  [cmb_40e4bfdd5e459beac0367f90e61e]
+   REMOVE: Phil 96-2691!C4  [cmb_1055552527bc3baac4c14a503d04]
+
+Formatting variants:
+  The audit also found variety-name formatting variants that normalize to the same identity (for example spaces around hyphens).
+  These were NOT deleted because they are source spelling/formatting variants, not duplicate combination events by themselves.
+  Canonical keys are used for search and duplicate detection so these variants do not create extra combination-history rows.

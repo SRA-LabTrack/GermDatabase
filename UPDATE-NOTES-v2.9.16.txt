@@ -1,0 +1,9 @@
+CaneSprout Registry v2.9.16
+
+Fixes:
+- Manual Add Record now keeps a stable client document ID while the form is open, making retry after uncertain Appwrite timeouts idempotent.
+- Variety Name is visibly required and validated before save.
+- Manual save errors/progress/success are shown directly in the fixed form footer.
+- Successful admin saves merge the returned Appwrite record into the current registry view immediately.
+- Excel import shows an in-modal success confirmation before closing, plus the global completion toast.
+- Brand card hard-fit layer uses a narrower system font, smaller badge, and responsive widths so both title lines and subtitle remain inside the card.

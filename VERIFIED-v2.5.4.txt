@@ -1,0 +1,10 @@
+CaneSprout Registry v2.5.4 verification notes
+
+- Administrator label is now the Appwrite-valid alphanumeric value: canesproutadmin.
+- Browser role checks, approval APIs, Storage permissions, setup permissions,
+  bootstrap grant, and Vercel account-management API all use the same label.
+- Bootstrap grant migrates collection + bucket permissions before granting the user label.
+- ncrowsboosting@gmail.com is the default bootstrap administrator.
+- Known Appwrite user ID 6a7534ee0022112c4500 is used first to avoid a slow Users search.
+- Admin account API has Frankfurt -> global endpoint fallback and a 20-second bounded timeout.
+- Normal registry operations still bypass Vercel functions and use Appwrite directly.

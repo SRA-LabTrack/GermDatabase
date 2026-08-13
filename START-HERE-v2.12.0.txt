@@ -1,0 +1,41 @@
+CaneSprout Registry v2.12.0
+ONE-LOGIN OFFLINE-FIRST RELEASE
+
+NORMAL DEVELOPMENT
+  npm.cmd install
+  npm.cmd run dev
+
+IMPORTANT
+Vite development mode intentionally does not register the Service Worker. Registry/combination offline queues still work while the dev server is running, but an actual browser reload with the network disconnected should be tested using a production build or the deployed Vercel site.
+
+LOCAL PRODUCTION OFFLINE TEST
+  npm.cmd run build
+  npm.cmd run preview
+
+Then:
+1. Open the preview URL while online.
+2. Sign in once.
+3. Leave CaneSprout open for several seconds so the app shell and every lazy tool can be pre-warmed.
+4. Open any records whose newest live details you specifically want cached. The bundled 950-record baseline is already available without a bulk Appwrite download.
+5. Disconnect Wi-Fi.
+6. Reload the preview. CaneSprout should open from the cached production shell using the remembered local identity.
+7. Add/edit/delete records, queue Excel imports, edit spreadsheet rows, or register/delete combinations.
+8. Reconnect Wi-Fi. CaneSprout automatically drains safe queued changes in small paced batches.
+
+DEPLOYED VERCEL SITE
+The same production Service Worker behavior applies after the first successful online load/login for each release version. A version update pre-warms the new tool chunks before old versioned caches are pruned.
+
+SECURITY
+- CaneSprout never stores the user's password.
+- Signing out clears the remembered local identity and requires login again.
+- Pending record changes remain owner-scoped on the device.
+- Admin approvals/account creation still require an online server session.
+
+FREE-PLAN NOTES
+- No polling or Realtime subscription.
+- No background Appwrite detail reads for every visible registry card.
+- No automatic full live-registry download for offline preparation.
+- Automatic sync uses max 6 registry changes per batch and max 5 combination changes per batch, with an 8-second pause between batches.
+- Failed connectivity stops the batch rather than creating a retry storm.
+
+No new Appwrite migration is required for v2.12.0 if the existing v2.11.3 backend is already configured.

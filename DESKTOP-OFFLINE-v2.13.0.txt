@@ -1,0 +1,61 @@
+CaneSprout Registry v2.13.0 - Electron Desktop Offline Edition
+
+WHAT THIS EDITION DOES
+- The installed application launches entirely from files packaged on the PC.
+- 950 audited germplasm baseline records are bundled with the application.
+- 2,285 canonical combination-history events are bundled locally.
+- All main tools are installed locally: Germplasm, Excel Tools, Add/Edit/Delete,
+  Combination Registry, offline queue, and cached profile/detail views.
+- IndexedDB/localStorage are stored in Electron's persistent userData profile,
+  outside the installed application files, so updates do not erase field work.
+
+ONE-LOGIN DESKTOP ACCESS
+- The first successful online sign-in enrolls that Windows PC.
+- The account profile is kept locally.
+- A PBKDF2 password verifier enables offline credential verification without
+  storing a plaintext password.
+- For automatic cloud reconnection, the sync credential is encrypted using
+  Electron safeStorage. On Windows this is protected by the current Windows
+  user's OS credential protection.
+- After enrollment, CaneSprout can start and enter the local workspace with no
+  internet connection. The existing cached identity also allows one-login
+  startup until the user explicitly signs out.
+- Explicit Sign out removes the enrolled offline login from that PC.
+
+OFFLINE WRITES
+- Add, edit, delete, Excel import/edit changes, photos, and non-admin submissions
+  use the existing persistent offline mutation queue.
+- Combination creates/deletes use the Combination Registry local-first queue.
+- Pending changes remain on the device after closing/reopening the application.
+
+RECONNECT SYNC
+- When Windows connectivity returns, Electron restores the Appwrite web session
+  with one OS-protected credential request before queued writes are drained.
+- Registry changes sync in batches of at most 6.
+- Combination changes sync in batches of at most 5.
+- There is an 8-second gap between batches.
+- Any backend/network failure stops the current drain. There is no polling and
+  no Appwrite Realtime subscription.
+- Vercel is not required by the installed desktop application's normal data path.
+  The Electron renderer talks directly to Appwrite when cloud sync is needed.
+
+IMPORTANT LIMIT
+A brand-new PC that has never been enrolled cannot authenticate an existing
+Appwrite account from thin air while completely offline. Sign in successfully
+once while online on that PC. After that enrollment, internet is not required
+to open and work in the desktop application.
+
+BUILD ON WINDOWS
+1. Extract the complete v2.13.0 folder.
+2. Copy your .env if you use non-default Appwrite settings. Do not put server API
+   keys in the desktop client.
+3. Double-click:
+     BUILD-WINDOWS-DESKTOP-OFFLINE.cmd
+4. The installer is generated in release\.
+5. Install the generated CaneSprout-Registry-Setup-2.13.0.exe.
+
+SOURCE DEVELOPMENT
+  START-DESKTOP-OFFLINE.cmd
+
+LOCAL ARCHITECTURE CHECK
+  VERIFY-DESKTOP-OFFLINE.cmd
