@@ -1,0 +1,50 @@
+Sugarcane Germplasm Resource Database
+PATCH: v2.9.7 -> v2.9.8
+
+SPREADSHEET EDITOR FORMAT
+- Fixes the Excel-style editor covering/overlapping the global Background control.
+- Spreadsheet editor now uses a true top-level workspace layer.
+- Adds a large, always-visible "Close editor" button in the editor header.
+- Escape also closes the editor.
+- If there are unsaved changes, closing asks before discarding them.
+- Hides the Background button while the editor is open.
+- Locks page scrolling while the editor is active.
+- Keeps table scrolling inside the editor itself.
+- Improves mobile sizing.
+
+EXPORT EXCEL
+- "Specific variety" is now "Selected varieties".
+- Search and select MULTIPLE varieties.
+- Selected varieties remain selected while you run additional searches.
+- Adds "Select all shown".
+- Adds selected variety chips with individual remove buttons.
+- Adds Clear all.
+- Exports all selected varieties together in ONE .xlsx workbook.
+- Selected full records load in parallel batches of 6 for faster preparation.
+
+SUGARCANE ICON
+- Replaces the previous abstract cane/plant symbol with a more recognizable
+  sugarcane drawing:
+  three tall segmented stalks with visible nodes and long blade-like leaves.
+- Updates the app/browser icon too.
+- Spreadsheet workspace empty/note icons now use the sugarcane symbol.
+
+PRESERVED
+- Appwrite data
+- Registry records
+- 950-record fallback
+- Import scope features
+- Whole-registry export
+- Sharp-edge UI
+- COAC toolbar
+- 5-second background interval
+- 2.5-second cross-fade
+
+Files replaced:
+src\App.jsx
+src\components\SpreadsheetEditorModal.jsx
+src\components\ExportExcelModal.jsx
+src\components\SugarcaneIcon.jsx
+src\styles.css
+public\icon.svg
+public\version.json

@@ -1,0 +1,8 @@
+CaneSprout Registry v2.6.7
+
+- Adds a Recently added control inside the Registry search bar.
+- Fetches at most 20 lean records ordered newest-first by Appwrite $sequence.
+- Recent mode is on-demand only: no polling, no Realtime subscription, and no full-library download.
+- Recent results use the same bounded session/memory cache as normal browsing.
+- Typing a search automatically exits Recent mode.
+- No Appwrite schema migration is required.

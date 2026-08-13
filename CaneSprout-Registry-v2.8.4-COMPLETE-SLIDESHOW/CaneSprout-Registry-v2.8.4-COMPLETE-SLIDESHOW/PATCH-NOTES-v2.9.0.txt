@@ -1,0 +1,79 @@
+Sugarcane Germplasm Resource Database
+PATCH: v2.8.10 -> v2.9.0
+
+HOMEPAGE / BRANDING
+- Website title changed to:
+  Sugarcane Germplasm Resource Database
+- Adds:
+  A Digital Repository for Characterization, Conservation, and Utilization
+  of Sugarcane Genetic Resources
+- Main heading:
+  Discover the Genetic Diversity of Sugarcane
+- Main subtitle:
+  A comprehensive platform showcasing sugarcane germplasm collections,
+  characteristics, and valuable genetic resources for research and crop improvement.
+- Adds the requested supporting lines about genetic wealth, conservation,
+  characterization, and utilization.
+- Adds hero buttons:
+  Explore Germplasm
+  Search Collection
+  Learn More
+
+ABOUT GERMPLASM
+- Adds a dedicated "What is Sugarcane Germplasm?" homepage section.
+- Uses the supplied germplasm explanation.
+- Adds Conservation, Characterization, and Utilization supporting panels.
+
+GERMPLASM COLLECTION
+- Collection heading changed to "Explore Our Germplasm Collection".
+- Cards are now germplasm profile previews.
+- Preview displays ONLY:
+  Accession Number
+  Origin
+  Collection Year
+  Species
+  Parentals
+  Yield Potential (TC/Ha and LKg/TC)
+  Recommended Locations
+  Reaction to Diseases
+- Full characterization opens ONLY through the View Profile button.
+
+NEW OPTIONAL PASSPORT FIELDS
+- accession_number
+- origin
+- collection_year
+- species
+- recommended_locations
+These are stored in the existing traits JSON structure, so no new Appwrite
+collection attributes are required.
+Existing records are never guessed or rewritten; missing values display
+"Not recorded".
+
+ICONS
+- Generic leaf, sprout, seed/wheat-style interface icons were replaced by
+  a dedicated sugarcane SVG icon.
+- Includes the main brand icon, boot/loading icon, collection icons,
+  record placeholders, hero icons, footer icon, and browser favicon.
+
+DATA / FUNCTIONALITY PRESERVED
+- Live Appwrite database
+- bundled 950-record safety snapshot
+- existing characterization data
+- SRA HYV parentage/yield/disease preview enrichment in bundled fallback
+- admin tools
+- user approval workflow
+- Excel import
+- offline queue
+- spreadsheet editor
+- photo compression
+- background slideshow
+
+BACKGROUND TIMING PRESERVED
+- 5 seconds per image
+- 2.5 second cross-fade
+
+After applying:
+npm.cmd run dev
+
+Then hard refresh once:
+Ctrl + Shift + R

@@ -1,0 +1,11 @@
+Sugarcane Germplasm Resource Database
+PATCH: v2.9.12 -> v2.9.13
+
+BRAND CONTAINMENT FIX
+- Fixes the v2.9.12 over-expansion.
+- Keeps the title and subtitle inside the left brand card.
+- Prevents the title from spilling into the Germplasm toolbar tab.
+- Rebalances brand width, logo size, text size, and overflow containment.
+- Keeps responsive collapse to icon for narrower screens.
+
+No registry/Appwrite data is changed.

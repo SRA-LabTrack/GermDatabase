@@ -1,0 +1,55 @@
+{
+  "completed_at": "2026-08-13T02:51:22.737Z",
+  "kept": [
+    {
+      "canonical": "PHIL56226",
+      "id": "sc_08aec3304c3c182490a191ba2f"
+    },
+    {
+      "canonical": "PHIL58260",
+      "id": "sc_c3db6cd8e11a514f3eec35d828"
+    },
+    {
+      "canonical": "PHIL992641",
+      "id": "sc_1ee81bd54cced9588090d8bedc"
+    }
+  ],
+  "deleted": [
+    {
+      "canonical": "PHIL56226",
+      "collection_id": "sugarcane_registry_details",
+      "deleted_id": "6a7d1fa400119ddf6216"
+    },
+    {
+      "canonical": "PHIL56226",
+      "collection_id": "sugarcane_registry_core",
+      "deleted_id": "6a7d1fa400119ddf6216"
+    },
+    {
+      "canonical": "PHIL58260",
+      "collection_id": "sugarcane_registry_details",
+      "deleted_id": "6a7d1f9f001a74872585"
+    },
+    {
+      "canonical": "PHIL58260",
+      "collection_id": "sugarcane_registry_core",
+      "deleted_id": "6a7d1f9f001a74872585"
+    },
+    {
+      "canonical": "PHIL992641",
+      "collection_id": "sugarcane_registry_details",
+      "deleted_id": "6a7d1eeb00286cde0834"
+    },
+    {
+      "canonical": "PHIL992641",
+      "collection_id": "sugarcane_registry_core",
+      "deleted_id": "6a7d1eeb00286cde0834"
+    }
+  ],
+  "untouched_conflicting_groups": [
+    "PHIL931902349",
+    "PHIL98010007",
+    "VMC73229"
+  ],
+  "blank_variety_policy": "UNTOUCHED"
+}

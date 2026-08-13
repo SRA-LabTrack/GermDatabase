@@ -1,0 +1,48 @@
+Sugarcane Germplasm Resource Database
+PATCH: v2.9.4 -> v2.9.5
+
+IMPORT EXCEL
+- Adds scope selector:
+  1. Specific variety
+  2. Whole registry
+- Specific variety lets you search/select ONE variety inside the uploaded workbook.
+- Only that workbook row is applied.
+- Whole registry applies all parsed workbook rows.
+- Existing duplicate-safe canonical matching remains enabled.
+- Blank-cell clearing remains optional.
+
+EXPORT EXCEL
+- Adds scope selector:
+  1. Specific variety
+  2. Whole registry
+- Specific variety searches the live registry first, then reads only the chosen
+  record + details and exports a one-row .xlsx.
+- Whole registry exports all records and details to one .xlsx.
+
+LOADING / PERFORMANCE
+- Whole-registry export now scans core + detail collections in parallel instead
+  of waiting for the entire core collection before starting details.
+- Import duplicate matching now uses the existing lean canonical identity index,
+  downloading only variety identity data rather than full list-card/provenance fields.
+- Registry search debounce reduced from 500 ms to 250 ms.
+- Specific-variety import/export avoids unnecessary full-registry processing.
+
+PRESERVED
+- Sharp-edge UI
+- COAC-style toolbar
+- Appwrite duplicate protections
+- 950-record bundled fallback
+- 5 seconds per background image
+- 2.5 second cross-fade
+
+Files replaced:
+src\App.jsx
+src\components\ImportModal.jsx
+src\components\ExportExcelModal.jsx
+src\lib\registryApi.js
+src\styles.css
+public\version.json
+
+After applying:
+npm.cmd run dev
+Ctrl + Shift + R

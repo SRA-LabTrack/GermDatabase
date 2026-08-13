@@ -1,0 +1,3 @@
+CaneSprout Registry v2.4.5
+Toolbar ordering and readability correction.
+No Appwrite schema changes.

@@ -1,0 +1,23 @@
+CaneSprout Registry v2.3.1 - startup + free-plan safeguards
+
+WEB / VERCEL
+- No navigation-caching service worker. Hashed Vite assets remain browser/CDN cached for one year.
+- index.html is revalidated, preventing stale HTML from referencing deleted hashed chunks.
+- A tiny inline HTML startup shell paints before JavaScript, so slow chunks never present as a white page.
+- Main React application is dynamically loaded after the startup shell is visible.
+- No Vercel Functions are used for normal Appwrite CRUD, search, auth, or photos.
+- Web update checks are manual; no continuous polling/version loop.
+
+APPWRITE
+- Direct Web SDK access.
+- 25-row cursor pages; no full-registry browsing download.
+- 3-character minimum and 500 ms search debounce.
+- Lean list-field selection; full traits/details only on open.
+- Bounded list/detail caches remain enabled.
+- Appwrite read timeout reduced to 3.5 s for UI list requests.
+- Legacy global endpoint fallback is disabled unless VITE_APPWRITE_ENABLE_FALLBACK=true, avoiding a second slow transport attempt during normal outages.
+- No Realtime subscription, no continuous polling, no total-count query.
+- Writes occur only on explicit user actions.
+- WebP thumbnail/full-image separation remains enabled.
+
+No schema update is required from v2.1.5+ / v2.3.0.

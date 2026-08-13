@@ -1,0 +1,10 @@
+Sugarcane Germplasm Resource Database
+PATCH: v2.9.8 -> v2.9.9
+
+Changed:
+Characterization • Conservation • Utilization
+
+to:
+SUGARCANE GERMPLASM LIBRARY
+
+No other functionality or styling is changed.

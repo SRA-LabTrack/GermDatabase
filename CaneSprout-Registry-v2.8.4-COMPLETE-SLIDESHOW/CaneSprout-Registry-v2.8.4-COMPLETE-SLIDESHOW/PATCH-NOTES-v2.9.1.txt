@@ -1,0 +1,34 @@
+CaneSprout / Sugarcane Germplasm Resource Database
+PATCH: v2.9.0 -> v2.9.1
+
+UI CHANGES
+- Removes rounded visual language in favor of sharp square edges.
+- Germplasm / Import Excel / Add Record / Admin Center now live inside ONE
+  segmented toolbar section, similar to COAC Tool Aid.
+- Only the currently active/open section is highlighted.
+- Add Record no longer stays permanently green when it is not active.
+- Brand title is forced into two clean lines:
+    Sugarcane Germplasm
+    Resource Database
+- Brand subtitle is shortened to avoid collisions.
+- Hero, About Germplasm, stats, and search surfaces are more opaque so
+  text is easier to read.
+- Background images remain visible behind the readable glass surfaces.
+- Section title overflow/overlap rules are corrected.
+
+PRESERVED
+- 5 seconds per background image
+- 2.5 second cross-fade
+- live Appwrite data
+- bundled 950-record fallback
+- germplasm redesign / preview fields
+- admin, import, approval, offline, spreadsheet, and photo features
+
+Files replaced:
+src\App.jsx
+src\styles.css
+public\version.json
+
+After applying:
+npm.cmd run dev
+Ctrl + Shift + R

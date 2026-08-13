@@ -1,0 +1,52 @@
+Sugarcane Germplasm Resource Database
+PATCH: v2.9.1 -> v2.9.2
+
+HOMEPAGE CLEANUP
+- Removes the redundant hero mission pills:
+  "Exploring the Genetic Wealth of Sugarcane Diversity"
+  "Conservation, Characterization, and Utilization of Sugarcane Genetic Resources"
+- Removes the redundant hero buttons:
+  Explore Germplasm
+  Search Collection
+  Learn More
+- Tightens the hero height after removing them.
+
+TOP TOOLBAR / EXCEL TOOLS
+- The Import Excel segment now EXPANDS into a sharp-edged menu.
+- Menu includes:
+  1. Import Excel
+     Opens the existing workbook import tool.
+  2. Export Excel
+     Reads the complete registry and downloads a true .xlsx workbook.
+  3. Edit in Excel format
+     Opens the existing bulk spreadsheet editor.
+- Excel menu closes on click-away or Escape.
+- Excel-style editor was removed from the three-dot menu so it is not duplicated.
+- The Excel toolbar segment remains highlighted while its menu/import/editor is active.
+
+EXPORT EXCEL
+- Exports the full registry rather than only the current 25 displayed cards.
+- Includes Variety, characterization/passport fields, germination fields,
+  source metadata, record ID, and timestamps.
+- Output filename:
+  Sugarcane-Germplasm-Collection-YYYY-MM-DD.xlsx
+
+PRESERVED
+- Live Appwrite registry
+- 950-record bundled fallback
+- Admin approval/account tools
+- Offline queue
+- Existing import workflow
+- Background slideshow
+- 5 seconds per image
+- 2.5 second cross-fade
+
+Files replaced:
+src\App.jsx
+src\styles.css
+public\version.json
+package.json
+
+After applying:
+npm.cmd run dev
+Ctrl + Shift + R

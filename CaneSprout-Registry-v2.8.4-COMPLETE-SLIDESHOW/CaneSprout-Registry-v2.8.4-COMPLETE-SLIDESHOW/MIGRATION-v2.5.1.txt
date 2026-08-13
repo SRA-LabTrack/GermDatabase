@@ -1,0 +1,11 @@
+CaneSprout Registry v2.5.1
+
+Toolbar + role refresh patch
+
+- User toolbar now uses exactly 2 action columns: Registry + Add record.
+- Administrator toolbar now uses exactly 4 action columns: Registry + Import Excel + Add record + Accounts.
+- Removes the blank phantom third column visible for user accounts in v2.5.0.
+- Prevents the fourth administrator action from wrapping into a clipped second row.
+- Refreshes Appwrite account labels once per browser tab/session while online so a newly promoted administrator does not stay stuck on a stale User toolbar.
+- Login already fetches account labels, so fresh logins do not incur an extra role-refresh request.
+- No Appwrite schema changes are required for this patch.

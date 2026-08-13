@@ -1,0 +1,14 @@
+Sugarcane Germplasm Resource Database
+PATCH: v2.9.13 -> v2.9.14
+
+BRAND FINAL FIT
+- Fixes the remaining crop of the brand title.
+- Keeps the full text visible:
+  Sugarcane Germplasm
+  Resource Database
+  Genetic resource repository
+- Prevents spill into the Germplasm tab.
+- Uses smaller, better-fitted typography inside a slightly rebalanced card width.
+- Keeps icon-only collapse on narrower screens.
+
+No registry/Appwrite data is changed.

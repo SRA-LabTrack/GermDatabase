@@ -1,0 +1,19 @@
+CaneSprout Registry v2.5.0 validation
+====================================
+
+Static validation completed in the ChatGPT build environment:
+- All JSX modules transpile without parser diagnostics.
+- All JavaScript/MJS/CJS files pass syntax checks.
+- All relative source imports resolve to existing files.
+- package.json, vercel.json, and public/version.json parse as valid JSON.
+- CSS braces are balanced.
+- The approval queue uses 25-row pages, total=false, and no polling/Realtime.
+- Live record collection permissions are migrated to admin-label create/update/delete.
+- Normal user registration/edit submissions write to registry_change_requests only.
+- Account creation and role changes are handled by /api/admin-accounts using a server-only key.
+- Admin role is the Appwrite label canesproutadmin.
+- Offline entries preserve multiple queued records and route user syncs into approval requests.
+
+A complete npm/Vite production build could not be executed in this sandbox because
+its private npm mirror does not provide the project's current Appwrite package.
+Run `npm.cmd run build` on the Windows development PC before pushing if desired.

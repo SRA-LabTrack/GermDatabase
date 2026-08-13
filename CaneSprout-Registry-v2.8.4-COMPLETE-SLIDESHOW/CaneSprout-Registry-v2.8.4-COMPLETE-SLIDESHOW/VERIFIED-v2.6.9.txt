@@ -1,0 +1,8 @@
+CaneSprout Registry v2.6.9 verification
+- Server JS syntax checked.
+- Vercel JSON parsed.
+- Versioned v269 route added ahead of SPA fallback.
+- Adaptive credential selection never exposes secret values.
+- Account listing remains capped at 25 with total=false and no polling.
+- Recently Added remains capped at 20.
+- No Appwrite schema changes.

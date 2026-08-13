@@ -1,0 +1,20 @@
+Sugarcane Germplasm Resource Database
+PATCH: v2.9.5 -> v2.9.6
+
+ORDER CORRECTION
+Old:
+Conservation -> Characterization -> Utilization
+
+New:
+Characterization -> Conservation -> Utilization
+
+Updated:
+- Homepage three-card germplasm priorities
+- Germplasm collection eyebrow label
+- Intro/login resource workflow ordering for consistency
+
+No database, Excel, Appwrite, slideshow, registry, or styling behavior is changed.
+
+Files replaced:
+src\App.jsx
+public\version.json

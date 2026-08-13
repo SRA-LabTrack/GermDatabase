@@ -1,0 +1,18 @@
+Sugarcane Germplasm Resource Database
+PATCH: v2.9.6 -> v2.9.7
+
+Replaces the four hero metric cards with germplasm collection categories:
+
+1. Accession
+2. SRA Developed Varieties
+3. Local Collection
+4. International Collection
+
+No fake category totals are shown because the current database has not yet
+been fully classified into these four categories.
+
+No Appwrite, registry, Excel, toolbar, slideshow, or other functionality is changed.
+
+Files replaced:
+src\App.jsx
+public\version.json

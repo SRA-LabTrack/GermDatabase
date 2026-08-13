@@ -1,0 +1,9 @@
+CaneSprout Registry v2.6.6 verification
+
+- ApprovalReview reads the full submitted request payload.
+- Registration reviews show every non-empty submitted field.
+- Edit reviews show Before and Requested values for each changed field.
+- Review panel uses an opaque high-contrast surface and dedicated scroll area.
+- Request summary shows field count, photo count, request type and target record.
+- No Appwrite schema changes or additional polling.
+- Build dependency install could not be completed in the sandbox because its package mirror does not contain appwrite@^26.2.0; source structure and JSON were validated locally.

@@ -1,0 +1,10 @@
+CaneSprout v2.5.7
+
+Toolbar account-card responsive fix.
+
+- Prevents avatar/name/menu/sign-out from wrapping into a second row.
+- Full identity remains visible on normal desktop/laptop widths.
+- Compact widths show avatar + menu + sign-out.
+- Small screens show menu + sign-out only.
+- No Appwrite schema or permission changes.
+- No additional Appwrite or Vercel requests.

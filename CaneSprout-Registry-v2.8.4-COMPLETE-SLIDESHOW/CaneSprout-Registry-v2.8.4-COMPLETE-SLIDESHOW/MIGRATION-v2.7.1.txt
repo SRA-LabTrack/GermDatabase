@@ -1,0 +1,16 @@
+CaneSprout Registry v2.7.1
+
+No Appwrite schema migration is required.
+
+Changes:
+- Fixes Excel-style editor loading when the full details batch is slow or rejects multi-ID filtering.
+- Full details are requested in small 5-record batches with a bounded individual-record fallback.
+- Adds spreadsheet search for Variety, Trial code, Location, Status, and All traits & keywords.
+- Search starts at 3 characters, uses a 500 ms debounce, and returns at most 20 full records per page.
+- Adds Retry and clearer core-vs-detail loading diagnostics.
+- Existing v2.7.0 red-font attributes and categorized photos are unchanged.
+
+Install/test:
+  npm.cmd install
+  npm.cmd run build
+  npm.cmd run dev

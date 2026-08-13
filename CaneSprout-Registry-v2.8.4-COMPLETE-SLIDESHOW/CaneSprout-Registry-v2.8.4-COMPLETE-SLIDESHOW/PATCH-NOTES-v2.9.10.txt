@@ -1,0 +1,41 @@
+Sugarcane Germplasm Resource Database
+PATCH: v2.9.9 -> v2.9.10
+
+VIEW PROFILE DEFAULT
+The record profile now shows ONLY the requested germplasm preview information:
+
+- Accession Number
+- Origin
+- Collection Year
+- Species
+- Parentals
+- Yield Potential
+  - TC/Ha
+  - LKg/TC
+- Recommended locations
+- Reaction to Diseases
+
+ADDITIONAL TRAITS
+- Germination is hidden by default.
+- Photo documentation is hidden by default.
+- Morphological, agronomic, canonical-template, and all other characterization
+  fields are hidden by default.
+- Clicking "Additional traits" expands the complete remaining record.
+- Clicking "Hide additional traits" collapses it back to the germplasm preview.
+- Fields already present in the compact preview are not duplicated below.
+
+OVERLAP / FORMAT FIXES
+- Additional traits is safely inside the scrollable profile content.
+- Edit / Done / Delete remain in a separate footer layer.
+- Extra bottom scroll spacing prevents the toggle from sliding under the footer.
+- Background button is hidden while a record profile is open.
+- Profile is responsive on desktop/tablet/mobile.
+- Square/sharp design remains.
+
+No Appwrite data or registry records are changed.
+
+Files replaced:
+src\App.jsx
+src\components\DetailModal.jsx
+src\styles.css
+public\version.json

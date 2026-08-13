@@ -1,0 +1,7 @@
+CaneSprout Registry v2.5.3 verification
+- bootstrap admin script syntax checked
+- exact email lookup + fallback search present
+- 45 second bounded timeout present
+- IPv4-first grant command present
+- uncertain PUT verification before retry present
+- ncrowsboosting@gmail.com remains default bootstrap administrator

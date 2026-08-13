@@ -1,0 +1,10 @@
+CaneSprout v2.6.8 verification notes
+====================================
+- New versioned admin API route is ahead of the SPA catch-all.
+- Legacy account-management routes re-export the new handler.
+- Server handler syntax checked with Node.
+- Client expects backend version 2.6.8-node-sdk-admin-auth and reports stale backend explicitly.
+- Uses official node-appwrite Client.setJWT + Account.get for administrator identity.
+- Uses node-appwrite Users API with server-only key for account management.
+- User listing limited to 25 with total:false.
+- Existing approvals, offline queue, image compression and Recently Added 20 are preserved.

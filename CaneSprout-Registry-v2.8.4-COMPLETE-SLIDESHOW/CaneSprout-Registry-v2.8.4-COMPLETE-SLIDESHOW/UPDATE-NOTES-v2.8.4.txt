@@ -1,0 +1,17 @@
+CaneSprout Registry v2.8.4 COMPLETE BACKGROUND SLIDESHOW
+
+What changed
+- Integrated the background slideshow into the real CaneSprout source instead of applying an external visual patch.
+- Fixed the real cause of the hidden wallpaper: .app-shell had its own full-screen gradient painted above the slideshow.
+- CaneSprout's page shell is now transparent while the hero, toolbar, registry controls, and footer remain readable glass surfaces.
+- Included 8 supplied sugarcane/field photos as optimized 1920px WebP backgrounds.
+- Built-in backgrounds total about 3.51 MB instead of about 53.48 MB of originals (about 93.4% smaller).
+- Select up to 3 active photos.
+- Active photos cross-fade every 3 seconds.
+- Aspect ratios are preserved: normal images use cover; extreme aspect-ratio/device combinations use contain with a blurred ambient fill.
+- Custom photos selected by the user are resized/compressed in-browser before being saved locally in IndexedDB.
+- Slideshow pauses while the tab/window is hidden.
+- Added WebP MIME support to the Electron local server so bundled backgrounds load correctly in the desktop build.
+- Updated app/package/version metadata to v2.8.4.
+
+No Appwrite registry data, collections, or database records are modified by this UI update.

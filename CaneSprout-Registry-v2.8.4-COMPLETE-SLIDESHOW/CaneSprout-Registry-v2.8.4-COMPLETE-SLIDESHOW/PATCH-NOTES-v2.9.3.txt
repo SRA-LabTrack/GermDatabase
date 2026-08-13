@@ -1,0 +1,41 @@
+Sugarcane Germplasm Resource Database
+PATCH: v2.9.2 -> v2.9.3
+
+FIXED FROM THE PROVIDED SCREENSHOT
+1. Excel menu:
+   - The arrow was changing, proving the toggle state worked.
+   - The submenu itself was trapped in the toolbar's layout/overflow stack.
+   - It now renders through a React portal directly on document.body.
+   - The menu uses fixed viewport positioning anchored to the Import Excel segment.
+   - It cannot be clipped by the toolbar, grid, sticky header, or overflow rules.
+   - It follows the toolbar during scrolling/resizing.
+   - Click-away and Escape both close it correctly.
+
+2. Excel actions:
+   - Import Excel opens the existing import modal.
+   - Export Excel downloads the complete registry as .xlsx.
+   - Edit in Excel format opens the bulk spreadsheet editor.
+
+3. Brand/title:
+   - Desktop brand panel widened.
+   - "Sugarcane Germplasm" and "Resource Database" no longer use ellipsis
+     on normal desktop widths.
+   - Responsive compression still hides/collapses the text on smaller screens.
+
+PRESERVED
+- Sharp-edge UI
+- COAC-style segmented toolbar
+- 5 seconds per background image
+- 2.5 second cross-fade
+- Appwrite data and registry records
+- bundled 950-record fallback
+- admin/import/offline functionality
+
+Files replaced:
+src\App.jsx
+src\styles.css
+public\version.json
+
+After applying:
+npm.cmd run dev
+Ctrl + Shift + R

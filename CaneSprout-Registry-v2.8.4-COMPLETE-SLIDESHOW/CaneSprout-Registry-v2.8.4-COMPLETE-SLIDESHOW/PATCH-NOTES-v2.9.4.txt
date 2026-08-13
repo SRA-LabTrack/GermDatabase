@@ -1,0 +1,26 @@
+Sugarcane Germplasm Resource Database
+PATCH: v2.9.3 -> v2.9.4
+
+FIXES
+- Brand title is contained inside a fixed-width panel and can no longer overlap Germplasm.
+- Import Excel no longer relies on a floating popover/dropdown.
+- Clicking Import Excel expands a real full-width Excel Tools row under the top toolbar.
+- The expanded row visibly contains:
+  1. Import Excel
+  2. Export Excel
+  3. Edit in Excel format
+- All three actions remain functional.
+- Press Escape or click Import Excel again to collapse the row.
+
+PRESERVED
+- Sharp-edge UI
+- COAC-style segmented toolbar
+- 5 seconds per background image
+- 2.5 second cross-fade
+- Appwrite data and 950-record fallback
+- Admin/import/offline/spreadsheet functionality
+
+Files replaced:
+src\App.jsx
+src\styles.css
+public\version.json

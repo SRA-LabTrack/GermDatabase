@@ -1,0 +1,10 @@
+CaneSprout Registry v2.5.9
+
+Account Management search fix
+
+- Fixes Appwrite Users API error: Invalid `queries` param / syntax error.
+- Removes the hand-written queries[]=limit(25) value from /api/admin-accounts.
+- Uses the official Users API `search` parameter with total=false.
+- Caps the Vercel response to 25 user rows to keep payloads small.
+- Search remains explicit-button driven; there is no polling or per-keystroke request.
+- No Appwrite schema migration is required.

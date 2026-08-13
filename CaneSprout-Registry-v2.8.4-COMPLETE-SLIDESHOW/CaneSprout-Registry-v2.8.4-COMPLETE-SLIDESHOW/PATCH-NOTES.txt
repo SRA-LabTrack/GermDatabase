@@ -1,0 +1,14 @@
+CaneSprout Registry
+PATCH: v2.8.9 -> v2.8.10
+
+Timing adjustment only:
+- changes slideshow interval from 7 seconds to 5 seconds per image
+- keeps cross-fade at 2.5 seconds
+- keeps the slower gentle zoom motion
+
+No registry, Appwrite, background image, admin, import, or fallback data is changed.
+
+Files replaced:
+src\backgroundSlideshow.js
+src\backgroundSlideshow.css
+public\version.json

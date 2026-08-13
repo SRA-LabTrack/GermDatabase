@@ -1,0 +1,14 @@
+CaneSprout Registry v2.7.3
+
+- Added SRA HYV Agronomic Description to Agronomic Characteristics.
+- Renamed Millable Stalk to Average No. of Millable Stalks.
+- Renamed Maturity to Maturity (Months).
+- Yield Potential fields now accept text so source ranges such as "2.15 & up" and "80-99" are preserved.
+- Parsed both SRA-HYVs Charac-LR.xls and SRA-HYVs Charac-LG.xls.
+- 60 unique HYV varieties were extracted; 43 map safely to existing seed varieties and 17 are new to the prior 933-record seed.
+- Fresh seed now contains 950 records.
+- Legacy A:H SRA HYV .xls files are recognized by Import Excel.
+- Import Excel now updates matching varieties and adds missing varieties instead of blindly duplicating rows.
+- Blank workbook cells preserve existing values unless the administrator explicitly enables clearing.
+- Official template updated to A:CB v2.7.3: A:BX traits, BY:CB Photo and Documentation categories.
+- Added npm.cmd run migrate:sra-hyv for one-time enrichment of an already deployed Appwrite database.

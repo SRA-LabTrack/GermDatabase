@@ -1,0 +1,32 @@
+CaneSprout Registry v2.1.4 verification
+
+Registry/search behavior
+- Registry nav button scrolls to and focuses the search input.
+- Default search scope is Variety; alternate indexed scopes: Trial code, Location, Status, All traits & keywords.
+- Search starts at 3 characters and is debounced 400 ms.
+- Old browse/search cards are cleared immediately when a new search starts.
+- Search result pages replace browse results and remain capped at 30.
+- Load More uses cursorAfter; no offset pagination.
+- Hyphenated accession/code searches are quoted for Appwrite full-text matching.
+
+Free-plan controls
+- Query.limit(30)
+- Query.select(list card fields only)
+- total:false
+- 90-second list/search cache + in-flight request deduplication
+- 5-minute detail cache
+- heavy trait/details document only fetched on open
+- Appwrite Storage WebP full + thumbnail variants; card images lazy loaded
+- no Appwrite Realtime subscriptions
+- no continuous polling
+- no Vercel API/function proxy for ordinary reads/writes
+- hashed Vite assets receive immutable CDN caching
+- no writes on keystrokes; writes happen only on explicit save/import/delete
+
+Validation performed
+- Node syntax checks passed for setup and library modules.
+- TypeScript parser passed App.jsx and main.jsx JSX syntax.
+- package.json, vercel.json, and version.json parsed successfully.
+- policy scan found no setInterval polling, Realtime subscribe(), total:true, or /api/ usage.
+
+Note: the ChatGPT sandbox private npm mirror does not carry appwrite@26.2.0, so a full npm/Vite build cannot run in this sandbox. Public npm/Appwrite use is expected on the user's PC, GitHub Actions, and Vercel.

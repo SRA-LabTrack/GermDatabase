@@ -1,0 +1,29 @@
+CaneSprout Registry v2.2.1
+============================
+
+UI CLEANUP
+- Excel column letters (A, AC, BH, etc.) remain internal mapping metadata only.
+- They are no longer shown beside trait labels in Add/Edit or record details.
+- The previously visible "Source column AE (unlabeled)" label is now "Unlabeled source trait".
+
+FREE-PLAN SAFEGUARDS
+- 25 lean rows maximum per registry page.
+- 500 ms search debounce and minimum 3 characters.
+- Exact-first indexed search, cursor pagination, no totals, no Realtime and no polling.
+- Browser list cache: 10 minutes; first browse page: 30 minutes; detail cache: 30 minutes.
+- Appwrite list cache TTL: browse 10 minutes; search 5 minutes.
+- Editing compares the already-open record locally and updates only the changed split collection.
+  This avoids unnecessary Appwrite writes without adding reads.
+- Refresh invalidates list caches only; it no longer destroys unrelated record-detail caches.
+- Manual force-refresh has a 20-second cooldown to prevent accidental repeated uncached reads.
+- Numeric variety fragments (for example 5001) skip unnecessary exact/prefix probes and go directly to indexed contains search.
+- Full photos now cap at 1600 px WebP ~82%; thumbnails at 360 px WebP ~70%.
+- Automatic service-worker update checks occur at most once per 24 hours. The Updates button can force a check.
+- Static UI/glass/transitions remain client-side and create no database/function requests.
+
+No Appwrite schema migration is required from v2.2.0.
+Windows commands continue to use npm.cmd.
+
+- Detail photo galleries use small thumbnails; the full Appwrite Storage image is fetched only after an explicit photo click.
+- Failed record saves attempt to remove newly uploaded image variants so they do not become orphaned Storage usage.
+- Record deletion keeps database metadata if media cleanup fails, allowing a safe retry instead of losing file references.

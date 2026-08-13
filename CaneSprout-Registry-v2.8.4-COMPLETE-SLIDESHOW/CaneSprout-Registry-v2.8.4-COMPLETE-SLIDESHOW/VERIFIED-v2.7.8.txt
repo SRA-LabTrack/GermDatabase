@@ -1,0 +1,15 @@
+CaneSprout v2.7.8 patch verification
+
+Checked:
+- package.json parses and reports 2.7.8
+- public/version.json parses and reports 2.7.8
+- node --check src/lib/registryApi.js
+- node --check scripts/audit-registry-integrity.mjs
+- node --check scripts/repair-safe-registry-integrity.mjs
+- v2.7.8 repair is dry-run by default
+- blank source record is never automatically renamed or deleted
+- conflicting-observation duplicate groups are never automatically merged by v2.7.8
+- saveRecord central guard excludes the same deterministic document ID so offline/approval retry remains idempotent
+- Excel bulk upsert keeps a local canonical index and skips the redundant full-registry guard for already-vetted new rows
+
+A full Vite build was not completed in the sandbox because npm dependency installation did not finish within the sandbox execution window. Run npm.cmd install and npm.cmd run build locally before deployment.

@@ -1,0 +1,7 @@
+{
+  "version": "2.9.14",
+  "channel": "stable",
+  "notes": "Renames the website to Sugarcane Germplasm Resource Database, adds a germplasm-focused homepage and About section, replaces generic plant icons with sugarcane icons, adds passport fields, and redesigns collection cards with View Profile-only full details. Background timing remains 5 seconds per image with a 2.5-second cross-fade.",
+  "migration": "complete-responsive-background-slideshow-integration",
+  "updated": "2026-08-13"
+}

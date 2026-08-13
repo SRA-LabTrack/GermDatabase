@@ -1,0 +1,14 @@
+Sugarcane Germplasm Resource Database
+PATCH: v2.9.11 -> v2.9.12
+
+BRAND CROP FIX
+- Widens the left brand section.
+- Keeps the complete two-line title visible:
+  Sugarcane Germplasm
+  Resource Database
+- Keeps "Genetic resource repository" visible underneath.
+- Prevents title/subtitle clipping.
+- Slightly rebalances logo/text sizing.
+- Preserves responsive collapse to icon on narrow screens.
+
+No registry/Appwrite data is changed.

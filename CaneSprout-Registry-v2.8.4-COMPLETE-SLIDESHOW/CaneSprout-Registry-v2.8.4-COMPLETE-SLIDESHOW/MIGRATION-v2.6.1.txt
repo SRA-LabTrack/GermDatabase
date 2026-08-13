@@ -1,0 +1,15 @@
+CaneSprout Registry v2.6.1
+
+Fixes Account Management "Failed to fetch" after APPWRITE_ADMIN_API_KEY was already configured.
+
+Changes:
+- Uses /canesprout-admin-api as a dedicated same-origin route.
+- Vercel rewrites that route to /api/admin-accounts-v2 before the SPA catch-all.
+- Vite dev serves the exact same route locally.
+- Status check no longer contacts Appwrite and costs zero Appwrite requests.
+- Account-management Users API prefers the global Appwrite endpoint, with Frankfurt fallback.
+- Clear UI distinction between a missing server key and an unreachable server route.
+- Existing approvals, role permissions, offline queue, registry data and media are unchanged.
+
+No Appwrite schema migration is required if v2.5.5 completed.
+The existing APPWRITE_ADMIN_API_KEY remains valid.

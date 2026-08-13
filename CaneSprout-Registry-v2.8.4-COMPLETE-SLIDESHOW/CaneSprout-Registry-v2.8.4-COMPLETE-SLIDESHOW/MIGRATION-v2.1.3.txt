@@ -1,0 +1,16 @@
+CANESPROUT REGISTRY v2.1.3 - LOGIN / SESSION FIX
+
+FIXES
+- A 401 returned by Appwrite during login is no longer mislabeled as an expired session.
+- Invalid credentials now show a clear incorrect email/password message.
+- A valid Appwrite browser session is restored even if the local cached user entry is missing.
+- A stale cached user is cleared silently before the registry performs database reads.
+- Registry list requests wait until session verification finishes, reducing unnecessary failed Appwrite reads.
+- Existing active sessions are recovered if Appwrite reports user_session_already_exists.
+- Login errors clear as soon as the user edits email/password.
+
+WINDOWS TEST COMMANDS
+  npm.cmd install
+  npm.cmd run dev
+
+No Appwrite schema change is required for v2.1.3 if v2.1.2 setup completed successfully.

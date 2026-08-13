@@ -1,0 +1,27 @@
+CaneSprout v2.7.7 - Full Registry Integrity Audit
+
+READ-ONLY audit expansion. No Appwrite schema migration is required.
+
+New command:
+  npm.cmd run audit:registry-full
+
+Checks every live core record and every live details record for:
+- canonical duplicate variety identities (case/space/punctuation insensitive)
+- exact display-name duplicates
+- conservative numeric-token/leading-zero formatting equivalents
+- repeated nonblank trial codes across different canonical varieties
+- repeated source workbook rows
+- blank variety names
+- missing details documents
+- orphan details documents
+- invalid traits_json/details_json
+- core variety vs traits_json variety mismatches
+- conflicting measurements/traits inside same canonical identity groups
+
+The audit deliberately does NOT call one-digit-different cultivar codes duplicates. Many legitimate sugarcane variety codes differ by one digit, so such cases need external evidence before merging.
+
+Reports:
+  reports/registry-integrity-v2.7.7.json
+  reports/registry-integrity-v2.7.7.csv
+
+Also records a code-path review: SRA HYV migration and Excel bulk upsert are canonical duplicate protected; manual Add Record, approved CREATE requests, and offline CREATE synchronization still use the general creation path and should receive a duplicate guard in a separate follow-up patch after the live audit is reviewed.

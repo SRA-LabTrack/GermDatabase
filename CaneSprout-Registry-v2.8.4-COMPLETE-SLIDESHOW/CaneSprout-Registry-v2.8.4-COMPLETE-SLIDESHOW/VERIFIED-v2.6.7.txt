@@ -1,0 +1,8 @@
+CaneSprout Registry v2.6.7 verification
+
+Feature target: Registry search-bar Recently added view.
+Limit: 20 lean records.
+Ordering: newest-first using Appwrite $sequence.
+Pagination: disabled in Recent mode.
+Background refresh: none.
+Appwrite schema changes: none.

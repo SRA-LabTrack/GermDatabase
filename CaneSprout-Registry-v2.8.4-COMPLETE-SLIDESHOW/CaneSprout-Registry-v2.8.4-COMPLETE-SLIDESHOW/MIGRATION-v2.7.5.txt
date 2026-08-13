@@ -1,0 +1,17 @@
+CaneSprout v2.7.5 duplicate identity guard
+
+The previous migration could miss an existing variety when punctuation/spacing differed before the normalized comparison.
+Examples treated as the SAME identity in v2.7.5:
+  PHIL-99-2641
+  PHIL99-2641
+  PHIL-99 2641
+
+Added:
+- npm.cmd run audit:duplicates
+- Read-only scan of the entire live registry.
+- JSON report at reports/duplicate-varieties-v2.7.5.json.
+- Migration preloads all live core records into one canonical-name index before any create.
+- Migration never creates a record if a canonical equivalent exists.
+- If multiple canonical equivalents exist, migration skips that row and asks for review instead of silently updating all duplicates.
+
+Do not auto-delete duplicate groups. Legacy Characterization.xlsx contains some repeated variety names with different observations, so merges need review.

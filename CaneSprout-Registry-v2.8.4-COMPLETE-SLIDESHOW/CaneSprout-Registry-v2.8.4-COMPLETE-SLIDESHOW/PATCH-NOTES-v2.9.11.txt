@@ -1,0 +1,34 @@
+Sugarcane Germplasm Resource Database
+PATCH: v2.9.10 -> v2.9.11
+
+IMPORT EXCEL AT ANY SCROLL POSITION
+- The top toolbar is measured with ResizeObserver.
+- The Excel Tools strip now uses fixed viewport positioning.
+- It always opens directly below the current sticky toolbar.
+- Scrolling halfway/down the page no longer leaves Excel Tools at document top.
+
+BRAND OVERLAP
+- Sugarcane Germplasm / Resource Database title has a fixed two-row title layout.
+- Genetic resource repository is its own third visual row.
+- Smaller font/line-height and explicit grid sizing prevent subtitle collision.
+- On smaller screens the brand text still collapses to the sugarcane icon.
+
+ADMIN CENTER
+- Raised above the sticky toolbar and Background button.
+- Uses a contained full workspace.
+- Header and Approvals/Account Management tabs remain visible.
+- Only Admin Center content scrolls internally.
+- Account creation form becomes responsive before fields can collide.
+
+ONLINE / OFFLINE QUEUE
+- Raised above the sticky toolbar and Background button.
+- Header and footer remain visible.
+- Queue content scrolls internally.
+- No more page toolbar cutting across the Online workspace.
+
+No registry/Appwrite records are changed.
+
+Files replaced:
+src\App.jsx
+src\styles.css
+public\version.json

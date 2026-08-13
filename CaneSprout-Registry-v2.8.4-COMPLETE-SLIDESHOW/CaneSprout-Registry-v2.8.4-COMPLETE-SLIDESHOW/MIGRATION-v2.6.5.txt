@@ -1,0 +1,14 @@
+CaneSprout Registry v2.6.5 - Admin JWT Region Fix
+
+No Appwrite schema migration is required.
+
+Changes:
+- Admin identity JWT is verified against the configured regional Appwrite endpoint first.
+- GET /account may try the secondary endpoint once only for a read-only 401/403 endpoint mismatch.
+- Administrator role is verified directly from the authenticated account labels.
+- Removes one redundant Users API read from each Account Management request.
+- Server now distinguishes expired Appwrite sessions, missing admin labels, and API-key scope failures.
+- Client retries once with a fresh JWT only when the server reports a session verification failure.
+
+Required administrator label: canesproutadmin
+Required server key scopes for account management: users.read and users.write.

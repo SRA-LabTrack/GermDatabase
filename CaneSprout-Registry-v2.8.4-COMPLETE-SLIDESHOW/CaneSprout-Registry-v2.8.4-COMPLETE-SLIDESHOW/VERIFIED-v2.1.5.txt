@@ -1,0 +1,18 @@
+CaneSprout Registry v2.1.5 verification targets
+- 30 records maximum per Appwrite list request
+- 400 ms debounce
+- 3-character search minimum
+- Query.contains for Variety / Trial / Location / Status
+- Query.search only for All traits & keywords
+- cursorAfter pagination
+- Query.select lean fields
+- total:false
+- no Realtime subscription
+- no polling
+- separate detail collection fetched on open
+- WebP thumbnails lazy-loaded
+- cache namespace v215
+
+Seed search assertions:
+  "Phil 5001" substring matches exactly 1 source row: Phil 5001
+  "5001" substring matches exactly 1 source row: Phil 5001

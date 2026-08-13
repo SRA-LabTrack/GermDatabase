@@ -1,0 +1,5 @@
+CaneSprout Registry v2.4.3 validation
+- Strict single-row toolbar CSS override added after all prior responsive rules.
+- No absolute positioning for toolbar sections.
+- No wrapping at laptop/tablet/mobile breakpoints.
+- Existing v2.4 offline queue and quota protections preserved.

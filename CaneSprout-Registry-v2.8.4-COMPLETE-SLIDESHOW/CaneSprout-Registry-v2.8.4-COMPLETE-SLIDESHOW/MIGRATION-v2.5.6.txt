@@ -1,0 +1,12 @@
+CaneSprout v2.5.6
+=================
+- Fixes the raw APPWRITE_ADMIN_API_KEY missing error in Admin Center.
+- Account Management now checks server configuration before loading users.
+- Shows exact secure setup steps if the Vercel Users API key is missing.
+- Adds APPWRITE_ADMIN_API_KEY -> APPWRITE_USERS_API_KEY -> APPWRITE_API_KEY server-only fallback chain.
+- Recommended production key remains APPWRITE_ADMIN_API_KEY with only users.read + users.write.
+- Adds CONFIGURE-VERCEL-ADMIN-KEY.cmd helper.
+- Local Vite/desktop admin account management uses the deployed Vercel endpoint by default.
+- Server status is cached client-side for 10 minutes; no polling is added.
+- Approval workflows remain direct Appwrite operations and do not require this Vercel Users API key.
+- No new Appwrite schema migration is required beyond v2.5.5.

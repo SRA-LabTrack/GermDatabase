@@ -1,0 +1,6 @@
+CaneSprout v2.6.4 validation notes
+- Root App is no longer a dynamic startup import.
+- Vercel HTML cache headers are no-store.
+- /assets remain one-year immutable.
+- Admin API rewrite remains before SPA catch-all.
+- No Appwrite schema changes.
