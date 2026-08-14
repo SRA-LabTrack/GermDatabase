@@ -84,13 +84,13 @@ export default function DetailModal({ recordId, onClose, onEdit, onDeleted, onQu
   const photoCategories = normalizedPhotoCategories(record?.photo_categories, photos.length);
 
   const parentals = useMemo(() => {
-    if (!record) return 'Not recorded';
+    if (!record) return 'N/A';
     const female = normalizeVarietyDisplay(record.parentage_female || '');
     const male = normalizeVarietyDisplay(record.parentage_male || '');
     if (male && female) return `${male} male X ${female} female`;
     if (male) return `${male} male`;
     if (female) return `${female} female`;
-    return 'Not recorded';
+    return 'N/A';
   }, [record]);
 
   return (
@@ -104,14 +104,11 @@ export default function DetailModal({ recordId, onClose, onEdit, onDeleted, onQu
         <div className="modal-content detail-content">
           {loading && <div className="detail-loading"><LoaderCircle className="spin" /> Loading only this record…</div>}
           {error && <div className="alert error">{error}</div>}
-          {record?.__bundledSnapshot && <div className="alert info">Offline-safe bundled registry snapshot. Edits/deletes are matched back to the live variety identity when CaneSprout reconnects.</div>}
-
           {record && <>
-            <section className="detail-hero compact-profile-hero">
+            <section className="detail-hero compact-profile-hero simplified-profile-hero">
               <div>
-                <span className="eyebrow"><SugarcaneIcon size={16} /> Sugarcane genetic resource profile</span>
                 <h3>{record.variety || 'Unnamed variety'}</h3>
-                <p>Core germplasm passport and breeding information</p>
+                <p className="profile-hero-parentage"><strong>Parentage:</strong> {parentals}</p>
               </div>
             </section>
 

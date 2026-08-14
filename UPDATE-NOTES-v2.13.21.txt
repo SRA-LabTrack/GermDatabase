@@ -1,0 +1,8 @@
+CaneSprout Registry v2.13.21
+
+- Removed the bundled snapshot notice from View Profile.
+- Removed "Sugarcane genetic resource profile" from the profile hero.
+- Removed "Core germplasm passport and breeding information" from the profile hero.
+- Profile hero now shows only the variety name and Parentage directly underneath.
+- Missing parentage is displayed as N/A.
+- Shared renderer change applies to website and Electron.
