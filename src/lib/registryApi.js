@@ -796,11 +796,14 @@ function expandRecord(core, detail) {
   if (!core && !detail) return null;
   const traits = parseJsonObject(detail?.traits_json);
   const extra = parseJsonObject(detail?.details_json);
-  // Hydrate every canonical optional trait locally. Older records therefore
-  // gain the red-font template fields immediately without spending hundreds
-  // of Appwrite writes just to persist empty strings. When a user enters a
-  // value, splitPayload stores only that populated trait as before.
-  return { ...OPTIONAL_TRAIT_DEFAULTS, ...traits, ...extra, ...(core || {}), $id: core?.$id || detail?.$id };
+  const varietyKey = normalizeVarietyIdentity(core?.variety || traits?.variety || '');
+  const baseline = varietyKey ? (BUNDLED_IDENTITY_MAP.get(varietyKey) || {}) : {};
+  // The audited bundled registry now carries the red-font Origin/other
+  // attributes from the official A:CH workbook. Merge that baseline locally
+  // before live values so website/Electron can show the new traits without
+  // spending ~700 Appwrite writes just to duplicate reference data. Any value
+  // explicitly stored in Appwrite still wins over the bundled baseline.
+  return { ...OPTIONAL_TRAIT_DEFAULTS, ...baseline, ...traits, ...extra, ...(core || {}), $id: core?.$id || detail?.$id };
 }
 
 async function listAllCollection(collectionId, { orderByVariety = false, onProgress } = {}) {

@@ -60,7 +60,7 @@ const SpreadsheetEditorModal = lazy(() => import('./components/SpreadsheetEditor
 const CombinationRegistryModal = lazy(() => import('./components/CombinationRegistryModal.jsx'));
 
 const APP_NAME = 'Sugarcane Germplasm Resource Database';
-const APP_VERSION = '2.13.14';
+const APP_VERSION = '2.13.15';
 const USER_CACHE_KEY = 'sugarcane-registry-user-v230';
 const ROLE_REFRESH_PREFIX = 'canesprout-role-refresh-v251:';
 const MANUAL_REFRESH_COOLDOWN_MS = 30_000;
@@ -312,9 +312,9 @@ function RecordCard({ record, onOpen, index }) {
         <h3>{record.variety || 'Unnamed variety'}</h3>
         <div className="germplasm-preview-grid">
           <span><small>Accession Number</small><b>{preview.accession_number || missing}</b></span>
-          <span><small>Origin</small><b>{preview.origin || missing}</b></span>
+          <span className="new-trait-preview"><small>Country</small><b>{preview.origin || missing}</b></span>
           <span><small>Collection Year</small><b>{preview.collection_year || missing}</b></span>
-          <span><small>Species</small><b>{preview.species || missing}</b></span>
+          <span className="new-trait-preview"><small>Species</small><b>{preview.species || missing}</b></span>
           <span className="preview-wide"><small>Parentage</small><b>{parentals}</b></span>
           <span className="preview-yield"><small>Yield Potential</small><b><em>TC/Ha</em> {tcHa}<i /> <em>LKg/TC</em> {lkgTc}</b></span>
           <span className="preview-wide"><small>Recommended Locations</small><b>{recommended}</b></span>

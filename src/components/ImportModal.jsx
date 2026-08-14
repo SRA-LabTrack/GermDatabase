@@ -183,10 +183,10 @@ export default function ImportModal({ onClose, onImported, actor = null, online 
           <div className="import-note canonical-template-note">
             <FileSpreadsheet size={24} />
             <div>
-              <strong>The A:CB workbook is the official germplasm template.</strong>
+              <strong>The A:CH workbook is the official germplasm template.</strong>
               <span>
                 You can apply only one selected variety or apply every row in the uploaded
-                registry workbook. Existing varieties are updated safely instead of duplicated.
+                registry workbook. The red-font Origin and other-attribute columns are supported directly. Existing varieties are updated safely instead of duplicated.
               </span>
             </div>
             <a className="secondary-button template-download-button" href={CANONICAL_TEMPLATE_PATH} download>

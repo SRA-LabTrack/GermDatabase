@@ -1,14 +1,24 @@
-// Generated from Characterization(2).xlsx. Keep keys stable: Appwrite indexes and seeded rows depend on them.
+// Updated from Characterization and other attributes (1).xlsx. Keep keys stable: Appwrite indexes and seeded rows depend on them.
 export const CHARACTERIZATION_GROUPS = [
   {
     "title": "Germplasm Passport",
     "fields": [
       { "key": "variety", "label": "Variety Name", "type": "text" },
       { "key": "accession_number", "label": "Accession Number", "type": "text" },
-      { "key": "origin", "label": "Origin", "type": "text" },
       { "key": "collection_year", "label": "Collection Year", "type": "text" },
-      { "key": "species", "label": "Species", "type": "text" },
       { "key": "recommended_locations", "label": "Recommended Locations", "type": "textarea" }
+    ]
+  },
+  {
+    "title": "Origin & Other Attributes",
+    "fields": [
+      { "key": "origin", "label": "Country", "type": "text", "newTrait": true },
+      { "key": "breeding_institution_developer_breeder", "label": "Breeding Institution/Developer/Breeder", "type": "text", "newTrait": true },
+      { "key": "collection_scope", "label": "Local/International Collection", "type": "text", "newTrait": true },
+      { "key": "species", "label": "Species", "type": "text", "newTrait": true },
+      { "key": "genetic_background", "label": "Type/Genetic Back Ground", "type": "text", "newTrait": true },
+      { "key": "other_details", "label": "Other details", "type": "textarea", "newTrait": true },
+      { "key": "lot_planted_station", "label": "Lot Planted in the station", "type": "text", "newTrait": true }
     ]
   },
   {
@@ -397,12 +407,7 @@ export const CHARACTERIZATION_GROUPS = [
 // hydrated for every existing record even when the older Appwrite row has
 // never stored a value for them yet.
 export const NEW_TEMPLATE_GROUP_TITLES = Object.freeze([
-  'Germplasm Passport',
-  'Parentage',
-  'Yield Potential',
-  'Agronomic Characteristics',
-  'Pest and Diseases',
-  'Tested Location'
+  'Origin & Other Attributes'
 ]);
 
 export const CHARACTERIZATION_FIELDS = CHARACTERIZATION_GROUPS.flatMap((group) =>

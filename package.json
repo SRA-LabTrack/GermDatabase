@@ -1,8 +1,8 @@
 {
   "name": "canesprout-registry",
   "private": true,
-  "version": "2.13.14",
-  "description": "Sugarcane Germplasm Resource Database unified web + Electron offline-first edition with shared cross-fading photo login showcase, local desktop enrollment, persistent offline mutation queues, and paced Appwrite reconnect sync.",
+  "version": "2.13.15",
+  "description": "Sugarcane Germplasm Resource Database unified web + Electron offline-first edition with red-font Origin/other attributes, A:CH Excel support, local desktop enrollment, persistent offline mutation queues, and paced Appwrite reconnect sync.",
   "main": "electron/main.cjs",
   "author": "SRA-LabTrack",
   "type": "module",
@@ -27,7 +27,8 @@
     "audit:combination-duplicates": "node scripts/audit-combination-duplicates.mjs",
     "cleanup:combination-duplicates": "node scripts/cleanup-combination-duplicates.mjs",
     "desktop:verify": "node scripts/verify-desktop-offline.mjs",
-    "audit:variety-identities-local": "node scripts/audit-variety-identities-local.mjs"
+    "audit:variety-identities-local": "node scripts/audit-variety-identities-local.mjs",
+    "audit:red-traits-local": "node scripts/audit-red-traits-local.mjs"
   },
   "dependencies": {
     "appwrite": "^26.2.0",

@@ -22,7 +22,7 @@ function Field({ field, value, onChange }) {
     'aria-required': required ? 'true' : undefined
   };
   return (
-    <label className={`form-field ${field.type === 'textarea' ? 'wide' : ''} ${required ? 'required-field' : ''}`}>
+    <label className={`form-field ${field.type === 'textarea' ? 'wide' : ''} ${required ? 'required-field' : ''} ${field.newTrait ? 'new-trait-field' : ''}`}>
       <span>{field.label}<i>{required ? 'Required' : 'Optional'}</i></span>
       {field.type === 'textarea' ? (
         <textarea {...common} rows={4} placeholder={required ? 'Required' : 'Optional'} />

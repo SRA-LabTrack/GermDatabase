@@ -133,3 +133,6 @@ v2.13.7 note: the three login showcase boxes were rebalanced to stay readable wi
 
 ## v2.13.13
 Mobile phone layouts now use a single collapsible tools button. The dropdown presents registry, Excel, combination, admin, offline, backup, update, and sign-out actions in a vertical list, while desktop and laptop layouts keep the full toolbar.
+
+## v2.13.15 red-font Origin and other attributes
+The shared web/Electron data model now includes the red-font attributes from `Characterization and other attributes (1).xlsx`: Country, Breeding Institution/Developer/Breeder, Local/International Collection, Species, Type/Genetic Back Ground, Other details, and Lot Planted in the station. The bundled 950-record snapshot carries the available source values locally, while Appwrite values remain authoritative when present. The official import workbook is now the A:CH `CaneSprout-Characterization-and-Attributes-v2.13.15.xlsx` template.

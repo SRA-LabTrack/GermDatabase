@@ -20,7 +20,7 @@ const spacingHyphenOnly = duplicates.filter(([, values]) => {
   const cleanedUpper = new Set(values.map((row) => String(row.clean || '').toUpperCase()));
   return rawUpper.size > 1 && cleanedUpper.size === 1;
 });
-console.log('\nCaneSprout local variety identity audit v2.13.9');
+console.log('\nCaneSprout local variety identity audit v2.13.15');
 console.log(`Bundled records: ${rows.length}`);
 console.log(`Canonical nonblank identities: ${groups.size}`);
 console.log(`Canonical duplicate groups: ${duplicates.length}`);

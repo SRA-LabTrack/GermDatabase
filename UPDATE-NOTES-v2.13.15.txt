@@ -1,0 +1,20 @@
+CaneSprout Registry v2.13.15
+
+RED-FONT TRAITS + NEW EXCEL FORMAT
+
+New red-font traits from Characterization and other attributes (1).xlsx:
+- Country
+- Breeding Institution/Developer/Breeder
+- Local/International Collection
+- Species
+- Type/Genetic Back Ground
+- Other details
+- Lot Planted in the station
+
+Implementation:
+- Shared website + Electron data model updated.
+- New traits render with red labels in forms, profile details, registry preview, and spreadsheet editor headers.
+- Bundled 950-record registry enriched locally from the uploaded workbook, so reference values can display without hundreds of Appwrite writes.
+- Existing Appwrite values always override the bundled reference baseline.
+- Excel importer now supports the official A:CH v2.13.15 workbook while retaining v2.7.3, v2.7.2, legacy SRA HYV, and single-header import compatibility.
+- Official downloadable template updated to CaneSprout-Characterization-and-Attributes-v2.13.15.xlsx.

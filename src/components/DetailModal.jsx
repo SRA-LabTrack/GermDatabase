@@ -129,8 +129,8 @@ export default function DetailModal({ recordId, onClose, onEdit, onDeleted, onQu
                   <strong>{shown(record.accession_number)}</strong>
                 </div>
 
-                <div>
-                  <small>Origin</small>
+                <div className="new-trait-preview">
+                  <small>Country</small>
                   <strong>{shown(record.origin)}</strong>
                 </div>
 
@@ -139,7 +139,7 @@ export default function DetailModal({ recordId, onClose, onEdit, onDeleted, onQu
                   <strong>{shown(record.collection_year)}</strong>
                 </div>
 
-                <div>
+                <div className="new-trait-preview">
                   <small>Species</small>
                   <strong>{shown(record.species)}</strong>
                 </div>
@@ -231,7 +231,7 @@ export default function DetailModal({ recordId, onClose, onEdit, onDeleted, onQu
                     </div>
                     <div className="detail-grid">
                       {fields.map((field) => (
-                        <div key={field.key}>
+                        <div key={field.key} className={field.newTrait ? 'new-trait-detail' : ''}>
                           <small>{field.label}</small>
                           <strong>{shown(record[field.key], 'Not provided')}</strong>
                         </div>

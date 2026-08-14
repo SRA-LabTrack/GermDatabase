@@ -1,7 +1,46 @@
 import { CHARACTERIZATION_FIELDS } from './characterizationFields';
 
-export const CANONICAL_TEMPLATE_PATH = '/templates/CaneSprout-Variety-Import-Template-v2.7.3.xlsx';
-export const CANONICAL_TEMPLATE_NAME = 'CaneSprout Variety Import Template v2.7.3';
+export const CANONICAL_TEMPLATE_PATH = '/templates/CaneSprout-Characterization-and-Attributes-v2.13.15.xlsx';
+export const CANONICAL_TEMPLATE_NAME = 'CaneSprout Characterization and Other Attributes v2.13.15';
+
+
+const ATTRIBUTES_V21315_SIGNATURE = Object.freeze([
+  [0, 60, 'parentage'], [1, 60, 'female'], [1, 61, 'male'],
+  [0, 62, 'yield_potential'], [1, 62, 'lkg_tc'], [1, 63, 'tc_ha'],
+  [0, 64, 'agronomic_characteristics'], [1, 73, 'reaction_diseases'],
+  [0, 74, 'tested_location'], [0, 75, 'photo_and_documentation'],
+  [0, 79, 'origin'], [1, 79, 'country'],
+  [1, 80, 'breeding_institution_developer_breeder'],
+  [1, 81, 'local_international_collection'], [1, 82, 'species'],
+  [1, 83, 'type_genetic_back_ground'], [1, 84, 'other_details'],
+  [0, 85, 'lot_planted_in_the_station']
+]);
+
+const PASSPORT_NON_POSITIONAL_KEYS = new Set([
+  'accession_number', 'origin', 'collection_year', 'species', 'recommended_locations',
+  'breeding_institution_developer_breeder', 'collection_scope', 'genetic_background',
+  'other_details', 'lot_planted_station'
+]);
+
+// A:BW matches the characterization source positions used by the new A:CH
+// workbook and by the older v2.7.2 workbook. The v2.7.3 template inserted one
+// internal SRA HYV description column before disease/tested-location.
+const POSITIONAL_V272_FIELDS = CHARACTERIZATION_FIELDS.filter((field) =>
+  !PASSPORT_NON_POSITIONAL_KEYS.has(field.key) && field.key !== 'agronomic_characteristics_summary'
+);
+const POSITIONAL_V273_FIELDS = CHARACTERIZATION_FIELDS.filter((field) =>
+  !PASSPORT_NON_POSITIONAL_KEYS.has(field.key)
+);
+
+const RED_ATTRIBUTE_COLUMNS = Object.freeze([
+  [79, 'origin'],
+  [80, 'breeding_institution_developer_breeder'],
+  [81, 'collection_scope'],
+  [82, 'species'],
+  [83, 'genetic_background'],
+  [84, 'other_details'],
+  [85, 'lot_planted_station']
+]);
 
 const CANONICAL_SIGNATURE = Object.freeze([
   [0, 60, 'parentage'],
@@ -24,6 +63,10 @@ function normalizedHeader(value) {
 
 function cleanText(value) {
   return String(value == null ? '' : value).replace(/\s+/g, ' ').trim();
+}
+
+function isAttributesV21315Template(matrix) {
+  return ATTRIBUTES_V21315_SIGNATURE.every(([row, column, expected]) => normalizedHeader(matrix?.[row]?.[column]) === expected);
 }
 
 function isCanonicalTemplate(matrix) {
@@ -97,10 +140,11 @@ function parseLegacySraHyv(matrix, fileName) {
 
 /**
  * Supports:
- * 1) CaneSprout canonical A:CB v2.7.3 workbook,
- * 2) the earlier A:CA / A:BW characterization workbooks,
- * 3) the SRA-BRED HIGH YIELDING VARIETIES A:H legacy .xls sheets,
- * 4) simple one-row headers using field keys or labels.
+ * 1) CaneSprout A:CH v2.13.15 characterization + red-font attributes workbook,
+ * 2) CaneSprout canonical A:CB v2.7.3 workbook,
+ * 3) the earlier A:CA / A:BW characterization workbooks,
+ * 4) the SRA-BRED HIGH YIELDING VARIETIES A:H legacy .xls sheets,
+ * 5) simple one-row headers using field keys or labels.
  */
 export async function parseCharacterizationExcel(file) {
   const XLSX = await import('xlsx');
@@ -141,27 +185,32 @@ export async function parseCharacterizationExcel(file) {
 
   const secondRowLooksLikeSource = normalizedHeader(matrix?.[1]?.[0]) === 'variety' && matrix[1].length >= 50;
   if (secondRowLooksLikeSource) {
-    const canonical = isCanonicalTemplate(matrix);
-    const oldV272 = !canonical && isV272Template(matrix);
+    const attributesV21315 = isAttributesV21315Template(matrix);
+    const canonicalV273 = !attributesV21315 && isCanonicalTemplate(matrix);
+    const oldV272 = !attributesV21315 && !canonicalV273 && isV272Template(matrix);
     const rows = matrix.slice(2).map((values, index) => {
       const record = { source_name: file.name || 'Excel import', source_row: index + 3 };
-      if (oldV272) {
-        // v2.7.2 had 75 traits in A:BW and photo headings in BX:CA. Keep
-        // its last two trait columns aligned instead of shifting them into the
-        // new v2.7.3 agronomic-description column.
-        CHARACTERIZATION_FIELDS.slice(0, 73).forEach((field, column) => {
+
+      if (canonicalV273) {
+        POSITIONAL_V273_FIELDS.forEach((field, column) => {
+          const value = values[column];
+          record[field.key] = value == null ? '' : String(value).trim();
+        });
+      } else {
+        // v2.13.15 and v2.7.2 both keep the physical characterization traits
+        // aligned in A:BW. BX:CA are photo-documentation descriptors and are
+        // intentionally not imported as text traits.
+        POSITIONAL_V272_FIELDS.forEach((field, column) => {
           const value = values[column];
           record[field.key] = value == null ? '' : String(value).trim();
         });
         record.agronomic_characteristics_summary = '';
-        record.disease_reaction = values[73] == null ? '' : String(values[73]).trim();
-        record.tested_location = values[74] == null ? '' : String(values[74]).trim();
-      } else {
-        // Canonical trait data occupies A:BX in v2.7.3. BY:CB are photo
-        // documentation headings and remain managed by CaneSprout's image uploader.
-        CHARACTERIZATION_FIELDS.forEach((field, column) => {
+      }
+
+      if (attributesV21315) {
+        RED_ATTRIBUTE_COLUMNS.forEach(([column, key]) => {
           const value = values[column];
-          record[field.key] = value == null ? '' : String(value).trim();
+          record[key] = value == null ? '' : String(value).trim();
         });
       }
       return record;
@@ -170,8 +219,15 @@ export async function parseCharacterizationExcel(file) {
     return {
       rows,
       sheetName,
-      layout: canonical ? 'CaneSprout canonical A:CB v2.7.3' : oldV272 ? 'CaneSprout canonical A:CA v2.7.2' : 'Characterization traits layout',
-      canonicalTemplate: canonical,
+      layout: attributesV21315
+        ? 'CaneSprout characterization + attributes A:CH v2.13.15'
+        : canonicalV273
+          ? 'CaneSprout canonical A:CB v2.7.3'
+          : oldV272
+            ? 'CaneSprout canonical A:CA v2.7.2'
+            : 'Characterization traits layout',
+      canonicalTemplate: attributesV21315 || canonicalV273,
+      redAttributeTemplate: attributesV21315,
       smartUpsertRecommended: true
     };
   }
