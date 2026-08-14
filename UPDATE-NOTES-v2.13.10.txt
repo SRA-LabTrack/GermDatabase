@@ -1,0 +1,11 @@
+CaneSprout Registry v2.13.10
+
+Responsive toolbar fix for website and Electron.
+
+- Removed the desktop-width horizontal-scroll toolbar behavior on viewports below 1180px.
+- Laptop/desktop retains the full toolbar.
+- Tablet uses a two-row adaptive toolbar.
+- Mobile uses a compact brand/status/account top row with a full-width tool row.
+- Very narrow phones progressively hide labels before controls can overlap.
+- Prevents horizontal page overflow while preserving all toolbar actions.
+- Same responsive CSS applies to the website and narrow Electron windows.

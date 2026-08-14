@@ -9227,3 +9227,443 @@ body:has(.export-excel-modal) #cs-bg-settings-button {
     border-radius: 22px !important;
   }
 }
+
+
+/* ========================================================================== 
+   v2.13.10 RESPONSIVE DEVICE TOOLBAR
+   Desktop/laptop keeps the full four-lane toolbar. Below 1180px the toolbar
+   becomes a real two-row responsive layout instead of preserving a desktop-
+   width strip and horizontally scrolling it inside a phone viewport.
+   ========================================================================== */
+@media (max-width: 1180px) {
+  html,
+  body,
+  #root,
+  .app-shell {
+    max-width: 100% !important;
+    overflow-x: clip !important;
+  }
+
+  .reference-toolbar {
+    box-sizing: border-box !important;
+    position: sticky !important;
+    top: 6px !important;
+    width: calc(100% - 16px) !important;
+    max-width: calc(100vw - 16px) !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: auto !important;
+    margin: 8px auto 0 !important;
+    padding: 8px !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto auto !important;
+    grid-template-rows: 64px 60px !important;
+    gap: 7px !important;
+    align-items: stretch !important;
+    justify-content: stretch !important;
+    overflow: visible !important;
+    border-radius: 24px !important;
+  }
+
+  .reference-toolbar > .toolbar-brand-panel,
+  .reference-toolbar > nav.toolbar-main-actions,
+  .reference-toolbar > .toolbar-status-card,
+  .reference-toolbar > .toolbar-account-card {
+    position: relative !important;
+    inset: auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    height: auto !important;
+    margin: 0 !important;
+    overflow: visible !important;
+  }
+
+  .reference-toolbar > .toolbar-brand-panel {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    padding: 7px 10px !important;
+    border-radius: 17px !important;
+  }
+
+  .reference-toolbar .toolbar-brand-panel .brand {
+    width: 100% !important;
+    height: 100% !important;
+    display: grid !important;
+    grid-template-columns: 42px minmax(0, 1fr) !important;
+    align-items: center !important;
+    gap: 8px !important;
+    overflow: hidden !important;
+  }
+
+  .reference-toolbar .toolbar-brand-panel .brand-badge,
+  .reference-toolbar .toolbar-brand-panel .brand > span:first-child {
+    display: grid !important;
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    min-height: 42px !important;
+    max-width: 42px !important;
+    max-height: 42px !important;
+    border-radius: 13px !important;
+  }
+
+  .reference-toolbar .toolbar-brand-panel .brand-copy,
+  .reference-toolbar .toolbar-brand-panel .brand > span:last-child {
+    display: grid !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    gap: 1px !important;
+  }
+
+  .reference-toolbar .toolbar-brand-panel .brand strong {
+    display: grid !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    font-size: 12px !important;
+    line-height: 1 !important;
+    transform: none !important;
+    overflow: hidden !important;
+  }
+
+  .reference-toolbar .toolbar-brand-panel .brand strong > span {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .reference-toolbar .toolbar-brand-panel .brand small {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    font-size: 7.5px !important;
+    line-height: 1.05 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .reference-toolbar > .toolbar-status-card {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    min-width: 118px !important;
+    height: 64px !important;
+    padding: 8px 10px !important;
+    border-radius: 17px !important;
+    gap: 7px !important;
+  }
+
+  .reference-toolbar > .toolbar-status-card > span {
+    display: flex !important;
+    min-width: 0 !important;
+  }
+
+  .reference-toolbar > .toolbar-status-card b {
+    font-size: 12px !important;
+  }
+
+  .reference-toolbar > .toolbar-status-card small {
+    display: none !important;
+  }
+
+  .reference-toolbar > .toolbar-account-card {
+    grid-column: 3 !important;
+    grid-row: 1 !important;
+    height: 64px !important;
+    min-width: 148px !important;
+    padding: 7px !important;
+    grid-template-columns: 38px minmax(0, 1fr) 34px 34px !important;
+    gap: 4px !important;
+    border-radius: 17px !important;
+  }
+
+  .reference-toolbar .toolbar-avatar {
+    display: grid !important;
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    min-height: 38px !important;
+    max-width: 38px !important;
+    max-height: 38px !important;
+    border-radius: 12px !important;
+  }
+
+  .reference-toolbar .toolbar-account-card .user-chip {
+    display: flex !important;
+    min-width: 0 !important;
+  }
+
+  .reference-toolbar .toolbar-account-card .user-chip b {
+    font-size: 11px !important;
+  }
+
+  .reference-toolbar .toolbar-account-card .user-chip small {
+    display: none !important;
+  }
+
+  .reference-toolbar .toolbar-more,
+  .reference-toolbar .toolbar-signout,
+  .reference-toolbar .toolbar-more > summary,
+  .reference-toolbar .toolbar-signout {
+    width: 34px !important;
+    min-width: 34px !important;
+    max-width: 34px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    max-height: 34px !important;
+  }
+
+  .reference-toolbar > nav.toolbar-main-actions,
+  .reference-toolbar.topbar > nav.toolbar-main-actions {
+    grid-column: 1 / -1 !important;
+    grid-row: 2 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 60px !important;
+    padding: 0 !important;
+    display: grid !important;
+    gap: 5px !important;
+    overflow: hidden !important;
+  }
+
+  .reference-toolbar.admin-toolbar > nav.toolbar-main-actions {
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  }
+
+  .reference-toolbar.user-toolbar > nav.toolbar-main-actions {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+
+  .reference-toolbar > nav.toolbar-main-actions > *,
+  .reference-toolbar > nav.toolbar-main-actions.segmented-toolbar > .excel-tools-segment,
+  .reference-toolbar .excel-tools-toggle {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    height: 60px !important;
+    min-height: 60px !important;
+    max-height: 60px !important;
+    margin: 0 !important;
+    padding: 7px 6px !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+  }
+
+  .reference-toolbar > nav.toolbar-main-actions > * span,
+  .reference-toolbar .excel-tools-toggle > span,
+  .reference-toolbar .toolbar-combinations > span {
+    display: block !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    font-size: 10px !important;
+    line-height: 1.03 !important;
+    white-space: normal !important;
+    overflow: hidden !important;
+    text-overflow: clip !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .reference-toolbar {
+    top: 4px !important;
+    width: calc(100% - 10px) !important;
+    max-width: calc(100vw - 10px) !important;
+    margin-top: 5px !important;
+    padding: 6px !important;
+    grid-template-columns: minmax(0, 1fr) 46px 84px !important;
+    grid-template-rows: 58px 54px !important;
+    gap: 5px !important;
+    border-radius: 19px !important;
+  }
+
+  .reference-toolbar > .toolbar-brand-panel {
+    padding: 6px 8px !important;
+    border-radius: 14px !important;
+  }
+
+  .reference-toolbar .toolbar-brand-panel .brand {
+    grid-template-columns: 38px minmax(0, 1fr) !important;
+    gap: 7px !important;
+  }
+
+  .reference-toolbar .toolbar-brand-panel .brand-badge,
+  .reference-toolbar .toolbar-brand-panel .brand > span:first-child {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    min-height: 38px !important;
+    max-width: 38px !important;
+    max-height: 38px !important;
+    border-radius: 11px !important;
+  }
+
+  .reference-toolbar .toolbar-brand-panel .brand strong {
+    font-size: 10.5px !important;
+  }
+
+  .reference-toolbar .toolbar-brand-panel .brand small {
+    font-size: 6.8px !important;
+  }
+
+  .reference-toolbar > .toolbar-status-card {
+    min-width: 0 !important;
+    width: 46px !important;
+    height: 58px !important;
+    padding: 0 !important;
+    justify-content: center !important;
+    border-radius: 14px !important;
+  }
+
+  .reference-toolbar > .toolbar-status-card > span {
+    display: none !important;
+  }
+
+  .reference-toolbar > .toolbar-account-card {
+    min-width: 0 !important;
+    width: 84px !important;
+    height: 58px !important;
+    padding: 5px !important;
+    grid-template-columns: 34px 34px !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    border-radius: 14px !important;
+  }
+
+  .reference-toolbar .toolbar-avatar,
+  .reference-toolbar .toolbar-account-card .user-chip {
+    display: none !important;
+  }
+
+  .reference-toolbar > nav.toolbar-main-actions,
+  .reference-toolbar.topbar > nav.toolbar-main-actions {
+    height: 54px !important;
+    gap: 4px !important;
+  }
+
+  .reference-toolbar > nav.toolbar-main-actions > *,
+  .reference-toolbar > nav.toolbar-main-actions.segmented-toolbar > .excel-tools-segment,
+  .reference-toolbar .excel-tools-toggle {
+    height: 54px !important;
+    min-height: 54px !important;
+    max-height: 54px !important;
+    padding: 5px 4px !important;
+    gap: 4px !important;
+    border-radius: 12px !important;
+  }
+
+  .reference-toolbar > nav.toolbar-main-actions > * svg,
+  .reference-toolbar .excel-tools-toggle svg {
+    width: 18px !important;
+    height: 18px !important;
+    flex: 0 0 18px !important;
+  }
+
+  .reference-toolbar > nav.toolbar-main-actions > * span,
+  .reference-toolbar .excel-tools-toggle > span,
+  .reference-toolbar .toolbar-combinations > span {
+    font-size: 8.8px !important;
+    line-height: 1 !important;
+  }
+
+  .reference-toolbar .excel-tools-chevron {
+    display: none !important;
+  }
+}
+
+@media (max-width: 540px) {
+  .reference-toolbar {
+    grid-template-columns: minmax(0, 1fr) 42px 76px !important;
+    grid-template-rows: 54px 50px !important;
+  }
+
+  .reference-toolbar .toolbar-brand-panel .brand {
+    grid-template-columns: 34px minmax(0, 1fr) !important;
+    gap: 6px !important;
+  }
+
+  .reference-toolbar .toolbar-brand-panel .brand-badge,
+  .reference-toolbar .toolbar-brand-panel .brand > span:first-child {
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    min-height: 34px !important;
+    max-width: 34px !important;
+    max-height: 34px !important;
+  }
+
+  .reference-toolbar .toolbar-brand-panel .brand strong {
+    font-size: 9.4px !important;
+  }
+
+  .reference-toolbar .toolbar-brand-panel .brand small {
+    display: none !important;
+  }
+
+  .reference-toolbar > .toolbar-status-card {
+    width: 42px !important;
+    height: 54px !important;
+  }
+
+  .reference-toolbar > .toolbar-account-card {
+    width: 76px !important;
+    height: 54px !important;
+    grid-template-columns: 31px 31px !important;
+    gap: 3px !important;
+  }
+
+  .reference-toolbar .toolbar-more,
+  .reference-toolbar .toolbar-signout,
+  .reference-toolbar .toolbar-more > summary,
+  .reference-toolbar .toolbar-signout {
+    width: 31px !important;
+    min-width: 31px !important;
+    max-width: 31px !important;
+    height: 31px !important;
+    min-height: 31px !important;
+    max-height: 31px !important;
+  }
+
+  .reference-toolbar > nav.toolbar-main-actions,
+  .reference-toolbar.topbar > nav.toolbar-main-actions,
+  .reference-toolbar > nav.toolbar-main-actions > *,
+  .reference-toolbar > nav.toolbar-main-actions.segmented-toolbar > .excel-tools-segment,
+  .reference-toolbar .excel-tools-toggle {
+    height: 50px !important;
+    min-height: 50px !important;
+    max-height: 50px !important;
+  }
+
+  .reference-toolbar > nav.toolbar-main-actions > * span,
+  .reference-toolbar .excel-tools-toggle > span,
+  .reference-toolbar .toolbar-combinations > span {
+    display: none !important;
+  }
+
+  .reference-toolbar > nav.toolbar-main-actions > *,
+  .reference-toolbar .excel-tools-toggle {
+    justify-content: center !important;
+    padding: 0 !important;
+    gap: 0 !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .reference-toolbar {
+    width: calc(100% - 6px) !important;
+    max-width: calc(100vw - 6px) !important;
+    padding: 4px !important;
+    gap: 3px !important;
+    grid-template-columns: minmax(0, 1fr) 40px 70px !important;
+  }
+
+  .reference-toolbar .toolbar-brand-panel .brand strong {
+    font-size: 8.7px !important;
+  }
+}
