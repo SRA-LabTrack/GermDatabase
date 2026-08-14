@@ -114,3 +114,6 @@ The authenticated header now uses one continuous rounded glass toolbar inspired 
 ## v2.5 administrator approval workflow
 
 CaneSprout uses the Appwrite label `canesproutadmin` for administrator authority. Signed-in users can browse live records and submit new registrations/edits for approval. Administrators can approve/reject those requests, delete live records, import workbooks, create accounts, and grant/revoke administrator authority. Privileged user-management actions are isolated to the server-only `/api/admin-accounts` endpoint; routine registry operations continue to use the Appwrite Web SDK directly.
+
+
+v2.13.1 note: refreshed the Electron login screen into a germplasm showcase layout that uses the built-in photo cross-fade background, with the sign-in form preserved and offline desktop messaging retained.

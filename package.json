@@ -1,7 +1,7 @@
 {
   "name": "canesprout-registry",
   "private": true,
-  "version": "2.13.0",
+  "version": "2.13.1",
   "description": "Sugarcane Germplasm Resource Database desktop-first Electron edition with one-login offline access, OS-protected local credential vault, bundled registry/combination data, persistent IndexedDB mutation queues, and paced reconnect sync to Appwrite.",
   "main": "electron/main.cjs",
   "author": "SRA-LabTrack",

@@ -58,7 +58,7 @@ const SpreadsheetEditorModal = lazy(() => import('./components/SpreadsheetEditor
 const CombinationRegistryModal = lazy(() => import('./components/CombinationRegistryModal.jsx'));
 
 const APP_NAME = 'Sugarcane Germplasm Resource Database';
-const APP_VERSION = '2.13.0';
+const APP_VERSION = '2.13.1';
 const USER_CACHE_KEY = 'sugarcane-registry-user-v230';
 const ROLE_REFRESH_PREFIX = 'canesprout-role-refresh-v251:';
 const MANUAL_REFRESH_COOLDOWN_MS = 30_000;
@@ -201,50 +201,74 @@ function AuthScreen({ onSignedIn }) {
     : (!networkOnline && window.germDesktop?.isDesktop ? 'Open offline workspace' : 'Sign in');
 
   return (
-    <main className="auth-shell">
-      <section className="auth-art">
-        <div className="auth-orb orb-one" />
-        <div className="auth-orb orb-two" />
-        <div className="auth-field-lines" aria-hidden="true" />
-        <div className="auth-copy">
-          <span className="eyebrow"><SugarcaneIcon size={16} /> Sugarcane genetic resources</span>
-          <h1>Exploring the Genetic Wealth of Sugarcane Diversity</h1>
-          <p>A Digital Repository for Characterization, Conservation, and Utilization of Sugarcane Genetic Resources.</p>
-          <div className="crop-flow compact-flow" aria-label="Sugarcane record workflow">
-            <span><SugarcaneIcon size={15} /> Characterization</span><i />
-            <span><Droplets size={15} /> Emergence</span><i />
-            <span><SugarcaneIcon size={15} /> Conservation</span><i />
-            <span><SugarcaneIcon size={15} /> Utilization</span>
-          </div>
-          <div className="auth-metrics">
-            <span><strong>{SOURCE_RECORD_COUNT}</strong> characterization entries</span>
-            <span><strong>{CHARACTERIZATION_FIELDS.length}</strong> optional varietal traits</span>
-          </div>
-        </div>
-      </section>
-      <section className="auth-panel">
-        <div className="auth-card">
-          <Brand />
-          <div className="auth-heading"><small>{window.germDesktop?.isDesktop ? 'Desktop local-first workspace' : 'Welcome back'}</small><h2>Sign in to the germplasm database</h2></div>
-          {window.germDesktop?.isDesktop && (
-            <div className={`desktop-offline-login-state ${desktopReady ? 'ready' : 'setup'}`}>
-              {desktopReady ? <CheckCircle2 size={17} /> : <CloudOff size={17} />}
-              <span>
-                <strong>{desktopReady ? 'Offline desktop access ready' : 'First sign-in enrolls this PC'}</strong>
-                <small>{desktopReady ? `This device can open ${desktopProfile?.user?.email || 'the enrolled account'} without internet.` : 'After one successful online sign-in, CaneSprout can open and save changes with no internet connection.'}</small>
-              </span>
+    <main className="auth-shell auth-shell-showcase">
+      <section className="auth-landing">
+        <div className="auth-hero-panel">
+          <div className="auth-showcase-copy">
+            <span className="eyebrow"><SugarcaneIcon size={16} /> About Germplasm</span>
+            <h1>What is Sugarcane Germplasm?</h1>
+            <p>
+              Sugarcane germplasm represents the diverse genetic resources preserved for research,
+              conservation, and breeding. These collections provide valuable traits that support the
+              development of improved sugarcane varieties with higher productivity, resilience, and adaptability.
+            </p>
+            <div className="auth-metrics auth-metrics-showcase">
+              <span><strong>{SOURCE_RECORD_COUNT}</strong> characterization entries</span>
+              <span><strong>{CHARACTERIZATION_FIELDS.length}</strong> optional varietal traits</span>
             </div>
-          )}
-          <form onSubmit={submit}>
-            <label><span>Email</span><input type="email" required value={form.email} onChange={(event) => { setError(''); setForm({ ...form, email: event.target.value }); }} /></label>
-            <label><span>Password</span><input type="password" required minLength={8} value={form.password} onChange={(event) => { setError(''); setForm({ ...form, password: event.target.value }); }} /></label>
-            {error && <div className="alert error">{error}</div>}
-            <button className="primary-button full" disabled={busy || (!networkOnline && window.germDesktop?.isDesktop && !desktopReady)}>
-              {busy && <LoaderCircle className="spin" size={17} />} {submitLabel}
-            </button>
-          </form>
-          <p className="auth-admin-note">{window.germDesktop?.isDesktop ? 'The installed desktop app keeps its registry, combination history, queued changes, and enrolled account on this PC. Signing out explicitly removes this device login.' : 'Accounts are created and assigned roles by a Sugarcane Germplasm Resource Database administrator.'}</p>
+          </div>
+          <div className="auth-showcase-pillars" aria-label="Sugarcane germplasm pillars">
+            <article className="auth-showcase-card">
+              <span className="auth-showcase-icon"><SugarcaneIcon size={22} /></span>
+              <h3>Characterization</h3>
+              <p>Compare morphological, agronomic, yield, parentage, and disease-response traits.</p>
+            </article>
+            <article className="auth-showcase-card">
+              <span className="auth-showcase-icon"><SugarcaneIcon size={22} /></span>
+              <h3>Conservation</h3>
+              <p>Preserve valuable sugarcane genetic resources and their documented identity.</p>
+            </article>
+            <article className="auth-showcase-card">
+              <span className="auth-showcase-icon"><SugarcaneIcon size={22} /></span>
+              <h3>Utilization</h3>
+              <p>Support research, breeding, crop improvement, and informed variety selection.</p>
+            </article>
+          </div>
         </div>
+
+        <section className="auth-panel auth-panel-showcase">
+          <div className="auth-card auth-login-card">
+            <Brand />
+            <div className="auth-heading">
+              <small>{window.germDesktop?.isDesktop ? 'Desktop local-first workspace' : 'Welcome back'}</small>
+              <h2>Sign in to the germplasm database</h2>
+            </div>
+            {window.germDesktop?.isDesktop && (
+              <div className={`desktop-offline-login-state ${desktopReady ? 'ready' : 'setup'}`}>
+                {desktopReady ? <CheckCircle2 size={17} /> : <CloudOff size={17} />}
+                <span>
+                  <strong>{desktopReady ? 'Offline desktop access ready' : 'First sign-in enrolls this PC'}</strong>
+                  <small>{desktopReady ? `This device can open ${desktopProfile?.user?.email || 'the enrolled account'} without internet.` : 'After one successful online sign-in, CaneSprout can open and save changes with no internet connection.'}</small>
+                </span>
+              </div>
+            )}
+            <form onSubmit={submit}>
+              <label><span>Email</span><input type="email" required value={form.email} onChange={(event) => { setError(''); setForm({ ...form, email: event.target.value }); }} /></label>
+              <label><span>Password</span><input type="password" required minLength={8} value={form.password} onChange={(event) => { setError(''); setForm({ ...form, password: event.target.value }); }} /></label>
+              {error && <div className="alert error">{error}</div>}
+              <button className="primary-button full" disabled={busy || (!networkOnline && window.germDesktop?.isDesktop && !desktopReady)}>
+                {busy && <LoaderCircle className="spin" size={17} />} {submitLabel}
+              </button>
+            </form>
+            <div className="crop-flow compact-flow auth-login-pills" aria-label="Sugarcane record workflow">
+              <span><SugarcaneIcon size={15} /> Characterization</span><i />
+              <span><Droplets size={15} /> Emergence</span><i />
+              <span><SugarcaneIcon size={15} /> Conservation</span><i />
+              <span><SugarcaneIcon size={15} /> Utilization</span>
+            </div>
+            <p className="auth-admin-note">{window.germDesktop?.isDesktop ? 'The installed desktop app keeps its registry, combination history, queued changes, and enrolled account on this PC. Signing out explicitly removes this device login.' : 'Accounts are created and assigned roles by a Sugarcane Germplasm Resource Database administrator.'}</p>
+          </div>
+        </section>
       </section>
     </main>
   );
