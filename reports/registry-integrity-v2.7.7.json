@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-13T02:56:03.608Z",
+  "generated_at": "2026-08-14T01:10:28.112Z",
   "mode": "read-only",
   "scanned": {
-    "core_records": 950,
-    "detail_records": 950
+    "core_records": 949,
+    "detail_records": 949
   },
   "summary": {
     "canonical_duplicate_groups": 3,
@@ -12,13 +12,13 @@
     "numeric_format_equivalent_groups": 0,
     "repeated_trial_code_groups": 0,
     "repeated_source_row_groups": 0,
-    "blank_varieties": 1,
+    "blank_varieties": 0,
     "missing_details_documents": 0,
     "orphan_details_documents": 0,
     "invalid_traits_json": 0,
     "invalid_details_json": 0,
     "core_detail_variety_mismatches": 0,
-    "total_issue_rows": 7
+    "total_issue_rows": 6
   },
   "canonical_duplicates": [
     {
@@ -611,13 +611,7 @@
   "numeric_format_equivalent": [],
   "repeated_trial_codes": [],
   "repeated_source_rows": [],
-  "blank_varieties": [
-    {
-      "id": "sc_c247fbc716d6b747b5380ae7d7",
-      "source_name": "Characterization.xlsx",
-      "source_row": "895"
-    }
-  ],
+  "blank_varieties": [],
   "missing_details_ids": [],
   "orphan_details_ids": [],
   "invalid_traits_json_ids": [],

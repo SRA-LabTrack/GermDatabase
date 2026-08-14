@@ -117,3 +117,6 @@ CaneSprout uses the Appwrite label `canesproutadmin` for administrator authority
 
 
 v2.13.1 note: refreshed the Electron login screen into a germplasm showcase layout that uses the built-in photo cross-fade background, with the sign-in form preserved and offline desktop messaging retained.
+
+
+v2.13.2 note: updated the Electron desktop login screen to use the website-style photo cross-fade backdrop, the “Sugarcane Germplasm Library” eyebrow label, and a 3-step Characterization / Conservation / Utilization showcase flow.

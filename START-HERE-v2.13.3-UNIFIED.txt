@@ -1,0 +1,33 @@
+CaneSprout Registry v2.13.3 UNIFIED WEB + ELECTRON
+
+LOGIN DESIGN
+- Website and Electron desktop now share the same login screen.
+- Built-in sugarcane photos remain the full-window background slideshow.
+- Background changes every 5 seconds with a 2.5 second cross-fade.
+- Eyebrow: Sugarcane Germplasm Library.
+- Workflow: Characterization -> Conservation -> Utilization.
+- Existing desktop local-first/offline login behavior is preserved.
+
+OFFLINE / DATA
+- 950 bundled germplasm records preserved.
+- 2,293 raw combination audit records preserved.
+- 2,285 canonical runtime combination events preserved.
+- Registry and combination offline queues preserved.
+- Reconnect synchronization remains paced for Appwrite free-plan efficiency.
+
+RUN WEB
+  npm.cmd install
+  npm.cmd run dev
+
+RUN ELECTRON
+  npm.cmd install
+  npm.cmd run desktop:dev
+
+VERIFY + BUILD
+  npm.cmd run desktop:verify
+  npm.cmd run audit:registry-full
+  npm.cmd run audit:combination-duplicates
+  npm.cmd run build
+  npm.cmd run desktop:build:win
+
+No new Appwrite schema migration is required.

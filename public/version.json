@@ -1,7 +1,7 @@
 {
-  "version": "2.13.0",
+  "version": "2.13.3",
   "channel": "stable",
-  "notes": "Electron desktop-first offline edition with one-login local device access, OS-protected sync credential, installed local app/data shell, persistent offline queues, and automatic paced Appwrite sync on reconnect.",
+  "notes": "Unified website and Electron login showcase with the same built-in sugarcane photo cross-fade background, Sugarcane Germplasm Library label, Characterization-Conservation-Utilization flow, and existing offline-first sync architecture.",
   "migration": "combination-registry-v2100",
   "updated": "2026-08-14"
 }

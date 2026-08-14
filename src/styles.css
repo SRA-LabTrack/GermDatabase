@@ -8843,3 +8843,211 @@ body:has(.export-excel-modal) #cs-bg-settings-button {
     padding: 22px 18px;
   }
 }
+
+/* =============================================================
+   v2.13.2 Electron login refinement
+   Website-style hero with photo cross-fade backdrop visible behind glass.
+   ============================================================= */
+.auth-shell-showcase {
+  min-height: 100vh;
+  padding: 28px;
+  background: transparent;
+}
+
+.auth-landing-login {
+  width: min(100%, 1820px);
+}
+
+.auth-hero-panel-login {
+  display: grid;
+  grid-template-columns: minmax(0, 1.42fr) minmax(420px, 560px);
+  gap: 42px;
+  align-items: stretch;
+  padding: 44px 40px;
+  border-radius: 32px;
+  border: 1px solid rgba(255,255,255,.68);
+  background: linear-gradient(135deg, rgba(247,250,242,.72), rgba(247,250,242,.46) 48%, rgba(255,247,205,.42));
+  box-shadow: 0 28px 70px rgba(33, 73, 42, .18);
+  backdrop-filter: blur(14px) saturate(128%);
+  -webkit-backdrop-filter: blur(14px) saturate(128%);
+  overflow: hidden;
+  position: relative;
+}
+
+.auth-hero-panel-login::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 28% 24%, rgba(215, 226, 144, .32), transparent 24%),
+    radial-gradient(circle at 54% 55%, rgba(220, 228, 154, .24), transparent 28%),
+    linear-gradient(100deg, rgba(255,255,255,.08), rgba(255,255,255,0));
+}
+
+.auth-showcase-copy-login,
+.auth-panel-showcase {
+  position: relative;
+  z-index: 1;
+}
+
+.auth-showcase-copy-login {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 18px 8px 18px 6px;
+}
+
+.auth-showcase-copy-login .eyebrow {
+  margin: 0 0 22px;
+  color: #235336;
+}
+
+.auth-showcase-copy-login h1 {
+  margin: 0 0 22px;
+  max-width: 9ch;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(68px, 6.2vw, 104px);
+  line-height: .92;
+  letter-spacing: -.055em;
+  font-weight: 500;
+  color: #133e26;
+}
+
+.auth-showcase-copy-login p {
+  margin: 0;
+  max-width: 940px;
+  font-size: clamp(18px, 1.42vw, 23px);
+  line-height: 1.55;
+  color: rgba(40, 74, 52, .84);
+}
+
+.auth-login-showcase-flow {
+  margin-top: 34px;
+  justify-content: flex-start;
+  gap: 16px;
+  flex-wrap: nowrap;
+}
+
+.auth-login-showcase-flow span {
+  min-width: 172px;
+  justify-content: center;
+  background: rgba(255,255,255,.78);
+  border-color: rgba(41, 85, 51, .14);
+}
+
+.auth-login-showcase-flow i {
+  width: 64px;
+  flex: 0 0 64px;
+}
+
+.auth-metrics-showcase {
+  margin-top: 36px;
+}
+
+.auth-panel-showcase {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+}
+
+.auth-login-card {
+  width: 100%;
+  max-width: 520px;
+  min-height: 100%;
+  padding: 36px 40px;
+  border-radius: 36px;
+  background: rgba(255,255,255,.88);
+  box-shadow: 0 22px 54px rgba(30, 69, 39, .12);
+}
+
+.auth-login-card .brand {
+  margin-bottom: 10px;
+}
+
+.auth-login-card .auth-heading {
+  margin: 26px 0 20px;
+}
+
+.auth-login-card .auth-heading h2 {
+  font-size: clamp(36px, 2.8vw, 56px);
+  line-height: .98;
+}
+
+.auth-login-card form {
+  gap: 14px;
+}
+
+.auth-login-card .auth-admin-note {
+  margin-top: 18px;
+  text-align: center;
+}
+
+@media (max-width: 1440px) {
+  .auth-hero-panel-login {
+    grid-template-columns: minmax(0, 1.18fr) minmax(380px, 500px);
+    gap: 30px;
+    padding: 34px 28px;
+  }
+
+  .auth-showcase-copy-login h1 {
+    font-size: clamp(58px, 5.3vw, 86px);
+  }
+
+  .auth-login-showcase-flow {
+    flex-wrap: wrap;
+  }
+
+  .auth-login-showcase-flow i {
+    display: none;
+  }
+}
+
+@media (max-width: 1180px) {
+  .auth-hero-panel-login {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-showcase-copy-login h1,
+  .auth-showcase-copy-login p {
+    max-width: 100%;
+  }
+
+  .auth-panel-showcase {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 760px) {
+  .auth-shell-showcase {
+    padding: 16px;
+  }
+
+  .auth-hero-panel-login {
+    padding: 22px 18px;
+    border-radius: 24px;
+  }
+
+  .auth-showcase-copy-login h1 {
+    font-size: clamp(42px, 12vw, 58px);
+  }
+
+  .auth-showcase-copy-login p {
+    font-size: 16px;
+  }
+
+  .auth-login-showcase-flow {
+    gap: 10px;
+  }
+
+  .auth-login-showcase-flow span {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .auth-login-card {
+    max-width: 100%;
+    padding: 24px 20px;
+    border-radius: 24px;
+  }
+}
