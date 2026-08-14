@@ -1,5 +1,5 @@
 {
-  "version": "2.13.18",
+  "version": "2.13.19",
   "channel": "stable",
   "notes": "Replaces the mobile multi-row toolbar with a compact collapsible tools menu while preserving the full desktop and laptop toolbar.",
   "migration": "combination-registry-v2100",

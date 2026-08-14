@@ -1,0 +1,9 @@
+CaneSprout Registry v2.13.19
+
+UI icon refinement for website + Electron
+
+- Characterization now uses a Microscope icon.
+- Conservation now uses a ShieldCheck icon.
+- Utilization now uses a Sprout icon.
+- Applied to both the login workflow boxes and the main Characterization / Conservation / Utilization feature cards.
+- No registry data, counters, Excel mappings, Appwrite logic, or offline behavior changed.

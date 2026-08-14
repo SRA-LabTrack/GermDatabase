@@ -136,3 +136,13 @@ Mobile phone layouts now use a single collapsible tools button. The dropdown pre
 
 ## v2.13.15 red-font Origin and other attributes
 The shared web/Electron data model now includes the red-font attributes from `Characterization and other attributes (1).xlsx`: Country, Breeding Institution/Developer/Breeder, Local/International Collection, Species, Type/Genetic Back Ground, Other details, and Lot Planted in the station. The bundled 950-record snapshot carries the available source values locally, while Appwrite values remain authoritative when present. The official import workbook is now the A:CH `CaneSprout-Characterization-and-Attributes-v2.13.15.xlsx` template.
+
+
+v2.13.16: New Origin & Other Attributes fields now use the same neutral label styling as existing characterization fields on both web and Electron.
+
+
+## v2.13.17
+The four germplasm collection cards now show auto-updating local counters for unique accessions, SRA-developed varieties, Local collection, and International collection. Counters react to manual/Excel/offline mutations without polling or repeated Appwrite total scans.
+
+
+v2.13.19 note: Characterization, Conservation, and Utilization now use title-specific Microscope, ShieldCheck, and Sprout icons in both the login workflow and main feature cards.

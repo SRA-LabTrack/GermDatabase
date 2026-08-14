@@ -15,6 +15,7 @@ import {
   LoaderCircle,
   LogOut,
   Maximize2,
+  Microscope,
   Menu,
   Minimize2,
   MoreHorizontal,
@@ -22,6 +23,7 @@ import {
   RefreshCw,
   Search,
   ShieldCheck,
+  Sprout,
   Users,
   X
 } from 'lucide-react';
@@ -61,7 +63,7 @@ const SpreadsheetEditorModal = lazy(() => import('./components/SpreadsheetEditor
 const CombinationRegistryModal = lazy(() => import('./components/CombinationRegistryModal.jsx'));
 
 const APP_NAME = 'Sugarcane Germplasm Resource Database';
-const APP_VERSION = '2.13.18';
+const APP_VERSION = '2.13.19';
 const USER_CACHE_KEY = 'sugarcane-registry-user-v230';
 const ROLE_REFRESH_PREFIX = 'canesprout-role-refresh-v251:';
 const MANUAL_REFRESH_COOLDOWN_MS = 30_000;
@@ -214,9 +216,9 @@ function AuthScreen({ onSignedIn }) {
               A Digital Repository for Characterization, Conservation, and Utilization of Sugarcane Genetic Resources.
             </p>
             <div className="crop-flow compact-flow auth-login-showcase-flow" aria-label="Sugarcane germplasm workflow">
-              <span><SugarcaneIcon size={15} /> Characterization</span><i />
-              <span><SugarcaneIcon size={15} /> Conservation</span><i />
-              <span><SugarcaneIcon size={15} /> Utilization</span>
+              <span><Microscope size={17} aria-hidden="true" /> Characterization</span><i />
+              <span><ShieldCheck size={17} aria-hidden="true" /> Conservation</span><i />
+              <span><Sprout size={17} aria-hidden="true" /> Utilization</span>
             </div>
             <div className="auth-metrics auth-metrics-showcase">
               <span><strong>{SOURCE_RECORD_COUNT}</strong> characterization entries</span>
@@ -1353,9 +1355,9 @@ export default function App() {
           <p>Sugarcane germplasm represents the diverse genetic resources preserved for research, conservation, and breeding. These collections provide valuable traits that support the development of improved sugarcane varieties with higher productivity, resilience, and adaptability.</p>
         </div>
         <div className="about-germplasm-pillars" aria-label="Germplasm resource priorities">
-          <article><SugarcaneIcon size={30} /><div><strong>Characterization</strong><span>Compare morphological, agronomic, yield, parentage, and disease-response traits.</span></div></article>
-          <article><SugarcaneIcon size={30} /><div><strong>Conservation</strong><span>Preserve valuable sugarcane genetic resources and their documented identity.</span></div></article>
-          <article><SugarcaneIcon size={30} /><div><strong>Utilization</strong><span>Support research, breeding, crop improvement, and informed variety selection.</span></div></article>
+          <article><Microscope size={30} aria-hidden="true" /><div><strong>Characterization</strong><span>Compare morphological, agronomic, yield, parentage, and disease-response traits.</span></div></article>
+          <article><ShieldCheck size={30} aria-hidden="true" /><div><strong>Conservation</strong><span>Preserve valuable sugarcane genetic resources and their documented identity.</span></div></article>
+          <article><Sprout size={30} aria-hidden="true" /><div><strong>Utilization</strong><span>Support research, breeding, crop improvement, and informed variety selection.</span></div></article>
         </div>
       </section>
 
