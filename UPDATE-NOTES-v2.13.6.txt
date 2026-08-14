@@ -1,0 +1,5 @@
+CaneSprout Registry v2.13.6
+
+- Enlarged the three login showcase boxes on the website and Electron login screen.
+- Increased box height, width, icon size, label size, and connector spacing.
+- Kept responsive behavior so the cards do not overlap on narrower screens.

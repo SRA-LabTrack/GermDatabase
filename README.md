@@ -123,3 +123,9 @@ v2.13.2 note: updated the Electron desktop login screen to use the website-style
 
 
 v2.13.5 note: the login showcase flow cards were enlarged and rebalanced for both the website and Electron app so the three boxes are more readable without overlapping.
+
+
+v2.13.6 note: the three login showcase boxes were enlarged further for better readability on both the website and Electron app while preserving non-overlapping responsive spacing.
+
+
+v2.13.7 note: the three login showcase boxes were rebalanced to stay readable without overlapping the sign-in card in both the website and Electron app.

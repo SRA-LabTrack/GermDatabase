@@ -1,0 +1,5 @@
+CaneSprout Registry v2.13.7
+
+- Rebalanced the three login showcase boxes so they stay large but do not overlap the sign-in panel.
+- Converted the login showcase row to flexible equal-width columns within the left panel.
+- Applied the same no-overlap showcase adjustment to both the website and the Electron app.
