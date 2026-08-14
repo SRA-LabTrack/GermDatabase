@@ -1,0 +1,7 @@
+CaneSprout Registry v2.13.16
+
+- Removed the special red UI styling from the newly added Origin & Other Attributes fields.
+- Country, Species, Breeding Institution/Developer/Breeder, Local/International Collection, Type/Genetic Back Ground, Other details, and Lot Planted in the station now use the same neutral typography as existing fields.
+- Updated detail profile, preview cards, add/edit forms, and spreadsheet editor styling.
+- Data mappings and trait values are unchanged.
+- Shared web/Electron renderer means the style change applies to both builds.

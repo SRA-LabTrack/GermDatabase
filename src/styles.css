@@ -10708,34 +10708,39 @@ body:has(.export-excel-modal) #cs-bg-settings-button {
 }
 
 /* ========================================================================== 
-   v2.13.15 RED-FONT ORIGIN / OTHER ATTRIBUTES
-   The red labels mirror the user's official characterization workbook.
+   v2.13.16 UNIFORM ORIGIN / OTHER ATTRIBUTE STYLING
+   New attributes use the same neutral CaneSprout typography and surfaces
+   as the existing characterization fields on web and Electron.
    ========================================================================== */
-.new-trait-field > span,
-.new-trait-detail > small,
-.new-trait-preview > small,
-.excel-grid th.new-trait-column {
-  color: #b42318 !important;
-}
 .new-trait-field > span {
-  font-weight: 900 !important;
+  color: #55705b !important;
+  font-weight: 800 !important;
 }
 .new-trait-field > span i {
-  color: #b42318 !important;
-  border-color: rgba(180, 35, 24, .18) !important;
-  background: rgba(254, 242, 242, .92) !important;
+  color: #99a39a !important;
+  border-color: rgba(153, 163, 154, .20) !important;
+  background: rgba(248, 251, 245, .92) !important;
+}
+.new-trait-detail > small {
+  color: #849087 !important;
+}
+.new-trait-preview > small {
+  color: #7e8d82 !important;
 }
 .new-trait-detail {
-  border-color: rgba(180, 35, 24, .14) !important;
-  background: linear-gradient(135deg, rgba(255,255,255,.92), rgba(254,242,242,.72)) !important;
+  border-color: #e8eee4 !important;
+  background: rgba(248, 251, 245, .92) !important;
 }
 .new-trait-preview {
-  border-color: rgba(180, 35, 24, .14) !important;
+  border-color: #e8eee4 !important;
 }
 .excel-grid th.new-trait-column {
-  background: #fff0ed !important;
+  color: #315b3e !important;
+  background: #eaf4df !important;
 }
-.new-template-trait-section .section-title h3,
+.new-template-trait-section .section-title h3 {
+  color: #235d38 !important;
+}
 .new-template-trait-section .section-title small {
-  color: #b42318 !important;
+  color: #88a080 !important;
 }

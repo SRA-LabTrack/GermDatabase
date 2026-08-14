@@ -1,6 +1,6 @@
 import { requestOfflinePersistentStorage } from './offlineSnapshot';
 
-const OFFLINE_VERSION = '2.13.15';
+const OFFLINE_VERSION = '2.13.16';
 const PREWARM_KEY = `canesprout:offline-prewarm:${OFFLINE_VERSION}`;
 const PREWARM_DELAY_MS = 2200;
 
