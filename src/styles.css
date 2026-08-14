@@ -9992,3 +9992,304 @@ body:has(.export-excel-modal) #cs-bg-settings-button {
     height: 17px !important;
   }
 }
+
+
+/* ========================================================================== 
+   v2.13.12 MOBILE TOOLBAR STRUCTURAL NO-OVERLAP LAYOUT
+   Phones use three independent rows so brand, status/account controls, and
+   primary navigation can never collide. Tablet/desktop rules remain intact.
+   ========================================================================== */
+@media (max-width: 600px) {
+  html,
+  body,
+  #root {
+    max-width: 100% !important;
+    overflow-x: clip !important;
+  }
+
+  .reference-toolbar,
+  .reference-toolbar.topbar {
+    box-sizing: border-box !important;
+    display: grid !important;
+    grid-template-areas:
+      "brand brand"
+      "status account"
+      "nav nav" !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+    grid-template-rows: auto auto auto !important;
+    width: calc(100vw - 12px) !important;
+    max-width: calc(100vw - 12px) !important;
+    min-width: 0 !important;
+    margin-inline: auto !important;
+    padding: 5px !important;
+    gap: 4px !important;
+    overflow: visible !important;
+  }
+
+  .reference-toolbar > .toolbar-brand-panel {
+    grid-area: brand !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    min-height: 54px !important;
+    height: auto !important;
+    padding: 6px 10px !important;
+    overflow: hidden !important;
+  }
+
+  .reference-toolbar .toolbar-brand-panel .brand {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 42px !important;
+    grid-template-columns: 38px minmax(0, 1fr) !important;
+    gap: 8px !important;
+    align-items: center !important;
+  }
+
+  .reference-toolbar .toolbar-brand-panel .brand-badge,
+  .reference-toolbar .toolbar-brand-panel .brand > span:first-child {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    min-height: 38px !important;
+    max-width: 38px !important;
+    max-height: 38px !important;
+  }
+
+  .reference-toolbar .toolbar-brand-panel .brand-copy,
+  .reference-toolbar .toolbar-brand-panel .brand > span:last-child {
+    min-width: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+  }
+
+  .reference-toolbar .toolbar-brand-panel .brand strong {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    font-size: clamp(9px, 2.65vw, 11px) !important;
+    line-height: 1.02 !important;
+  }
+
+  .reference-toolbar .toolbar-brand-panel .brand strong > span {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .reference-toolbar .toolbar-brand-panel .brand small {
+    display: none !important;
+  }
+
+  .reference-toolbar > .toolbar-status-card {
+    grid-area: status !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    max-height: 44px !important;
+    margin: 0 !important;
+    padding: 0 10px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 7px !important;
+    overflow: hidden !important;
+  }
+
+  .reference-toolbar > .toolbar-status-card > svg {
+    width: 19px !important;
+    height: 19px !important;
+    flex: 0 0 19px !important;
+  }
+
+  .reference-toolbar > .toolbar-status-card > span {
+    display: block !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+  }
+
+  .reference-toolbar > .toolbar-status-card b {
+    display: block !important;
+    max-width: 100% !important;
+    font-size: 9px !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .reference-toolbar > .toolbar-status-card small {
+    display: none !important;
+  }
+
+  .reference-toolbar > .toolbar-account-card {
+    grid-area: account !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    max-height: 44px !important;
+    margin: 0 !important;
+    padding: 4px !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+    align-items: stretch !important;
+    gap: 4px !important;
+    overflow: hidden !important;
+  }
+
+  .reference-toolbar .toolbar-account-card .toolbar-avatar,
+  .reference-toolbar .toolbar-account-card .user-chip {
+    display: none !important;
+  }
+
+  .reference-toolbar .toolbar-more,
+  .reference-toolbar .toolbar-signout,
+  .reference-toolbar .toolbar-more > summary,
+  .reference-toolbar .toolbar-signout.icon-button {
+    box-sizing: border-box !important;
+    position: relative !important;
+    inset: auto !important;
+    transform: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: grid !important;
+    place-items: center !important;
+    overflow: hidden !important;
+  }
+
+  .reference-toolbar .toolbar-more > summary svg,
+  .reference-toolbar .toolbar-signout svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  .reference-toolbar > nav.toolbar-main-actions,
+  .reference-toolbar.topbar > nav.toolbar-main-actions {
+    grid-area: nav !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    max-height: 48px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 3px !important;
+    overflow: hidden !important;
+  }
+
+  .reference-toolbar.admin-toolbar > nav.toolbar-main-actions {
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  }
+
+  .reference-toolbar.user-toolbar > nav.toolbar-main-actions {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+
+  .reference-toolbar > nav.toolbar-main-actions > *,
+  .reference-toolbar > nav.toolbar-main-actions.segmented-toolbar > .excel-tools-segment,
+  .reference-toolbar .excel-tools-toggle {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .reference-toolbar > nav.toolbar-main-actions > * svg,
+  .reference-toolbar .excel-tools-toggle svg {
+    width: 20px !important;
+    height: 20px !important;
+    flex: 0 0 20px !important;
+  }
+
+  .reference-toolbar > nav.toolbar-main-actions > * span,
+  .reference-toolbar .excel-tools-toggle > span,
+  .reference-toolbar .toolbar-combinations > span,
+  .reference-toolbar .excel-tools-chevron {
+    display: none !important;
+  }
+}
+
+/* Very narrow mobile webviews: preserve the same three-row structure but
+   slightly tighten the fixed heights and icon sizes. */
+@media (max-width: 359px) {
+  .reference-toolbar,
+  .reference-toolbar.topbar {
+    width: calc(100vw - 8px) !important;
+    max-width: calc(100vw - 8px) !important;
+    padding: 4px !important;
+    gap: 3px !important;
+  }
+
+  .reference-toolbar > .toolbar-brand-panel {
+    min-height: 50px !important;
+    padding: 5px 8px !important;
+  }
+
+  .reference-toolbar .toolbar-brand-panel .brand {
+    grid-template-columns: 34px minmax(0, 1fr) !important;
+    min-height: 38px !important;
+    gap: 6px !important;
+  }
+
+  .reference-toolbar .toolbar-brand-panel .brand-badge,
+  .reference-toolbar .toolbar-brand-panel .brand > span:first-child {
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    min-height: 34px !important;
+  }
+
+  .reference-toolbar .toolbar-brand-panel .brand strong {
+    font-size: 8px !important;
+  }
+
+  .reference-toolbar > .toolbar-status-card,
+  .reference-toolbar > .toolbar-account-card {
+    height: 40px !important;
+    min-height: 40px !important;
+    max-height: 40px !important;
+  }
+
+  .reference-toolbar > nav.toolbar-main-actions,
+  .reference-toolbar.topbar > nav.toolbar-main-actions {
+    height: 44px !important;
+    min-height: 44px !important;
+    max-height: 44px !important;
+  }
+
+  .reference-toolbar > nav.toolbar-main-actions > * svg,
+  .reference-toolbar .excel-tools-toggle svg,
+  .reference-toolbar > .toolbar-status-card > svg {
+    width: 17px !important;
+    height: 17px !important;
+  }
+}

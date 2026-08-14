@@ -1,7 +1,7 @@
 {
   "name": "canesprout-registry",
   "private": true,
-  "version": "2.13.11",
+  "version": "2.13.12",
   "description": "Sugarcane Germplasm Resource Database unified web + Electron offline-first edition with shared cross-fading photo login showcase, local desktop enrollment, persistent offline mutation queues, and paced Appwrite reconnect sync.",
   "main": "electron/main.cjs",
   "author": "SRA-LabTrack",

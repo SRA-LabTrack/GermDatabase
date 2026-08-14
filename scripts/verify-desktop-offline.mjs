@@ -20,7 +20,7 @@ const germ = json('seed/characterization.json');
 const comboRaw = json('seed/combination_registry.json');
 const comboRuntime = json('seed/combination_runtime.json');
 
-check('Version is 2.13.11', pkg.version === '2.13.11' && app.includes("const APP_VERSION = '2.13.11'"));
+check('Version is 2.13.12', pkg.version === '2.13.12' && app.includes("const APP_VERSION = '2.13.12'"));
 check('Electron main process exists', exists('electron/main.cjs'));
 check('Electron preload bridge exists', exists('electron/preload.cjs'));
 check('Desktop offline vault exists', exists('electron/offline-vault.cjs'));
@@ -41,7 +41,7 @@ check('Runtime icon exists', exists('public/icon.png'));
 check('Installer keeps local app data on uninstall', pkg.build?.nsis?.deleteAppDataOnUninstall === false);
 check('Installer packages local dist and Electron code', Array.isArray(pkg.build?.files) && pkg.build.files.includes('dist/**/*') && pkg.build.files.includes('electron/**/*'));
 
-console.log('\nCaneSprout v2.13.11 Desktop Offline Verification\n');
+console.log('\nCaneSprout v2.13.12 Desktop Offline Verification\n');
 for (const item of checks) console.log(`${item.ok ? 'PASS' : 'FAIL'}  ${item.name}${item.detail ? ` (${item.detail})` : ''}`);
 
 const failed = checks.filter((item) => !item.ok);

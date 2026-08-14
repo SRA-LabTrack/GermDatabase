@@ -1,0 +1,8 @@
+CaneSprout Registry v2.13.12
+
+- Rebuilt the phone toolbar as three isolated rows to remove all overlap classes.
+- Row 1: full-width CaneSprout brand.
+- Row 2: connection/status and account/sign-out controls.
+- Row 3: primary navigation tools.
+- Supports very narrow mobile webviews through wide phones without horizontal page overflow.
+- Desktop/laptop toolbar remains unchanged.
