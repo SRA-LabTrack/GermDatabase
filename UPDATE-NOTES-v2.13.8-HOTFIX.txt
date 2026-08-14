@@ -1,0 +1,6 @@
+CaneSprout v2.13.8 Desktop Verification Hotfix
+
+- Fixed stale desktop verifier version check (2.13.7 -> 2.13.8).
+- One-login verification now checks the actual offline auth wiring instead of removed UI text.
+- Synced package-lock, public version, Service Worker cache, and offline cache version to 2.13.8.
+- No Appwrite schema change required.

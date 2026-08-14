@@ -1,5 +1,5 @@
 {
-  "version": "2.13.7",
+  "version": "2.13.9",
   "channel": "stable",
   "notes": "Fixes web login layout squeeze by removing legacy auth-shell/auth-panel grid inheritance while preserving the unified website/Electron photo cross-fade login.",
   "migration": "combination-registry-v2100",

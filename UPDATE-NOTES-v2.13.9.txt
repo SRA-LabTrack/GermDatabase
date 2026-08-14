@@ -1,0 +1,8 @@
+CaneSprout Registry v2.13.9
+
+- Normalizes variety display spacing around hyphens before future saves/imports.
+- Canonical duplicate protection continues to ignore spaces, hyphens, punctuation, and capitalization.
+- Search/list pages collapse accidental canonical duplicates while preserving three known historical conflict identities.
+- Added local read-only variety identity audit command.
+- View Profile now labels parentage roles explicitly: "<male> male X <female> female".
+- Registry card preview uses the same Parentage role labels.

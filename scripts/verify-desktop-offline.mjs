@@ -20,7 +20,7 @@ const germ = json('seed/characterization.json');
 const comboRaw = json('seed/combination_registry.json');
 const comboRuntime = json('seed/combination_runtime.json');
 
-check('Version is 2.13.7', pkg.version === '2.13.7' && app.includes("const APP_VERSION = '2.13.7'"));
+check('Version is 2.13.9', pkg.version === '2.13.9' && app.includes("const APP_VERSION = '2.13.9'"));
 check('Electron main process exists', exists('electron/main.cjs'));
 check('Electron preload bridge exists', exists('electron/preload.cjs'));
 check('Desktop offline vault exists', exists('electron/offline-vault.cjs'));
@@ -28,7 +28,7 @@ check('OS-protected credential storage wired', vault.includes('safeStorage.encry
 check('Local password verifier uses PBKDF2', vault.includes('crypto.pbkdf2') && vault.includes('timingSafeEqual'));
 check('Silent Appwrite reconnect wired', vault.includes('/account/sessions/email') && main.includes('offline-auth:restore-online-session'));
 check('Renderer exposes offline auth bridge', preload.includes('offlineAuth') && preload.includes('restoreOnlineSession'));
-check('One-login desktop boot wired', app.includes('offlineAuth.status()') && app.includes('First sign-in enrolls this PC'));
+check('One-login desktop boot wired', app.includes('offlineAuth.status()') && app.includes('unlockDesktopOffline') && app.includes('offlineAuth?.remember') && app.includes('restoreOnlineSession'));
 check('Explicit sign out forgets local login', app.includes('offlineAuth?.forget'));
 check('Registry offline mutation queue present', queue.includes('queueOfflineRecord') && queue.includes('syncOfflineQueue'));
 check('Combination local-first queue present', combination.includes('syncPendingCombinations') && combination.includes('local_manual'));
@@ -41,7 +41,7 @@ check('Runtime icon exists', exists('public/icon.png'));
 check('Installer keeps local app data on uninstall', pkg.build?.nsis?.deleteAppDataOnUninstall === false);
 check('Installer packages local dist and Electron code', Array.isArray(pkg.build?.files) && pkg.build.files.includes('dist/**/*') && pkg.build.files.includes('electron/**/*'));
 
-console.log('\nCaneSprout v2.13.7 Desktop Offline Verification\n');
+console.log('\nCaneSprout v2.13.9 Desktop Offline Verification\n');
 for (const item of checks) console.log(`${item.ok ? 'PASS' : 'FAIL'}  ${item.name}${item.detail ? ` (${item.detail})` : ''}`);
 
 const failed = checks.filter((item) => !item.ok);

@@ -1,18 +1,16 @@
-CaneSprout v2.13.3 -> v2.13.4
+CaneSprout v2.13.8 -> v2.13.9 Variety Identity + Parentage Fix
 
-Fixes the website login layout shown in the screenshot:
-- removes legacy auth-shell 60/40 grid collision
-- makes the showcase use the full browser width
-- removes the inherited full-height white auth-panel slab
-- keeps the photo slideshow visible across the whole page
-- keeps wide hero copy left + compact glass login card right
-- fixes login brand word spacing
-- preserves responsive stacking on tablet/mobile
-- bumps web/offline cache to v2.13.4
+Changes:
+- Normalize variety display spacing around hyphens before future saves/imports.
+- Phil 996-0339 / Phil 996- 0339 / Phil 996 -0339 all resolve to one canonical identity.
+- Search/list results collapse accidental canonical duplicates.
+- Three known historical conflict identities remain intentionally preserved.
+- View Profile Parentage now shows explicit roles:
+    <male> male X <female> female
+- Registry preview uses the same Parentage format.
+- Adds local read-only identity audit:
+    npm.cmd run audit:variety-identities-local
+- Current live Appwrite duplicate audit remains:
+    npm.cmd run audit:duplicates
 
-Overlay this ZIP into the permanent CaneSprout project and replace files.
-Then run:
-  PUBLISH-ALL-v2.13.4.cmd
-
-The publish script uses GitHub main -> Vercel automatic deployment and does
-not call the currently unreliable Vercel CLI deploy command.
+Overlay onto the current v2.13.8 project and replace files.

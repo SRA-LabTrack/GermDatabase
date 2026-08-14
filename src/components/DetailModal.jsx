@@ -8,6 +8,7 @@ import { queueOfflineDelete } from '../lib/offlineQueue';
 import { isNetworkFailure } from '../lib/appwrite';
 import { messageFor, pct } from '../lib/registryUi';
 import { PHOTO_DOCUMENTATION_SECTIONS, normalizedPhotoCategories } from '../lib/photoSections';
+import { normalizeVarietyDisplay } from '../lib/legacyHyv';
 
 const PREVIEW_FIELD_KEYS = new Set([
   'variety',
@@ -84,10 +85,12 @@ export default function DetailModal({ recordId, onClose, onEdit, onDeleted, onQu
 
   const parentals = useMemo(() => {
     if (!record) return 'Not recorded';
-    const female = String(record.parentage_female || '').trim();
-    const male = String(record.parentage_male || '').trim();
-    if (female && male) return `${female} X ${male}`;
-    return female || male || 'Not recorded';
+    const female = normalizeVarietyDisplay(record.parentage_female || '');
+    const male = normalizeVarietyDisplay(record.parentage_male || '');
+    if (male && female) return `${male} male X ${female} female`;
+    if (male) return `${male} male`;
+    if (female) return `${female} female`;
+    return 'Not recorded';
   }, [record]);
 
   return (
@@ -142,7 +145,7 @@ export default function DetailModal({ recordId, onClose, onEdit, onDeleted, onQu
                 </div>
 
                 <div className="profile-preview-wide">
-                  <small>Parentals</small>
+                  <small>Parentage</small>
                   <strong>{parentals}</strong>
                 </div>
 

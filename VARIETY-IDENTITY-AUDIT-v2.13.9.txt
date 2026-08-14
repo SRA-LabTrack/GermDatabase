@@ -1,0 +1,27 @@
+CaneSprout Variety Identity Audit v2.13.9
+
+BUNDLED REGISTRY
+- Records checked: 950
+- Nonblank canonical identity keys: 946
+- Canonical duplicate identity groups: 3
+- Extra records across those groups: 3
+- Formatting-only duplicate groups including case: 1
+- Whitespace/hyphen-only duplicate groups: 0
+
+Known historical duplicate keys preserved intentionally:
+- PHIL931902349
+- VMC73229
+- PHIL98010007
+
+FORMAT NORMALIZATION EXAMPLE
+- Phil 996-0339 -> PHIL9960339
+- Phil 996- 0339 -> PHIL9960339
+- Phil 996 -0339 -> PHIL9960339
+
+Those forms are the same identity for duplicate protection.
+
+Stored live audit snapshot: 2026-08-13T02:56:03.608Z | core=950 | details=950 | canonical duplicate groups=3 | numeric-format-equivalent groups=0
+
+IMPORTANT
+The stored live audit is a previous snapshot, not a guarantee of the current Appwrite state.
+Run `npm.cmd run audit:duplicates` on the enrolled project PC to scan the live registry read-only.

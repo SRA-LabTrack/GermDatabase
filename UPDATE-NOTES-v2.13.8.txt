@@ -1,0 +1,10 @@
+CaneSprout Registry v2.13.8
+
+Electron login screen now matches the website login showcase more closely.
+
+Changes:
+- Unified the Electron login hero to match the website login layout.
+- Restored the simple "Welcome back" heading on the login card.
+- Removed the extra desktop-only offline status panel from the visible login card UI.
+- Kept offline desktop functionality active in the background.
+- Preserved the cross-fade photo backdrop and showcase boxes.

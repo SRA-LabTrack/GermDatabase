@@ -15,6 +15,16 @@ export function normalizeVarietyIdentity(value) {
     .replace(/[^A-Z0-9]+/g, '');
 }
 
+export function normalizeVarietyDisplay(value) {
+  return String(value || '')
+    .normalize('NFKC')
+    .trim()
+    .replace(/\s+/g, ' ')
+    .replace(/\s*-\s*/g, '-')
+    .replace(/^PHILIPPINES\b/i, 'Phil')
+    .replace(/^PHIL\b/i, 'Phil');
+}
+
 export function canonicalLegacyVariety(value) {
   const normalized = normalizeVarietyIdentity(value);
   return LEGACY_SRA_HYV_ALIASES[normalized] || String(value || '').trim();

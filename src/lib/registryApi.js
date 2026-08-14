@@ -14,7 +14,7 @@ import {
 } from './appwrite';
 import { CHARACTERIZATION_FIELDS } from './characterizationFields';
 import { normalizedPhotoCategories, primaryPhotoIndex } from './photoSections';
-import { canonicalLegacyVariety, normalizeVarietyIdentity } from './legacyHyv';
+import { canonicalLegacyVariety, normalizeVarietyDisplay, normalizeVarietyIdentity } from './legacyHyv';
 import bundledCharacterization from '../../seed/characterization.json';
 import bundledHyvCharacteristics from '../../seed/sra_hyv_characteristics_v273.json';
 import { cacheOfflineRecord, cacheOfflineRecords, findOfflineRecordByVariety, getOfflineRecord, listOfflineRecords, removeOfflineRecord } from './offlineSnapshot';
@@ -57,6 +57,31 @@ const BUNDLED_RECORDS = BUNDLED_SOURCE_RECORDS.map((record, index) => ({
 }));
 const BUNDLED_RECORD_MAP = new Map(BUNDLED_RECORDS.map((record) => [record.$id, record]));
 const BUNDLED_IDENTITY_MAP = new Map(BUNDLED_RECORDS.map((record) => [normalizeVarietyIdentity(record.variety), record]));
+
+// These three duplicate identities are preserved historical source conflicts.
+// Every other canonical duplicate is treated as accidental display duplication
+// in list/search results, including spacing/hyphen/case variants.
+const PRESERVED_HISTORICAL_DUPLICATE_IDENTITIES = new Set([
+  'PHIL931902349',
+  'VMC73229',
+  'PHIL98010007'
+]);
+
+function dedupeRegistryPageByIdentity(documents = []) {
+  const seen = new Set();
+  const output = [];
+  for (const record of documents || []) {
+    const key = normalizeVarietyIdentity(record?.variety || '');
+    if (!key || PRESERVED_HISTORICAL_DUPLICATE_IDENTITIES.has(key)) {
+      output.push(record);
+      continue;
+    }
+    if (seen.has(key)) continue;
+    seen.add(key);
+    output.push(record);
+  }
+  return output;
+}
 
 function bundledText(value) {
   return String(value ?? '').trim().toLowerCase();
@@ -443,7 +468,8 @@ export async function listRecentRecords({ bypassCache = false } = {}) {
         ...buildLeanQueries(RECENT_LIMIT),
         Query.orderDesc('$sequence')
       ], { ttl: APPWRITE_BROWSE_TTL_SECONDS, bypassCache });
-      const documents = result.documents || [];
+      const rawDocuments = result.documents || [];
+      const documents = dedupeRegistryPageByIdentity(rawDocuments);
       const value = {
         documents,
         nextCursor: '',
@@ -534,7 +560,7 @@ export async function listRecords({ search = '', scope = 'variety', cursor = '',
       }
 
       const value = {
-        documents: page.documents,
+        documents: dedupeRegistryPageByIdentity(page.documents),
         nextCursor: page.nextCursor,
         hasMore: page.hasMore,
         skippedForShortSearch: false,
@@ -959,7 +985,12 @@ function makeTraits(data) {
   // attributes without inflating traits_json with dozens of empty strings.
   return Object.fromEntries(
     CHARACTERIZATION_FIELDS
-      .map((field) => [field.key, String(data[field.key] ?? '').trim()])
+      .map((field) => [
+        field.key,
+        field.key === 'variety'
+          ? normalizeVarietyDisplay(data[field.key])
+          : String(data[field.key] ?? '').trim()
+      ])
       .filter(([, value]) => value !== '')
   );
 }
@@ -1144,7 +1175,7 @@ async function deleteStoredFileIfPresent(fileId) {
 }
 
 export async function deleteRecordByVariety(variety) {
-  const display = String(variety || '').trim();
+  const display = normalizeVarietyDisplay(variety || '');
   if (!display) throw new Error('A variety name is required for this queued deletion.');
   const matches = await findCanonicalVarietyMatches(display, { force: false });
   if (!matches.length) return { missing: true, variety: display };
@@ -1329,7 +1360,7 @@ export async function findCanonicalVarietyMatches(variety, { excludeId = '', for
 }
 
 export async function assertUniqueVarietyIdentity(variety, { excludeId = '', force = false } = {}) {
-  const display = String(variety || '').trim();
+  const display = normalizeVarietyDisplay(variety || '');
   if (!display) throw new Error('Variety is required before creating or renaming a registry record.');
   const matches = await findCanonicalVarietyMatches(display, { excludeId, force });
   if (!matches.length) return true;
@@ -1348,7 +1379,7 @@ export async function assertUniqueVarietyIdentity(variety, { excludeId = '', for
  * network response.
  */
 export async function createManualRecord(data, recordId = '', onProgress) {
-  const variety = String(data?.variety || '').trim();
+  const variety = normalizeVarietyDisplay(data?.variety || '');
   if (!variety) throw new Error('Variety Name is required before this record can be registered.');
 
   onProgress?.('Checking the live registry for an existing variety…');
@@ -1418,7 +1449,7 @@ function mergeImportedValues(existing, incoming, { clearBlankCells = false } = {
 }
 
 export async function upsertRecordByVariety(data, previousHint = null, { clearBlankCells = false } = {}) {
-  const variety = String(data?.variety || '').trim();
+  const variety = normalizeVarietyDisplay(data?.variety || '');
   if (!variety) throw new Error('Variety Name is required.');
   const identityIndex = await loadCanonicalIdentityIndex({ force: false });
   const matches = findImportMatches(variety, identityIndex);

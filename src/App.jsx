@@ -47,6 +47,7 @@ import { getOfflineQueueSummary, offlineEntryToRecord, overlayOfflineQueueRecord
 import { getOfflineSnapshotSummary, subscribeOfflineSnapshot } from './lib/offlineSnapshot';
 import { prepareOfflineWorkspace } from './lib/offlineApp';
 import SugarcaneIcon from './components/SugarcaneIcon.jsx';
+import { normalizeVarietyDisplay } from './lib/legacyHyv';
 
 const DetailModal = lazy(() => import('./components/DetailModal.jsx'));
 const RecordFormModal = lazy(() => import('./components/RecordFormModal.jsx'));
@@ -58,7 +59,7 @@ const SpreadsheetEditorModal = lazy(() => import('./components/SpreadsheetEditor
 const CombinationRegistryModal = lazy(() => import('./components/CombinationRegistryModal.jsx'));
 
 const APP_NAME = 'Sugarcane Germplasm Resource Database';
-const APP_VERSION = '2.13.7';
+const APP_VERSION = '2.13.9';
 const USER_CACHE_KEY = 'sugarcane-registry-user-v230';
 const ROLE_REFRESH_PREFIX = 'canesprout-role-refresh-v251:';
 const MANUAL_REFRESH_COOLDOWN_MS = 30_000;
@@ -225,18 +226,9 @@ function AuthScreen({ onSignedIn }) {
             <div className="auth-card auth-login-card">
               <Brand />
               <div className="auth-heading">
-                <small>{window.germDesktop?.isDesktop ? 'Desktop local-first workspace' : 'Welcome back'}</small>
+                <small>Welcome back</small>
                 <h2>Sign in to the germplasm database</h2>
               </div>
-              {window.germDesktop?.isDesktop && (
-                <div className={`desktop-offline-login-state ${desktopReady ? 'ready' : 'setup'}`}>
-                  {desktopReady ? <CheckCircle2 size={17} /> : <CloudOff size={17} />}
-                  <span>
-                    <strong>{desktopReady ? 'Offline desktop access ready' : 'First sign-in enrolls this PC'}</strong>
-                    <small>{desktopReady ? `This device can open ${desktopProfile?.user?.email || 'the enrolled account'} without internet.` : 'After one successful online sign-in, CaneSprout can open and save changes with no internet connection.'}</small>
-                  </span>
-                </div>
-              )}
               <form onSubmit={submit}>
                 <label><span>Email</span><input type="email" required value={form.email} onChange={(event) => { setError(''); setForm({ ...form, email: event.target.value }); }} /></label>
                 <label><span>Password</span><input type="password" required minLength={8} value={form.password} onChange={(event) => { setError(''); setForm({ ...form, password: event.target.value }); }} /></label>
@@ -245,7 +237,7 @@ function AuthScreen({ onSignedIn }) {
                   {busy && <LoaderCircle className="spin" size={17} />} {submitLabel}
                 </button>
               </form>
-              <p className="auth-admin-note">{window.germDesktop?.isDesktop ? 'The installed desktop app keeps its registry, combination history, queued changes, and enrolled account on this PC. Signing out explicitly removes this device login.' : 'Accounts are created and assigned roles by a Sugarcane Germplasm Resource Database administrator.'}</p>
+              <p className="auth-admin-note">Accounts are created and assigned roles by a Sugarcane Germplasm Resource Database administrator.</p>
             </div>
           </section>
         </div>
@@ -294,7 +286,11 @@ function RecordCard({ record, onOpen, index }) {
 
   const preview = profilePreview || record;
   const missing = profilePreview ? 'Not recorded' : 'Loading…';
-  const parentals = [preview.parentage_female, preview.parentage_male].filter(Boolean).join(' × ') || missing;
+  const parentFemale = normalizeVarietyDisplay(preview.parentage_female || '');
+  const parentMale = normalizeVarietyDisplay(preview.parentage_male || '');
+  const parentals = parentMale && parentFemale
+    ? `${parentMale} male X ${parentFemale} female`
+    : parentMale ? `${parentMale} male` : parentFemale ? `${parentFemale} female` : missing;
   const tcHa = preview.yield_tc_ha || missing;
   const lkgTc = preview.yield_lkg_tc || missing;
   const recommended = preview.recommended_locations || preview.tested_location || missing;
@@ -318,7 +314,7 @@ function RecordCard({ record, onOpen, index }) {
           <span><small>Origin</small><b>{preview.origin || missing}</b></span>
           <span><small>Collection Year</small><b>{preview.collection_year || missing}</b></span>
           <span><small>Species</small><b>{preview.species || missing}</b></span>
-          <span className="preview-wide"><small>Parentals</small><b>{parentals}</b></span>
+          <span className="preview-wide"><small>Parentage</small><b>{parentals}</b></span>
           <span className="preview-yield"><small>Yield Potential</small><b><em>TC/Ha</em> {tcHa}<i /> <em>LKg/TC</em> {lkgTc}</b></span>
           <span className="preview-wide"><small>Recommended Locations</small><b>{recommended}</b></span>
           <span className="preview-wide preview-disease"><small>Reaction to Diseases</small><b>{disease}</b></span>
