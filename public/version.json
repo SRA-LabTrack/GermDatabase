@@ -1,7 +1,7 @@
 {
-  "version": "2.13.3",
+  "version": "2.13.4",
   "channel": "stable",
-  "notes": "Unified website and Electron login showcase with the same built-in sugarcane photo cross-fade background, Sugarcane Germplasm Library label, Characterization-Conservation-Utilization flow, and existing offline-first sync architecture.",
+  "notes": "Fixes web login layout squeeze by removing legacy auth-shell/auth-panel grid inheritance while preserving the unified website/Electron photo cross-fade login.",
   "migration": "combination-registry-v2100",
   "updated": "2026-08-14"
 }

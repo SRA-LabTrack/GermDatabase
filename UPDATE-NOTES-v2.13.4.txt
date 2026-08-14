@@ -1,0 +1,12 @@
+CaneSprout v2.13.4
+
+WEB + ELECTRON LOGIN LAYOUT FIX
+- Fixes legacy auth-shell two-column grid squeezing the unified login into ~60% of the browser.
+- Removes inherited full-height white auth-panel slab.
+- Restores full-width photo cross-fade backdrop.
+- Keeps wide hero copy left and compact glass login card right.
+- Fixes missing visual spacing in the login brand title.
+- Responsive stack now occurs only at tablet/mobile widths.
+- Bumps web Service Worker/offline shell cache to v2.13.4.
+
+No Appwrite migration required.

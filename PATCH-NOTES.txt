@@ -1,13 +1,18 @@
-CaneSprout v2.13.2 -> v2.13.3 UNIFIED WEB + ELECTRON
+CaneSprout v2.13.3 -> v2.13.4
 
-- Same login design for browser/Vercel and Electron desktop.
-- Existing sugarcane photo background slideshow remains full-screen on login.
-- 5-second slide interval and 2.5-second cross-fade preserved.
-- Login eyebrow: Sugarcane Germplasm Library.
-- Login workflow: Characterization -> Conservation -> Utilization.
-- Desktop offline login/enrollment and local queues preserved.
-- Website offline Service Worker preserved.
-- Version/cache stamps synchronized to v2.13.3 to force clients off stale login shells.
-- Desktop verifier synchronized to v2.13.3.
-- Includes PUBLISH-ALL-v2.13.3.cmd for verify/build/GitHub/Vercel workflow.
-- No new Appwrite schema migration.
+Fixes the website login layout shown in the screenshot:
+- removes legacy auth-shell 60/40 grid collision
+- makes the showcase use the full browser width
+- removes the inherited full-height white auth-panel slab
+- keeps the photo slideshow visible across the whole page
+- keeps wide hero copy left + compact glass login card right
+- fixes login brand word spacing
+- preserves responsive stacking on tablet/mobile
+- bumps web/offline cache to v2.13.4
+
+Overlay this ZIP into the permanent CaneSprout project and replace files.
+Then run:
+  PUBLISH-ALL-v2.13.4.cmd
+
+The publish script uses GitHub main -> Vercel automatic deployment and does
+not call the currently unreliable Vercel CLI deploy command.

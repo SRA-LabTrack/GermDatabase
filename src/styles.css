@@ -9051,3 +9051,151 @@ body:has(.export-excel-modal) #cs-bg-settings-button {
     border-radius: 24px;
   }
 }
+
+/* =============================================================
+   v2.13.4 WEB + ELECTRON LOGIN LAYOUT FIX
+   Prevent legacy auth-shell/auth-panel grid rules from squeezing the
+   unified slideshow login into a narrow column on web browsers.
+   ============================================================= */
+.auth-shell.auth-shell-showcase {
+  display: block !important;
+  grid-template-columns: none !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 100vh !important;
+  padding: clamp(18px, 2vw, 30px) !important;
+  background: transparent !important;
+  overflow-x: hidden;
+}
+
+.auth-shell-showcase > .auth-landing-login {
+  width: min(calc(100vw - clamp(36px, 4vw, 60px)), 1820px) !important;
+  max-width: 1820px !important;
+  margin: 0 auto !important;
+  min-width: 0 !important;
+}
+
+.auth-shell-showcase .auth-hero-panel-login {
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: calc(100vh - clamp(36px, 4vw, 60px));
+  grid-template-columns: minmax(0, 1.48fr) minmax(390px, 520px) !important;
+  align-items: center !important;
+  gap: clamp(26px, 3vw, 48px) !important;
+  padding: clamp(30px, 3.2vw, 52px) !important;
+}
+
+.auth-shell-showcase .auth-showcase-copy-login {
+  min-width: 0 !important;
+  max-width: 980px !important;
+  padding: 0 !important;
+}
+
+.auth-shell-showcase .auth-showcase-copy-login h1 {
+  width: auto !important;
+  max-width: 10.6ch !important;
+  font-size: clamp(56px, 5.25vw, 92px) !important;
+  line-height: .94 !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+}
+
+.auth-shell-showcase .auth-showcase-copy-login p {
+  max-width: 800px !important;
+}
+
+.auth-shell-showcase .auth-panel.auth-panel-showcase {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  align-self: center !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  height: auto !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.auth-shell-showcase .auth-login-card {
+  width: 100% !important;
+  max-width: 500px !important;
+  min-height: 0 !important;
+  height: auto !important;
+  padding: clamp(26px, 2.6vw, 38px) !important;
+  border-radius: 30px !important;
+  background: rgba(255, 255, 255, .90) !important;
+  box-shadow: 0 28px 70px rgba(18, 58, 31, .18), inset 0 1px 0 rgba(255,255,255,.88) !important;
+  backdrop-filter: blur(22px) saturate(132%) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(132%) !important;
+}
+
+/* The Brand component uses adjacent spans with no literal spaces in JSX.
+   Give them visual word spacing on the login card. */
+.auth-shell-showcase .auth-login-card .brand-copy strong > span {
+  display: inline !important;
+  white-space: normal !important;
+}
+.auth-shell-showcase .auth-login-card .brand-copy strong > span:not(:last-child) {
+  margin-right: .20em !important;
+}
+
+.auth-shell-showcase .auth-login-card .auth-heading h2 {
+  font-size: clamp(34px, 2.65vw, 48px) !important;
+  line-height: 1 !important;
+}
+
+.auth-shell-showcase .auth-login-showcase-flow {
+  flex-wrap: wrap !important;
+}
+
+@media (max-width: 1180px) {
+  .auth-shell.auth-shell-showcase {
+    padding: 18px !important;
+  }
+
+  .auth-shell-showcase > .auth-landing-login {
+    width: calc(100vw - 36px) !important;
+  }
+
+  .auth-shell-showcase .auth-hero-panel-login {
+    min-height: auto !important;
+    grid-template-columns: 1fr !important;
+    padding: 28px !important;
+  }
+
+  .auth-shell-showcase .auth-showcase-copy-login h1,
+  .auth-shell-showcase .auth-showcase-copy-login p {
+    max-width: 100% !important;
+  }
+
+  .auth-shell-showcase .auth-login-card {
+    max-width: 640px !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .auth-shell.auth-shell-showcase {
+    padding: 10px !important;
+  }
+
+  .auth-shell-showcase > .auth-landing-login {
+    width: calc(100vw - 20px) !important;
+  }
+
+  .auth-shell-showcase .auth-hero-panel-login {
+    padding: 20px 16px !important;
+    border-radius: 22px !important;
+  }
+
+  .auth-shell-showcase .auth-showcase-copy-login h1 {
+    font-size: clamp(40px, 12.5vw, 58px) !important;
+  }
+
+  .auth-shell-showcase .auth-login-card {
+    padding: 22px 18px !important;
+    border-radius: 22px !important;
+  }
+}
