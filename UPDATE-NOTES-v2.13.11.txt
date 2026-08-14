@@ -1,0 +1,9 @@
+CaneSprout Registry v2.13.11
+
+Mobile toolbar collision fix:
+- Prevents status and account/sign-out controls from spilling into neighboring grid cells.
+- Uses explicit grid areas and hard max-width/min-width resets on phone layouts.
+- Supports narrow 320–359px, 360–389px, 390–429px, 430–600px, tablet and desktop widths.
+- Keeps mobile navigation as equal-width icon buttons and moves the More menu to a safe full-width mobile sheet.
+- No toolbar functions were removed.
+- Desktop/laptop layout remains unchanged above the mobile/tablet breakpoints.
