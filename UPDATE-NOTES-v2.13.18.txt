@@ -1,0 +1,7 @@
+CaneSprout Registry v2.13.18
+
+- Rebalanced the SRA Developed Varieties counter card so it matches the other three germplasm collection cards.
+- Reduced only the long SRA title font slightly so it fits cleanly and avoids a crowded three-line heading.
+- Standardized title spacing across all four counter cards.
+- Counter logic and registry data are unchanged.
+- Applies to website and Electron through the shared renderer.

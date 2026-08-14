@@ -61,7 +61,7 @@ const SpreadsheetEditorModal = lazy(() => import('./components/SpreadsheetEditor
 const CombinationRegistryModal = lazy(() => import('./components/CombinationRegistryModal.jsx'));
 
 const APP_NAME = 'Sugarcane Germplasm Resource Database';
-const APP_VERSION = '2.13.17';
+const APP_VERSION = '2.13.18';
 const USER_CACHE_KEY = 'sugarcane-registry-user-v230';
 const ROLE_REFRESH_PREFIX = 'canesprout-role-refresh-v251:';
 const MANUAL_REFRESH_COOLDOWN_MS = 30_000;
@@ -1322,7 +1322,7 @@ export default function App() {
             <strong>Accession</strong>
             <span>Total unique varieties currently recorded in CaneSprout.</span>
           </div>
-          <div>
+          <div className="germplasm-category-card-sra">
             <span className="stat-icon"><SugarcaneIcon size={20} /></span>
             <small>Germplasm Collection</small>
             <b className="germplasm-category-count">{registryStats.sraDeveloped.toLocaleString()}</b>
