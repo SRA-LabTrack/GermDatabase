@@ -120,3 +120,6 @@ v2.13.1 note: refreshed the Electron login screen into a germplasm showcase layo
 
 
 v2.13.2 note: updated the Electron desktop login screen to use the website-style photo cross-fade backdrop, the “Sugarcane Germplasm Library” eyebrow label, and a 3-step Characterization / Conservation / Utilization showcase flow.
+
+
+v2.13.5 note: the login showcase flow cards were enlarged and rebalanced for both the website and Electron app so the three boxes are more readable without overlapping.

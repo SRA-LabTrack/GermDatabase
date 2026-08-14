@@ -8923,22 +8923,38 @@ body:has(.export-excel-modal) #cs-bg-settings-button {
 }
 
 .auth-login-showcase-flow {
-  margin-top: 34px;
-  justify-content: flex-start;
-  gap: 16px;
-  flex-wrap: nowrap;
+  margin-top: 36px;
+  max-width: 860px;
+  grid-template-columns: auto minmax(36px, 1fr) auto minmax(36px, 1fr) auto;
+  gap: 14px;
 }
 
 .auth-login-showcase-flow span {
-  min-width: 172px;
+  min-width: 208px;
+  min-height: 64px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  background: rgba(255,255,255,.78);
-  border-color: rgba(41, 85, 51, .14);
+  gap: 10px;
+  font-size: 12px;
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: .01em;
+  background: rgba(255,255,255,.86);
+  border-color: rgba(41, 85, 51, .18);
+  box-shadow: 0 10px 24px rgba(31, 67, 40, .08), inset 0 1px 0 rgba(255,255,255,.74);
+}
+
+.auth-login-showcase-flow span svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
 }
 
 .auth-login-showcase-flow i {
-  width: 64px;
-  flex: 0 0 64px;
+  width: 86px;
+  flex: 0 0 86px;
 }
 
 .auth-metrics-showcase {
@@ -8995,7 +9011,9 @@ body:has(.export-excel-modal) #cs-bg-settings-button {
   }
 
   .auth-login-showcase-flow {
-    flex-wrap: wrap;
+    max-width: 100%;
+    grid-template-columns: repeat(3, minmax(180px, 1fr));
+    gap: 12px;
   }
 
   .auth-login-showcase-flow i {
@@ -9037,12 +9055,15 @@ body:has(.export-excel-modal) #cs-bg-settings-button {
   }
 
   .auth-login-showcase-flow {
+    grid-template-columns: 1fr;
     gap: 10px;
   }
 
   .auth-login-showcase-flow span {
     min-width: 0;
     width: 100%;
+    min-height: 56px;
+    padding: 12px 14px;
   }
 
   .auth-login-card {

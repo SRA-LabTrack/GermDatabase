@@ -1,0 +1,5 @@
+CaneSprout Registry v2.13.5
+
+- Enlarged the three login showcase boxes (Characterization, Conservation, Utilization).
+- Rebalanced spacing and connector widths so the bigger cards do not overlap.
+- Applied the same login showcase sizing update to both website and Electron desktop builds.
