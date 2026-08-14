@@ -1,0 +1,11 @@
+CaneSprout Registry v2.13.20
+
+BACKGROUND SLIDESHOW
+- Increased the maximum selectable slideshow photos from 3 to 10.
+- Selection counter now displays x / 10 selected.
+- Background settings copy now says Select up to ten photos.
+- Existing default 3-photo preset is preserved. Users can add/select up to 10 total photos.
+- Slideshow timing remains 5 seconds per image with the existing smooth cross-fade.
+- Shared renderer means the change applies to both website and Electron.
+
+No registry, Appwrite, Excel, combination-registry, or offline-sync behavior was changed.

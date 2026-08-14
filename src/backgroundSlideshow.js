@@ -67,7 +67,7 @@ const BUILTIN_SLIDES = [
   }
 ];
 const DEFAULT_SELECTION = ["builtin-05", "builtin-07", "builtin-08"];
-const MAX_ACTIVE = 3;
+const MAX_ACTIVE = 10;
 const CHANGE_EVERY_MS = 5000;
 const CROSS_FADE_MS = 2500;
 const MAX_LONG_EDGE = 1920;
@@ -448,7 +448,7 @@ async function toggleSelection(id) {
     state.selectedIds.splice(index, 1);
   } else {
     if (state.selectedIds.length >= MAX_ACTIVE) {
-      setStatus("You can select a maximum of 3 slideshow photos.", "error");
+      setStatus(`You can select a maximum of ${MAX_ACTIVE} slideshow photos.`, "error");
       return;
     }
     state.selectedIds.push(id);
@@ -460,8 +460,8 @@ async function toggleSelection(id) {
 
   setStatus(
     state.selectedIds.length === MAX_ACTIVE
-      ? "Three photos selected. Slideshow changes every 3 seconds."
-      : `Select ${MAX_ACTIVE - state.selectedIds.length} more photo${MAX_ACTIVE - state.selectedIds.length === 1 ? "" : "s"} for a 3-photo slideshow.`,
+      ? `${MAX_ACTIVE} photos selected. Slideshow changes every ${CHANGE_EVERY_MS / 1000} seconds.`
+      : `Select up to ${MAX_ACTIVE - state.selectedIds.length} more photo${MAX_ACTIVE - state.selectedIds.length === 1 ? "" : "s"}.`,
     "success",
   );
 }
@@ -505,8 +505,8 @@ function openModal() {
   renderGallery();
   setStatus(
     state.selectedIds.length === MAX_ACTIVE
-      ? "Three photos selected. They transition every 3 seconds."
-      : "Select up to three photos.",
+      ? `${MAX_ACTIVE} photos selected. They transition every ${CHANGE_EVERY_MS / 1000} seconds.`
+      : `Select up to ${MAX_ACTIVE} photos.`,
   );
 
   modal.hidden = false;
@@ -586,7 +586,7 @@ function buildDom() {
         <div>
           <p class="cs-bg-kicker">Appearance</p>
           <h2 id="cs-bg-title">Background slideshow</h2>
-          <p>Select any three photos. They smoothly fade into one another every 5 seconds and always fill the current screen without stretching.</p>
+          <p>Select up to ten photos. They smoothly fade into one another every 5 seconds and always fill the current screen without stretching.</p>
         </div>
         <button type="button" class="cs-bg-close" id="cs-bg-close" aria-label="Close">×</button>
       </header>
@@ -594,7 +594,7 @@ function buildDom() {
       <div class="cs-bg-toolbar">
         <div>
           <strong>Your background library</strong>
-          <small id="cs-bg-count">0 / 3 selected</small>
+          <small id="cs-bg-count">0 / 10 selected</small>
         </div>
         <div class="cs-bg-toolbar-actions">
           <input id="cs-bg-file-input" class="cs-bg-file-input" type="file" accept="image/*" multiple />
