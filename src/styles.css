@@ -10744,3 +10744,29 @@ body:has(.export-excel-modal) #cs-bg-settings-button {
 .new-template-trait-section .section-title small {
   color: #88a080 !important;
 }
+
+
+/* =============================================================
+   v2.13.17 Dynamic germplasm collection counters
+   ============================================================= */
+.germplasm-category-cards > div .germplasm-category-count {
+  display: block;
+  margin: 4px 0 2px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(38px, 3.1vw, 54px);
+  line-height: .92;
+  letter-spacing: -.04em;
+  font-weight: 500;
+  color: #174d2e;
+  font-variant-numeric: tabular-nums;
+}
+
+.germplasm-category-cards > div > strong {
+  margin-top: 7px;
+}
+
+@media (max-width: 760px) {
+  .germplasm-category-cards > div .germplasm-category-count {
+    font-size: clamp(30px, 9vw, 42px);
+  }
+}

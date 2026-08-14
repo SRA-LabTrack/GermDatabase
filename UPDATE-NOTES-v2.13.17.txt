@@ -1,0 +1,12 @@
+CaneSprout Registry v2.13.17
+
+Dynamic germplasm collection counters
+
+- Accession shows the number of unique nonblank variety identities.
+- SRA Developed Varieties counts varieties whose Breeding Institution/Developer/Breeder equals Sugar Regulatory Administration.
+- Local Collection counts varieties classified as Local.
+- International Collection is calculated as all recorded unique varieties other than the Local collection, so Local + International always equals Accession.
+- Counters recalculate locally after manual registration, Excel import/upsert, edits, offline queue changes, reconnect sync, and deletes.
+- Historical duplicate observations count once per canonical variety identity.
+- Counter refresh adds zero Appwrite reads and uses no polling.
+- Shared implementation applies to website and Electron.

@@ -18,6 +18,7 @@ import { canonicalLegacyVariety, normalizeVarietyDisplay, normalizeVarietyIdenti
 import bundledCharacterization from '../../seed/characterization.json';
 import bundledHyvCharacteristics from '../../seed/sra_hyv_characteristics_v273.json';
 import { cacheOfflineRecord, cacheOfflineRecords, findOfflineRecordByVariety, getOfflineRecord, listOfflineRecords, removeOfflineRecord } from './offlineSnapshot';
+import { rememberRegistryStatDelete, rememberRegistryStatRecord } from './registryStats';
 
 export const PAGE_SIZE = 25;
 export const RECENT_LIMIT = 20;
@@ -1152,6 +1153,7 @@ export async function saveRecord(data, recordId = '', previous = null, { knownNe
   writeCoreSession(core);
   writeDetailSession(id, value);
   cacheOfflineRecord(value).catch(() => {});
+  rememberRegistryStatRecord(value, previous);
   return value;
 }
 
@@ -1197,6 +1199,7 @@ export async function deleteRecord(record) {
   await deleteDocumentIfPresent(COLLECTIONS.records, record.$id);
   clearListCache();
   clearRecordCache(record.$id);
+  rememberRegistryStatDelete(record);
   removeOfflineRecord(record.$id).catch(() => {});
 }
 

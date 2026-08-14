@@ -1,6 +1,7 @@
 import { ID, isNetworkFailure } from './appwrite';
 import { submitChangeRequest } from './approvalApi';
 import { clearListCache, deleteRecord, deleteRecordByVariety, deleteStoredFiles, saveRecord, upsertRecordByVariety, uploadPreparedPhotos, validateRecordPayload } from './registryApi';
+import { rememberRegistryStatDelete, rememberRegistryStatRecord } from './registryStats';
 
 const DB_NAME = 'canesprout-offline-queue';
 const DB_VERSION = 1;
@@ -222,6 +223,7 @@ export async function queueOfflineRecord({ ownerId, actor = null, form, recordId
   };
 
   await transact('readwrite', (store) => { store.put(entry); });
+  if (entry.syncMode === 'direct') rememberRegistryStatRecord(entry.form, entry.previous);
   notifyQueueChanged();
   return entry;
 }
@@ -240,6 +242,7 @@ export async function queueOfflineDelete({ ownerId, actor = null, record }) {
   // simply cancels that local create. No Appwrite delete is necessary.
   if (existing?.operation === 'create' && Number(existing.attempts || 0) === 0) {
     await removeEntry(id);
+    rememberRegistryStatDelete(existing.form || record);
     return { ...existing, operation: 'cancelled-create', cancelled: true };
   }
 
@@ -264,6 +267,7 @@ export async function queueOfflineDelete({ ownerId, actor = null, record }) {
     photos: []
   };
   await transact('readwrite', (store) => { store.put(entry); });
+  rememberRegistryStatDelete(record);
   notifyQueueChanged();
   return entry;
 }

@@ -47,6 +47,7 @@ import { loginMessageFor, messageFor } from './lib/registryUi';
 import { getOfflineQueueSummary, offlineEntryToRecord, overlayOfflineQueueRecords, subscribeOfflineQueue, syncOfflineQueue } from './lib/offlineQueue';
 import { getOfflineSnapshotSummary, subscribeOfflineSnapshot } from './lib/offlineSnapshot';
 import { prepareOfflineWorkspace } from './lib/offlineApp';
+import { getRegistryStats, subscribeRegistryStats } from './lib/registryStats';
 import SugarcaneIcon from './components/SugarcaneIcon.jsx';
 import { normalizeVarietyDisplay } from './lib/legacyHyv';
 
@@ -60,7 +61,7 @@ const SpreadsheetEditorModal = lazy(() => import('./components/SpreadsheetEditor
 const CombinationRegistryModal = lazy(() => import('./components/CombinationRegistryModal.jsx'));
 
 const APP_NAME = 'Sugarcane Germplasm Resource Database';
-const APP_VERSION = '2.13.16';
+const APP_VERSION = '2.13.17';
 const USER_CACHE_KEY = 'sugarcane-registry-user-v230';
 const ROLE_REFRESH_PREFIX = 'canesprout-role-refresh-v251:';
 const MANUAL_REFRESH_COOLDOWN_MS = 30_000;
@@ -396,6 +397,7 @@ export default function App() {
   const [isMobileToolbar, setIsMobileToolbar] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 760px)').matches);
   const [mobileToolbarOpen, setMobileToolbarOpen] = useState(false);
   const [toolbarBottom, setToolbarBottom] = useState(108);
+  const [registryStats, setRegistryStats] = useState({ accession: 0, sraDeveloped: 0, local: 0, international: 0 });
 
   useEffect(() => {
     let frame = 0;
@@ -559,6 +561,29 @@ export default function App() {
     const unsubscribeSnapshot = subscribeOfflineSnapshot(refreshLocalState);
     return () => { live = false; unsubscribeQueue?.(); unsubscribeSnapshot?.(); };
   }, [user]);
+
+  // The four germplasm collection cards are derived locally from the audited
+  // bundled registry plus any records/edits already saved on this device.
+  // Manual registration, Excel import, offline queue changes, reconnect sync,
+  // edits, and deletes emit a tiny local event so these counts repaint without
+  // polling or a full Appwrite scan.
+  useEffect(() => {
+    if (!user) return undefined;
+    let live = true;
+    const refreshStats = () => {
+      getRegistryStats().then((next) => {
+        if (live) setRegistryStats(next);
+      }).catch(() => {});
+    };
+    refreshStats();
+    const unsubscribeStats = subscribeRegistryStats(refreshStats);
+    const unsubscribeSnapshotStats = subscribeOfflineSnapshot(refreshStats);
+    return () => {
+      live = false;
+      unsubscribeStats?.();
+      unsubscribeSnapshotStats?.();
+    };
+  }, [user?.id, user?.email]);
 
   // After one successful login, ask the browser to preserve CaneSprout storage
   // and pre-load every lazy section once per app version. This is deliberately
@@ -1293,26 +1318,30 @@ export default function App() {
           <div>
             <span className="stat-icon"><SugarcaneIcon size={20} /></span>
             <small>Germplasm Collection</small>
+            <b className="germplasm-category-count">{registryStats.accession.toLocaleString()}</b>
             <strong>Accession</strong>
-            <span>Documented sugarcane accessions maintained in the resource database.</span>
+            <span>Total unique varieties currently recorded in CaneSprout.</span>
           </div>
           <div>
             <span className="stat-icon"><SugarcaneIcon size={20} /></span>
             <small>Germplasm Collection</small>
+            <b className="germplasm-category-count">{registryStats.sraDeveloped.toLocaleString()}</b>
             <strong>SRA Developed Varieties</strong>
-            <span>Sugarcane varieties developed and documented through SRA breeding programs.</span>
+            <span>Varieties whose Breeding Institution/Developer/Breeder is Sugar Regulatory Administration.</span>
           </div>
           <div>
             <span className="stat-icon"><SugarcaneIcon size={20} /></span>
             <small>Germplasm Collection</small>
+            <b className="germplasm-category-count">{registryStats.local.toLocaleString()}</b>
             <strong>Local Collection</strong>
-            <span>Locally collected and maintained sugarcane genetic resources.</span>
+            <span>Varieties recorded as Local in the collection classification.</span>
           </div>
           <div>
             <span className="stat-icon"><SugarcaneIcon size={20} /></span>
             <small>Germplasm Collection</small>
+            <b className="germplasm-category-count">{registryStats.international.toLocaleString()}</b>
             <strong>International Collection</strong>
-            <span>Introduced and internationally sourced sugarcane germplasm resources.</span>
+            <span>All recorded varieties other than those classified as Local.</span>
           </div>
         </div>
       </section>
@@ -1346,7 +1375,7 @@ export default function App() {
         </div>
         {!!offlineSummary.count && <div className="offline-queue-banner"><CloudUpload size={18} /><div><strong>{offlineSummary.count} offline entr{offlineSummary.count === 1 ? 'y' : 'ies'} waiting on this device</strong><span>{offlineSummary.photoCount ? `${offlineSummary.photoCount} compressed photo${offlineSummary.photoCount === 1 ? '' : 's'} included. ` : ''}Sync is direct to Appwrite and never routed through Vercel.</span></div><button className="secondary-button" onClick={() => setShowOfflineQueue(true)}>Open queue</button></div>}
         {offlineSyncState && <div className="alert info offline-sync-status"><CloudUpload size={16} /> {offlineSyncState}</div>}
-        <div className="query-policy"><CheckCircle2 size={16} /><span>{PAGE_SIZE} rows/request • recent view capped at {RECENT_LIMIT} • {SEARCH_DEBOUNCE_MS} ms debounce • cursor Load More • lazy germplasm preview traits • bounded caching • admin approval workflow • persistent offline workspace • desktop local-first login • paced IndexedDB sync • lazy tools/photos • no polling • no Realtime • no totals</span></div>
+        <div className="query-policy"><CheckCircle2 size={16} /><span>{PAGE_SIZE} rows/request • recent view capped at {RECENT_LIMIT} • {SEARCH_DEBOUNCE_MS} ms debounce • cursor Load More • lazy germplasm preview traits • bounded caching • admin approval workflow • persistent offline workspace • desktop local-first login • paced IndexedDB sync • lazy tools/photos • local auto-updating collection counters • no polling • no Realtime • no repeated total scans</span></div>
         {!loading && recentMode && <div className="search-result-note recent-result-note"><b>{records.length}</b><span>Most recently added sugarcane records, newest first. This view is capped at {RECENT_LIMIT} lean records and does not auto-refresh.</span></div>}
         {!loading && !recentMode && searchInput.trim().length >= SEARCH_MIN && searchTerm === searchInput.trim() && <div className="search-result-note"><b>{records.length}</b><span>{searchMatchMode === 'exact' ? `Exact ${SEARCH_SCOPES[searchScope].label.toLowerCase()} match` : `${records.length === 1 ? 'match' : 'matches'} loaded`} for “{searchTerm}” in {SEARCH_SCOPES[searchScope].label}.{hasMore ? ` More matches are available with Load ${PAGE_SIZE} more.` : ''}</span></div>}
         {cacheNote && <div className="alert info">{cacheNote}</div>}
