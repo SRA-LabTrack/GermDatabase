@@ -60,7 +60,7 @@ const SpreadsheetEditorModal = lazy(() => import('./components/SpreadsheetEditor
 const CombinationRegistryModal = lazy(() => import('./components/CombinationRegistryModal.jsx'));
 
 const APP_NAME = 'Sugarcane Germplasm Resource Database';
-const APP_VERSION = '2.13.13';
+const APP_VERSION = '2.13.14';
 const USER_CACHE_KEY = 'sugarcane-registry-user-v230';
 const ROLE_REFRESH_PREFIX = 'canesprout-role-refresh-v251:';
 const MANUAL_REFRESH_COOLDOWN_MS = 30_000;
@@ -393,6 +393,7 @@ export default function App() {
   const [offlineSyncState, setOfflineSyncState] = useState('');
   const [backupState, setBackupState] = useState('');
   const [updateState, setUpdateState] = useState('');
+  const [isMobileToolbar, setIsMobileToolbar] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 760px)').matches);
   const [mobileToolbarOpen, setMobileToolbarOpen] = useState(false);
   const [toolbarBottom, setToolbarBottom] = useState(108);
 
@@ -426,8 +427,10 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const closeForDesktop = () => {
-      if (window.innerWidth > 760) setMobileToolbarOpen(false);
+    const media = window.matchMedia('(max-width: 760px)');
+    const syncToolbarMode = () => {
+      setIsMobileToolbar(media.matches);
+      if (!media.matches) setMobileToolbarOpen(false);
     };
     const closeOnEscape = (event) => {
       if (event.key === 'Escape') setMobileToolbarOpen(false);
@@ -437,11 +440,16 @@ export default function App() {
       if (toolbarRef.current?.contains(event.target)) return;
       setMobileToolbarOpen(false);
     };
-    window.addEventListener('resize', closeForDesktop);
+    syncToolbarMode();
+    if (media.addEventListener) media.addEventListener('change', syncToolbarMode);
+    else media.addListener(syncToolbarMode);
+    window.addEventListener('orientationchange', syncToolbarMode);
     document.addEventListener('keydown', closeOnEscape);
     document.addEventListener('pointerdown', closeOnOutsidePress);
     return () => {
-      window.removeEventListener('resize', closeForDesktop);
+      if (media.removeEventListener) media.removeEventListener('change', syncToolbarMode);
+      else media.removeListener(syncToolbarMode);
+      window.removeEventListener('orientationchange', syncToolbarMode);
       document.removeEventListener('keydown', closeOnEscape);
       document.removeEventListener('pointerdown', closeOnOutsidePress);
     };
@@ -1006,6 +1014,7 @@ export default function App() {
       <header ref={toolbarRef} className={`topbar reference-toolbar ${isAdmin ? 'admin-toolbar' : 'user-toolbar'}`}>
         <div className="toolbar-brand-panel"><Brand /></div>
 
+        {isMobileToolbar && (<>
         <button
           type="button"
           className={`mobile-toolbar-toggle ${mobileToolbarOpen ? 'open' : ''}`}
@@ -1096,7 +1105,9 @@ export default function App() {
             </div>
           </section>
         )}
+        </>)}
 
+        {!isMobileToolbar && (<>
         <nav className={`toolbar-main-actions segmented-toolbar ${isAdmin ? 'admin-actions' : ''}`} aria-label="Primary registry navigation">
           <button
             className={`toolbar-tile nav-button ${!showImport && !showExcelMenu && !showExportExcel && !showSpreadsheetEditor && !showForm && !showAdminCenter && !showCombinationRegistry ? 'active' : ''}`}
@@ -1192,6 +1203,7 @@ export default function App() {
 
           <button className="toolbar-signout icon-button" title="Sign out" onClick={signOut}><LogOut size={21} /></button>
         </div>
+        </>)}
       </header>
 
       {submissionNotice && (

@@ -10671,3 +10671,38 @@ body:has(.export-excel-modal) #cs-bg-settings-button {
   .mobile-toolbar-toggle,
   .mobile-toolbar-menu { display: none !important; }
 }
+
+
+/* ==========================================================================
+   v2.13.14 MOBILE MENU HARD GUARD
+   React now conditionally renders mobile vs desktop controls. These rules are
+   a second safety layer for stale/legacy CSS and unusual embedded webviews.
+   ========================================================================== */
+@media (max-width: 760px) {
+  .reference-toolbar > nav.toolbar-main-actions,
+  .reference-toolbar > .toolbar-status-card,
+  .reference-toolbar > .toolbar-account-card {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    position: absolute !important;
+    width: 0 !important;
+    height: 0 !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+  .reference-toolbar > .mobile-toolbar-toggle {
+    display: inline-flex !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+}
+@media (min-width: 761px) {
+  .reference-toolbar > .mobile-toolbar-toggle,
+  .reference-toolbar > .mobile-toolbar-menu {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+}

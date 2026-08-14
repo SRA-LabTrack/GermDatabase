@@ -1,0 +1,8 @@
+CaneSprout Registry v2.13.14
+
+- Fixed the mobile toolbar at the React render level, not CSS only.
+- Mobile screens render only the CaneSprout brand and collapsible Menu control.
+- Desktop navigation, status, account, More, and Sign Out controls are not mounted on mobile.
+- Desktop/laptop screens continue to render the normal full toolbar.
+- Added a final CSS hard guard against stale legacy toolbar rules.
+- Bumped website Service Worker/offline cache versions so the deployed mobile site picks up the new shell.
