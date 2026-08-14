@@ -63,7 +63,7 @@ const SpreadsheetEditorModal = lazy(() => import('./components/SpreadsheetEditor
 const CombinationRegistryModal = lazy(() => import('./components/CombinationRegistryModal.jsx'));
 
 const APP_NAME = 'Sugarcane Germplasm Resource Database';
-const APP_VERSION = '2.13.21';
+const APP_VERSION = '2.13.22';
 const USER_CACHE_KEY = 'sugarcane-registry-user-v230';
 const ROLE_REFRESH_PREFIX = 'canesprout-role-refresh-v251:';
 const MANUAL_REFRESH_COOLDOWN_MS = 30_000;
@@ -838,8 +838,6 @@ export default function App() {
       if (result.offlineWorkspace) setCacheNote(`Offline workspace active. ${result.cachedLiveCount || offlineSnapshotSummary.count || 0} live record snapshot${(result.cachedLiveCount || offlineSnapshotSummary.count || 0) === 1 ? '' : 's'} are stored on this device, with the bundled ${SOURCE_RECORD_COUNT}-record registry filling the remaining gaps.`);
       else if (result.bundledSnapshot) setCacheNote(`Appwrite did not respond in time. Showing the bundled ${SOURCE_RECORD_COUNT}-record registry snapshot from this device.`);
       else if (result.offlineFallback) setCacheNote('Showing the last saved browse page because Appwrite is currently unreachable.');
-      else if (result.persistentCache) setCacheNote('Loaded a recent field page from this device: 0 Appwrite reads. Use Refresh only when you need newer data.');
-      else if (result.fromCache) setCacheNote('Loaded from bounded local cache: 0 additional Appwrite reads.');
     }).catch((error) => {
       if (!live) return;
       const code = Number(error?.code || error?.status || 0);
@@ -1377,7 +1375,6 @@ export default function App() {
         </div>
         {!!offlineSummary.count && <div className="offline-queue-banner"><CloudUpload size={18} /><div><strong>{offlineSummary.count} offline entr{offlineSummary.count === 1 ? 'y' : 'ies'} waiting on this device</strong><span>{offlineSummary.photoCount ? `${offlineSummary.photoCount} compressed photo${offlineSummary.photoCount === 1 ? '' : 's'} included. ` : ''}Sync is direct to Appwrite and never routed through Vercel.</span></div><button className="secondary-button" onClick={() => setShowOfflineQueue(true)}>Open queue</button></div>}
         {offlineSyncState && <div className="alert info offline-sync-status"><CloudUpload size={16} /> {offlineSyncState}</div>}
-        <div className="query-policy"><CheckCircle2 size={16} /><span>{PAGE_SIZE} rows/request • recent view capped at {RECENT_LIMIT} • {SEARCH_DEBOUNCE_MS} ms debounce • cursor Load More • lazy germplasm preview traits • bounded caching • admin approval workflow • persistent offline workspace • desktop local-first login • paced IndexedDB sync • lazy tools/photos • local auto-updating collection counters • no polling • no Realtime • no repeated total scans</span></div>
         {!loading && recentMode && <div className="search-result-note recent-result-note"><b>{records.length}</b><span>Most recently added sugarcane records, newest first. This view is capped at {RECENT_LIMIT} lean records and does not auto-refresh.</span></div>}
         {!loading && !recentMode && searchInput.trim().length >= SEARCH_MIN && searchTerm === searchInput.trim() && <div className="search-result-note"><b>{records.length}</b><span>{searchMatchMode === 'exact' ? `Exact ${SEARCH_SCOPES[searchScope].label.toLowerCase()} match` : `${records.length === 1 ? 'match' : 'matches'} loaded`} for “{searchTerm}” in {SEARCH_SCOPES[searchScope].label}.{hasMore ? ` More matches are available with Load ${PAGE_SIZE} more.` : ''}</span></div>}
         {cacheNote && <div className="alert info">{cacheNote}</div>}

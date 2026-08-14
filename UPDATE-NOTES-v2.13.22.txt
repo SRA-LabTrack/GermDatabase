@@ -1,0 +1,7 @@
+CaneSprout Registry v2.13.22
+
+Registry UI cleanup for website and Electron:
+- Removed the long performance/query-policy strip above the registry records.
+- Removed routine "Loaded from bounded local cache" and recent local-page read notices.
+- Kept caching, offline workspace, Appwrite optimization, pagination, and sync behavior unchanged.
+- Meaningful offline/fallback/error notices remain available when needed.

@@ -10827,3 +10827,10 @@ body:has(.export-excel-modal) #cs-bg-settings-button {
   color: #183f2a !important;
   font-weight: 800 !important;
 }
+
+
+/* =============================================================
+   v2.13.22 registry status UI cleanup
+   Routine performance/cache-read banners are intentionally omitted
+   from the registry view. Offline/error notices remain functional.
+   ============================================================= */
