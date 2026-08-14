@@ -1,0 +1,7 @@
+CaneSprout Registry v2.13.13
+
+- Replaced the mobile multi-row toolbar with one compact collapsible Menu button.
+- Mobile menu opens as a vertical array/list of all registry, Excel, combination, admin, offline, backup, update, Electron-window, and sign-out actions available to the current user.
+- Desktop and laptop retain the full horizontal toolbar.
+- Mobile layout supports narrow phones and browser webviews without toolbar collision or overlap.
+- Menu closes on outside tap, Escape, action selection, or resize back to desktop.

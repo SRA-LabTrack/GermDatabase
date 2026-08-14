@@ -129,3 +129,7 @@ v2.13.6 note: the three login showcase boxes were enlarged further for better re
 
 
 v2.13.7 note: the three login showcase boxes were rebalanced to stay readable without overlapping the sign-in card in both the website and Electron app.
+
+
+## v2.13.13
+Mobile phone layouts now use a single collapsible tools button. The dropdown presents registry, Excel, combination, admin, offline, backup, update, and sign-out actions in a vertical list, while desktop and laptop layouts keep the full toolbar.

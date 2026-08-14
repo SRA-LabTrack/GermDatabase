@@ -1,7 +1,7 @@
 {
-  "version": "2.13.12",
+  "version": "2.13.13",
   "channel": "stable",
-  "notes": "Fixes web login layout squeeze by removing legacy auth-shell/auth-panel grid inheritance while preserving the unified website/Electron photo cross-fade login.",
+  "notes": "Replaces the mobile multi-row toolbar with a compact collapsible tools menu while preserving the full desktop and laptop toolbar.",
   "migration": "combination-registry-v2100",
   "updated": "2026-08-14"
 }

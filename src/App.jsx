@@ -15,6 +15,7 @@ import {
   LoaderCircle,
   LogOut,
   Maximize2,
+  Menu,
   Minimize2,
   MoreHorizontal,
   Plus,
@@ -59,7 +60,7 @@ const SpreadsheetEditorModal = lazy(() => import('./components/SpreadsheetEditor
 const CombinationRegistryModal = lazy(() => import('./components/CombinationRegistryModal.jsx'));
 
 const APP_NAME = 'Sugarcane Germplasm Resource Database';
-const APP_VERSION = '2.13.12';
+const APP_VERSION = '2.13.13';
 const USER_CACHE_KEY = 'sugarcane-registry-user-v230';
 const ROLE_REFRESH_PREFIX = 'canesprout-role-refresh-v251:';
 const MANUAL_REFRESH_COOLDOWN_MS = 30_000;
@@ -392,6 +393,7 @@ export default function App() {
   const [offlineSyncState, setOfflineSyncState] = useState('');
   const [backupState, setBackupState] = useState('');
   const [updateState, setUpdateState] = useState('');
+  const [mobileToolbarOpen, setMobileToolbarOpen] = useState(false);
   const [toolbarBottom, setToolbarBottom] = useState(108);
 
   useEffect(() => {
@@ -422,6 +424,28 @@ export default function App() {
       window.removeEventListener('orientationchange', measureToolbar);
     };
   }, []);
+
+  useEffect(() => {
+    const closeForDesktop = () => {
+      if (window.innerWidth > 760) setMobileToolbarOpen(false);
+    };
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') setMobileToolbarOpen(false);
+    };
+    const closeOnOutsidePress = (event) => {
+      if (!mobileToolbarOpen) return;
+      if (toolbarRef.current?.contains(event.target)) return;
+      setMobileToolbarOpen(false);
+    };
+    window.addEventListener('resize', closeForDesktop);
+    document.addEventListener('keydown', closeOnEscape);
+    document.addEventListener('pointerdown', closeOnOutsidePress);
+    return () => {
+      window.removeEventListener('resize', closeForDesktop);
+      document.removeEventListener('keydown', closeOnEscape);
+      document.removeEventListener('pointerdown', closeOnOutsidePress);
+    };
+  }, [mobileToolbarOpen]);
 
   useEffect(() => {
     if (!showExcelMenu) return undefined;
@@ -981,6 +1005,97 @@ export default function App() {
     <main className="app-shell">
       <header ref={toolbarRef} className={`topbar reference-toolbar ${isAdmin ? 'admin-toolbar' : 'user-toolbar'}`}>
         <div className="toolbar-brand-panel"><Brand /></div>
+
+        <button
+          type="button"
+          className={`mobile-toolbar-toggle ${mobileToolbarOpen ? 'open' : ''}`}
+          aria-expanded={mobileToolbarOpen}
+          aria-controls="mobile-toolbar-menu"
+          aria-label={mobileToolbarOpen ? 'Close tools menu' : 'Open tools menu'}
+          onClick={() => {
+            setShowExcelMenu(false);
+            setMobileToolbarOpen((open) => !open);
+          }}
+        >
+          {mobileToolbarOpen ? <X size={22} /> : <Menu size={22} />}
+          <span>{mobileToolbarOpen ? 'Close' : 'Menu'}</span>
+        </button>
+
+        {mobileToolbarOpen && (
+          <section id="mobile-toolbar-menu" className="mobile-toolbar-menu" aria-label="CaneSprout tools menu">
+            <div className="mobile-toolbar-menu-account">
+              <span className="mobile-toolbar-menu-avatar" aria-hidden="true">{String(user.name || user.email || 'U').trim().charAt(0).toUpperCase()}</span>
+              <span>
+                <strong>{user.name || user.email?.split('@')[0] || 'User'}</strong>
+                <small>{isAdmin ? 'Administrator' : 'User'} · {user.email}</small>
+              </span>
+              <span className={`mobile-toolbar-network ${online ? 'online' : 'offline'}`}>
+                {online ? <Cloud size={16} /> : <CloudOff size={16} />}
+                {online ? 'Online' : 'Offline'}
+              </span>
+            </div>
+
+            <div className="mobile-toolbar-menu-list">
+              <button type="button" onClick={() => { setMobileToolbarOpen(false); setShowExcelMenu(false); setShowCombinationRegistry(false); goToGermplasmCollection(); }}>
+                <SugarcaneIcon size={20} />
+                <span><strong>Germplasm</strong><small>Browse the germplasm collection</small></span>
+              </button>
+              <button type="button" onClick={() => { setMobileToolbarOpen(false); setShowCombinationRegistry(false); setShowForm(false); setEditRecord(null); setShowAdminCenter(false); setShowOfflineQueue(false); setShowExcelMenu(true); }}>
+                <FileSpreadsheet size={20} />
+                <span><strong>Excel Tools</strong><small>Import, export, or edit spreadsheet data</small></span>
+              </button>
+              <button type="button" onClick={() => { setMobileToolbarOpen(false); setShowExcelMenu(false); setShowCombinationRegistry(false); setEditRecord(null); setShowForm(true); }}>
+                <Plus size={21} />
+                <span><strong>Add record</strong><small>Register a new sugarcane variety</small></span>
+              </button>
+              <button type="button" onClick={() => { setMobileToolbarOpen(false); setShowExcelMenu(false); setShowForm(false); setEditRecord(null); setShowAdminCenter(false); setShowOfflineQueue(false); setShowImport(false); setShowExportExcel(false); setShowSpreadsheetEditor(false); setShowCombinationRegistry(true); }}>
+                <Dna size={20} />
+                <span><strong>Combination Registry</strong><small>Search and record male × female crosses</small></span>
+              </button>
+              {isAdmin && (
+                <>
+                  <button type="button" onClick={() => { setMobileToolbarOpen(false); setShowExcelMenu(false); setShowCombinationRegistry(false); openAdminCenter('approvals'); }}>
+                    <ShieldCheck size={20} />
+                    <span><strong>Pending approvals</strong><small>Review submitted registry changes</small></span>
+                  </button>
+                  <button type="button" onClick={() => { setMobileToolbarOpen(false); setShowExcelMenu(false); setShowCombinationRegistry(false); openAdminCenter('accounts'); }}>
+                    <Users size={20} />
+                    <span><strong>Account management</strong><small>Manage users and assigned roles</small></span>
+                  </button>
+                </>
+              )}
+              <button type="button" onClick={() => { setMobileToolbarOpen(false); setShowOfflineQueue(true); }}>
+                <CloudUpload size={20} />
+                <span><strong>Offline queue</strong><small>{offlineSummary.count ? `${offlineSummary.count} queued change${offlineSummary.count === 1 ? '' : 's'}` : 'View offline sync status'}</small></span>
+                {offlineSummary.count ? <b className="mobile-toolbar-count">{offlineSummary.count}</b> : null}
+              </button>
+              <button type="button" disabled={Boolean(backupState)} onClick={() => { setMobileToolbarOpen(false); createBackup(); }}>
+                <Download size={20} />
+                <span><strong>{backupState || 'Backup'}</strong><small>Create a registry backup</small></span>
+              </button>
+              <button type="button" onClick={() => { setMobileToolbarOpen(false); handleUpdates(); }}>
+                <RefreshCw size={20} />
+                <span><strong>{updateState === 'downloaded' ? 'Restart & update' : updateState === 'checking' ? 'Checking…' : 'Updates'}</strong><small>Check CaneSprout update status</small></span>
+              </button>
+              {window.germDesktop && (
+                <>
+                  <button type="button" onClick={() => { setMobileToolbarOpen(false); window.germDesktop.minimize?.(); }}>
+                    <Minimize2 size={20} />
+                    <span><strong>Minimize</strong><small>Minimize the Electron window</small></span>
+                  </button>
+                  <button type="button" onClick={() => { setMobileToolbarOpen(false); window.germDesktop.toggleFullscreen?.(); }}>
+                    <Maximize2 size={20} />
+                    <span><strong>Full screen</strong><small>Toggle Electron full screen</small></span>
+                  </button>
+                </>
+              )}
+              <button type="button" className="mobile-toolbar-signout" onClick={() => { setMobileToolbarOpen(false); signOut(); }}>
+                <LogOut size={20} />
+                <span><strong>Sign out</strong><small>End this CaneSprout session</small></span>
+              </button>
+            </div>
+          </section>
+        )}
 
         <nav className={`toolbar-main-actions segmented-toolbar ${isAdmin ? 'admin-actions' : ''}`} aria-label="Primary registry navigation">
           <button
