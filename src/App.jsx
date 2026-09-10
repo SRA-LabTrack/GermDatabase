@@ -65,7 +65,7 @@ const SpreadsheetEditorModal = lazy(() => import('./components/SpreadsheetEditor
 const CombinationRegistryModal = lazy(() => import('./components/CombinationRegistryModal.jsx'));
 
 const APP_NAME = 'Sugarcane Germplasm Resource Database';
-const APP_VERSION = '2.13.24';
+const APP_VERSION = '2.13.26';
 const USER_CACHE_KEY = 'sugarcane-registry-user-v230';
 const ROLE_REFRESH_PREFIX = 'canesprout-role-refresh-v251:';
 const MANUAL_REFRESH_COOLDOWN_MS = 30_000;
@@ -124,6 +124,9 @@ function AuthScreen({ onSignedIn }) {
   const [policyCandidate, setPolicyCandidate] = useState(null);
   const [policyBusy, setPolicyBusy] = useState(false);
   const [policyError, setPolicyError] = useState('');
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
+  const allPoliciesAccepted = termsAccepted && privacyAccepted;
 
   useEffect(() => {
     const onOnline = () => setNetworkOnline(true);
@@ -197,12 +200,18 @@ function AuthScreen({ onSignedIn }) {
     setPolicyCandidate(null);
     setPolicyError('');
     setForm((current) => ({ ...current, password: '' }));
+    setTermsAccepted(false);
+    setPrivacyAccepted(false);
     setError('You must accept the current Terms of Use and Privacy Policy before accessing CaneSprout.');
     setPolicyBusy(false);
   }
 
   async function submit(event) {
     event.preventDefault();
+    if (!allPoliciesAccepted) {
+      setError('Please agree to both the Terms of Use and Privacy Policy before signing in.');
+      return;
+    }
     setBusy(true);
     setError('');
     try {
@@ -218,7 +227,9 @@ function AuthScreen({ onSignedIn }) {
       }
       const existing = await withAppwriteFailover(() => account.get(), { timeoutMs: 9000 });
       if (requiresPolicyAcceptance(existing)) {
-        setPolicyCandidate(existing);
+        const updated = await withAppwriteFailover(() => account.updatePrefs({ prefs: policyPrefs(existing) }), { timeoutMs: 9000 });
+        const accepted = { ...existing, ...updated, prefs: updated?.prefs || policyPrefs(existing) };
+        await finalizeOnlineSignIn(accepted);
         return;
       }
       await finalizeOnlineSignIn(existing);
@@ -274,17 +285,36 @@ function AuthScreen({ onSignedIn }) {
               <form onSubmit={submit}>
                 <label><span>Email</span><input type="email" required value={form.email} onChange={(event) => { setError(''); setForm({ ...form, email: event.target.value }); }} /></label>
                 <label><span>Password</span><input type="password" required minLength={8} value={form.password} onChange={(event) => { setError(''); setForm({ ...form, password: event.target.value }); }} /></label>
-                {error && <div className="alert error">{error}</div>}
-                <button className="primary-button full" disabled={busy || (!networkOnline && window.germDesktop?.isDesktop && !desktopReady)}>
-                  {busy && <LoaderCircle className="spin" size={17} />} {submitLabel}
-                </button>
-                <div className="auth-policy-shortcuts" aria-label="CaneSprout account policies">
-                  <span className="auth-policy-shortcuts-label">Account Policies</span>
-                  <div className="auth-legal-links">
-                    <button type="button" onClick={() => setLegalDocument('terms')}>Terms of Use</button>
-                    <button type="button" onClick={() => setLegalDocument('privacy')}>Privacy Policy</button>
+                <div className="auth-policy-consent" aria-label="CaneSprout account policy agreement">
+                  <span className="auth-policy-consent-title">Account Policies</span>
+                  <div className="auth-policy-consent-row">
+                    <input id="login-terms-consent" type="checkbox" checked={termsAccepted} onChange={(event) => setTermsAccepted(event.target.checked)} />
+                    <label htmlFor="login-terms-consent">I agree to the</label>
+                    <button type="button" className="auth-policy-link-button" onClick={() => setLegalDocument('terms')}>Terms of Use</button>
+                  </div>
+                  <div className="auth-policy-consent-row">
+                    <input id="login-privacy-consent" type="checkbox" checked={privacyAccepted} onChange={(event) => setPrivacyAccepted(event.target.checked)} />
+                    <label htmlFor="login-privacy-consent">I agree to the</label>
+                    <button type="button" className="auth-policy-link-button" onClick={() => setLegalDocument('privacy')}>Privacy Policy</button>
+                  </div>
+                  <div className="auth-policy-consent-row auth-policy-consent-all">
+                    <input
+                      id="login-accept-all"
+                      type="checkbox"
+                      checked={allPoliciesAccepted}
+                      onChange={(event) => {
+                        const checked = event.target.checked;
+                        setTermsAccepted(checked);
+                        setPrivacyAccepted(checked);
+                      }}
+                    />
+                    <label htmlFor="login-accept-all">Accept All</label>
                   </div>
                 </div>
+                {error && <div className="alert error">{error}</div>}
+                <button className="primary-button full" disabled={!allPoliciesAccepted || busy || (!networkOnline && window.germDesktop?.isDesktop && !desktopReady)}>
+                  {busy && <LoaderCircle className="spin" size={17} />} {submitLabel}
+                </button>
               </form>
               <p className="auth-admin-note">Accounts are created and assigned roles by a Sugarcane Germplasm Resource Database administrator.</p>
             </div>

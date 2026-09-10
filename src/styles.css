@@ -11033,6 +11033,10 @@ body:has(.export-excel-modal) #cs-bg-settings-button {
   border-top: 1px solid rgba(46, 84, 56, .10);
   background: rgba(248,250,246,.98);
 }
+.legal-agreement-options {
+  display: grid;
+  gap: 9px;
+}
 .legal-agreement-checkbox {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
@@ -11047,6 +11051,11 @@ body:has(.export-excel-modal) #cs-bg-settings-button {
 .legal-agreement-checkbox input { width: 18px; height: 18px; margin: 2px 0 0; accent-color: #2e7c46; }
 .legal-agreement-checkbox span { display: grid; gap: 3px; color: #244d33; font-size: 12px; line-height: 1.4; }
 .legal-agreement-checkbox small { color: #758177; font-size: 10px; }
+.legal-agreement-accept-all {
+  border-color: rgba(46, 124, 70, .26);
+  background: rgba(232, 245, 222, .72);
+}
+.legal-agreement-accept-all span b { color: #1f6038; }
 .legal-acceptance-actions {
   margin-top: 13px;
   display: flex;
@@ -11150,5 +11159,105 @@ body:has(.export-excel-modal) #cs-bg-settings-button {
 @media (max-width: 420px) {
   .auth-policy-shortcuts .auth-legal-links {
     grid-template-columns: 1fr;
+  }
+}
+
+
+/* =============================================================
+   v2.13.26 Visible login policy agreement
+   Explicit Terms + Privacy + Accept All checkboxes are rendered on
+   both web and Electron login cards before the Sign in action.
+   ============================================================= */
+.auth-policy-consent {
+  margin: 2px 0 2px;
+  padding: 12px 14px;
+  display: grid;
+  gap: 9px;
+  border: 1px solid rgba(40, 88, 56, .16);
+  border-radius: 12px;
+  background: rgba(244, 248, 241, .82);
+}
+
+.auth-policy-consent-title {
+  color: #66786c;
+  font-size: 9px;
+  line-height: 1;
+  font-weight: 850;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.auth-policy-consent-row {
+  min-width: 0;
+  display: flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  color: #385846;
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.auth-policy-consent-row > input[type="checkbox"] {
+  appearance: auto !important;
+  -webkit-appearance: checkbox !important;
+  width: 16px !important;
+  height: 16px !important;
+  min-width: 16px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  accent-color: #2e7b45;
+  cursor: pointer;
+}
+
+.auth-policy-consent-row > label {
+  display: inline !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  color: #385846 !important;
+  font-size: 11px !important;
+  font-weight: 650 !important;
+  cursor: pointer;
+}
+
+.auth-policy-link-button {
+  appearance: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  color: #245f39;
+  font: inherit;
+  font-weight: 850;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.auth-policy-link-button:hover,
+.auth-policy-link-button:focus-visible {
+  color: #123f25;
+  outline: none;
+}
+
+.auth-policy-consent-all {
+  margin-top: 1px;
+  padding-top: 9px;
+  border-top: 1px solid rgba(40, 88, 56, .12);
+}
+
+.auth-policy-consent-all > label {
+  color: #245f39 !important;
+  font-weight: 850 !important;
+}
+
+@media (max-width: 520px) {
+  .auth-policy-consent {
+    padding: 11px 12px;
+  }
+  .auth-policy-consent-row {
+    flex-wrap: wrap !important;
+    column-gap: 6px !important;
+    row-gap: 3px !important;
   }
 }

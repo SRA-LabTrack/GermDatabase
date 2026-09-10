@@ -1,0 +1,9 @@
+CaneSprout Registry v2.13.26
+
+- Adds visible policy agreement checkboxes directly to the website and Electron login card.
+- Separate checkboxes for Terms of Use and Privacy Policy.
+- Adds Accept All, which selects/deselects both agreements.
+- Terms of Use and Privacy Policy remain clickable from the checkbox rows.
+- Sign in stays disabled until both required agreements are selected.
+- For newly created accounts, accepted policy version is recorded in Appwrite preferences during the successful online sign-in.
+- Existing policy modal/gate remains available for restored-session policy enforcement.
