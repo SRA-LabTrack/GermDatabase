@@ -1,0 +1,7 @@
+CaneSprout Registry v2.13.25
+
+- Added separate Terms of Use acceptance checkbox.
+- Added separate Privacy Policy acceptance checkbox.
+- Added Accept All checkbox that toggles both policy choices.
+- Agree & Continue remains disabled until both policies are accepted.
+- Applied to both website and Electron shared renderer.
