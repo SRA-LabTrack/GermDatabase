@@ -1,0 +1,7 @@
+CaneSprout Registry v2.13.24
+
+- Makes Terms of Use and Privacy Policy visibly accessible directly below the Sign in button.
+- Adds a compact Account Policies block with two distinct policy buttons.
+- Keeps the first-online-sign-in acceptance gate and Appwrite preference recording introduced in v2.13.23.
+- Applies to both website and Electron because they share the renderer.
+- Bumps the web/offline cache version so deployed clients receive the updated login UI.

@@ -51,6 +51,8 @@ import { getOfflineSnapshotSummary, subscribeOfflineSnapshot } from './lib/offli
 import { prepareOfflineWorkspace } from './lib/offlineApp';
 import { getRegistryStats, subscribeRegistryStats } from './lib/registryStats';
 import SugarcaneIcon from './components/SugarcaneIcon.jsx';
+import { LegalPolicyModal, PolicyAcceptanceModal } from './components/LegalPolicyModal.jsx';
+import { policyPrefs, requiresPolicyAcceptance } from './lib/legalPolicy';
 import { normalizeVarietyDisplay } from './lib/legacyHyv';
 
 const DetailModal = lazy(() => import('./components/DetailModal.jsx'));
@@ -63,7 +65,7 @@ const SpreadsheetEditorModal = lazy(() => import('./components/SpreadsheetEditor
 const CombinationRegistryModal = lazy(() => import('./components/CombinationRegistryModal.jsx'));
 
 const APP_NAME = 'Sugarcane Germplasm Resource Database';
-const APP_VERSION = '2.13.19';
+const APP_VERSION = '2.13.24';
 const USER_CACHE_KEY = 'sugarcane-registry-user-v230';
 const ROLE_REFRESH_PREFIX = 'canesprout-role-refresh-v251:';
 const MANUAL_REFRESH_COOLDOWN_MS = 30_000;
@@ -118,6 +120,10 @@ function AuthScreen({ onSignedIn }) {
   const [error, setError] = useState('');
   const [networkOnline, setNetworkOnline] = useState(navigator.onLine);
   const [desktopProfile, setDesktopProfile] = useState(null);
+  const [legalDocument, setLegalDocument] = useState('');
+  const [policyCandidate, setPolicyCandidate] = useState(null);
+  const [policyBusy, setPolicyBusy] = useState(false);
+  const [policyError, setPolicyError] = useState('');
 
   useEffect(() => {
     const onOnline = () => setNetworkOnline(true);
@@ -157,6 +163,44 @@ function AuthScreen({ onSignedIn }) {
     return next;
   }
 
+  async function finalizeOnlineSignIn(existing) {
+    markRoleRefreshed(existing);
+    if (window.germDesktop?.offlineAuth?.remember) {
+      await window.germDesktop.offlineAuth.remember({
+        email: form.email.trim(),
+        password: form.password,
+        user: existing
+      }).then((status) => setDesktopProfile(status || null)).catch(() => {});
+    }
+    onSignedIn(saveCachedUser(existing), { offline: false, desktop: Boolean(window.germDesktop?.isDesktop) });
+  }
+
+  async function acceptCurrentPolicy() {
+    if (!policyCandidate) return;
+    setPolicyBusy(true);
+    setPolicyError('');
+    try {
+      const updated = await withAppwriteFailover(() => account.updatePrefs({ prefs: policyPrefs(policyCandidate) }), { timeoutMs: 9000 });
+      const accepted = { ...policyCandidate, ...updated, prefs: updated?.prefs || policyPrefs(policyCandidate) };
+      setPolicyCandidate(null);
+      await finalizeOnlineSignIn(accepted);
+    } catch (err) {
+      setPolicyError(err?.message || 'CaneSprout could not record the agreement. Please check your connection and try again.');
+    } finally {
+      setPolicyBusy(false);
+    }
+  }
+
+  async function declineCurrentPolicy() {
+    setPolicyBusy(true);
+    try { await account.deleteSession({ sessionId: 'current' }); } catch {}
+    setPolicyCandidate(null);
+    setPolicyError('');
+    setForm((current) => ({ ...current, password: '' }));
+    setError('You must accept the current Terms of Use and Privacy Policy before accessing CaneSprout.');
+    setPolicyBusy(false);
+  }
+
   async function submit(event) {
     event.preventDefault();
     setBusy(true);
@@ -173,17 +217,11 @@ function AuthScreen({ onSignedIn }) {
         if (String(sessionError?.type || '').toLowerCase() !== 'user_session_already_exists') throw sessionError;
       }
       const existing = await withAppwriteFailover(() => account.get(), { timeoutMs: 9000 });
-      markRoleRefreshed(existing);
-
-      if (window.germDesktop?.offlineAuth?.remember) {
-        await window.germDesktop.offlineAuth.remember({
-          email: form.email.trim(),
-          password: form.password,
-          user: existing
-        }).then((status) => setDesktopProfile(status || null)).catch(() => {});
+      if (requiresPolicyAcceptance(existing)) {
+        setPolicyCandidate(existing);
+        return;
       }
-
-      onSignedIn(saveCachedUser(existing), { offline: false, desktop: Boolean(window.germDesktop?.isDesktop) });
+      await finalizeOnlineSignIn(existing);
     } catch (err) {
       if (window.germDesktop?.isDesktop && isNetworkFailure(err)) {
         try {
@@ -240,12 +278,21 @@ function AuthScreen({ onSignedIn }) {
                 <button className="primary-button full" disabled={busy || (!networkOnline && window.germDesktop?.isDesktop && !desktopReady)}>
                   {busy && <LoaderCircle className="spin" size={17} />} {submitLabel}
                 </button>
+                <div className="auth-policy-shortcuts" aria-label="CaneSprout account policies">
+                  <span className="auth-policy-shortcuts-label">Account Policies</span>
+                  <div className="auth-legal-links">
+                    <button type="button" onClick={() => setLegalDocument('terms')}>Terms of Use</button>
+                    <button type="button" onClick={() => setLegalDocument('privacy')}>Privacy Policy</button>
+                  </div>
+                </div>
               </form>
               <p className="auth-admin-note">Accounts are created and assigned roles by a Sugarcane Germplasm Resource Database administrator.</p>
             </div>
           </section>
         </div>
       </section>
+      {legalDocument && <LegalPolicyModal initialDocument={legalDocument} onClose={() => setLegalDocument('')} />}
+      {policyCandidate && <PolicyAcceptanceModal user={policyCandidate} busy={policyBusy} error={policyError} onAccept={acceptCurrentPolicy} onDecline={declineCurrentPolicy} />}
     </main>
   );
 }
@@ -400,6 +447,9 @@ export default function App() {
   const [mobileToolbarOpen, setMobileToolbarOpen] = useState(false);
   const [toolbarBottom, setToolbarBottom] = useState(108);
   const [registryStats, setRegistryStats] = useState({ accession: 0, sraDeveloped: 0, local: 0, international: 0 });
+  const [policyGateUser, setPolicyGateUser] = useState(null);
+  const [policyGateBusy, setPolicyGateBusy] = useState(false);
+  const [policyGateError, setPolicyGateError] = useState('');
 
   useEffect(() => {
     let frame = 0;
@@ -716,6 +766,11 @@ export default function App() {
       try {
         const value = await withAppwriteFailover(() => account.get(), { timeoutMs: 9000 });
         if (!live) return;
+        if (requiresPolicyAcceptance(value)) {
+          setPolicyGateUser(value);
+          setSessionState('policy');
+          return;
+        }
         setUser(saveCachedUser(value));
         setSessionState('ready');
       } catch (error) {
@@ -746,6 +801,11 @@ export default function App() {
     let live = true;
     withAppwriteFailover(() => account.get(), { timeoutMs: 9000 }).then((fresh) => {
       if (!live) return;
+      if (requiresPolicyAcceptance(fresh)) {
+        setPolicyGateUser(fresh);
+        setSessionState('policy');
+        return;
+      }
       const next = saveCachedUser(fresh);
       markRoleRefreshed(next);
       setUser(next);
@@ -838,8 +898,6 @@ export default function App() {
       if (result.offlineWorkspace) setCacheNote(`Offline workspace active. ${result.cachedLiveCount || offlineSnapshotSummary.count || 0} live record snapshot${(result.cachedLiveCount || offlineSnapshotSummary.count || 0) === 1 ? '' : 's'} are stored on this device, with the bundled ${SOURCE_RECORD_COUNT}-record registry filling the remaining gaps.`);
       else if (result.bundledSnapshot) setCacheNote(`Appwrite did not respond in time. Showing the bundled ${SOURCE_RECORD_COUNT}-record registry snapshot from this device.`);
       else if (result.offlineFallback) setCacheNote('Showing the last saved browse page because Appwrite is currently unreachable.');
-      else if (result.persistentCache) setCacheNote('Loaded a recent field page from this device: 0 Appwrite reads. Use Refresh only when you need newer data.');
-      else if (result.fromCache) setCacheNote('Loaded from bounded local cache: 0 additional Appwrite reads.');
     }).catch((error) => {
       if (!live) return;
       const code = Number(error?.code || error?.status || 0);
@@ -1006,6 +1064,37 @@ export default function App() {
     aboutSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
+  async function acceptPolicyGate() {
+    if (!policyGateUser) return;
+    setPolicyGateBusy(true);
+    setPolicyGateError('');
+    try {
+      const updated = await withAppwriteFailover(() => account.updatePrefs({ prefs: policyPrefs(policyGateUser) }), { timeoutMs: 9000 });
+      const accepted = { ...policyGateUser, ...updated, prefs: updated?.prefs || policyPrefs(policyGateUser) };
+      const next = saveCachedUser(accepted);
+      markRoleRefreshed(next);
+      setPolicyGateUser(null);
+      setUser(next);
+      setSessionState('ready');
+    } catch (error) {
+      setPolicyGateError(error?.message || 'CaneSprout could not record the agreement. Please check your connection and try again.');
+    } finally {
+      setPolicyGateBusy(false);
+    }
+  }
+
+  async function declinePolicyGate() {
+    setPolicyGateBusy(true);
+    try { await account.deleteSession({ sessionId: 'current' }); } catch {}
+    if (desktopMode) await window.germDesktop?.offlineAuth?.forget?.().catch(() => {});
+    clearCachedUser();
+    setPolicyGateUser(null);
+    setPolicyGateError('');
+    setUser(null);
+    setSessionState('signed-out');
+    setPolicyGateBusy(false);
+  }
+
   async function signOut() {
     account.deleteSession({ sessionId: 'current' }).catch(() => {});
     if (desktopMode) await window.germDesktop?.offlineAuth?.forget?.().catch(() => {});
@@ -1033,6 +1122,10 @@ export default function App() {
       setListError(messageFor(error));
     }
   }
+
+  if (policyGateUser) return <main className="auth-shell auth-shell-showcase policy-gate-shell">
+    <PolicyAcceptanceModal user={policyGateUser} busy={policyGateBusy} error={policyGateError} onAccept={acceptPolicyGate} onDecline={declinePolicyGate} />
+  </main>;
 
   if (!user) return <AuthScreen onSignedIn={(next, meta = {}) => { setUser(next); setSessionState(meta.offline || !navigator.onLine ? 'offline' : 'ready'); }} />;
 
@@ -1377,7 +1470,6 @@ export default function App() {
         </div>
         {!!offlineSummary.count && <div className="offline-queue-banner"><CloudUpload size={18} /><div><strong>{offlineSummary.count} offline entr{offlineSummary.count === 1 ? 'y' : 'ies'} waiting on this device</strong><span>{offlineSummary.photoCount ? `${offlineSummary.photoCount} compressed photo${offlineSummary.photoCount === 1 ? '' : 's'} included. ` : ''}Sync is direct to Appwrite and never routed through Vercel.</span></div><button className="secondary-button" onClick={() => setShowOfflineQueue(true)}>Open queue</button></div>}
         {offlineSyncState && <div className="alert info offline-sync-status"><CloudUpload size={16} /> {offlineSyncState}</div>}
-        <div className="query-policy"><CheckCircle2 size={16} /><span>{PAGE_SIZE} rows/request • recent view capped at {RECENT_LIMIT} • {SEARCH_DEBOUNCE_MS} ms debounce • cursor Load More • lazy germplasm preview traits • bounded caching • admin approval workflow • persistent offline workspace • desktop local-first login • paced IndexedDB sync • lazy tools/photos • local auto-updating collection counters • no polling • no Realtime • no repeated total scans</span></div>
         {!loading && recentMode && <div className="search-result-note recent-result-note"><b>{records.length}</b><span>Most recently added sugarcane records, newest first. This view is capped at {RECENT_LIMIT} lean records and does not auto-refresh.</span></div>}
         {!loading && !recentMode && searchInput.trim().length >= SEARCH_MIN && searchTerm === searchInput.trim() && <div className="search-result-note"><b>{records.length}</b><span>{searchMatchMode === 'exact' ? `Exact ${SEARCH_SCOPES[searchScope].label.toLowerCase()} match` : `${records.length === 1 ? 'match' : 'matches'} loaded`} for “{searchTerm}” in {SEARCH_SCOPES[searchScope].label}.{hasMore ? ` More matches are available with Load ${PAGE_SIZE} more.` : ''}</span></div>}
         {cacheNote && <div className="alert info">{cacheNote}</div>}

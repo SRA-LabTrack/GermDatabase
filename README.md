@@ -146,3 +146,15 @@ The four germplasm collection cards now show auto-updating local counters for un
 
 
 v2.13.19 note: Characterization, Conservation, and Utilization now use title-specific Microscope, ShieldCheck, and Sprout icons in both the login workflow and main feature cards.
+
+
+v2.13.20: Background slideshow selection now supports up to 10 active photos on both the website and Electron app. The existing default 3-photo preset remains available.
+
+
+v2.13.22 removes the verbose registry performance strip and routine cache-read banner from both web and Electron while retaining the underlying caching/offline optimizations.
+
+
+v2.13.23: Added Terms of Use and Privacy Policy links plus a first-access agreement gate for newly created accounts. Acceptance is stored in Appwrite account preferences and the same flow is used by website and Electron.
+
+
+v2.13.24: Login now exposes a clearly visible Account Policies block directly below Sign in, with Terms of Use and Privacy Policy buttons on web and Electron.
