@@ -13,12 +13,26 @@ export const CHARACTERIZATION_GROUPS = [
     "title": "Origin & Other Attributes",
     "fields": [
       { "key": "origin", "label": "Country", "type": "text", "newTrait": true },
+      { "key": "origin_latitude", "label": "Country Latitude (decimal degrees)", "type": "number", "min": -90, "max": 90, "step": "any", "placeholder": "e.g. 10.123456", "newTrait": true, "coordinateFor": "origin" },
+      { "key": "origin_longitude", "label": "Country Longitude (decimal degrees)", "type": "number", "min": -180, "max": 180, "step": "any", "placeholder": "e.g. 122.987654", "newTrait": true, "coordinateFor": "origin" },
       { "key": "breeding_institution_developer_breeder", "label": "Breeding Institution/Developer/Breeder", "type": "text", "newTrait": true },
+      { "key": "breeder_latitude", "label": "Breeding Institution Latitude (decimal degrees)", "type": "number", "min": -90, "max": 90, "step": "any", "placeholder": "e.g. 10.123456", "newTrait": true, "coordinateFor": "breeding_institution_developer_breeder" },
+      { "key": "breeder_longitude", "label": "Breeding Institution Longitude (decimal degrees)", "type": "number", "min": -180, "max": 180, "step": "any", "placeholder": "e.g. 122.987654", "newTrait": true, "coordinateFor": "breeding_institution_developer_breeder" },
       { "key": "collection_scope", "label": "Local/International Collection", "type": "text", "newTrait": true },
+      { "key": "collection_latitude", "label": "Collection Latitude (decimal degrees)", "type": "number", "min": -90, "max": 90, "step": "any", "placeholder": "e.g. 10.123456", "newTrait": true, "coordinateFor": "collection_scope" },
+      { "key": "collection_longitude", "label": "Collection Longitude (decimal degrees)", "type": "number", "min": -180, "max": 180, "step": "any", "placeholder": "e.g. 122.987654", "newTrait": true, "coordinateFor": "collection_scope" },
       { "key": "species", "label": "Species", "type": "text", "newTrait": true },
+      { "key": "species_latitude", "label": "Species Latitude (decimal degrees)", "type": "number", "min": -90, "max": 90, "step": "any", "placeholder": "e.g. 10.123456", "newTrait": true, "coordinateFor": "species" },
+      { "key": "species_longitude", "label": "Species Longitude (decimal degrees)", "type": "number", "min": -180, "max": 180, "step": "any", "placeholder": "e.g. 122.987654", "newTrait": true, "coordinateFor": "species" },
       { "key": "genetic_background", "label": "Type/Genetic Back Ground", "type": "text", "newTrait": true },
+      { "key": "genetic_background_latitude", "label": "Genetic Background Latitude (decimal degrees)", "type": "number", "min": -90, "max": 90, "step": "any", "placeholder": "e.g. 10.123456", "newTrait": true, "coordinateFor": "genetic_background" },
+      { "key": "genetic_background_longitude", "label": "Genetic Background Longitude (decimal degrees)", "type": "number", "min": -180, "max": 180, "step": "any", "placeholder": "e.g. 122.987654", "newTrait": true, "coordinateFor": "genetic_background" },
       { "key": "other_details", "label": "Other details", "type": "textarea", "newTrait": true },
-      { "key": "lot_planted_station", "label": "Lot Planted in the station", "type": "text", "newTrait": true }
+      { "key": "other_details_latitude", "label": "Other Details Latitude (decimal degrees)", "type": "number", "min": -90, "max": 90, "step": "any", "placeholder": "e.g. 10.123456", "newTrait": true, "coordinateFor": "other_details" },
+      { "key": "other_details_longitude", "label": "Other Details Longitude (decimal degrees)", "type": "number", "min": -180, "max": 180, "step": "any", "placeholder": "e.g. 122.987654", "newTrait": true, "coordinateFor": "other_details" },
+      { "key": "lot_planted_station", "label": "Lot Planted in the station", "type": "text", "newTrait": true },
+      { "key": "lot_planted_latitude", "label": "Lot Planted Latitude (decimal degrees)", "type": "number", "min": -90, "max": 90, "step": "any", "placeholder": "e.g. 10.123456", "newTrait": true, "coordinateFor": "lot_planted_station" },
+      { "key": "lot_planted_longitude", "label": "Lot Planted Longitude (decimal degrees)", "type": "number", "min": -180, "max": 180, "step": "any", "placeholder": "e.g. 122.987654", "newTrait": true, "coordinateFor": "lot_planted_station" },
     ]
   },
   {

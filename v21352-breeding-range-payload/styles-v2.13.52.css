@@ -1,0 +1,124 @@
+
+/* v2.13.52 Multi-year Breeding Report Time Ranges */
+.breeding-range-hint {
+  margin-top: 11px;
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 11px 12px;
+  border: 1px solid #d9e6d4;
+  border-radius: 13px;
+  background: linear-gradient(135deg, #f3f8ee, #fffdf1);
+  color: #356146;
+}
+.breeding-range-hint > svg { flex: 0 0 auto; margin-top: 1px; }
+.breeding-range-hint span,
+.breeding-range-hint b,
+.breeding-range-hint small { display: block; }
+.breeding-range-hint b { font-size: 10px; }
+.breeding-range-hint small { margin-top: 2px; color: #738178; font-size: 8.5px; line-height: 1.45; }
+
+.breeding-report-stat-grid.range-stats {
+  grid-template-columns: repeat(7, minmax(0,1fr));
+}
+
+.breeding-report-timeline {
+  margin: 15px 0;
+  padding: 14px;
+  border: 1px solid #dce7d7;
+  border-radius: 15px;
+  background: #f8fbf5;
+}
+.breeding-report-timeline-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+.breeding-report-timeline-heading small {
+  display: block;
+  color: #7a887d;
+  font-size: 7.5px;
+  font-weight: 800;
+  letter-spacing: .08em;
+}
+.breeding-report-timeline-heading h4 {
+  margin: 3px 0 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 20px;
+  font-weight: 500;
+  color: #28583a;
+}
+.breeding-report-timeline-heading > span {
+  flex: 0 0 auto;
+  padding: 6px 9px;
+  border-radius: 999px;
+  background: #e9f2e3;
+  color: #42664c;
+  font-size: 8px;
+  font-weight: 800;
+}
+.breeding-report-timeline-table-wrap {
+  max-height: 420px;
+  overflow: auto;
+  border: 1px solid #dfe8dc;
+  border-radius: 11px;
+  background: #fff;
+}
+.breeding-report-timeline-table {
+  width: 100%;
+  min-width: 820px;
+  border-collapse: collapse;
+}
+.breeding-report-timeline-table th,
+.breeding-report-timeline-table td {
+  padding: 8px 9px;
+  border-bottom: 1px solid #e7eee4;
+  text-align: left;
+  vertical-align: middle;
+  font-size: 8.5px;
+}
+.breeding-report-timeline-table th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #edf5e9;
+  color: #55705b;
+  font-size: 7.5px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.breeding-report-timeline-table tr.active td {
+  background: rgba(232, 243, 224, .56);
+}
+.breeding-report-timeline-table tr.inactive td {
+  color: #88948b;
+}
+.breeding-report-timeline-table tr.inactive td:nth-child(n+4) {
+  color: #9aa49c;
+}
+.breeding-report-timeline-table td strong {
+  color: #2d583c;
+}
+.breeding-report-timeline-table tr.inactive td strong {
+  color: #7e8b81;
+}
+
+@media (max-width: 1050px) {
+  .breeding-report-stat-grid.range-stats {
+    grid-template-columns: repeat(4, minmax(0,1fr));
+  }
+}
+@media (max-width: 820px) {
+  .breeding-report-coverage-row {
+    grid-template-columns: repeat(2, minmax(0,1fr));
+  }
+  .breeding-report-stat-grid.range-stats {
+    grid-template-columns: repeat(2, minmax(0,1fr));
+  }
+  .breeding-report-timeline-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

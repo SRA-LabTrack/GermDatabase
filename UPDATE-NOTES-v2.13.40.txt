@@ -1,0 +1,20 @@
+CaneSprout v2.13.40
+
+PROFILE COLOR PREVIEW
+- RHS color visualization chips are now clickable.
+- Clicking opens a large modal preview of the recorded color.
+- Dual color observations display side-by-side in the preview.
+- The original coded value remains visible in the profile.
+- Digital colors remain explicitly identified as screen approximations.
+
+EXACT GERMPASM MAP COORDINATES
+- Added optional Latitude and Longitude characterization fields.
+- Coordinates are stored with the normal characterization record and work with offline/local record handling.
+- A complete valid coordinate pair takes priority over place-name approximation.
+- Exact pins use satellite-level close zoom and are not marked approximate.
+- Invalid or incomplete coordinate values do not break mapping; CaneSprout falls back to the existing station/tested/recommended/origin hierarchy.
+
+FORM VALIDATION
+- Latitude range: -90 to 90.
+- Longitude range: -180 to 180.
+- Decimal values and negative coordinates are accepted.

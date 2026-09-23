@@ -1,0 +1,8 @@
+CaneSprout v2.13.45
+
+- Split the former "Print / Save PDF" action into two independent buttons.
+- Print: opens the native browser/system print dialog.
+- Save PDF: creates and downloads an actual A4 PDF of the current Core or Complete profile preview.
+- Download HTML remains available as a separate standalone file option.
+- Added progress/error feedback for PDF creation.
+- PDF libraries are dynamically imported only when Save PDF is requested.

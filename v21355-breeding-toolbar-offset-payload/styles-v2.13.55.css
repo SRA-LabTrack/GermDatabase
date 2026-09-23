@@ -1,0 +1,94 @@
+
+/* v2.13.55 Breeding Reports top-toolbar geometry fix */
+
+/*
+  The Breeding Reports overlay now receives CaneSprout's measured toolbarBottom.
+  Inline top/bottom values define the actual usable viewport. These rules make
+  the modal consume only that area, rather than centering a 94vh panel behind
+  the fixed global toolbar.
+*/
+.breeding-reports-backdrop {
+  inset: auto !important;
+  position: fixed !important;
+  display: flex !important;
+  align-items: stretch !important;
+  justify-content: center !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+
+.breeding-reports-modal {
+  align-self: stretch !important;
+  width: min(1180px, calc(100vw - 24px)) !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  min-height: 0 !important;
+  margin: 0 auto !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+.breeding-reports-header {
+  position: relative !important;
+  top: auto !important;
+  flex: 0 0 auto !important;
+  min-height: 72px;
+  z-index: 90 !important;
+}
+
+.breeding-reports-close {
+  position: relative !important;
+  top: auto !important;
+  right: auto !important;
+  z-index: 110 !important;
+  flex: 0 0 auto !important;
+}
+
+.breeding-reports-body {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  scroll-padding-top: 12px;
+}
+
+.breeding-reports-footer {
+  position: relative !important;
+  bottom: auto !important;
+  flex: 0 0 auto !important;
+  z-index: 60 !important;
+}
+
+/* The old pseudo-hint occupied the lower-right corner over content. */
+.breeding-reports-modal::after {
+  content: none !important;
+}
+
+/* Defensive containment: no child may force the report shell under the toolbar. */
+.breeding-reports-header,
+.breeding-reports-body,
+.breeding-reports-footer,
+.breeding-report-request,
+.breeding-report-result {
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+
+@media (max-width: 760px) {
+  .breeding-reports-modal {
+    width: calc(100vw - 10px) !important;
+    border-radius: 15px !important;
+  }
+
+  .breeding-reports-header {
+    min-height: 64px;
+  }
+
+  .breeding-reports-close {
+    min-width: 80px;
+  }
+}

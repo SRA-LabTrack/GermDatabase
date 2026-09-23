@@ -13,8 +13,11 @@ import {
   X
 } from 'lucide-react';
 import SugarcaneIcon from './SugarcaneIcon.jsx';
+import BreedingPartnerSuggestions from './BreedingPartnerSuggestions.jsx';
+import BreedingReportsPanel from './BreedingReportsPanel.jsx';
 import {
   buildCombinationSearchResults,
+  breedingPartnerSuggestions,
   combinationSuggestions,
   combinationVarietyKey,
   createCombination,
@@ -115,7 +118,9 @@ export default function CombinationRegistryModal({ actor, isAdmin = false, onClo
   const [createOpen, setCreateOpen] = useState(false);
   const [createBusy, setCreateBusy] = useState(false);
   const [createForm, setCreateForm] = useState({ male: '', female: '', date: today(), notes: '' });
+  const [suggestionAnchorRole, setSuggestionAnchorRole] = useState('male');
   const [manageOpen, setManageOpen] = useState(false);
+  const [showBreedingReports, setShowBreedingReports] = useState(false);
   const [registeredRows, setRegisteredRows] = useState([]);
   const [registeredLoading, setRegisteredLoading] = useState(false);
   const [registeredCloudLoaded, setRegisteredCloudLoaded] = useState(false);
@@ -125,6 +130,11 @@ export default function CombinationRegistryModal({ actor, isAdmin = false, onClo
   const [renderLimit, setRenderLimit] = useState(80);
   const resultsRef = useRef(null);
   const sourceSummary = useMemo(() => combinationSourceSummary(), []);
+  const suggestionAnchorVariety = suggestionAnchorRole === 'female' ? createForm.female : createForm.male;
+  const breedingSuggestionResult = useMemo(
+    () => breedingPartnerSuggestions(suggestionAnchorVariety, suggestionAnchorRole),
+    [suggestionAnchorVariety, suggestionAnchorRole]
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -351,9 +361,12 @@ This removes the manually registered combination. The original Cross combination
           <div className="combination-header-actions">
             {isAdmin && <button type="button" className="primary-button compact" onClick={() => { setManageOpen(false); setCreateOpen((open) => !open); }}><Plus size={17} /><span>Record combination</span></button>}
             {isAdmin && <button type="button" className={`secondary-button compact combination-manage-button ${manageOpen ? 'active' : ''}`} onClick={toggleRegisteredManager}><Trash2 size={16} /><span>Manage registered</span></button>}
+            <button type="button" className={`secondary-button compact combination-report-button ${showBreedingReports ? 'active' : ''}`} onClick={() => setShowBreedingReports(true)}><CalendarDays size={16} /><span>Breeding reports</span></button>
             <button type="button" className="secondary-button combination-close-button" onClick={onClose} aria-label="Close Combination Registry"><X size={18} /><span>Close</span></button>
           </div>
         </header>
+
+        {showBreedingReports && <BreedingReportsPanel actor={actor} isAdmin={isAdmin} online={navigator.onLine} toolbarBottom={toolbarBottom} onClose={() => setShowBreedingReports(false)} />}
 
         <div className="modal-content combination-registry-content">
           {createOpen && isAdmin && (
@@ -365,17 +378,24 @@ This removes the manually registered combination. The original Cross combination
               <div className="combination-create-grid">
                 <label>
                   <span>Male variety</span>
-                  <VarietyAutocomplete catalog={catalog} value={createForm.male} onChange={(male) => setCreateForm((current) => ({ ...current, male }))} placeholder="Type at least 2 characters" ariaLabel="Male variety" disabled={catalogLoading} required />
+                  <VarietyAutocomplete catalog={catalog} value={createForm.male} onChange={(male) => { setCreateForm((current) => ({ ...current, male })); setSuggestionAnchorRole('male'); }} placeholder="Type at least 2 characters" ariaLabel="Male variety" disabled={catalogLoading} required />
                 </label>
                 <span className="combination-cross">×</span>
                 <label>
                   <span>Female variety</span>
-                  <VarietyAutocomplete catalog={catalog} value={createForm.female} onChange={(female) => setCreateForm((current) => ({ ...current, female }))} placeholder="Type at least 2 characters" ariaLabel="Female variety" disabled={catalogLoading} required />
+                  <VarietyAutocomplete catalog={catalog} value={createForm.female} onChange={(female) => { setCreateForm((current) => ({ ...current, female })); setSuggestionAnchorRole('female'); }} placeholder="Type at least 2 characters" ariaLabel="Female variety" disabled={catalogLoading} required />
                 </label>
                 <label><span>Combination date</span><input type="date" value={createForm.date} onChange={(event) => setCreateForm((current) => ({ ...current, date: event.target.value }))} required /></label>
                 <label className="combination-notes"><span>Notes <i>Optional</i></span><input value={createForm.notes} onChange={(event) => setCreateForm((current) => ({ ...current, notes: event.target.value }))} placeholder="Cross number, location, breeder note…" /></label>
                 <button className="primary-button" type="submit" disabled={createBusy || catalogLoading}>{createBusy ? <><LoaderCircle className="spin" size={17} /> Recording…</> : <><CheckCircle2 size={17} /> Save combination</>}</button>
               </div>
+
+              <BreedingPartnerSuggestions
+                result={breedingSuggestionResult}
+                onSelect={(variety, counterpartRole) => {
+                  setCreateForm((current) => ({ ...current, [counterpartRole]: variety }));
+                }}
+              />
             </form>
           )}
 

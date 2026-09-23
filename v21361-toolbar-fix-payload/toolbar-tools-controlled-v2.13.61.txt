@@ -1,0 +1,94 @@
+          <div
+            ref={toolbarToolsRef}
+            className={`toolbar-tools-drawer ${toolbarToolsOpen || showExcelMenu || showImport || showExportExcel || showSpreadsheetEditor || showForm || showCombinationRegistry || showAdminCenter ? 'active' : ''}`}
+          >
+            <button
+              type="button"
+              className="toolbar-tools-summary"
+              aria-expanded={toolbarToolsOpen}
+              aria-haspopup="menu"
+              aria-controls="desktop-toolbar-tools-menu"
+              title="Open registry tools"
+              onClick={() => setToolbarToolsOpen((open) => !open)}
+            >
+              <Menu size={20} />
+              <span>Tools</span>
+              <ChevronDown className={`toolbar-tools-chevron ${toolbarToolsOpen ? 'open' : ''}`} size={15} />
+            </button>
+
+            {toolbarToolsOpen && (
+              <div id="desktop-toolbar-tools-menu" className="toolbar-tools-menu" role="menu" aria-label="Registry tools">
+                <button
+                  type="button"
+                  role="menuitem"
+                  className={showExcelMenu || showImport || showExportExcel || showSpreadsheetEditor ? 'active' : ''}
+                  onClick={() => {
+                    setToolbarToolsOpen(false);
+                    setShowCombinationRegistry(false);
+                    setShowForm(false);
+                    setEditRecord(null);
+                    setShowAdminCenter(false);
+                    setShowOfflineQueue(false);
+                    setShowExcelMenu(true);
+                  }}
+                >
+                  <FileSpreadsheet size={19} />
+                  <span><strong>Excel Tools</strong><small>Import, export, and edit spreadsheet data</small></span>
+                </button>
+
+                <button
+                  type="button"
+                  role="menuitem"
+                  className={showForm ? 'active' : ''}
+                  onClick={() => {
+                    setToolbarToolsOpen(false);
+                    setShowExcelMenu(false);
+                    setShowCombinationRegistry(false);
+                    setEditRecord(null);
+                    setShowForm(true);
+                  }}
+                >
+                  <Plus size={20} />
+                  <span><strong>Add record</strong><small>Register a new sugarcane variety</small></span>
+                </button>
+
+                <button
+                  type="button"
+                  role="menuitem"
+                  className={showCombinationRegistry ? 'active' : ''}
+                  onClick={() => {
+                    setToolbarToolsOpen(false);
+                    setShowExcelMenu(false);
+                    setShowForm(false);
+                    setEditRecord(null);
+                    setShowAdminCenter(false);
+                    setShowOfflineQueue(false);
+                    setShowImport(false);
+                    setShowExportExcel(false);
+                    setShowSpreadsheetEditor(false);
+                    setShowCombinationRegistry(true);
+                  }}
+                >
+                  <Dna size={19} />
+                  <span><strong>Combination Registry</strong><small>Search and record male × female crosses</small></span>
+                </button>
+
+                {isAdmin && (
+                  <button
+                    type="button"
+                    role="menuitem"
+                    className={showAdminCenter ? 'active' : ''}
+                    onClick={() => {
+                      setToolbarToolsOpen(false);
+                      setShowExcelMenu(false);
+                      setShowCombinationRegistry(false);
+                      openAdminCenter('approvals');
+                    }}
+                  >
+                    <ShieldCheck size={19} />
+                    <span><strong>Admin Center</strong><small>Approvals, accounts, and administrator tools</small></span>
+                  </button>
+                )}
+              </div>
+            )}
+          </div>

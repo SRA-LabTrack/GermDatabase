@@ -1,0 +1,11 @@
+Extract ALL files in this ZIP directly into:
+D:\Germ\CaneSprout-Registry-v2.13.0-ELECTRON-OFFLINE-COMPLETE
+
+Allow Windows to replace existing files.
+
+Then run:
+  npm.cmd run verify:pedigree-web
+  npm.cmd run audit:pedigree-source
+  npm.cmd run build
+
+The patch is FLAT on purpose. There is no extra wrapper folder.

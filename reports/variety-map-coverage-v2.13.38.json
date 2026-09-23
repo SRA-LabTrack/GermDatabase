@@ -1,0 +1,15 @@
+{
+  "version": "2.13.38",
+  "bundledRecords": 950,
+  "uniqueRegistryVarieties": 946,
+  "uniqueVarietiesWithFormalCountryOrOrigin": 695,
+  "uniqueVarietiesWithAnyMapLocation": 695,
+  "uniqueVarietiesMappedWithoutOnlineGeocoding": 695,
+  "locatedButNotMapped": [],
+  "sourceLocatedVarietiesMissingFromCatalog": [],
+  "safeOtherDetailsPrecisionHints": 88,
+  "currentlyChosenOtherDetailsHints": 88,
+  "cachedOrLiveGermLocationEntriesChosen": 0,
+  "placeholderOriginWithUsableCountry": 0,
+  "note": "The bundled audit is local/read-only. Live/manual records already cached on a device are handled by the same resolver, including germ_location and country fallbacks."
+}

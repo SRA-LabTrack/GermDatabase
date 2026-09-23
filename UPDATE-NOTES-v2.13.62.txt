@@ -1,0 +1,7 @@
+CaneSprout v2.13.62
+Toolbar Portal + Full-Space Fix
+
+- Tools dropdown now renders through document.body.
+- Dropdown contents can no longer be clipped by toolbar overflow.
+- Primary navigation expands across unused space.
+- Better desktop proportions for brand, nav, status, and account.

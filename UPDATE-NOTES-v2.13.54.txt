@@ -1,0 +1,7 @@
+CaneSprout v2.13.54
+Breeding Reports Navigation Fix
+
+- Keeps Breeding Reports header visible while scrolling.
+- Keeps Close control above long generated report content.
+- Adds Escape-key closing.
+- Keeps report footer visible/reachable.

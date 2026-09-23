@@ -882,20 +882,45 @@ export async function exportAllRecords(onProgress) {
   return cores.map((core) => expandRecord(core, detailMap.get(core.$id)));
 }
 
+
+export async function listLocalPedigreeRecords() {
+  // Pedigree browsing is intentionally local-first. The audited bundled
+  // registry is overlaid with any full live records already cached in
+  // IndexedDB, including records created or updated manually / by Excel.
+  // Opening the pedigree tool therefore does not perform a total Appwrite scan.
+  const page = await offlineWorkspacePage({
+    limit: Math.max(5000, BUNDLED_RECORDS.length + 1000)
+  });
+  return page.documents || [];
+}
+
 export async function getLocalRecordPreview(record) {
   if (!record) return null;
   const varietyKey = normalizeVarietyIdentity(record.variety || '');
   const baseline = varietyKey ? (BUNDLED_IDENTITY_MAP.get(varietyKey) || {}) : {};
 
-  if (record.__bundledSnapshot) {
-    return { ...OPTIONAL_TRAIT_DEFAULTS, ...baseline, ...record, __localPreview: true };
-  }
-
+  // Always check the persisted full-record snapshot, even when the visible
+  // list card came from the bundled baseline. Previously bundled cards returned
+  // here before checking IndexedDB, so an administrator could correct a value
+  // in Edit/Profile while the collection preview continued showing stale text.
   let snapshot = null;
-  if (record.$id) snapshot = await getOfflineRecord(record.$id).catch(() => null);
+  if (!record.__bundledSnapshot && record.$id) snapshot = await getOfflineRecord(record.$id).catch(() => null);
   if (!snapshot && varietyKey) snapshot = await findOfflineRecordByVariety(record.variety).catch(() => null);
 
   const hasLocalDetails = Boolean(snapshot || baseline?.variety);
+  if (record.__bundledSnapshot) {
+    return {
+      ...OPTIONAL_TRAIT_DEFAULTS,
+      ...baseline,
+      ...record,
+      ...(snapshot || {}),
+      $id: snapshot?.$id || record.$id || baseline?.$id,
+      __bundledSnapshot: !snapshot,
+      __offlineSnapshot: Boolean(snapshot),
+      __localPreview: hasLocalDetails
+    };
+  }
+
   return {
     ...OPTIONAL_TRAIT_DEFAULTS,
     ...baseline,

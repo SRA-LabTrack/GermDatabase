@@ -1,0 +1,2 @@
+Extract these files directly into the CaneSprout project root and replace existing files.
+Do not extract into an extra nested folder.

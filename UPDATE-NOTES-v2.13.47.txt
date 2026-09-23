@@ -1,0 +1,11 @@
+CaneSprout v2.13.47
+
+PROFILE EXPORTS
+- Added Save Word (.docx).
+- Added Save Excel (.xlsx).
+- Save PDF continues to use true vector text/shapes.
+- Saved PDF, Word, and Excel files no longer rely on screenshot capture.
+- Word output is editable and uses structured section tables with controlled paragraph spacing.
+- Excel output is editable and uses native cells, fixed column widths, row heights, and wrapped values.
+- RHS color observations are preserved as code + HEX values in Word/Excel.
+- Core and Complete profiles support all export formats.

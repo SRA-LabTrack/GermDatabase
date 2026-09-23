@@ -1,0 +1,7 @@
+CaneSprout v2.13.50
+- Makes the web edition installable as a Progressive Web App.
+- Adds web manifest, standalone display mode, installation icons, and Apple/mobile metadata.
+- Adds Install CaneSprout actions to desktop More actions and the mobile tools menu.
+- Captures the browser beforeinstallprompt event and handles installed/dismissed states.
+- Adds manifest/icons to the existing offline service-worker shell.
+- Preserves the Electron desktop edition and does not show the web install action there.

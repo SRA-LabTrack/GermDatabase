@@ -1,0 +1,8 @@
+CaneSprout v2.13.49 direct bridge
+
+- Allows direct installation from v2.13.47 without applying v2.13.48.
+- Removes the nonresponsive about:blank popup profile preview.
+- Moves all profile preview/export controls into the main CaneSprout document.
+- Keeps the printable document visually isolated in an iframe.
+- Preserves vector PDF, editable DOCX, and native XLSX exporters.
+- Close and Escape dismiss the in-app preview directly.

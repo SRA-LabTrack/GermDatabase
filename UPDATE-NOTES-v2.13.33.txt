@@ -1,0 +1,13 @@
+CaneSprout Registry v2.13.33 - Website Variety Map
+
+- Adds a website-only Map tool beside Pedigree in the toolbar.
+- Adds the same Map action to the collapsible mobile tools menu.
+- Loads the local/bundled registry without a full Appwrite scan.
+- Uses the most specific available location in this order: Lot planted in the station, Tested location, Recommended locations, Country/origin.
+- Provides a searchable variety/location list.
+- Clicking a variety smoothly flies the map to that variety's recorded location and opens its pin popup.
+- Pin popup can open the variety profile.
+- Country/origin-only records are clearly treated as approximate map positions.
+- Common bundled origin locations are resolved locally; custom unresolved locations can be looked up once through OpenStreetMap Nominatim and cached locally.
+- Interactive map tiles use OpenStreetMap.
+- Feature is intentionally website-only in this release; Electron remains unchanged.

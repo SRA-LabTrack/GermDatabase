@@ -1,0 +1,8 @@
+CaneSprout Registry v2.13.30
+
+- Entire germplasm variety cards now open View Profile when clicked anywhere on the card.
+- Cards also open with Enter or Space when keyboard-focused.
+- View Profile button remains available as a visual action.
+- Visible Parentage is simplified to "MaleParent X FemaleParent" without role words.
+- Underlying male/female parent fields are unchanged so pedigree tracing remains accurate.
+- Import preview parentage follows the same clean male-first X female format.

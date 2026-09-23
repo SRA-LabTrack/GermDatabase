@@ -1,0 +1,13 @@
+CaneSprout v2.13.46
+
+Profile PDF quality and pagination update
+
+- Save PDF no longer rasterizes the profile through html2canvas.
+- PDF text is rendered directly by jsPDF for sharp output at any zoom.
+- Profile cards, borders and RHS swatches are vector-drawn.
+- Pagination occurs between complete field rows instead of arbitrary screenshot slices.
+- Long sections repeat their heading on continuation pages.
+- Continuation pages identify the variety and profile type.
+- Header metadata spacing is corrected.
+- Every PDF receives Page X of Y footers.
+- Browser Print also avoids splitting individual field cards where possible.

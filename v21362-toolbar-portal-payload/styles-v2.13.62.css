@@ -1,0 +1,294 @@
+
+/* ================================================================
+   v2.13.62 TOOLBAR PORTAL MENU + FULL-SPACE PROPORTION FIX
+   ================================================================ */
+
+/*
+  Brand, primary navigation, status, and account now share the complete
+  horizontal toolbar without leaving an empty middle strip.
+*/
+.reference-toolbar:not(:has(.mobile-toolbar-toggle)) {
+  display: flex !important;
+  grid-template-columns: none !important;
+  align-items: stretch !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  gap: 8px !important;
+  padding: 10px 12px !important;
+  box-sizing: border-box !important;
+  overflow: visible !important;
+}
+
+.reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-brand-panel {
+  flex: 0 1 320px !important;
+  width: auto !important;
+  min-width: 245px !important;
+  max-width: 320px !important;
+}
+
+.reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-main-actions.toolbar-primary-actions {
+  flex: 1 1 0 !important;
+  width: auto !important;
+  min-width: 360px !important;
+  max-width: none !important;
+  display: flex !important;
+  align-items: stretch !important;
+  overflow: visible !important;
+}
+
+/* The three primary buttons expand to consume all navigation space. */
+.toolbar-primary-actions > .toolbar-tile {
+  flex: 1 1 0 !important;
+  width: auto !important;
+  min-width: 105px !important;
+  max-width: none !important;
+  padding-inline: 16px !important;
+  justify-content: center !important;
+}
+
+.toolbar-primary-actions > .toolbar-tile span {
+  display: inline !important;
+  min-width: 0 !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: nowrap !important;
+}
+
+/* Tools occupies one predictable segment at the end of primary navigation. */
+.toolbar-primary-actions > .toolbar-tools-drawer {
+  flex: 0 0 122px !important;
+  width: 122px !important;
+  min-width: 122px !important;
+  max-width: 122px !important;
+  position: relative !important;
+  display: flex !important;
+  align-items: stretch !important;
+  overflow: visible !important;
+}
+
+.toolbar-tools-summary {
+  appearance: none !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 64px !important;
+  border: 0 !important;
+  border-left: 1px solid rgba(48, 89, 57, .13) !important;
+  border-radius: 0 !important;
+  padding: 0 13px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  background: rgba(249, 252, 246, .82) !important;
+  color: #315b3d !important;
+  cursor: pointer !important;
+  font: inherit !important;
+  font-weight: 800 !important;
+  white-space: nowrap !important;
+  pointer-events: auto !important;
+}
+
+.toolbar-tools-summary:hover,
+.toolbar-tools-summary[aria-expanded="true"],
+.toolbar-tools-drawer.active .toolbar-tools-summary {
+  background: #edf5e7 !important;
+  color: #24563a !important;
+}
+
+.toolbar-tools-drawer.active .toolbar-tools-summary {
+  box-shadow: inset 0 -4px 0 #b7d35a !important;
+}
+
+.toolbar-tools-chevron {
+  transition: transform .18s ease !important;
+}
+.toolbar-tools-chevron.open {
+  transform: rotate(180deg) !important;
+}
+
+/*
+  The menu is rendered through document.body. These !important coordinates
+  deliberately override every older toolbar dropdown rule.
+*/
+.toolbar-tools-menu.toolbar-tools-menu-portal {
+  position: fixed !important;
+  top: var(--toolbar-tools-top) !important;
+  left: var(--toolbar-tools-left) !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: var(--toolbar-tools-width) !important;
+  max-width: calc(100vw - 24px) !important;
+  max-height: var(--toolbar-tools-max-height) !important;
+  min-width: 260px !important;
+  z-index: 100000 !important;
+  display: grid !important;
+  gap: 5px !important;
+  padding: 8px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  border: 1px solid rgba(47, 87, 57, .18) !important;
+  border-radius: 15px !important;
+  background: rgba(252, 254, 249, .995) !important;
+  box-shadow: 0 22px 58px rgba(24, 57, 34, .28) !important;
+  backdrop-filter: blur(16px);
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  box-sizing: border-box !important;
+}
+
+.toolbar-tools-menu.toolbar-tools-menu-portal button {
+  width: 100% !important;
+  min-width: 0 !important;
+  display: grid !important;
+  grid-template-columns: 28px minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 11px 12px !important;
+  border: 0 !important;
+  border-radius: 10px !important;
+  background: transparent !important;
+  color: #31583b !important;
+  text-align: left !important;
+  cursor: pointer !important;
+  font: inherit !important;
+  pointer-events: auto !important;
+}
+
+.toolbar-tools-menu.toolbar-tools-menu-portal button:hover,
+.toolbar-tools-menu.toolbar-tools-menu-portal button.active {
+  background: #edf5e8 !important;
+}
+
+.toolbar-tools-menu.toolbar-tools-menu-portal button.active {
+  box-shadow: inset 3px 0 0 #7ba85a !important;
+}
+
+.toolbar-tools-menu.toolbar-tools-menu-portal button > span {
+  display: grid !important;
+  min-width: 0 !important;
+  gap: 2px !important;
+}
+
+.toolbar-tools-menu.toolbar-tools-menu-portal strong {
+  color: #2e593a !important;
+  font-size: 11px !important;
+  line-height: 1.25 !important;
+}
+
+.toolbar-tools-menu.toolbar-tools-menu-portal small {
+  color: #7b887e !important;
+  font-size: 8.5px !important;
+  line-height: 1.35 !important;
+  white-space: normal !important;
+}
+
+/* Utility blocks are fixed-size, letting navigation take all remaining space. */
+.reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-status-card {
+  flex: 0 0 138px !important;
+  width: 138px !important;
+  min-width: 138px !important;
+  max-width: 138px !important;
+  margin-left: 0 !important;
+  padding-inline: 12px !important;
+}
+
+.reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-account-card {
+  flex: 0 1 290px !important;
+  width: auto !important;
+  min-width: 215px !important;
+  max-width: 290px !important;
+  margin-left: 0 !important;
+  padding: 8px 9px !important;
+  overflow: visible !important;
+}
+
+/* Medium desktop. */
+@media (max-width: 1500px) and (min-width: 761px) {
+  .reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-brand-panel {
+    flex-basis: 270px !important;
+    min-width: 215px !important;
+    max-width: 270px !important;
+  }
+
+  .reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-main-actions.toolbar-primary-actions {
+    min-width: 320px !important;
+  }
+
+  .toolbar-primary-actions > .toolbar-tile {
+    min-width: 88px !important;
+    padding-inline: 10px !important;
+  }
+
+  .toolbar-primary-actions > .toolbar-tools-drawer {
+    flex-basis: 104px !important;
+    width: 104px !important;
+    min-width: 104px !important;
+    max-width: 104px !important;
+  }
+
+  .reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-status-card {
+    flex-basis: 116px !important;
+    width: 116px !important;
+    min-width: 116px !important;
+    max-width: 116px !important;
+  }
+
+  .reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-account-card {
+    flex-basis: 235px !important;
+    min-width: 185px !important;
+    max-width: 235px !important;
+  }
+}
+
+/* Narrow desktop keeps every action usable without overlap. */
+@media (max-width: 1180px) and (min-width: 761px) {
+  .reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-brand-panel {
+    flex: 0 1 205px !important;
+    min-width: 180px !important;
+    max-width: 205px !important;
+  }
+
+  .reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-main-actions.toolbar-primary-actions {
+    min-width: 280px !important;
+  }
+
+  .toolbar-primary-actions > .toolbar-tile span,
+  .toolbar-tools-summary span {
+    display: none !important;
+  }
+
+  .toolbar-primary-actions > .toolbar-tile {
+    min-width: 68px !important;
+    padding-inline: 8px !important;
+  }
+
+  .toolbar-primary-actions > .toolbar-tools-drawer {
+    flex-basis: 70px !important;
+    width: 70px !important;
+    min-width: 70px !important;
+    max-width: 70px !important;
+  }
+
+  .reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-status-card {
+    flex-basis: 58px !important;
+    width: 58px !important;
+    min-width: 58px !important;
+    max-width: 58px !important;
+    justify-content: center !important;
+  }
+
+  .reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-status-card span {
+    display: none !important;
+  }
+
+  .reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-account-card {
+    flex: 0 1 175px !important;
+    min-width: 150px !important;
+    max-width: 175px !important;
+  }
+
+  .reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-account-card .user-chip small {
+    display: none !important;
+  }
+}

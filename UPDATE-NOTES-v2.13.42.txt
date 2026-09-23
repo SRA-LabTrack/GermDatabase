@@ -1,0 +1,18 @@
+CaneSprout v2.13.42
+Printable Core + Complete Variety Profiles
+Updated: 2026-09-20
+
+NEW
+- Adds a Print button to every opened variety profile.
+- Adds two print choices:
+  1. Core Information
+  2. Complete Information
+- Core print contains the compact germplasm profile: identity, country, species, parentage, yield, recommended locations, and disease reaction when available.
+- Complete print includes Core Information plus all nonblank additional characterization traits, per-attribute coordinate fields, germination information, attached-photo metadata, and source metadata.
+- Print layout is designed for A4 paper and omits blank fields.
+- Existing RHS screen color swatches are preserved in printable complete profiles.
+- Existing leaf blade length interpretation such as 95 cm (SMALL) is preserved in printable complete profiles.
+
+NO DATA MIGRATION
+- No Appwrite collection/schema migration is required.
+- No existing germplasm data is changed.

@@ -1,0 +1,341 @@
+
+/* ================================================================
+   v2.13.72 ROLE-AWARE BREEDING PARTNER SUGGESTIONS
+   ================================================================ */
+
+.breeding-suggestion-panel {
+  display: grid;
+  gap: 13px;
+  margin-top: 14px;
+  padding: 16px;
+  border: 1px solid rgba(62, 104, 67, .18);
+  border-radius: 16px;
+  background:
+    linear-gradient(135deg, rgba(248, 252, 242, .97), rgba(255, 253, 235, .94));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
+}
+
+.breeding-suggestion-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  min-width: 0;
+}
+
+.breeding-suggestion-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+}
+
+.breeding-suggestion-icon {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: #e9f4df;
+  color: #2f7248;
+}
+
+.breeding-suggestion-title > div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.breeding-suggestion-title small {
+  color: #809080;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.breeding-suggestion-title strong {
+  color: #28583a;
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.breeding-suggestion-title span {
+  color: #748176;
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.breeding-suggestion-title span b {
+  color: #3b6847;
+}
+
+.breeding-suggestion-anchor {
+  flex: 0 0 auto;
+  min-width: 92px;
+  padding: 9px 11px;
+  border: 1px solid rgba(61, 101, 64, .14);
+  border-radius: 10px;
+  background: rgba(255,255,255,.72);
+  text-align: center;
+}
+
+.breeding-suggestion-anchor small,
+.breeding-suggestion-anchor strong {
+  display: block;
+}
+
+.breeding-suggestion-anchor small {
+  color: #819082;
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.breeding-suggestion-anchor strong {
+  margin-top: 2px;
+  color: #2d5e3d;
+  font-size: 14px;
+}
+
+.breeding-suggestion-rules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.breeding-suggestion-rules span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 8px;
+  border: 1px solid rgba(53, 103, 64, .14);
+  border-radius: 999px;
+  background: rgba(255,255,255,.74);
+  color: #46704f;
+  font-size: 8.5px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.breeding-suggestion-rules svg {
+  color: #398052;
+}
+
+.breeding-suggestion-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.breeding-suggestion-card {
+  appearance: none;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  grid-template-areas:
+    "icon main"
+    "metrics metrics";
+  align-items: center;
+  gap: 7px 9px;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid rgba(49, 91, 58, .15);
+  border-radius: 11px;
+  background: rgba(255,255,255,.86);
+  color: #2e5b3d;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  transition:
+    transform .14s ease,
+    border-color .14s ease,
+    box-shadow .14s ease,
+    background .14s ease;
+}
+
+.breeding-suggestion-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(47, 118, 70, .38);
+  background: #ffffff;
+  box-shadow: 0 7px 18px rgba(31, 72, 43, .09);
+}
+
+.breeding-suggestion-card:focus-visible {
+  outline: 2px solid #4e8e60;
+  outline-offset: 2px;
+}
+
+.breeding-suggestion-card-icon {
+  grid-area: icon;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: #edf6e5;
+  color: #4d8058;
+}
+
+.breeding-suggestion-card-main {
+  grid-area: main;
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.breeding-suggestion-card-main strong {
+  overflow: hidden;
+  color: #28583a;
+  font-size: 10.5px;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.breeding-suggestion-card-main small {
+  color: #7a887b;
+  font-size: 8px;
+  line-height: 1.2;
+}
+
+.breeding-suggestion-card-metrics {
+  grid-area: metrics;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding-top: 7px;
+  border-top: 1px solid rgba(52, 89, 59, .08);
+}
+
+.breeding-suggestion-card-metrics b,
+.breeding-suggestion-card-metrics em,
+.breeding-suggestion-card-metrics i {
+  display: inline-flex;
+  align-items: center;
+  min-height: 20px;
+  padding: 3px 6px;
+  border-radius: 999px;
+  font-size: 7.5px;
+  line-height: 1;
+  font-style: normal;
+  white-space: nowrap;
+}
+
+.breeding-suggestion-card-metrics b {
+  background: #f0f4ec;
+  color: #526554;
+}
+
+.breeding-suggestion-card-metrics em {
+  background: #eef6e8;
+  color: #39714a;
+}
+
+.breeding-suggestion-card-metrics i {
+  background: #edf4fa;
+  color: #466c80;
+}
+
+.breeding-suggestion-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding-top: 2px;
+}
+
+.breeding-suggestion-footer > div:first-child {
+  display: grid;
+  gap: 2px;
+}
+
+.breeding-suggestion-footer strong {
+  color: #42664b;
+  font-size: 9px;
+}
+
+.breeding-suggestion-footer span {
+  color: #859086;
+  font-size: 8px;
+}
+
+.breeding-suggestion-footer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+.breeding-suggestion-empty {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px;
+  border: 1px dashed rgba(65, 105, 69, .2);
+  border-radius: 11px;
+  background: rgba(255,255,255,.62);
+  color: #779078;
+}
+
+.breeding-suggestion-empty > div {
+  display: grid;
+  gap: 2px;
+}
+
+.breeding-suggestion-empty strong {
+  color: #42644b;
+  font-size: 10px;
+}
+
+.breeding-suggestion-empty span {
+  color: #818d82;
+  font-size: 8.5px;
+  line-height: 1.4;
+}
+
+.breeding-suggestion-note {
+  margin: 0;
+  padding-top: 9px;
+  border-top: 1px solid rgba(53, 92, 59, .1);
+  color: #89948a;
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+@media (max-width: 1280px) {
+  .breeding-suggestion-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .breeding-suggestion-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .breeding-suggestion-heading,
+  .breeding-suggestion-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .breeding-suggestion-anchor {
+    align-self: flex-start;
+  }
+
+  .breeding-suggestion-footer-actions {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 620px) {
+  .breeding-suggestion-panel {
+    padding: 11px;
+  }
+
+  .breeding-suggestion-grid {
+    grid-template-columns: 1fr;
+  }
+}

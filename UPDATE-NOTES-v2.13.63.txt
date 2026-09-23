@@ -1,0 +1,7 @@
+CaneSprout v2.13.63
+Equal Four-Way Toolbar Navigation
+
+- Germplasm, Pedigree, Map, and Tools each receive 25%.
+- Navigation consumes all available middle toolbar space.
+- No negative strip between Tools and Online.
+- Narrow desktop hides labels before overlap.

@@ -1,0 +1,12 @@
+CaneSprout v2.13.52
+Breeding Report Time Ranges
+
+- Adds Single period / Time period range report coverage.
+- Multi-year ranges use Start year + End year.
+- Multi-year reports can be broken down Weekly, Monthly, Quarterly, or Annual.
+- Every reporting interval is included, including intervals with zero breeding activity.
+- Weekly intervals run continuously through year boundaries.
+- Adds total interval and active interval metrics.
+- Adds an on-screen scrollable period-by-period timeline.
+- Downloaded/printed breeding reports include the complete period timeline.
+- Technical Report option remains available for both single-period and time-range reports.

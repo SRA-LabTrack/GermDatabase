@@ -1,0 +1,7 @@
+CaneSprout v2.13.59
+Smooth Germplasm Map Redirect
+
+- Slower nearby and long-distance map redirection.
+- Multi-level satellite tile prewarming.
+- Larger Leaflet tile buffer.
+- Smoother tile compositing during animated movement.

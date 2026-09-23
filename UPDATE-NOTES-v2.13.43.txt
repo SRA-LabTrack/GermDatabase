@@ -1,0 +1,12 @@
+CaneSprout v2.13.43
+===================
+
+Collection Card Printable Profiles
+
+- Adds a visible Print action directly on each germplasm collection card.
+- Places Print beside the existing View Profile action.
+- Offers Core Information and Complete Information print formats.
+- Fetches the complete record before printing to avoid lean-card data gaps.
+- Keeps the v2.13.42 Print action inside the opened profile.
+- Prevents Print interactions from triggering the card's open-profile click handler.
+- Adds responsive card action styling for smaller screens.

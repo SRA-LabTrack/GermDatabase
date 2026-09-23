@@ -1,0 +1,9 @@
+CaneSprout v2.13.56
+Breeding Reports Portal + Scrolling Fix
+
+- Renders Breeding Reports through React portal at document.body.
+- Eliminates parent Combination Registry clipping.
+- Guarantees visible Close button.
+- Restores reliable report-body scrolling.
+- Locks background scroll while report is open.
+- Keeps Escape-to-close functionality.

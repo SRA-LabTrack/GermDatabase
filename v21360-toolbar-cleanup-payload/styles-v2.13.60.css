@@ -1,0 +1,262 @@
+
+/* ================================================================
+   v2.13.60 CLEAN + COLLAPSIBLE DESKTOP TOOLBAR
+   ================================================================ */
+.reference-toolbar:not(:has(.mobile-toolbar-toggle)) {
+  display: grid !important;
+  grid-template-columns: minmax(255px, 330px) minmax(430px, 1fr) auto minmax(220px, 300px) !important;
+  align-items: stretch !important;
+  gap: 10px !important;
+  padding: 12px 14px !important;
+  min-width: 0 !important;
+}
+
+.reference-toolbar .toolbar-brand-panel,
+.reference-toolbar .toolbar-main-actions,
+.reference-toolbar .toolbar-account-card,
+.reference-toolbar .toolbar-status-card {
+  min-width: 0 !important;
+}
+
+.toolbar-main-actions.toolbar-primary-actions {
+  display: flex !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  border: 1px solid rgba(48, 89, 57, .13) !important;
+  background: rgba(249, 252, 246, .82) !important;
+  overflow: visible !important;
+}
+
+.toolbar-primary-actions > .toolbar-tile {
+  flex: 1 1 112px !important;
+  min-width: 92px !important;
+  max-width: 155px !important;
+  padding: 0 16px !important;
+  gap: 9px !important;
+  white-space: nowrap !important;
+}
+
+.toolbar-primary-actions > .toolbar-tile span {
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: nowrap !important;
+}
+
+.toolbar-tools-drawer {
+  position: relative;
+  flex: 0 0 118px;
+  min-width: 118px;
+  display: flex;
+  align-items: stretch;
+}
+
+.toolbar-tools-drawer > summary {
+  list-style: none;
+}
+.toolbar-tools-drawer > summary::-webkit-details-marker {
+  display: none;
+}
+
+.toolbar-tools-summary {
+  width: 100%;
+  height: 100%;
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 0 14px;
+  cursor: pointer;
+  user-select: none;
+  border-left: 1px solid rgba(48, 89, 57, .13);
+  color: #315b3d;
+  background: rgba(249, 252, 246, .82);
+  font: inherit;
+  font-weight: 800;
+  white-space: nowrap;
+  transition: background .16s ease, color .16s ease, box-shadow .16s ease;
+}
+
+.toolbar-tools-summary:hover,
+.toolbar-tools-drawer[open] .toolbar-tools-summary,
+.toolbar-tools-drawer.active .toolbar-tools-summary {
+  background: #edf5e7;
+  color: #24563a;
+}
+
+.toolbar-tools-drawer.active .toolbar-tools-summary {
+  box-shadow: inset 0 -4px 0 #b7d35a;
+}
+
+.toolbar-tools-chevron {
+  transition: transform .18s ease;
+}
+.toolbar-tools-drawer[open] .toolbar-tools-chevron {
+  transform: rotate(180deg);
+}
+
+.toolbar-tools-menu {
+  position: absolute;
+  top: calc(100% + 9px);
+  right: 0;
+  z-index: 22000;
+  width: min(340px, calc(100vw - 28px));
+  display: grid;
+  gap: 5px;
+  padding: 8px;
+  border: 1px solid rgba(47, 87, 57, .16);
+  border-radius: 16px;
+  background: rgba(252, 254, 249, .985);
+  box-shadow: 0 20px 50px rgba(26, 61, 36, .20);
+  backdrop-filter: blur(16px);
+}
+
+.toolbar-tools-menu button {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: #31583b;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+}
+
+.toolbar-tools-menu button:hover,
+.toolbar-tools-menu button.active {
+  background: #edf5e8;
+}
+
+.toolbar-tools-menu button.active {
+  box-shadow: inset 3px 0 0 #7ba85a;
+}
+
+.toolbar-tools-menu button > span {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+.toolbar-tools-menu strong {
+  font-size: 11px;
+  line-height: 1.2;
+}
+.toolbar-tools-menu small {
+  color: #7c897e;
+  font-size: 8px;
+  line-height: 1.3;
+  white-space: normal;
+}
+
+.reference-toolbar .toolbar-status-card {
+  width: auto !important;
+  min-width: 138px !important;
+  max-width: 175px !important;
+  padding: 0 14px !important;
+  gap: 8px !important;
+}
+
+.reference-toolbar .toolbar-status-card span {
+  min-width: 0;
+}
+.reference-toolbar .toolbar-status-card span b {
+  white-space: nowrap;
+}
+.reference-toolbar .toolbar-status-card span small {
+  display: none !important;
+}
+
+.reference-toolbar .toolbar-account-card {
+  width: 100% !important;
+  max-width: 300px !important;
+  padding: 8px 9px !important;
+  gap: 9px !important;
+}
+
+.reference-toolbar .toolbar-account-card .user-chip {
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+}
+.reference-toolbar .toolbar-account-card .user-chip b,
+.reference-toolbar .toolbar-account-card .user-chip small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reference-toolbar .toolbar-more-menu {
+  z-index: 22010 !important;
+}
+
+@media (max-width: 1450px) and (min-width: 761px) {
+  .reference-toolbar:not(:has(.mobile-toolbar-toggle)) {
+    grid-template-columns: minmax(215px, 270px) minmax(390px, 1fr) auto minmax(190px, 245px) !important;
+    gap: 7px !important;
+    padding-inline: 9px !important;
+  }
+
+  .toolbar-primary-actions > .toolbar-tile {
+    padding-inline: 11px !important;
+    min-width: 84px !important;
+  }
+
+  .toolbar-tools-drawer {
+    flex-basis: 102px;
+    min-width: 102px;
+  }
+
+  .toolbar-tools-summary {
+    padding-inline: 10px;
+  }
+
+  .reference-toolbar .toolbar-status-card {
+    min-width: 112px !important;
+    padding-inline: 10px !important;
+  }
+
+  .reference-toolbar .toolbar-account-card {
+    max-width: 245px !important;
+  }
+}
+
+@media (max-width: 1120px) and (min-width: 761px) {
+  .reference-toolbar:not(:has(.mobile-toolbar-toggle)) {
+    grid-template-columns: 205px minmax(360px, 1fr) 54px 150px !important;
+  }
+
+  .toolbar-primary-actions > .toolbar-tile {
+    min-width: 70px !important;
+    max-width: none !important;
+  }
+  .toolbar-primary-actions > .toolbar-tile span {
+    display: none !important;
+  }
+
+  .toolbar-tools-drawer {
+    flex-basis: 76px;
+    min-width: 76px;
+  }
+  .toolbar-tools-summary span {
+    display: none;
+  }
+
+  .reference-toolbar .toolbar-status-card {
+    min-width: 54px !important;
+    width: 54px !important;
+    padding: 0 !important;
+    justify-content: center !important;
+  }
+  .reference-toolbar .toolbar-status-card span {
+    display: none !important;
+  }
+
+  .reference-toolbar .toolbar-account-card .user-chip small {
+    display: none !important;
+  }
+}

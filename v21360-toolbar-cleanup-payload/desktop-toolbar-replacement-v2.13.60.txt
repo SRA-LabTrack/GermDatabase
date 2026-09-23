@@ -1,0 +1,120 @@
+        <nav className={`toolbar-main-actions segmented-toolbar toolbar-primary-actions ${isAdmin ? 'admin-actions' : ''}`} aria-label="Primary registry navigation">
+          <button
+            className={`toolbar-tile nav-button ${!showImport && !showExcelMenu && !showExportExcel && !showSpreadsheetEditor && !showForm && !showAdminCenter && !showCombinationRegistry && !showPedigree && !showMap ? 'active' : ''}`}
+            aria-current={!showImport && !showExcelMenu && !showExportExcel && !showSpreadsheetEditor && !showForm && !showAdminCenter && !showCombinationRegistry && !showPedigree && !showMap ? 'page' : undefined}
+            onClick={() => { setShowExcelMenu(false); setShowCombinationRegistry(false); setShowPedigree(false); setShowMap(false); goToGermplasmCollection(); }}
+          >
+            <SugarcaneIcon size={22} /><span>Germplasm</span>
+          </button>
+
+          {!desktopMode && (
+            <button
+              type="button"
+              className={`toolbar-tile nav-button toolbar-pedigree ${showPedigree ? 'active' : ''}`}
+              aria-pressed={showPedigree}
+              data-web-tool="pedigree"
+              onClick={() => { setShowExcelMenu(false); setShowForm(false); setEditRecord(null); setShowAdminCenter(false); setShowOfflineQueue(false); setShowImport(false); setShowExportExcel(false); setShowSpreadsheetEditor(false); setShowCombinationRegistry(false); setShowMap(false); setPedigreeInitialVariety(''); setShowPedigree(true); }}
+              title="Build a three-generation pedigree from recorded parentage"
+            >
+              <GitBranch size={21} /><span>Pedigree</span>
+            </button>
+          )}
+
+          {!desktopMode && (
+            <button
+              type="button"
+              className={`toolbar-tile nav-button toolbar-map ${showMap ? 'active' : ''}`}
+              aria-pressed={showMap}
+              data-web-tool="map"
+              onClick={() => { setShowExcelMenu(false); setShowForm(false); setEditRecord(null); setShowAdminCenter(false); setShowOfflineQueue(false); setShowImport(false); setShowExportExcel(false); setShowSpreadsheetEditor(false); setShowCombinationRegistry(false); setShowPedigree(false); setShowMap(true); }}
+              title="Explore sugarcane varieties by recorded location"
+            >
+              <MapPin size={21} /><span>Map</span>
+            </button>
+          )}
+
+          <details
+            className={`toolbar-tools-drawer ${showExcelMenu || showImport || showExportExcel || showSpreadsheetEditor || showForm || showCombinationRegistry || showAdminCenter ? 'active' : ''}`}
+          >
+            <summary className="toolbar-tools-summary" title="Open registry tools">
+              <Menu size={20} />
+              <span>Tools</span>
+              <ChevronDown className="toolbar-tools-chevron" size={15} />
+            </summary>
+
+            <div className="toolbar-tools-menu" role="menu" aria-label="Registry tools">
+              <button
+                type="button"
+                role="menuitem"
+                className={showExcelMenu || showImport || showExportExcel || showSpreadsheetEditor ? 'active' : ''}
+                onClick={(event) => {
+                  event.currentTarget.closest('details')?.removeAttribute('open');
+                  setShowCombinationRegistry(false);
+                  setShowForm(false);
+                  setEditRecord(null);
+                  setShowAdminCenter(false);
+                  setShowOfflineQueue(false);
+                  setShowExcelMenu(true);
+                }}
+              >
+                <FileSpreadsheet size={19} />
+                <span><strong>Excel Tools</strong><small>Import, export, and edit spreadsheet data</small></span>
+              </button>
+
+              <button
+                type="button"
+                role="menuitem"
+                className={showForm ? 'active' : ''}
+                onClick={(event) => {
+                  event.currentTarget.closest('details')?.removeAttribute('open');
+                  setShowExcelMenu(false);
+                  setShowCombinationRegistry(false);
+                  setEditRecord(null);
+                  setShowForm(true);
+                }}
+              >
+                <Plus size={20} />
+                <span><strong>Add record</strong><small>Register a new sugarcane variety</small></span>
+              </button>
+
+              <button
+                type="button"
+                role="menuitem"
+                className={showCombinationRegistry ? 'active' : ''}
+                onClick={(event) => {
+                  event.currentTarget.closest('details')?.removeAttribute('open');
+                  setShowExcelMenu(false);
+                  setShowForm(false);
+                  setEditRecord(null);
+                  setShowAdminCenter(false);
+                  setShowOfflineQueue(false);
+                  setShowImport(false);
+                  setShowExportExcel(false);
+                  setShowSpreadsheetEditor(false);
+                  setShowCombinationRegistry(true);
+                }}
+              >
+                <Dna size={19} />
+                <span><strong>Combination Registry</strong><small>Search and record male × female crosses</small></span>
+              </button>
+
+              {isAdmin && (
+                <button
+                  type="button"
+                  role="menuitem"
+                  className={showAdminCenter ? 'active' : ''}
+                  onClick={(event) => {
+                    event.currentTarget.closest('details')?.removeAttribute('open');
+                    setShowExcelMenu(false);
+                    setShowCombinationRegistry(false);
+                    openAdminCenter('approvals');
+                  }}
+                >
+                  <ShieldCheck size={19} />
+                  <span><strong>Admin Center</strong><small>Approvals, accounts, and administrator tools</small></span>
+                </button>
+              )}
+            </div>
+          </details>
+        </nav>
+

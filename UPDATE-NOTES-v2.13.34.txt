@@ -1,0 +1,10 @@
+CaneSprout Registry v2.13.34
+
+Website variety map refinement:
+- Satellite imagery is now the default map layer.
+- Optional Streets base layer and place-label overlay.
+- Cleaner green target-style selected pins and distinct approximate markers.
+- Precision-aware fly-to zoom levels.
+- Accuracy circles show when a location is broad/approximate instead of implying false field precision.
+- Metric scale control added.
+- Existing variety search, profile links, local cache and geocoding behavior preserved.

@@ -1,0 +1,185 @@
+
+/* ================================================================
+   v2.13.63 EQUAL FOUR-WAY DESKTOP NAVIGATION
+   Germplasm | Pedigree | Map | Tools
+   ================================================================ */
+
+/*
+  The navigation area itself owns all remaining space between the brand
+  and utility/account sections. Its four direct children share that area
+  equally, eliminating the blank strip left by the previous fixed Tools width.
+*/
+.reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-main-actions.toolbar-primary-actions {
+  flex: 1 1 0 !important;
+  width: 0 !important;
+  min-width: 420px !important;
+  max-width: none !important;
+  display: flex !important;
+  align-items: stretch !important;
+  justify-content: stretch !important;
+  overflow: visible !important;
+  box-sizing: border-box !important;
+}
+
+/* Exactly four equal desktop navigation cells. */
+.reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-primary-actions > .toolbar-tile,
+.reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-primary-actions > .toolbar-tools-drawer {
+  flex: 1 1 25% !important;
+  width: 25% !important;
+  min-width: 0 !important;
+  max-width: 25% !important;
+  box-sizing: border-box !important;
+}
+
+/* Primary links fill their full quarter without forcing overflow. */
+.reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-primary-actions > .toolbar-tile {
+  padding: 0 12px !important;
+  justify-content: center !important;
+  gap: 9px !important;
+  overflow: hidden !important;
+}
+
+.reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-primary-actions > .toolbar-tile span {
+  display: block !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+/* Tools behaves exactly like the other three navigation quarters. */
+.reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-primary-actions > .toolbar-tools-drawer {
+  position: relative !important;
+  display: flex !important;
+  align-items: stretch !important;
+  overflow: visible !important;
+}
+
+.reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-tools-summary {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  padding: 0 12px !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+
+.reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-tools-summary > span {
+  display: block !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+/*
+  Keep the surrounding utility groups bounded so navigation gets one
+  continuous rectangular region with no internal negative space.
+*/
+.reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-brand-panel {
+  flex: 0 1 320px !important;
+  width: auto !important;
+  min-width: 245px !important;
+  max-width: 320px !important;
+}
+
+.reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-status-card {
+  flex: 0 0 138px !important;
+  width: 138px !important;
+  min-width: 138px !important;
+  max-width: 138px !important;
+  margin-left: 0 !important;
+}
+
+.reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-account-card {
+  flex: 0 1 290px !important;
+  width: auto !important;
+  min-width: 215px !important;
+  max-width: 290px !important;
+  margin-left: 0 !important;
+}
+
+/* Medium desktop: the four quarters remain equal. */
+@media (max-width: 1500px) and (min-width: 761px) {
+  .reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-main-actions.toolbar-primary-actions {
+    min-width: 360px !important;
+  }
+
+  .reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-primary-actions > .toolbar-tile,
+  .reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-primary-actions > .toolbar-tools-drawer {
+    flex-basis: 25% !important;
+    width: 25% !important;
+    max-width: 25% !important;
+  }
+
+  .reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-brand-panel {
+    flex-basis: 270px !important;
+    min-width: 215px !important;
+    max-width: 270px !important;
+  }
+
+  .reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-status-card {
+    flex-basis: 116px !important;
+    width: 116px !important;
+    min-width: 116px !important;
+    max-width: 116px !important;
+  }
+
+  .reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-account-card {
+    flex-basis: 235px !important;
+    min-width: 185px !important;
+    max-width: 235px !important;
+  }
+}
+
+/*
+  Before the mobile toolbar takes over, retain equal quarters but remove
+  labels when needed instead of allowing any overlap.
+*/
+@media (max-width: 1180px) and (min-width: 761px) {
+  .reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-main-actions.toolbar-primary-actions {
+    min-width: 280px !important;
+  }
+
+  .reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-primary-actions > .toolbar-tile,
+  .reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-primary-actions > .toolbar-tools-drawer {
+    flex: 1 1 25% !important;
+    width: 25% !important;
+    min-width: 0 !important;
+    max-width: 25% !important;
+  }
+
+  .reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-primary-actions > .toolbar-tile span,
+  .reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-tools-summary > span {
+    display: none !important;
+  }
+
+  .reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-primary-actions > .toolbar-tile,
+  .reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-tools-summary {
+    padding-inline: 7px !important;
+    justify-content: center !important;
+  }
+
+  .reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-brand-panel {
+    flex: 0 1 205px !important;
+    min-width: 180px !important;
+    max-width: 205px !important;
+  }
+
+  .reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-status-card {
+    flex: 0 0 58px !important;
+    width: 58px !important;
+    min-width: 58px !important;
+    max-width: 58px !important;
+    justify-content: center !important;
+  }
+
+  .reference-toolbar:not(:has(.mobile-toolbar-toggle)) .toolbar-account-card {
+    flex: 0 1 175px !important;
+    min-width: 150px !important;
+    max-width: 175px !important;
+  }
+}

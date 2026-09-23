@@ -1,0 +1,299 @@
+
+/* ================================================================
+   v2.13.64 STABLE DESKTOP TOOLBAR LAYOUT
+   Fixes the failed :has(.mobile-toolbar-toggle) desktop detection.
+   ================================================================ */
+
+@media (min-width: 761px) {
+  /*
+    Important: do NOT gate desktop layout with :has(.mobile-toolbar-toggle).
+    CaneSprout keeps the mobile toggle in the DOM even when hidden.
+  */
+  .reference-toolbar {
+    display: flex !important;
+    grid-template-columns: none !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    gap: 8px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    padding: 10px 12px !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Brand */
+  .reference-toolbar .toolbar-brand-panel {
+    flex: 0 1 330px !important;
+    width: auto !important;
+    min-width: 250px !important;
+    max-width: 330px !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  /*
+    Primary navigation takes every remaining pixel between the brand and
+    utilities. Its four children are exactly equal.
+  */
+  .reference-toolbar .toolbar-main-actions.toolbar-primary-actions {
+    flex: 1 1 0 !important;
+    width: 0 !important;
+    min-width: 420px !important;
+    max-width: none !important;
+    height: auto !important;
+    display: flex !important;
+    align-items: stretch !important;
+    justify-content: stretch !important;
+    gap: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+  }
+
+  .reference-toolbar .toolbar-primary-actions > .toolbar-tile,
+  .reference-toolbar .toolbar-primary-actions > .toolbar-tools-drawer {
+    flex: 1 1 0 !important;
+    width: 25% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 100% !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Germplasm / Pedigree / Map */
+  .reference-toolbar .toolbar-primary-actions > .toolbar-tile {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    padding: 0 14px !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+  }
+
+  .reference-toolbar .toolbar-primary-actions > .toolbar-tile span {
+    display: block !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    font-size: inherit !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* Tools is the fourth equal cell. */
+  .reference-toolbar .toolbar-primary-actions > .toolbar-tools-drawer {
+    position: relative !important;
+    display: flex !important;
+    align-items: stretch !important;
+    overflow: visible !important;
+  }
+
+  .reference-toolbar .toolbar-tools-summary {
+    appearance: none !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 100% !important;
+    min-height: 64px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 9px !important;
+    padding: 0 14px !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-left: 1px solid rgba(48, 89, 57, .13) !important;
+    border-radius: 0 !important;
+    background: rgba(249, 252, 246, .82) !important;
+    color: #315b3d !important;
+    cursor: pointer !important;
+    font: inherit !important;
+    font-weight: 800 !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    pointer-events: auto !important;
+  }
+
+  .reference-toolbar .toolbar-tools-summary > span {
+    display: block !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  .reference-toolbar .toolbar-tools-summary:hover,
+  .reference-toolbar .toolbar-tools-summary[aria-expanded="true"],
+  .reference-toolbar .toolbar-tools-drawer.active .toolbar-tools-summary {
+    background: #edf5e7 !important;
+    color: #24563a !important;
+  }
+
+  .reference-toolbar .toolbar-tools-drawer.active .toolbar-tools-summary {
+    box-shadow: inset 0 -4px 0 #b7d35a !important;
+  }
+
+  .reference-toolbar .toolbar-tools-chevron {
+    flex: 0 0 auto !important;
+  }
+
+  .reference-toolbar .toolbar-tools-chevron.open {
+    transform: rotate(180deg) !important;
+  }
+
+  /* Online utility */
+  .reference-toolbar .toolbar-status-card {
+    flex: 0 0 140px !important;
+    width: 140px !important;
+    min-width: 140px !important;
+    max-width: 140px !important;
+    margin: 0 !important;
+    padding: 0 12px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Account utility */
+  .reference-toolbar .toolbar-account-card {
+    flex: 0 1 300px !important;
+    width: auto !important;
+    min-width: 220px !important;
+    max-width: 300px !important;
+    margin: 0 !important;
+    padding: 8px 9px !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+  }
+
+  .reference-toolbar .toolbar-account-card .user-chip {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+  }
+
+  .reference-toolbar .toolbar-account-card .user-chip b,
+  .reference-toolbar .toolbar-account-card .user-chip small {
+    display: block !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  /* Portal menu remains outside toolbar clipping. */
+  .toolbar-tools-menu.toolbar-tools-menu-portal {
+    position: fixed !important;
+    top: var(--toolbar-tools-top) !important;
+    left: var(--toolbar-tools-left) !important;
+    right: auto !important;
+    bottom: auto !important;
+    width: var(--toolbar-tools-width) !important;
+    max-width: calc(100vw - 24px) !important;
+    max-height: var(--toolbar-tools-max-height) !important;
+    min-width: 260px !important;
+    z-index: 100000 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+}
+
+/* Medium desktop */
+@media (min-width: 761px) and (max-width: 1500px) {
+  .reference-toolbar {
+    gap: 6px !important;
+    padding-inline: 8px !important;
+  }
+
+  .reference-toolbar .toolbar-brand-panel {
+    flex-basis: 275px !important;
+    min-width: 220px !important;
+    max-width: 275px !important;
+  }
+
+  .reference-toolbar .toolbar-main-actions.toolbar-primary-actions {
+    min-width: 360px !important;
+  }
+
+  .reference-toolbar .toolbar-status-card {
+    flex-basis: 118px !important;
+    width: 118px !important;
+    min-width: 118px !important;
+    max-width: 118px !important;
+  }
+
+  .reference-toolbar .toolbar-account-card {
+    flex-basis: 240px !important;
+    min-width: 190px !important;
+    max-width: 240px !important;
+  }
+
+  .reference-toolbar .toolbar-primary-actions > .toolbar-tile,
+  .reference-toolbar .toolbar-tools-summary {
+    padding-inline: 10px !important;
+    gap: 7px !important;
+  }
+}
+
+/* Narrow desktop/tablet before the mobile toolbar takes over. */
+@media (min-width: 761px) and (max-width: 1120px) {
+  .reference-toolbar .toolbar-brand-panel {
+    flex-basis: 205px !important;
+    min-width: 180px !important;
+    max-width: 205px !important;
+  }
+
+  .reference-toolbar .toolbar-main-actions.toolbar-primary-actions {
+    min-width: 280px !important;
+  }
+
+  .reference-toolbar .toolbar-primary-actions > .toolbar-tile,
+  .reference-toolbar .toolbar-primary-actions > .toolbar-tools-drawer {
+    flex: 1 1 0 !important;
+    width: 25% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+
+  /* Hide labels before any collision can occur. */
+  .reference-toolbar .toolbar-primary-actions > .toolbar-tile span,
+  .reference-toolbar .toolbar-tools-summary > span {
+    display: none !important;
+  }
+
+  .reference-toolbar .toolbar-primary-actions > .toolbar-tile,
+  .reference-toolbar .toolbar-tools-summary {
+    padding-inline: 7px !important;
+    justify-content: center !important;
+  }
+
+  .reference-toolbar .toolbar-status-card {
+    flex: 0 0 58px !important;
+    width: 58px !important;
+    min-width: 58px !important;
+    max-width: 58px !important;
+    justify-content: center !important;
+  }
+
+  .reference-toolbar .toolbar-status-card span {
+    display: none !important;
+  }
+
+  .reference-toolbar .toolbar-account-card {
+    flex: 0 1 175px !important;
+    min-width: 150px !important;
+    max-width: 175px !important;
+  }
+
+  .reference-toolbar .toolbar-account-card .user-chip small {
+    display: none !important;
+  }
+}

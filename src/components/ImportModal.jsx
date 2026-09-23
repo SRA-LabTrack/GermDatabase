@@ -317,7 +317,7 @@ export default function ImportModal({ onClose, onImported, actor = null, online 
                       <tr key={`${row.variety || 'row'}-${index}`}>
                         <td>{index + 1}</td>
                         <td>{row.variety || '—'}</td>
-                        <td>{[row.parentage_female, row.parentage_male].filter(Boolean).join(' × ') || '—'}</td>
+                        <td>{[row.parentage_male, row.parentage_female].filter(Boolean).join(' X ') || '—'}</td>
                         <td>{row.yield_lkg_tc || '—'}</td>
                         <td>{row.yield_tc_ha || '—'}</td>
                         <td>{row.agronomic_maturity || '—'}</td>

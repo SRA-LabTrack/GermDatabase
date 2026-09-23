@@ -1,0 +1,10 @@
+CaneSprout v2.13.53
+Breeding Report Layout + Native Exports
+
+- Responsive modal width capped to available viewport.
+- Header, result actions, footer, form fields, and technical report fields wrap safely.
+- Large report tables scroll within their own containers.
+- Adds separate Save PDF, Save Word, Save Excel actions.
+- PDF is vector-rendered, not screenshot-based.
+- Word output is editable DOCX.
+- Excel output is native XLSX with Summary, Timeline, Events, and optional Technical Report sheets.

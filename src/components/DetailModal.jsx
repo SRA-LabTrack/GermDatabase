@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ChevronDown, ChevronUp, LoaderCircle, Pencil, Trash2, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, GitBranch, LoaderCircle, Pencil, Trash2, X, Printer } from 'lucide-react';
 import SugarcaneIcon from './SugarcaneIcon.jsx';
+import { printVarietyProfile } from '../lib/profilePrint.js';
+import TraitValue from './TraitValue.jsx';
 import { CHARACTERIZATION_GROUPS, NEW_TEMPLATE_GROUP_TITLES } from '../lib/characterizationFields';
 import { GERMINATION_FIELDS } from '../lib/germinationFields';
 import { deleteRecord, deleteRecordByVariety, fileViewUrl, getRecord } from '../lib/registryApi';
@@ -9,6 +11,7 @@ import { isNetworkFailure } from '../lib/appwrite';
 import { messageFor, pct } from '../lib/registryUi';
 import { PHOTO_DOCUMENTATION_SECTIONS, normalizedPhotoCategories } from '../lib/photoSections';
 import { normalizeVarietyDisplay } from '../lib/legacyHyv';
+import { resolveRecordParentage } from '../lib/sourceParentage';
 
 const PREVIEW_FIELD_KEYS = new Set([
   'variety',
@@ -30,13 +33,14 @@ function shown(value, fallback = 'Not recorded') {
   return text || fallback;
 }
 
-export default function DetailModal({ recordId, onClose, onEdit, onDeleted, onQueuedDelete, actor = null, online = navigator.onLine, isAdmin = false }) {
+export default function DetailModal({ recordId, onClose, onEdit, onDeleted, onQueuedDelete, onOpenPedigree, actor = null, online = navigator.onLine, isAdmin = false }) {
   const [record, setRecord] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showAdditional, setShowAdditional] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [photoViewIndex, setPhotoViewIndex] = useState(-1);
+  const [showPrintMenu, setShowPrintMenu] = useState(false);
 
   useEffect(() => {
     let live = true;
@@ -80,16 +84,27 @@ export default function DetailModal({ recordId, onClose, onEdit, onDeleted, onQu
     }
   }
 
+  function printProfile(mode) {
+    if (!record) return;
+    try {
+      printVarietyProfile(record, mode);
+      setShowPrintMenu(false);
+    } catch (err) {
+      setError(err?.message || 'CaneSprout could not open the print preview.');
+    }
+  }
+
   const photos = record?.photo_file_ids || [];
   const photoCategories = normalizedPhotoCategories(record?.photo_categories, photos.length);
 
   const parentals = useMemo(() => {
     if (!record) return 'N/A';
-    const female = normalizeVarietyDisplay(record.parentage_female || '');
-    const male = normalizeVarietyDisplay(record.parentage_male || '');
-    if (male && female) return `${male} male X ${female} female`;
-    if (male) return `${male} male`;
-    if (female) return `${female} female`;
+    const resolved = resolveRecordParentage(record);
+    const female = normalizeVarietyDisplay(resolved.female || '');
+    const male = normalizeVarietyDisplay(resolved.male || '');
+    if (male && female) return `${male} X ${female}`;
+    if (male) return male;
+    if (female) return female;
     return 'N/A';
   }, [record]);
 
@@ -145,6 +160,18 @@ export default function DetailModal({ recordId, onClose, onEdit, onDeleted, onQu
                   <small>Parentage</small>
                   <strong>{parentals}</strong>
                 </div>
+
+                {onOpenPedigree && (
+                  <button
+                    type="button"
+                    className="profile-pedigree-link"
+                    onClick={() => onOpenPedigree(record)}
+                    aria-label={`Open ${record.variety || 'this variety'} pedigree`}
+                  >
+                    <GitBranch size={19} />
+                    <span><small>Pedigree</small><strong>View 3-generation pedigree</strong></span>
+                  </button>
+                )}
 
                 <div className="yield-preview-card">
                   <small>Yield Potential</small>
@@ -202,7 +229,7 @@ export default function DetailModal({ recordId, onClose, onEdit, onDeleted, onQu
                   {GERMINATION_FIELDS.map((field) => (
                     <div key={field.key}>
                       <small>{field.label}</small>
-                      <strong>{shown(record[field.key], 'Not provided')}</strong>
+                      <TraitValue fieldKey={field.key} value={record[field.key]} fallback="Not provided" />
                     </div>
                   ))}
                   <div>
@@ -230,7 +257,7 @@ export default function DetailModal({ recordId, onClose, onEdit, onDeleted, onQu
                       {fields.map((field) => (
                         <div key={field.key} className={field.newTrait ? 'new-trait-detail' : ''}>
                           <small>{field.label}</small>
-                          <strong>{shown(record[field.key], 'Not provided')}</strong>
+                          <TraitValue fieldKey={field.key} value={record[field.key]} fallback="Not provided" />
                         </div>
                       ))}
                     </div>
@@ -248,6 +275,29 @@ export default function DetailModal({ recordId, onClose, onEdit, onDeleted, onQu
             </button>
           )}
           <span className="footer-spacer" />
+          <div className="profile-print-action" onMouseDown={(event) => event.stopPropagation()}>
+            <button
+              type="button"
+              className={`secondary-button profile-print-trigger ${showPrintMenu ? 'active' : ''}`}
+              onClick={() => setShowPrintMenu((current) => !current)}
+              aria-haspopup="menu"
+              aria-expanded={showPrintMenu}
+            >
+              <Printer size={16} /> Print
+            </button>
+            {showPrintMenu && (
+              <div className="profile-print-menu" role="menu" aria-label="Printable variety profile formats">
+                <button type="button" role="menuitem" onClick={() => printProfile('core')}>
+                  <strong>Core Information</strong>
+                  <span>Preview variety identity, parentage, yield, locations and disease reaction.</span>
+                </button>
+                <button type="button" role="menuitem" onClick={() => printProfile('complete')}>
+                  <strong>Complete Information</strong>
+                  <span>Preview core profile plus all recorded additional characterization and germination data.</span>
+                </button>
+              </div>
+            )}
+          </div>
           {(<button className="secondary-button" onClick={() => onEdit(record)}>
               <Pencil size={16} /> {isAdmin ? 'Edit' : 'Request edit'}
             </button>)}

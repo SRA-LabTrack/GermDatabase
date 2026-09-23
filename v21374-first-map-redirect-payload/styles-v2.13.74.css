@@ -1,0 +1,63 @@
+
+/* ================================================================
+   v2.13.74 FIRST GERMPLASM MAP REDIRECT GUARD
+   Prevents the first world-to-variety fly animation from exposing
+   a massively scaled accuracy circle and stretched overview tiles.
+   ================================================================ */
+
+/*
+  Only the first user selection after each map opening receives this class.
+  Later redirects keep the existing v2.13.59 smooth transition untouched.
+*/
+.variety-map-canvas.variety-map-first-redirect {
+  isolation: isolate;
+}
+
+/* Do not render the destination accuracy geometry at world/intermediate zoom. */
+.variety-map-canvas.variety-map-first-redirect .leaflet-overlay-pane,
+.variety-map-canvas.variety-map-first-redirect .leaflet-marker-pane,
+.variety-map-canvas.variety-map-first-redirect .leaflet-popup-pane,
+.variety-map-canvas.variety-map-first-redirect .leaflet-tooltip-pane {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transition: none !important;
+}
+
+/*
+  A world tile scaled all the way into a regional/country destination creates
+  the large blurry green/brown smear seen in the recording. During the zoom
+  portion of the FIRST redirect, dim the old tile container instead.
+*/
+.variety-map-canvas.variety-map-first-redirect.leaflet-zoom-anim .leaflet-tile-container {
+  opacity: .10 !important;
+}
+
+/* Dark satellite-colored veil over only the first zoom animation. */
+.variety-map-canvas.variety-map-first-redirect::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 250;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(34, 64, 47, .28), rgba(18, 39, 29, .72)),
+    #17291f;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .16s ease;
+}
+
+.variety-map-canvas.variety-map-first-redirect.leaflet-zoom-anim::after {
+  opacity: .62;
+}
+
+/*
+  When the guard is released, Leaflet's already-open popup and selected
+  overlays become visible without changing their map state.
+*/
+.variety-map-canvas:not(.variety-map-first-redirect) .leaflet-overlay-pane,
+.variety-map-canvas:not(.variety-map-first-redirect) .leaflet-marker-pane,
+.variety-map-canvas:not(.variety-map-first-redirect) .leaflet-popup-pane,
+.variety-map-canvas:not(.variety-map-first-redirect) .leaflet-tooltip-pane {
+  transition: opacity .20s ease;
+}

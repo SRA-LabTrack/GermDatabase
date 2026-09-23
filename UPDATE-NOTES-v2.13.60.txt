@@ -1,0 +1,7 @@
+CaneSprout v2.13.60
+Clean Collapsible Toolbar
+
+- Keeps Germplasm, Pedigree, and Map primary.
+- Groups Excel Tools, Add Record, Combination Registry, and Admin Center under Tools.
+- Compacts connection and account sections.
+- Adds medium/narrow desktop responsive safeguards.

@@ -1,0 +1,10 @@
+CaneSprout Registry v2.13.35
+
+Website Variety Map interaction refinement:
+- Replaced hundreds of DOM marker icons with Canvas circle markers for smoother zoom/pan.
+- Added one branded CaneSprout sugarcane pin for the selected variety.
+- Closing a Leaflet popup no longer closes the Variety Map modal.
+- Disabled backdrop click-to-close for the map; only the map header close button exits the tool.
+- Tuned satellite tile loading to wait for zoom idle and keep a smaller tile buffer.
+- Added adaptive short setView/flyTo animations and opens popups on moveend.
+- Preserved satellite default, accuracy circles, place labels, Streets layer, search, and profile links.

@@ -1,5 +1,5 @@
-const CACHE_VERSION = 'canesprout-offline-v2.13.26';
-const SMALL_SHELL_URLS = ['/version.json', '/icon.svg'];
+const CACHE_VERSION = 'canesprout-offline-v2.13.76';
+const SMALL_SHELL_URLS = ['/version.json', '/icon.svg', '/manifest.webmanifest', '/pwa-192.png', '/pwa-512.png'];
 const STATIC_DESTINATIONS = new Set(['script', 'style', 'image', 'font']);
 const STATIC_PATH = /\.(?:js|css|woff2?|ttf|otf|png|jpe?g|webp|gif|svg|json)(?:\?|$)/i;
 

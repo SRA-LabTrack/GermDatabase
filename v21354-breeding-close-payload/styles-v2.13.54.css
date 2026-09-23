@@ -1,0 +1,81 @@
+
+/* v2.13.54 Breeding Reports persistent close control */
+.breeding-reports-backdrop {
+  isolation: isolate;
+}
+
+.breeding-reports-modal {
+  position: relative !important;
+}
+
+.breeding-reports-header {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 80 !important;
+  flex: 0 0 auto !important;
+  background:
+    linear-gradient(135deg, rgba(248, 252, 243, .985), rgba(255, 253, 235, .985)) !important;
+  box-shadow: 0 1px 0 #dfe8da, 0 8px 22px rgba(30, 68, 42, .06);
+  backdrop-filter: blur(14px);
+}
+
+.breeding-reports-header > button:last-child {
+  position: sticky !important;
+  top: 12px !important;
+  right: 16px !important;
+  z-index: 100 !important;
+  align-self: flex-start !important;
+  min-width: 92px;
+  justify-content: center;
+  background: #ffffff !important;
+  border-color: #cbdac5 !important;
+  box-shadow: 0 5px 16px rgba(27, 64, 39, .12);
+}
+
+.breeding-reports-header > button:last-child:hover {
+  background: #edf5e8 !important;
+  border-color: #9dbb91 !important;
+}
+
+.breeding-reports-body {
+  position: relative;
+  z-index: 1;
+}
+
+.breeding-reports-footer {
+  position: sticky !important;
+  bottom: 0 !important;
+  z-index: 45 !important;
+  background: rgba(245, 249, 240, .98) !important;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 -1px 0 #dfe8da, 0 -7px 18px rgba(31, 67, 42, .045);
+}
+
+/* Extra always-visible escape hatch on long generated reports. */
+.breeding-reports-modal::after {
+  content: "Esc to close";
+  position: absolute;
+  right: 20px;
+  bottom: 13px;
+  z-index: 50;
+  pointer-events: none;
+  color: #7c887f;
+  font-size: 8px;
+  letter-spacing: .02em;
+}
+
+@media (max-width: 760px) {
+  .breeding-reports-header {
+    padding-right: 12px !important;
+  }
+
+  .breeding-reports-header > button:last-child {
+    top: 8px !important;
+    right: 8px !important;
+    min-width: 82px;
+  }
+
+  .breeding-reports-modal::after {
+    display: none;
+  }
+}

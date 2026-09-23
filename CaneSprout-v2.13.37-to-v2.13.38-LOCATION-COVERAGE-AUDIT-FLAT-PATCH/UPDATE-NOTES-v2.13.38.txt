@@ -1,0 +1,18 @@
+CaneSprout Registry v2.13.38
+
+VARIETY MAP COVERAGE AUDIT + LOCATION RESOLVER HARDENING
+
+- Audited all bundled location-bearing records against the map catalog.
+- Includes germ_location (Nursery / field location) for manual/live records.
+- Country is now checked separately when Origin contains a placeholder.
+- Safe explicit geographic hints in Other details improve existing map precision.
+- Added specific resolvers for Assam, Coimbatore, Campos dos Goytacazes, and Canal Point.
+- Added npm.cmd run audit:variety-map-coverage.
+- No invented coordinates are created for records whose exact geography is genuinely unknown.
+
+SOURCE AUDIT RESULT
+- 701 source rows contain a Country value; 2 are "Not documented".
+- 699 rows therefore have a usable Country/Origin.
+- Those collapse to 695 unique canonical varieties because four source duplicate identity groups share locations.
+- The existing map catalog already contained all 695 unique source-located varieties, so no bundled source variety was missing a pin.
+- 88 records contain safe, explicit geographic hints in Other details and now use those hints to improve precision.

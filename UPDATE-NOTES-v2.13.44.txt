@@ -1,0 +1,14 @@
+CaneSprout v2.13.44
+===================
+
+Printable Profile Reliability + Preview/Download
+
+- Fixes blank-looking Core Information printable profiles.
+- Core output now always includes the core field cards and displays Not recorded for genuinely missing values.
+- Card-originated printable profiles merge hydrated full data with useful locally cached preview values.
+- Removes automatic print-dialog launch.
+- Adds a dedicated preview window before printing.
+- Adds Download for a standalone printable HTML profile.
+- Adds Print / Save PDF only when the user explicitly chooses it.
+- Adds Close action to the preview window.
+- Keeps both Core Information and Complete Information formats.

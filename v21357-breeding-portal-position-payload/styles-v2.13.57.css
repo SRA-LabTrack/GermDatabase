@@ -1,0 +1,57 @@
+
+/* v2.13.57 Breeding Reports portal position conflict fix */
+
+/*
+  v2.13.55 introduced `inset: auto !important` on the backdrop.
+  That declaration outranks the non-important inline top/right/bottom/left
+  values used by v2.13.56, making the portaled report appear to not open.
+
+  The measured toolbar position now travels through a CSS custom property.
+  This rule applies the final inset with !important, so no older rule can
+  erase the portal geometry.
+*/
+.breeding-reports-backdrop {
+  inset: var(--breeding-report-top, 120px) 0 8px 0 !important;
+  top: var(--breeding-report-top, 120px) !important;
+  right: 0 !important;
+  bottom: 8px !important;
+  left: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  pointer-events: auto !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.breeding-reports-modal {
+  width: min(1180px, calc(100vw - 20px)) !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  min-height: 0 !important;
+}
+
+.breeding-reports-body {
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  pointer-events: auto !important;
+}
+
+/* Make the open report unmistakably interactive. */
+.breeding-reports-header,
+.breeding-reports-close,
+.breeding-report-request,
+.breeding-report-result {
+  pointer-events: auto !important;
+}
+
+@media (max-width: 760px) {
+  .breeding-reports-backdrop {
+    inset: var(--breeding-report-top, 92px) 0 5px 0 !important;
+    top: var(--breeding-report-top, 92px) !important;
+    bottom: 5px !important;
+  }
+}

@@ -1,32 +1,6 @@
 import React, { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import './styles.css';
-import {
-  ArrowUpRight,
-  CheckCircle2,
-  ChevronDown,
-  Clock3,
-  Cloud,
-  CloudOff,
-  CloudUpload,
-  Download,
-  Droplets,
-  FileSpreadsheet,
-  Dna,
-  LoaderCircle,
-  LogOut,
-  Maximize2,
-  Microscope,
-  Menu,
-  Minimize2,
-  MoreHorizontal,
-  Plus,
-  RefreshCw,
-  Search,
-  ShieldCheck,
-  Sprout,
-  Users,
-  X
-} from 'lucide-react';
+import { ArrowUpRight, CheckCircle2, ChevronDown, Clock3, Cloud, CloudOff, CloudUpload, Download, Droplets, FileSpreadsheet, Dna, GitBranch, LoaderCircle, LogOut, MapPin, Maximize2, Microscope, Menu, Minimize2, MoreHorizontal, Plus, RefreshCw, Search, ShieldCheck, Sprout, Users, X, Printer } from 'lucide-react';
 import { ADMIN_LABEL, APPWRITE_PROJECT_ID, account, getActiveAppwriteEndpoint, isNetworkFailure, withAppwriteFailover } from './lib/appwrite';
 import { CHARACTERIZATION_FIELDS, SOURCE_RECORD_COUNT } from './lib/characterizationFields';
 import { GERMINATION_FIELDS } from './lib/germinationFields';
@@ -51,9 +25,13 @@ import { getOfflineSnapshotSummary, subscribeOfflineSnapshot } from './lib/offli
 import { prepareOfflineWorkspace } from './lib/offlineApp';
 import { getRegistryStats, subscribeRegistryStats } from './lib/registryStats';
 import SugarcaneIcon from './components/SugarcaneIcon.jsx';
+import ProfileCardPrintMenu from './components/ProfileCardPrintMenu.jsx';
+import DesktopPrimaryNav from './components/DesktopPrimaryNav.jsx';
 import { LegalPolicyModal, PolicyAcceptanceModal } from './components/LegalPolicyModal.jsx';
 import { policyPrefs, requiresPolicyAcceptance } from './lib/legalPolicy';
 import { normalizeVarietyDisplay } from './lib/legacyHyv';
+import { printVarietyProfile } from './lib/profilePrint.js';
+import { usePwaInstall } from './lib/pwaInstall.js';
 
 const DetailModal = lazy(() => import('./components/DetailModal.jsx'));
 const RecordFormModal = lazy(() => import('./components/RecordFormModal.jsx'));
@@ -63,13 +41,37 @@ const OfflineQueueModal = lazy(() => import('./components/OfflineQueueModal.jsx'
 const AdminCenterModal = lazy(() => import('./components/AdminCenterModal.jsx'));
 const SpreadsheetEditorModal = lazy(() => import('./components/SpreadsheetEditorModal.jsx'));
 const CombinationRegistryModal = lazy(() => import('./components/CombinationRegistryModal.jsx'));
+const PedigreeModal = lazy(() => import('./components/PedigreeModal.jsx'));
+const VarietyMapModal = lazy(() => import('./components/VarietyMapModal.jsx'));
 
 const APP_NAME = 'Sugarcane Germplasm Resource Database';
-const APP_VERSION = '2.13.26';
+const APP_VERSION = '2.13.76';
 const USER_CACHE_KEY = 'sugarcane-registry-user-v230';
 const ROLE_REFRESH_PREFIX = 'canesprout-role-refresh-v251:';
 const MANUAL_REFRESH_COOLDOWN_MS = 30_000;
 const STALE_NOTICE_MS = 45 * 60_000;
+
+function hasGermplasmPhoto(record) {
+  return Boolean(String(record?.thumbnail_file_id || '').trim());
+}
+
+function photoFirstBrowseRecords(records, { searchInput = '', recentMode = false } = {}) {
+  if (recentMode || String(searchInput || '').trim()) return records;
+
+  return (Array.isArray(records) ? records : [])
+    .map((record, index) => ({
+      record,
+      index,
+      hasPhoto: hasGermplasmPhoto(record)
+    }))
+    .sort((a, b) => {
+      const photoDelta = Number(b.hasPhoto) - Number(a.hasPhoto);
+      if (photoDelta !== 0) return photoDelta;
+      return a.index - b.index;
+    })
+    .map(({ record }) => record);
+}
+
 
 function cachedUser() {
   try {
@@ -352,6 +354,9 @@ function RecordCard({ record, onOpen, index }) {
   const image = fileViewUrl(record.thumbnail_file_id);
   const [cardRef, visible] = useViewportReveal();
   const [profilePreview, setProfilePreview] = useState(record.__bundledSnapshot ? record : null);
+  const [cardPrintMenuOpen, setCardPrintMenuOpen] = useState(false);
+  const [cardPrintBusy, setCardPrintBusy] = useState('');
+  const cardPrintTriggerRef = useRef(null);
 
   useEffect(() => {
     let live = true;
@@ -370,18 +375,50 @@ function RecordCard({ record, onOpen, index }) {
   const parentFemale = normalizeVarietyDisplay(preview.parentage_female || '');
   const parentMale = normalizeVarietyDisplay(preview.parentage_male || '');
   const parentals = parentMale && parentFemale
-    ? `${parentMale} male X ${parentFemale} female`
-    : parentMale ? `${parentMale} male` : parentFemale ? `${parentFemale} female` : missing;
+    ? `${parentMale} X ${parentFemale}`
+    : parentMale || parentFemale || missing;
   const tcHa = preview.yield_tc_ha || missing;
   const lkgTc = preview.yield_lkg_tc || missing;
   const recommended = preview.recommended_locations || preview.tested_location || missing;
   const disease = preview.disease_reaction || missing;
 
+  async function printFromCard(event, mode) {
+    event?.preventDefault?.();
+    event?.stopPropagation?.();
+    if (cardPrintBusy) return;
+    setCardPrintBusy(mode);
+    try {
+      // Printing is an explicit user action, so fetch the complete record first.
+      // This prevents the collection card's lean preview from producing an incomplete printout.
+      const fullRecord = await getRecord(record.$id);
+      const printableRecord = { ...(preview || record || {}), ...(fullRecord || {}) };
+      // Preserve locally available card values when an older live record returns a blank core field.
+      for (const [key, value] of Object.entries(preview || record || {})) {
+        if (String(printableRecord[key] ?? '').trim() === '' && String(value ?? '').trim() !== '') printableRecord[key] = value;
+      }
+      printVarietyProfile(printableRecord, mode);
+      setCardPrintMenuOpen(false);
+    } catch (err) {
+      window.alert(err?.message || 'CaneSprout could not open the printable variety profile.');
+    } finally {
+      setCardPrintBusy('');
+    }
+  }
+
   return (
     <article
       ref={cardRef}
-      className={`record-card germplasm-card viewport-card ${visible ? 'is-visible' : ''}`}
+      className={`record-card germplasm-card viewport-card clickable-record-card ${visible ? 'is-visible' : ''}`}
       style={{ '--card-delay': `${Math.min(index % 6, 5) * 34}ms` }}
+      tabIndex={0}
+      aria-label={`Open ${record.variety || 'unnamed variety'} profile`}
+      onClick={() => onOpen(record.$id)}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onOpen(record.$id);
+        }
+      }}
     >
       <div className={`record-image ${image ? 'has-image' : ''}`}>
         {image ? <img src={image} alt={record.variety || 'Sugarcane germplasm'} loading="lazy" decoding="async" fetchPriority="low" /> : <div className="record-placeholder"><SugarcaneIcon size={44} /><span>Germplasm photo optional</span></div>}
@@ -402,7 +439,31 @@ function RecordCard({ record, onOpen, index }) {
         </div>
         <footer className="germplasm-card-footer">
           <span>Preview only. Open the profile for complete characterization data.</span>
-          <button type="button" className="primary-button view-profile-button" onClick={() => onOpen(record.$id)}>View Profile <ArrowUpRight size={16} /></button>
+          <div className="germplasm-card-actions" onClick={(event) => event.stopPropagation()} onKeyDown={(event) => event.stopPropagation()}>
+            <div className="germplasm-card-print-action">
+              <button
+                ref={cardPrintTriggerRef}
+                type="button"
+                className={`secondary-button germplasm-card-print-trigger ${cardPrintMenuOpen ? 'active' : ''}`}
+                onClick={(event) => { event.preventDefault(); event.stopPropagation(); setCardPrintMenuOpen((current) => !current); }}
+                aria-haspopup="menu"
+                aria-expanded={cardPrintMenuOpen}
+                title="Preview, download or print this variety"
+              >
+                <Printer size={15} /> {cardPrintBusy ? 'Preparing…' : 'Print'}
+              </button>
+              <ProfileCardPrintMenu
+                open={cardPrintMenuOpen}
+                triggerRef={cardPrintTriggerRef}
+                variety={record.variety || 'variety'}
+                busy={Boolean(cardPrintBusy)}
+                onClose={() => setCardPrintMenuOpen(false)}
+                onCore={(event) => printFromCard(event, 'core')}
+                onComplete={(event) => printFromCard(event, 'complete')}
+              />
+            </div>
+            <button type="button" className="primary-button view-profile-button" onClick={(event) => { event.stopPropagation(); onOpen(record.$id); }}>View Profile <ArrowUpRight size={16} /></button>
+          </div>
         </footer>
       </div>
     </article>
@@ -428,6 +489,7 @@ function excelCellValue(value) {
 export default function App() {
   const initialUser = cachedUser();
   const desktopMode = Boolean(window.germDesktop?.isDesktop);
+  const { canInstall, installed: pwaInstalled, installApp } = usePwaInstall();
   const [user, setUser] = useState(initialUser);
   const [sessionState, setSessionState] = useState(initialUser ? (navigator.onLine ? 'ready' : 'offline') : 'checking');
   const [online, setOnline] = useState(navigator.onLine);
@@ -465,6 +527,9 @@ export default function App() {
   const [showAdminCenter, setShowAdminCenter] = useState(false);
   const [showSpreadsheetEditor, setShowSpreadsheetEditor] = useState(false);
   const [showCombinationRegistry, setShowCombinationRegistry] = useState(false);
+  const [showPedigree, setShowPedigree] = useState(false);
+  const [pedigreeInitialVariety, setPedigreeInitialVariety] = useState('');
+  const [showMap, setShowMap] = useState(false);
   const [adminCenterTab, setAdminCenterTab] = useState('approvals');
   const [submissionNotice, setSubmissionNotice] = useState('');
   const submissionNoticeTimerRef = useRef(0);
@@ -480,6 +545,7 @@ export default function App() {
   const [policyGateUser, setPolicyGateUser] = useState(null);
   const [policyGateBusy, setPolicyGateBusy] = useState(false);
   const [policyGateError, setPolicyGateError] = useState('');
+
 
   useEffect(() => {
     let frame = 0;
@@ -996,6 +1062,27 @@ export default function App() {
   }
 
 
+  async function handleInstallCaneSprout() {
+    const result = await installApp();
+    if (result.status === 'accepted') {
+      showCompletionNotice('CaneSprout installation started. After installation, open it from your desktop, Start menu, or taskbar.', 8000);
+      return;
+    }
+    if (result.status === 'installed') {
+      showCompletionNotice('CaneSprout is already installed on this device.', 6000);
+      return;
+    }
+    if (result.status === 'dismissed') {
+      showCompletionNotice('Installation was cancelled. You can install CaneSprout later from the More actions menu.', 6000);
+      return;
+    }
+    if (result.status === 'unavailable') {
+      showCompletionNotice('The browser install prompt is not available yet. In Brave or Chrome, open the browser menu and choose Install CaneSprout / Install app.', 9000);
+      return;
+    }
+    showCompletionNotice('CaneSprout could not start the browser installation prompt. Try the browser menu and choose Install app.', 8000);
+  }
+
   async function handleUpdates() {
     if (!window.germDesktop) {
       setUpdateState('checking');
@@ -1161,7 +1248,7 @@ export default function App() {
 
   return (
     <main className="app-shell">
-      <header ref={toolbarRef} className={`topbar reference-toolbar ${isAdmin ? 'admin-toolbar' : 'user-toolbar'}`}>
+      <header ref={toolbarRef} className={`topbar reference-toolbar toolbar-clean-v21368 ${isAdmin ? 'admin-toolbar' : 'user-toolbar'} ${desktopMode ? 'electron-toolbar' : 'web-pedigree-toolbar'}`}>
         <div className="toolbar-brand-panel"><Brand /></div>
 
         {isMobileToolbar && (<>
@@ -1195,11 +1282,23 @@ export default function App() {
             </div>
 
             <div className="mobile-toolbar-menu-list">
-              <button type="button" onClick={() => { setMobileToolbarOpen(false); setShowExcelMenu(false); setShowCombinationRegistry(false); goToGermplasmCollection(); }}>
+              <button type="button" onClick={() => { setMobileToolbarOpen(false); setShowExcelMenu(false); setShowCombinationRegistry(false); setShowPedigree(false); setShowMap(false); goToGermplasmCollection(); }}>
                 <SugarcaneIcon size={20} />
                 <span><strong>Germplasm</strong><small>Browse the germplasm collection</small></span>
               </button>
-              <button type="button" onClick={() => { setMobileToolbarOpen(false); setShowCombinationRegistry(false); setShowForm(false); setEditRecord(null); setShowAdminCenter(false); setShowOfflineQueue(false); setShowExcelMenu(true); }}>
+              {!desktopMode && (
+                <button type="button" data-web-tool="pedigree" onClick={() => { setMobileToolbarOpen(false); setShowExcelMenu(false); setShowForm(false); setEditRecord(null); setShowAdminCenter(false); setShowOfflineQueue(false); setShowImport(false); setShowExportExcel(false); setShowSpreadsheetEditor(false); setShowCombinationRegistry(false); setShowMap(false); setPedigreeInitialVariety(''); setShowPedigree(true); }}>
+                  <GitBranch size={20} />
+                  <span><strong>Pedigree</strong><small>Trace parentage through three generations</small></span>
+                </button>
+              )}
+              {!desktopMode && (
+                <button type="button" data-web-tool="map" onClick={() => { setMobileToolbarOpen(false); setShowExcelMenu(false); setShowForm(false); setEditRecord(null); setShowAdminCenter(false); setShowOfflineQueue(false); setShowImport(false); setShowExportExcel(false); setShowSpreadsheetEditor(false); setShowCombinationRegistry(false); setShowPedigree(false); setShowMap(true); }}>
+                  <MapPin size={20} />
+                  <span><strong>Map</strong><small>Explore varieties by recorded location</small></span>
+                </button>
+              )}
+              <button type="button" onClick={() => { setMobileToolbarOpen(false); setShowMap(false); setShowCombinationRegistry(false); setShowForm(false); setEditRecord(null); setShowAdminCenter(false); setShowOfflineQueue(false); setShowExcelMenu(true); }}>
                 <FileSpreadsheet size={20} />
                 <span><strong>Excel Tools</strong><small>Import, export, or edit spreadsheet data</small></span>
               </button>
@@ -1232,6 +1331,12 @@ export default function App() {
                 <Download size={20} />
                 <span><strong>{backupState || 'Backup'}</strong><small>Create a registry backup</small></span>
               </button>
+              {!desktopMode && (
+                <button type="button" data-pwa-install onClick={() => { setMobileToolbarOpen(false); handleInstallCaneSprout(); }} disabled={pwaInstalled}>
+                  <Download size={20} />
+                  <span><strong>{pwaInstalled ? 'CaneSprout installed' : 'Install CaneSprout'}</strong><small>{pwaInstalled ? 'Launch it from your desktop or Start menu' : canInstall ? 'Add the website as an app on this device' : 'Install the website for one-click launching'}</small></span>
+                </button>
+              )}
               <button type="button" onClick={() => { setMobileToolbarOpen(false); handleUpdates(); }}>
                 <RefreshCw size={20} />
                 <span><strong>{updateState === 'downloaded' ? 'Restart & update' : updateState === 'checking' ? 'Checking…' : 'Updates'}</strong><small>Check CaneSprout update status</small></span>
@@ -1258,63 +1363,81 @@ export default function App() {
         </>)}
 
         {!isMobileToolbar && (<>
-        <nav className={`toolbar-main-actions segmented-toolbar ${isAdmin ? 'admin-actions' : ''}`} aria-label="Primary registry navigation">
-          <button
-            className={`toolbar-tile nav-button ${!showImport && !showExcelMenu && !showExportExcel && !showSpreadsheetEditor && !showForm && !showAdminCenter && !showCombinationRegistry ? 'active' : ''}`}
-            aria-current={!showImport && !showExcelMenu && !showExportExcel && !showSpreadsheetEditor && !showForm && !showAdminCenter && !showCombinationRegistry ? 'page' : undefined}
-            onClick={() => { setShowExcelMenu(false); setShowCombinationRegistry(false); goToGermplasmCollection(); }}
-          >
-            <SugarcaneIcon size={22} /><span>Germplasm</span>
-          </button>
-          <div
-            className={`excel-tools-segment ${showExcelMenu || showImport || showExportExcel || showSpreadsheetEditor || excelExportState ? 'active' : ''}`}
-          >
-            <button
-              type="button"
-              className="excel-tools-toggle"
-              aria-expanded={showExcelMenu}
-              aria-controls="excel-tools-expansion"
-              onClick={() => {
-                setShowCombinationRegistry(false);
-                setShowForm(false);
-                setEditRecord(null);
-                setShowAdminCenter(false);
-                setShowOfflineQueue(false);
-                setShowExcelMenu((open) => !open);
-              }}
-            >
-              <FileSpreadsheet size={21} />
-              <span>Excel Tools</span>
-              <ChevronDown className={`excel-tools-chevron ${showExcelMenu ? 'open' : ''}`} size={15} />
-            </button>
-          </div>
-          <button
-            className={`toolbar-tile nav-button toolbar-add ${showForm ? 'active' : ''}`}
-            aria-pressed={showForm}
-            onClick={() => { setShowExcelMenu(false); setShowCombinationRegistry(false); setEditRecord(null); setShowForm(true); }}
-          >
-            <Plus size={22} /><span>Add record</span>
-          </button>
-          <button
-            className={`toolbar-tile nav-button toolbar-combinations ${showCombinationRegistry ? 'active' : ''}`}
-            aria-pressed={showCombinationRegistry}
-            onClick={() => { setShowExcelMenu(false); setShowForm(false); setEditRecord(null); setShowAdminCenter(false); setShowOfflineQueue(false); setShowImport(false); setShowExportExcel(false); setShowSpreadsheetEditor(false); setShowCombinationRegistry(true); }}
-            title="Search and record male × female sugarcane combinations"
-          >
-            <Dna size={21} /><span>Combination Registry</span>
-          </button>
-          {isAdmin && (
-            <button
-              className={`toolbar-tile nav-button toolbar-accounts ${showAdminCenter ? 'active' : ''}`}
-              aria-pressed={showAdminCenter}
-              onClick={() => { setShowExcelMenu(false); setShowCombinationRegistry(false); openAdminCenter('approvals'); }}
-              title="Admin Center: approvals and account management"
-            >
-              <ShieldCheck size={21} /><span>Admin Center</span>
-            </button>
-          )}
-        </nav>
-
+        <DesktopPrimaryNav
+          germplasmActive={!showImport && !showExcelMenu && !showExportExcel && !showSpreadsheetEditor && !showForm && !showAdminCenter && !showCombinationRegistry && !showPedigree && !showMap}
+          pedigreeActive={showPedigree}
+          mapActive={showMap}
+          toolsActive={showExcelMenu || showImport || showExportExcel || showSpreadsheetEditor || showForm || showCombinationRegistry || showAdminCenter}
+          excelActive={showExcelMenu || showImport || showExportExcel || showSpreadsheetEditor}
+          addRecordActive={showForm}
+          combinationActive={showCombinationRegistry}
+          adminActive={showAdminCenter}
+          isAdmin={isAdmin}
+          onGermplasm={() => {
+            setShowExcelMenu(false);
+            setShowCombinationRegistry(false);
+            setShowPedigree(false);
+            setShowMap(false);
+            goToGermplasmCollection();
+          }}
+          onPedigree={() => {
+            setShowExcelMenu(false);
+            setShowForm(false);
+            setEditRecord(null);
+            setShowAdminCenter(false);
+            setShowOfflineQueue(false);
+            setShowImport(false);
+            setShowExportExcel(false);
+            setShowSpreadsheetEditor(false);
+            setShowCombinationRegistry(false);
+            setShowMap(false);
+            setPedigreeInitialVariety('');
+            setShowPedigree(true);
+          }}
+          onMap={() => {
+            setShowExcelMenu(false);
+            setShowForm(false);
+            setEditRecord(null);
+            setShowAdminCenter(false);
+            setShowOfflineQueue(false);
+            setShowImport(false);
+            setShowExportExcel(false);
+            setShowSpreadsheetEditor(false);
+            setShowCombinationRegistry(false);
+            setShowPedigree(false);
+            setShowMap(true);
+          }}
+          onExcelTools={() => {
+            setShowCombinationRegistry(false);
+            setShowForm(false);
+            setEditRecord(null);
+            setShowAdminCenter(false);
+            setShowOfflineQueue(false);
+            setShowExcelMenu(true);
+          }}
+          onAddRecord={() => {
+            setShowExcelMenu(false);
+            setShowCombinationRegistry(false);
+            setEditRecord(null);
+            setShowForm(true);
+          }}
+          onCombinationRegistry={() => {
+            setShowExcelMenu(false);
+            setShowForm(false);
+            setEditRecord(null);
+            setShowAdminCenter(false);
+            setShowOfflineQueue(false);
+            setShowImport(false);
+            setShowExportExcel(false);
+            setShowSpreadsheetEditor(false);
+            setShowCombinationRegistry(true);
+          }}
+          onAdminCenter={() => {
+            setShowExcelMenu(false);
+            setShowCombinationRegistry(false);
+            openAdminCenter('approvals');
+          }}
+        />
         <button
           type="button"
           className={`toolbar-status-card connection ${online ? 'online' : 'offline'} ${offlineSummary.count ? 'has-queue' : ''}`}
@@ -1346,6 +1469,7 @@ export default function App() {
               }}><FileSpreadsheet size={17} /><span>Excel Tools</span></button>
               <button onClick={() => setShowOfflineQueue(true)}><CloudUpload size={17} /><span>Offline queue</span>{offlineSummary.count ? <b>{offlineSummary.count}</b> : null}</button>
               <button onClick={createBackup} disabled={Boolean(backupState)}><Download size={17} /><span>{backupState || 'Backup'}</span></button>
+              {!desktopMode && <button data-pwa-install onClick={handleInstallCaneSprout} disabled={pwaInstalled}><Download size={17} /><span>{pwaInstalled ? 'CaneSprout installed' : 'Install CaneSprout'}</span></button>}
               <button onClick={handleUpdates}><RefreshCw size={17} /><span>{updateState === 'downloaded' ? 'Restart & update' : updateState === 'checking' ? 'Checking…' : 'Updates'}</span></button>
               {window.germDesktop && <><button onClick={() => window.germDesktop.minimize?.()}><Minimize2 size={17} /><span>Minimize</span></button><button onClick={() => window.germDesktop.toggleFullscreen?.()}><Maximize2 size={17} /><span>Full screen</span></button></>}
             </div>
@@ -1380,6 +1504,17 @@ export default function App() {
           <div className="excel-tools-expansion-label">
             <FileSpreadsheet size={20} />
             <span><strong>Excel Tools</strong><small>Work with one variety or the complete registry</small></span>
+            <button
+              type="button"
+              className="excel-tools-collapse-button"
+              onClick={() => setShowExcelMenu(false)}
+              aria-label="Collapse Excel Tools"
+              aria-controls="excel-tools-expansion"
+              title="Collapse Excel Tools"
+            >
+              <ChevronDown className="excel-tools-collapse-chevron" size={17} />
+              <span>Collapse</span>
+            </button>
           </div>
 
           <div className="excel-tools-expansion-actions">
@@ -1486,7 +1621,7 @@ export default function App() {
 
       <section className="registry-section germplasm-collection-section" id="registry" ref={collectionSectionRef}>
         <div className="registry-toolbar">
-          <div><span className="eyebrow"><SugarcaneIcon size={16} /> SUGARCANE GERMPLASM LIBRARY</span><h2>Explore Our Germplasm Collection</h2><p>Browse focused germplasm previews with key passport, parentage, yield, location, and disease-response information. Select <strong>View Profile</strong> to open the complete characterization record.</p></div>
+          <div><span className="eyebrow"><SugarcaneIcon size={16} /> SUGARCANE GERMPLASM LIBRARY</span><h2>Explore Our Germplasm Collection</h2><p>Browse focused germplasm previews with key passport, parentage, yield, location, and disease-response information. Select any variety card to open the complete characterization record.</p></div>
           <div className="toolbar-actions"><button className="icon-button bordered" title="Refresh current page" onClick={() => refreshRegistry({ manual: true })}><RefreshCw size={18} /></button></div>
         </div>
 
@@ -1496,7 +1631,7 @@ export default function App() {
           <button type="button" className={`recent-search-button ${recentMode ? 'active' : ''}`} onClick={() => { const next = !recentMode; setRecentMode(next); setSearchInput(''); setSearchTerm(''); setSearchMatchMode(next ? 'recent' : ''); setRecords([]); setCursor(''); setHasMore(false); }} aria-pressed={recentMode} title={`Show the ${RECENT_LIMIT} most recently added records`}><Clock3 size={16} /><span>Recently added</span><b>{RECENT_LIMIT}</b></button>
           <label className="search-scope"><span>Search in</span><select value={searchScope} disabled={recentMode} onChange={(event) => { setRecentMode(false); setSearchScope(event.target.value); setRecords([]); setCursor(''); setHasMore(false); setSearchMatchMode(''); }}>{Object.entries(SEARCH_SCOPES).map(([value, config]) => <option key={value} value={value}>{config.label}</option>)}</select></label>
           {searchInput && <button className="clear-search" onClick={() => { setRecentMode(false); setSearchMatchMode(''); setSearchInput(''); searchInputRef.current?.focus(); }} aria-label="Clear search"><X size={16} /></button>}
-          <span>{recentMode ? `Newest ${RECENT_LIMIT} • on-demand lean view` : searchInput.trim().length > 0 && searchInput.trim().length < SEARCH_MIN ? `${SEARCH_MIN - searchInput.trim().length} more character${SEARCH_MIN - searchInput.trim().length === 1 ? '' : 's'} • 0 reads` : searchInput.trim() ? `${SEARCH_SCOPES[searchScope].label} • ${searchScope === 'all' ? 'keyword index' : 'smart index'}` : `Browse first ${PAGE_SIZE}`}</span>
+          <span>{recentMode ? `Newest ${RECENT_LIMIT} • on-demand lean view` : searchInput.trim().length > 0 && searchInput.trim().length < SEARCH_MIN ? `${SEARCH_MIN - searchInput.trim().length} more character${SEARCH_MIN - searchInput.trim().length === 1 ? '' : 's'} • 0 reads` : searchInput.trim() ? `${SEARCH_SCOPES[searchScope].label} • ${searchScope === 'all' ? 'keyword index' : 'smart index'}` : `Browse first ${PAGE_SIZE} • photos first`}</span>
         </div>
         {!!offlineSummary.count && <div className="offline-queue-banner"><CloudUpload size={18} /><div><strong>{offlineSummary.count} offline entr{offlineSummary.count === 1 ? 'y' : 'ies'} waiting on this device</strong><span>{offlineSummary.photoCount ? `${offlineSummary.photoCount} compressed photo${offlineSummary.photoCount === 1 ? '' : 's'} included. ` : ''}Sync is direct to Appwrite and never routed through Vercel.</span></div><button className="secondary-button" onClick={() => setShowOfflineQueue(true)}>Open queue</button></div>}
         {offlineSyncState && <div className="alert info offline-sync-status"><CloudUpload size={16} /> {offlineSyncState}</div>}
@@ -1506,7 +1641,7 @@ export default function App() {
         {listError && <div className="alert error">{listError}</div>}
 
         <div className="record-grid">
-          {loading ? Array.from({ length: 6 }, (_, index) => <SkeletonCard key={index} />) : records.map((record, index) => <RecordCard key={record.$id} record={record} index={index} onOpen={setDetailId} />)}
+          {loading ? Array.from({ length: 6 }, (_, index) => <SkeletonCard key={index} />) : photoFirstBrowseRecords(records, { searchInput, recentMode }).map((record, index) => <RecordCard key={record.$id} record={record} index={index} onOpen={setDetailId} />)}
         </div>
         {!loading && !records.length && <div className="empty-state"><SugarcaneIcon size={38} /><h3>{recentMode ? 'No recently added records' : searchInput.trim() && searchInput.trim().length < SEARCH_MIN ? `Type at least ${SEARCH_MIN} characters` : searchInput.trim() ? 'No matching sugarcane records' : 'No sugarcane records available'}</h3><p>{recentMode ? 'No registry entries were returned for the recent-record view.' : searchInput.trim() && searchInput.trim().length < SEARCH_MIN ? 'Short searches stay entirely on this device, so Appwrite receives zero requests.' : searchInput.trim() ? `No ${SEARCH_SCOPES[searchScope].label.toLowerCase()} match was returned for “${searchInput.trim()}”. Try another term or search field.` : 'Add or import a sugarcane record to begin.'}</p></div>}
         {!loading && hasMore && <div className="load-more-row"><button className="secondary-button load-more" onClick={loadMore} disabled={loadingMore}>{loadingMore ? <><LoaderCircle className="spin" size={17} /> Loading {PAGE_SIZE} more…</> : `Load ${PAGE_SIZE} more`}</button><small>More records are fetched only when requested.</small></div>}
@@ -1515,7 +1650,7 @@ export default function App() {
       <footer className="app-footer"><span><SugarcaneIcon size={17} /> {APP_NAME} v{APP_VERSION}</span><span>{desktopMode ? 'Installed desktop mirror • one-login offline access • persistent local queue • reconnect Appwrite sync' : 'Versioned offline app shell • persistent IndexedDB workspace • paced direct Appwrite sync • storage-efficient WebP media'}</span></footer>
 
       <Suspense fallback={<ModalLoading />}>
-        {detailId && <DetailModal recordId={detailId} actor={user} online={online} isAdmin={isAdmin} onClose={() => setDetailId('')} onEdit={openEdit} onDeleted={({ record } = {}) => { if (record) setRecords((current) => current.filter((item) => item.$id !== record.$id)); else refreshRegistry(); }} onQueuedDelete={handleQueuedDelete} />}
+        {detailId && <DetailModal recordId={detailId} actor={user} online={online} isAdmin={isAdmin} onClose={() => setDetailId('')} onEdit={openEdit} onOpenPedigree={!desktopMode ? (record) => { setDetailId(''); setShowMap(false); setPedigreeInitialVariety(record?.variety || ''); setShowPedigree(true); } : undefined} onDeleted={({ record } = {}) => { if (record) setRecords((current) => current.filter((item) => item.$id !== record.$id)); else refreshRegistry(); }} onQueuedDelete={handleQueuedDelete} />}
         {showForm && <RecordFormModal initial={editRecord} actor={user} isAdmin={isAdmin} online={online} onClose={() => { setShowForm(false); setEditRecord(null); }} onSaved={({ type, variety, record }) => { clearListCache(); if (record && !searchInput.trim() && !recentMode) { setRecords((current) => [record, ...current.filter((item) => item.$id !== record.$id)].slice(0, PAGE_SIZE)); } else { refreshRegistry(); } showCompletionNotice(type === 'edit' ? `${variety} was updated successfully.` : `${variety} was registered successfully.`); }} onSubmitted={({ type, variety }) => { showCompletionNotice(`${variety} ${type === 'edit' ? 'edit' : 'registration'} submitted for administrator approval.`); }} onQueued={handleQueuedOffline} />}
         {showImport && isAdmin && <ImportModal actor={user} online={online} onClose={() => setShowImport(false)} onImported={({ created = 0, updated = 0, queued = 0, total = 0, scope, variety, offline: importedOffline = false, message = '' }) => { if (importedOffline) setRefreshKey((value) => value + 1); else refreshRegistry(); const subject = message || (scope === 'specific' && variety ? `${variety} imported successfully.` : `Excel import completed for ${total} ${total === 1 ? 'variety' : 'varieties'}.`); showCompletionNotice(importedOffline ? subject : `${subject} ${created} added, ${updated} updated.${queued ? ` ${queued} queued.` : ''}`, 7000); }} />}
         {showExportExcel && <ExportExcelModal onClose={() => setShowExportExcel(false)} onExported={(message) => showCompletionNotice(message)} />}
@@ -1523,6 +1658,8 @@ export default function App() {
         {showSpreadsheetEditor && isAdmin && <SpreadsheetEditorModal actor={user} online={online} onClose={() => setShowSpreadsheetEditor(false)} onSaved={({ offline: savedOffline } = {}) => { clearListCache(); if (!savedOffline) refreshRegistry(); }} />}
         {showAdminCenter && isAdmin && <AdminCenterModal initialTab={adminCenterTab} currentUser={user} online={online} onClose={() => setShowAdminCenter(false)} onRegistryChanged={() => { clearListCache(); refreshRegistry(); }} />}
         {showCombinationRegistry && <CombinationRegistryModal actor={user} isAdmin={isAdmin} onClose={() => setShowCombinationRegistry(false)} onChanged={() => { clearListCache(); }} onNotice={(message) => showCompletionNotice(message, 7000)} toolbarBottom={toolbarBottom} />}
+        {showPedigree && !desktopMode && <PedigreeModal initialVariety={pedigreeInitialVariety} onClose={() => { setShowPedigree(false); setPedigreeInitialVariety(''); }} onOpenProfile={(recordId) => { setShowPedigree(false); setPedigreeInitialVariety(''); setDetailId(recordId); }} />}
+        {showMap && !desktopMode && <VarietyMapModal onClose={() => setShowMap(false)} onOpenProfile={(recordId) => { setDetailId(recordId); }} />}
       </Suspense>
     </main>
   );

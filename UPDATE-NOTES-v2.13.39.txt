@@ -1,0 +1,23 @@
+CaneSprout v2.13.39 - Profile Trait Visualization
+=================================================
+
+Profile improvements
+- Color-coded characterization traits now show an on-screen color swatch beside the stored RHS code.
+- Standard RHS codes 1A-202D use bundled screen-oriented RGB approximations.
+- Several N-series codes used by the registry have direct approximations; other valid N/NN codes fall back to the corresponding legacy code when available and remain explicitly a screen approximation.
+- Dual entries such as 200D/199A render as a segmented two-color preview.
+- Leaf Blade Length now includes a size interpretation:
+    0-100 cm       SMALL
+    >100-150 cm    MEDIUM
+    >150 cm        LARGE
+  Example: 95 -> 95 cm (SMALL), 163.6 -> 163.6 cm (LARGE).
+
+Safety / compatibility
+- The patch edits the existing DetailModal renderer instead of replacing the entire file, preserving v2.13.38 pedigree and map/profile work.
+- No registry data is changed.
+- No Appwrite schema migration is required.
+- Digital swatches are visual approximations and do not replace a calibrated physical RHS Colour Chart.
+
+Verification
+npm.cmd run verify:profile-trait-visuals
+npm.cmd run build

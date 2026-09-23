@@ -1,0 +1,287 @@
+
+/* ================================================================
+   v2.13.65 CLASSIC-PROPORTION UPDATED TOOLBAR
+   Brand | Germplasm | Pedigree | Map | Tools | Online | Account
+   ================================================================ */
+
+@media (min-width: 761px) {
+  /*
+    Match the clean cell-based proportions of the earlier CaneSprout toolbar
+    while retaining the new navigation set.
+  */
+  .reference-toolbar {
+    display: grid !important;
+    grid-template-columns:
+      minmax(290px, 360px)
+      minmax(560px, 1fr)
+      minmax(150px, 190px)
+      minmax(250px, 340px) !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    padding: 12px 14px !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+  }
+
+  /* Brand cell */
+  .reference-toolbar .toolbar-brand-panel {
+    grid-column: 1 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  /*
+    Updated primary navigation:
+    Germplasm | Pedigree | Map | Tools
+    Four equal cells, same visual rhythm as the reference screenshot.
+  */
+  .reference-toolbar .toolbar-main-actions.toolbar-primary-actions {
+    grid-column: 2 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    align-items: stretch !important;
+    gap: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+    border: 1px solid rgba(48, 89, 57, .14) !important;
+    background: rgba(249, 252, 246, .88) !important;
+  }
+
+  .reference-toolbar .toolbar-primary-actions > .toolbar-tile,
+  .reference-toolbar .toolbar-primary-actions > .toolbar-tools-drawer {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 100% !important;
+    min-height: 72px !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .reference-toolbar .toolbar-primary-actions > .toolbar-tile {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    padding: 0 14px !important;
+    overflow: hidden !important;
+    border-radius: 0 !important;
+    white-space: nowrap !important;
+  }
+
+  /* Restore readable desktop labels. */
+  .reference-toolbar .toolbar-primary-actions > .toolbar-tile span {
+    display: block !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* Equal Tools cell */
+  .reference-toolbar .toolbar-primary-actions > .toolbar-tools-drawer {
+    position: relative !important;
+    display: flex !important;
+    align-items: stretch !important;
+    overflow: visible !important;
+  }
+
+  .reference-toolbar .toolbar-tools-summary {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 100% !important;
+    min-height: 72px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 9px !important;
+    padding: 0 14px !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-left: 1px solid rgba(48, 89, 57, .14) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: #315b3d !important;
+    font: inherit !important;
+    font-weight: 800 !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  .reference-toolbar .toolbar-tools-summary > span {
+    display: block !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  .reference-toolbar .toolbar-tools-summary:hover,
+  .reference-toolbar .toolbar-tools-summary[aria-expanded="true"],
+  .reference-toolbar .toolbar-tools-drawer.active .toolbar-tools-summary {
+    background: #edf5e7 !important;
+    color: #24563a !important;
+  }
+
+  .reference-toolbar .toolbar-tools-drawer.active .toolbar-tools-summary {
+    box-shadow: inset 0 -4px 0 #b7d35a !important;
+  }
+
+  /* Online/status cell */
+  .reference-toolbar .toolbar-status-card {
+    grid-column: 3 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 15px !important;
+    box-sizing: border-box !important;
+    justify-content: center !important;
+  }
+
+  .reference-toolbar .toolbar-status-card span {
+    min-width: 0 !important;
+  }
+
+  .reference-toolbar .toolbar-status-card span b {
+    display: block !important;
+    white-space: nowrap !important;
+  }
+
+  /* Keep small sync detail where there is enough room, like the reference. */
+  .reference-toolbar .toolbar-status-card span small {
+    display: block !important;
+    max-width: 115px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  /* Account cell */
+  .reference-toolbar .toolbar-account-card {
+    grid-column: 4 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 8px 10px !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+  }
+
+  .reference-toolbar .toolbar-account-card .user-chip {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+  }
+
+  .reference-toolbar .toolbar-account-card .user-chip b,
+  .reference-toolbar .toolbar-account-card .user-chip small {
+    display: block !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  /* Preserve the working body-level Tools portal. */
+  .toolbar-tools-menu.toolbar-tools-menu-portal {
+    position: fixed !important;
+    top: var(--toolbar-tools-top) !important;
+    left: var(--toolbar-tools-left) !important;
+    right: auto !important;
+    bottom: auto !important;
+    width: var(--toolbar-tools-width) !important;
+    max-width: calc(100vw - 24px) !important;
+    max-height: var(--toolbar-tools-max-height) !important;
+    min-width: 260px !important;
+    z-index: 100000 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+}
+
+/* Medium desktop: same placement, just tighter proportions. */
+@media (min-width: 1181px) and (max-width: 1550px) {
+  .reference-toolbar {
+    grid-template-columns:
+      minmax(235px, 300px)
+      minmax(500px, 1fr)
+      minmax(120px, 150px)
+      minmax(205px, 260px) !important;
+    gap: 7px !important;
+    padding-inline: 9px !important;
+  }
+
+  .reference-toolbar .toolbar-primary-actions > .toolbar-tile,
+  .reference-toolbar .toolbar-tools-summary {
+    padding-inline: 10px !important;
+    gap: 7px !important;
+  }
+
+  .reference-toolbar .toolbar-status-card span small {
+    display: none !important;
+  }
+}
+
+/*
+  Narrow desktop: still the same placement. Labels are removed only when
+  genuinely necessary, so sections never overlap.
+*/
+@media (min-width: 761px) and (max-width: 1180px) {
+  .reference-toolbar {
+    grid-template-columns:
+      minmax(180px, 215px)
+      minmax(300px, 1fr)
+      60px
+      minmax(145px, 180px) !important;
+    gap: 5px !important;
+    padding-inline: 6px !important;
+  }
+
+  .reference-toolbar .toolbar-main-actions.toolbar-primary-actions {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+
+  .reference-toolbar .toolbar-primary-actions > .toolbar-tile span,
+  .reference-toolbar .toolbar-tools-summary > span {
+    display: none !important;
+  }
+
+  .reference-toolbar .toolbar-primary-actions > .toolbar-tile,
+  .reference-toolbar .toolbar-tools-summary {
+    padding-inline: 6px !important;
+    justify-content: center !important;
+  }
+
+  .reference-toolbar .toolbar-status-card {
+    padding: 0 !important;
+  }
+
+  .reference-toolbar .toolbar-status-card span {
+    display: none !important;
+  }
+
+  .reference-toolbar .toolbar-account-card .user-chip small {
+    display: none !important;
+  }
+}

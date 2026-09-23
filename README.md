@@ -158,3 +158,22 @@ v2.13.23: Added Terms of Use and Privacy Policy links plus a first-access agreem
 
 
 v2.13.24: Login now exposes a clearly visible Account Policies block directly below Sign in, with Terms of Use and Privacy Policy buttons on web and Electron.
+
+
+v2.13.27 adds a website-only three-generation pedigree tool in the main toolbar using existing parentage records and local-first registry data.
+
+
+v2.13.28: Website pedigree parentage is now source-verified against the supplied SRA HYV lineage data, with LR-over-LG precedence, alias-aware identity matching, and a read-only pedigree source audit.
+
+
+## v2.13.29 Pedigree toolbar hard fix
+The website toolbar now renders a dedicated Pedigree action immediately after Germplasm. The tool is backed by the SRA HYV parentage source and traces up to three generations. Use `npm.cmd run verify:pedigree-web` before publishing.
+
+## v2.13.33 website variety map
+The website toolbar now includes an interactive Map tool. CaneSprout maps varieties using the most specific available recorded location, supports variety/location search with smooth fly-to navigation, and opens the selected variety profile from its pin. Country/origin-only locations are approximate. The feature is website-only in v2.13.33.
+
+### v2.13.35 map interaction refinement
+The website Variety Map now renders bulk locations as Canvas vector points for smoother pan/zoom, uses a single branded CaneSprout sugarcane pin for the selected variety, prevents popup-close interactions from closing the map tool, and uses shorter adaptive map animations with tile loading deferred until zoom settles.
+
+
+v2.13.36: Variety Map redirects now stream tiles during movement, warm destination imagery, retain the marker catalog between selections, and use a non-white map fallback so distant variety redirects remain visually continuous.

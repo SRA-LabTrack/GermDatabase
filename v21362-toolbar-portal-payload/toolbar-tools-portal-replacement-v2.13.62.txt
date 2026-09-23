@@ -1,0 +1,38 @@
+          <ToolbarToolsMenu
+            active={showExcelMenu || showImport || showExportExcel || showSpreadsheetEditor || showForm || showCombinationRegistry || showAdminCenter}
+            excelActive={showExcelMenu || showImport || showExportExcel || showSpreadsheetEditor}
+            formActive={showForm}
+            combinationActive={showCombinationRegistry}
+            adminActive={showAdminCenter}
+            isAdmin={isAdmin}
+            onExcelTools={() => {
+              setShowCombinationRegistry(false);
+              setShowForm(false);
+              setEditRecord(null);
+              setShowAdminCenter(false);
+              setShowOfflineQueue(false);
+              setShowExcelMenu(true);
+            }}
+            onAddRecord={() => {
+              setShowExcelMenu(false);
+              setShowCombinationRegistry(false);
+              setEditRecord(null);
+              setShowForm(true);
+            }}
+            onCombinationRegistry={() => {
+              setShowExcelMenu(false);
+              setShowForm(false);
+              setEditRecord(null);
+              setShowAdminCenter(false);
+              setShowOfflineQueue(false);
+              setShowImport(false);
+              setShowExportExcel(false);
+              setShowSpreadsheetEditor(false);
+              setShowCombinationRegistry(true);
+            }}
+            onAdminCenter={() => {
+              setShowExcelMenu(false);
+              setShowCombinationRegistry(false);
+              openAdminCenter('approvals');
+            }}
+          />

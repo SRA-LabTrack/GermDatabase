@@ -1,0 +1,7 @@
+CaneSprout v2.13.61
+Toolbar Menu + Proportion Fix
+
+- Controlled React Tools dropdown.
+- Click-outside and Escape closing.
+- Flex-based desktop toolbar proportions.
+- Removes excessive blank space and overlap.

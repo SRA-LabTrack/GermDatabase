@@ -1,0 +1,61 @@
+{
+  "version": "2.13.38",
+  "source": "Characterization and other attributes (1).xlsx",
+  "dataRowsWithCountryCell": 701,
+  "rowsWithNotDocumentedCountry": 2,
+  "rowsWithUsableCountryOrOrigin": 699,
+  "canonicalUniqueVarietiesWithUsableCountryOrOrigin": 695,
+  "duplicateIdentityGroupsAmongUsableLocationRows": [
+    {
+      "identity": "PHIL931902349",
+      "rows": [
+        353,
+        360
+      ],
+      "display": [
+        "Phil 93-190-2349",
+        "Phil 93-190-2349"
+      ]
+    },
+    {
+      "identity": "PHIL002569",
+      "rows": [
+        434,
+        903
+      ],
+      "display": [
+        "Phil 00 2569",
+        "Phil 00-2569"
+      ]
+    },
+    {
+      "identity": "VMC73229",
+      "rows": [
+        712,
+        717
+      ],
+      "display": [
+        "VMC 73-229",
+        "VMC 73-229"
+      ]
+    },
+    {
+      "identity": "PHIL98010007",
+      "rows": [
+        807,
+        885
+      ],
+      "display": [
+        "Phil 98-01-0007",
+        "PHIL 98-01-0007"
+      ]
+    }
+  ],
+  "mapCatalogUniqueLocated": 695,
+  "mapCatalogMappedWithoutOnlineGeocoding": 695,
+  "missedUniqueSourceLocatedVarieties": 0,
+  "testedLocationPopulatedRows": 0,
+  "lotPlantedStationPopulatedRows": 0,
+  "otherDetailsRowsWithSafeExplicitGeographicHint": 88,
+  "note": "The map already covered every unique bundled variety with a usable Country/Origin. v2.13.38 additionally recognizes germ_location, separate country fallback, and safe explicit geographic hints for better future/live coverage and precision."
+}

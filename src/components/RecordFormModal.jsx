@@ -22,17 +22,31 @@ function Field({ field, value, onChange }) {
     'aria-required': required ? 'true' : undefined
   };
   return (
-    <label className={`form-field ${field.type === 'textarea' ? 'wide' : ''} ${required ? 'required-field' : ''} ${field.newTrait ? 'new-trait-field' : ''}`}>
-      <span>{field.label}<i>{required ? 'Required' : 'Optional'}</i></span>
+    <label className={`form-field ${field.type === 'textarea' ? 'wide' : ''} ${required ? 'required-field' : ''} ${field.newTrait ? 'new-trait-field' : ''} ${field.coordinateFor ? 'coordinate-location-field' : ''}`}>
+      <span>{field.label}<i>{required ? 'Required' : field.coordinateFor ? 'Optional exact location' : 'Optional'}</i></span>
       {field.type === 'textarea' ? (
         <textarea {...common} rows={4} placeholder={required ? 'Required' : 'Optional'} />
       ) : field.type === 'select' ? (
         <select {...common}><option value="">{required ? 'Select a value' : 'Not provided'}</option>{field.options.map((option) => <option key={option}>{option}</option>)}</select>
       ) : (
-        <input {...common} type={field.type || 'text'} min={field.type === 'number' ? 0 : undefined} step={field.type === 'number' ? 'any' : undefined} placeholder={required ? 'Required' : 'Optional'} />
+        <input
+          {...common}
+          type={field.type || 'text'}
+          min={field.min ?? (field.type === 'number' ? 0 : undefined)}
+          max={field.max}
+          step={field.step ?? (field.type === 'number' ? 'any' : undefined)}
+          placeholder={field.placeholder || (required ? 'Required' : 'Optional')}
+        />
       )}
     </label>
   );
+}
+
+function migrateLegacyOriginCoordinates(value = {}) {
+  const next = { ...value };
+  if (!String(next.origin_latitude ?? '').trim() && String(next.latitude ?? '').trim()) next.origin_latitude = next.latitude;
+  if (!String(next.origin_longitude ?? '').trim() && String(next.longitude ?? '').trim()) next.origin_longitude = next.longitude;
+  return next;
 }
 
 function readDraft(key) {
@@ -55,7 +69,7 @@ export default function RecordFormModal({ initial, actor, isAdmin = false, onlin
   const editing = Boolean(initial?.$id);
   const draftKey = `${DRAFT_PREFIX}${initial?.$id || 'new'}`;
   const storedDraft = useMemo(() => readDraft(draftKey), [draftKey]);
-  const [form, setForm] = useState(() => ({ ...emptyForm(), ...(initial || {}), ...(storedDraft?.form || {}) }));
+  const [form, setForm] = useState(() => migrateLegacyOriginCoordinates({ ...emptyForm(), ...(initial || {}), ...(storedDraft?.form || {}) }));
   const [draftRestored, setDraftRestored] = useState(Boolean(storedDraft));
   const [dirty, setDirty] = useState(Boolean(storedDraft));
   const [newPhotoItems, setNewPhotoItems] = useState([]);

@@ -1,0 +1,9 @@
+CaneSprout Registry v2.13.37
+
+Website map interaction fix:
+- Opening a variety profile from the map no longer closes the Variety Map.
+- Closing the profile returns to the same map and selected variety.
+- Closing a pin popup only closes that popup.
+- The selected branded sugarcane pin is now clickable and reopens the variety popup after it has been closed.
+- Keyboard Enter/Space can reopen the selected pin popup.
+- Existing satellite, smooth redirect, precision and pedigree behavior are preserved.

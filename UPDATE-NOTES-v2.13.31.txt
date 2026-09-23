@@ -1,0 +1,10 @@
+CaneSprout Registry v2.13.31
+
+Preview synchronization and text-quality fix.
+
+- Fixed collection preview cards so cached/live edited records override the older bundled fallback values.
+- This applies to every preview field, not only Reaction to Diseases.
+- Corrected the confirmed "yellow sppot" typo for Phil 99-1793 in the bundled fallback data.
+- Cleaned a small set of unambiguous transcription artifacts in bundled disease-response text: duplicated "downy", intermediate misspellings, and line-wrap splits in susceptible/resistant.
+- Added npm.cmd run audit:preview-data-quality.
+- No variety identities, parentage, yields, counters, or pedigree relationships were changed.

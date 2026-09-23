@@ -1,0 +1,212 @@
+
+/* v2.13.56 Breeding Reports portal + scrolling fix */
+
+/*
+  Breeding Reports is now portaled directly to document.body, so it is no
+  longer clipped by Combination Registry's modal/backdrop overflow context.
+*/
+.breeding-reports-backdrop {
+  position: fixed !important;
+  z-index: 50000 !important;
+  display: flex !important;
+  align-items: stretch !important;
+  justify-content: center !important;
+  padding: 0 10px !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  background: rgba(18, 43, 27, .43) !important;
+  backdrop-filter: blur(10px);
+  pointer-events: auto !important;
+}
+
+.breeding-reports-modal {
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-self: stretch !important;
+  width: min(1180px, calc(100vw - 20px)) !important;
+  height: 100% !important;
+  max-width: 1180px !important;
+  max-height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  border-radius: 24px !important;
+  background: #f8fbf4 !important;
+  box-shadow: 0 28px 90px rgba(21, 57, 31, .3) !important;
+}
+
+/*
+  Header and footer are outside the scrolling body. They therefore remain
+  visible without sticky/fixed positioning and cannot be clipped by scrolling.
+*/
+.breeding-reports-header {
+  position: relative !important;
+  inset: auto !important;
+  z-index: 5 !important;
+  flex: 0 0 auto !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  flex-wrap: nowrap !important;
+  width: 100% !important;
+  min-height: 78px !important;
+  max-width: 100% !important;
+  padding: 16px 18px !important;
+  overflow: visible !important;
+  box-sizing: border-box !important;
+  background: linear-gradient(135deg, #f8fcf3, #fffdeb) !important;
+  border-bottom: 1px solid #dfe8da !important;
+  box-shadow: none !important;
+}
+
+.breeding-reports-header > div:first-child {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  padding-right: 14px;
+}
+
+.breeding-reports-close {
+  position: relative !important;
+  inset: auto !important;
+  z-index: 10 !important;
+  flex: 0 0 auto !important;
+  min-width: 96px !important;
+  max-width: none !important;
+  height: 46px;
+  margin: 0 !important;
+  padding: 0 16px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  background: #ffffff !important;
+  color: #245336 !important;
+  border: 1px solid #c9d9c4 !important;
+  box-shadow: 0 3px 12px rgba(25, 63, 38, .08);
+}
+
+.breeding-reports-close:hover {
+  background: #edf5e8 !important;
+  border-color: #94b68a !important;
+}
+
+.breeding-reports-body {
+  position: relative !important;
+  z-index: 1 !important;
+  flex: 1 1 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  padding: 18px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  overscroll-behavior: contain !important;
+  scrollbar-gutter: stable !important;
+  -webkit-overflow-scrolling: touch;
+  box-sizing: border-box !important;
+  touch-action: pan-y !important;
+  pointer-events: auto !important;
+}
+
+.breeding-reports-body::-webkit-scrollbar {
+  width: 12px;
+}
+.breeding-reports-body::-webkit-scrollbar-track {
+  background: #edf3e9;
+  border-radius: 999px;
+}
+.breeding-reports-body::-webkit-scrollbar-thumb {
+  background: #9eb49a;
+  border: 3px solid #edf3e9;
+  border-radius: 999px;
+}
+.breeding-reports-body::-webkit-scrollbar-thumb:hover {
+  background: #799777;
+}
+
+.breeding-reports-footer {
+  position: relative !important;
+  inset: auto !important;
+  z-index: 4 !important;
+  flex: 0 0 auto !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 10px 18px !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  background: #f5f9f0 !important;
+  border-top: 1px solid #dfe8da !important;
+  box-shadow: none !important;
+}
+
+.breeding-reports-modal::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* Keep all content inside the body width. */
+.breeding-report-request,
+.breeding-report-result,
+.breeding-report-result-head,
+.breeding-report-options,
+.breeding-report-period-row,
+.breeding-report-timeline,
+.breeding-report-event-table-wrap,
+.breeding-report-timeline-table-wrap {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+@media (max-width: 760px) {
+  .breeding-reports-backdrop {
+    padding: 0 5px !important;
+  }
+
+  .breeding-reports-modal {
+    width: calc(100vw - 10px) !important;
+    border-radius: 15px !important;
+  }
+
+  .breeding-reports-header {
+    min-height: 68px !important;
+    padding: 11px 12px !important;
+  }
+
+  .breeding-reports-header h2 {
+    font-size: 22px !important;
+  }
+
+  .breeding-reports-header p {
+    display: none;
+  }
+
+  .breeding-reports-close {
+    min-width: 82px !important;
+    height: 42px;
+    padding: 0 11px !important;
+  }
+
+  .breeding-reports-body {
+    padding: 10px !important;
+  }
+
+  .breeding-reports-footer {
+    padding: 8px 10px !important;
+  }
+}

@@ -1,0 +1,9 @@
+CaneSprout Registry v2.13.32
+
+Website profile pedigree shortcut
+
+- Added a clickable Pedigree option inside Core profile information.
+- Clicking it closes the profile and opens the existing three-generation pedigree for that exact variety.
+- The toolbar Pedigree action still opens the general pedigree search.
+- The shortcut is website-only to match the current website pedigree feature.
+- Parentage data, pedigree lineage, registry data, and Appwrite records are unchanged.

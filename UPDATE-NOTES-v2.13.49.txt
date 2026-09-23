@@ -1,0 +1,6 @@
+CaneSprout v2.13.49
+- Replaced about:blank printable profile popup with an in-app overlay.
+- Profile export controls now stay in the primary CaneSprout document.
+- Fixed nonresponsive Save PDF, Save Word, Save Excel, and Close actions in Brave.
+- Retained vector PDF, editable DOCX, and native XLSX export paths.
+- Added Escape-to-close and safe body-scroll restoration.

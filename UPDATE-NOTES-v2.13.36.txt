@@ -1,0 +1,10 @@
+CaneSprout Registry v2.13.36
+
+- Fixed the white/gray map flash seen when redirecting between distant varieties.
+- Satellite tiles now load during animated map movement instead of waiting for movement to finish.
+- Warms destination satellite and label tiles before the camera arrives.
+- Keeps a larger tile buffer for smoother redirection.
+- Prevents the 695-point marker catalog from rebuilding on every variety selection.
+- Cancels stale popup move callbacks when users select another variety quickly.
+- Adds a dark map fallback background if network tiles are briefly late.
+- Website variety-map behavior only; registry data is unchanged.

@@ -1,0 +1,11 @@
+CaneSprout Registry v2.13.28 - Source-Verified Pedigree
+
+- Uses the supplied SRA-HYVs Charac-LR/LG parentage source for the website pedigree viewer.
+- LR is the authoritative overlapping source; LG remains the fallback source.
+- Adds alias-aware pedigree matching for six historical SRA variety aliases.
+- Every one of the 60 SRA HYV parentage records is mapped to the current bundled registry.
+- Male/female roles are preserved exactly.
+- Pedigree lookup can continue through source-backed ancestors even when a source-only lineage record is needed.
+- View Profile uses the same source-backed parentage resolver for consistent parentage display.
+- Characterization.xlsx and Characterization and other attributes.xlsx were checked as broader characterization/identity sources; their supplied Female/Male parentage columns are blank.
+- Adds npm.cmd run audit:pedigree-source for read-only verification.

@@ -1,0 +1,13 @@
+CaneSprout v2.13.55 Corrected Patch
+
+This package replaces the earlier v2.13.55 ZIP whose installer contained a
+JavaScript quoting error in a console.log line.
+
+The earlier installer failed before applying project changes, so a project that
+reported that SyntaxError should still be on v2.13.54.
+
+This corrected installer was validated with:
+  node --check scripts/apply-breeding-report-toolbar-offset-v2.13.55.mjs
+
+Apply:
+  APPLY-BREEDING-REPORT-TOOLBAR-FIX-v2.13.55.cmd

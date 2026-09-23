@@ -1,0 +1,8 @@
+CaneSprout Registry v2.13.29
+
+- Hard-fixes website Pedigree toolbar visibility.
+- Moves Pedigree directly after Germplasm in desktop and mobile website navigation.
+- Includes the source-backed 3-generation pedigree modal and SRA parentage data.
+- Adds npm.cmd run verify:pedigree-web.
+- Flat patch packaging is provided so extraction directly into the project root overwrites the correct files.
+- Website focused. Electron does not display the Pedigree toolbar item.

@@ -1,7 +1,7 @@
 {
-  "version": "2.13.26",
+  "version": "2.13.76",
   "channel": "stable",
-  "notes": "Replaces the mobile multi-row toolbar with a compact collapsible tools menu while preserving the full desktop and laptop toolbar.",
+  "notes": "Renames the pedigree modal title from Three-Generation Pedigree to Germplasm Pedigree.",
   "migration": "combination-registry-v2100",
-  "updated": "2026-08-14"
+  "updated": "2026-09-20"
 }

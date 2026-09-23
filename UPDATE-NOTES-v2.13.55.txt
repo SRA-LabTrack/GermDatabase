@@ -1,0 +1,8 @@
+CaneSprout v2.13.55
+Breeding Reports Toolbar Geometry Fix
+
+- Fixes overlap with CaneSprout's fixed global top toolbar.
+- Uses measured toolbarBottom instead of full-viewport centering.
+- Keeps Breeding Reports title and Close button visible before and after generating reports.
+- Constrains report modal to the remaining visible viewport height.
+- Keeps scrolling inside the report body.

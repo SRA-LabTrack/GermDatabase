@@ -1,0 +1,75 @@
+        <DesktopPrimaryNav
+          germplasmActive={!showImport && !showExcelMenu && !showExportExcel && !showSpreadsheetEditor && !showForm && !showAdminCenter && !showCombinationRegistry && !showPedigree && !showMap}
+          pedigreeActive={showPedigree}
+          mapActive={showMap}
+          toolsActive={showExcelMenu || showImport || showExportExcel || showSpreadsheetEditor || showForm || showCombinationRegistry || showAdminCenter}
+          excelActive={showExcelMenu || showImport || showExportExcel || showSpreadsheetEditor}
+          addRecordActive={showForm}
+          combinationActive={showCombinationRegistry}
+          adminActive={showAdminCenter}
+          isAdmin={isAdmin}
+          onGermplasm={() => {
+            setShowExcelMenu(false);
+            setShowCombinationRegistry(false);
+            setShowPedigree(false);
+            setShowMap(false);
+            goToGermplasmCollection();
+          }}
+          onPedigree={() => {
+            setShowExcelMenu(false);
+            setShowForm(false);
+            setEditRecord(null);
+            setShowAdminCenter(false);
+            setShowOfflineQueue(false);
+            setShowImport(false);
+            setShowExportExcel(false);
+            setShowSpreadsheetEditor(false);
+            setShowCombinationRegistry(false);
+            setShowMap(false);
+            setPedigreeInitialVariety('');
+            setShowPedigree(true);
+          }}
+          onMap={() => {
+            setShowExcelMenu(false);
+            setShowForm(false);
+            setEditRecord(null);
+            setShowAdminCenter(false);
+            setShowOfflineQueue(false);
+            setShowImport(false);
+            setShowExportExcel(false);
+            setShowSpreadsheetEditor(false);
+            setShowCombinationRegistry(false);
+            setShowPedigree(false);
+            setShowMap(true);
+          }}
+          onExcelTools={() => {
+            setShowCombinationRegistry(false);
+            setShowForm(false);
+            setEditRecord(null);
+            setShowAdminCenter(false);
+            setShowOfflineQueue(false);
+            setShowExcelMenu(true);
+          }}
+          onAddRecord={() => {
+            setShowExcelMenu(false);
+            setShowCombinationRegistry(false);
+            setEditRecord(null);
+            setShowForm(true);
+          }}
+          onCombinationRegistry={() => {
+            setShowExcelMenu(false);
+            setShowForm(false);
+            setEditRecord(null);
+            setShowAdminCenter(false);
+            setShowOfflineQueue(false);
+            setShowImport(false);
+            setShowExportExcel(false);
+            setShowSpreadsheetEditor(false);
+            setShowCombinationRegistry(true);
+          }}
+          onAdminCenter={() => {
+            setShowExcelMenu(false);
+            setShowCombinationRegistry(false);
+            openAdminCenter('approvals');
+          }}
+        />

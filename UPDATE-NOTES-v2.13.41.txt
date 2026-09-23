@@ -1,0 +1,10 @@
+CaneSprout v2.13.41
+===================
+
+- Replaces the single generic exact-coordinate form pair with an optional coordinate pair for every Origin & Other Attributes field.
+- Adds 14 optional characterization traits (7 latitude + 7 longitude).
+- Keeps decimal-degree range validation: latitude -90..90, longitude -180..180.
+- Adds clear "Optional exact location" form hints.
+- Preserves old v2.13.40 general coordinates through map fallback and edit-time migration to Country/Origin coordinates.
+- Updates the Germplasm Map resolver so exact per-attribute coordinates override approximate place-name geocoding.
+- Keeps a single primary pin per variety using a deterministic exact-coordinate priority.

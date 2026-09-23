@@ -1,0 +1,315 @@
+
+/* ================================================================
+   v2.13.67 FINAL DESKTOP TOOLBAR GEOMETRY
+   Brand | Germplasm | Pedigree | Map | Tools | Online | Account
+   ================================================================ */
+
+@media (min-width: 761px) {
+  .reference-toolbar.toolbar-clean-v21367 {
+    display: grid !important;
+    grid-template-columns:
+      minmax(320px, 365px)
+      minmax(620px, 1fr)
+      minmax(150px, 175px)
+      minmax(285px, 345px) !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    padding: 12px 14px !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+  }
+
+  .reference-toolbar.toolbar-clean-v21367 > .toolbar-brand-panel {
+    grid-column: 1 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  /* One continuous navigation block, divided into four exact equal cells. */
+  .reference-toolbar.toolbar-clean-v21367 > .toolbar-main-actions.toolbar-nav-v21367 {
+    grid-column: 2 !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) !important;
+    grid-template-rows: 1fr !important;
+    grid-auto-flow: column !important;
+    grid-auto-columns: minmax(0, 1fr) !important;
+    align-items: stretch !important;
+    justify-items: stretch !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 0 !important;
+    border: 1px solid rgba(49, 88, 58, .15) !important;
+    background: rgba(249, 252, 246, .92) !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Force the exact order so no legacy grid/flex rule can stretch Tools. */
+  .reference-toolbar.toolbar-clean-v21367 .toolbar-nav-v21367 > :nth-child(1) {
+    grid-column: 1 !important;
+  }
+  .reference-toolbar.toolbar-clean-v21367 .toolbar-nav-v21367 > :nth-child(2) {
+    grid-column: 2 !important;
+  }
+  .reference-toolbar.toolbar-clean-v21367 .toolbar-nav-v21367 > :nth-child(3) {
+    grid-column: 3 !important;
+  }
+  .reference-toolbar.toolbar-clean-v21367 .toolbar-nav-v21367 > :nth-child(4) {
+    grid-column: 4 !important;
+  }
+
+  .reference-toolbar.toolbar-clean-v21367 .toolbar-nav-v21367 > .toolbar-tile,
+  .reference-toolbar.toolbar-clean-v21367 .toolbar-nav-v21367 > .toolbar-tools-drawer {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    min-height: 76px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    flex: none !important;
+    align-self: stretch !important;
+    box-sizing: border-box !important;
+  }
+
+  .reference-toolbar.toolbar-clean-v21367 .toolbar-nav-v21367 > .toolbar-tile {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    padding: 0 14px !important;
+    overflow: hidden !important;
+    border-radius: 0 !important;
+    white-space: nowrap !important;
+  }
+
+  .reference-toolbar.toolbar-clean-v21367 .toolbar-nav-v21367 > .toolbar-tile + .toolbar-tile,
+  .reference-toolbar.toolbar-clean-v21367 .toolbar-nav-v21367 > .toolbar-tools-drawer {
+    border-left: 1px solid rgba(49, 88, 58, .15) !important;
+  }
+
+  .reference-toolbar.toolbar-clean-v21367 .toolbar-nav-v21367 > .toolbar-tile > svg,
+  .reference-toolbar.toolbar-clean-v21367 .toolbar-nav-v21367 .toolbar-tools-summary > svg {
+    flex: 0 0 auto !important;
+  }
+
+  .reference-toolbar.toolbar-clean-v21367 .toolbar-nav-v21367 > .toolbar-tile > span,
+  .reference-toolbar.toolbar-clean-v21367 .toolbar-nav-v21367 .toolbar-tools-summary > span {
+    display: inline-block !important;
+    position: static !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    font-size: 13px !important;
+    line-height: 1.2 !important;
+  }
+
+  .reference-toolbar.toolbar-clean-v21367 .toolbar-nav-v21367 > .toolbar-tools-drawer {
+    position: relative !important;
+    display: flex !important;
+    align-items: stretch !important;
+    justify-content: stretch !important;
+    overflow: visible !important;
+  }
+
+  .reference-toolbar.toolbar-clean-v21367 .toolbar-nav-v21367 .toolbar-tools-summary {
+    appearance: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 9px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    min-height: 76px !important;
+    margin: 0 !important;
+    padding: 0 14px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: #315b3d !important;
+    cursor: pointer !important;
+    font: inherit !important;
+    font-weight: 800 !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    pointer-events: auto !important;
+  }
+
+  .reference-toolbar.toolbar-clean-v21367 .toolbar-tools-summary:hover,
+  .reference-toolbar.toolbar-clean-v21367 .toolbar-tools-summary[aria-expanded="true"],
+  .reference-toolbar.toolbar-clean-v21367 .toolbar-tools-drawer.active .toolbar-tools-summary {
+    background: #edf5e7 !important;
+    color: #24563a !important;
+  }
+
+  .reference-toolbar.toolbar-clean-v21367 .toolbar-tools-drawer.active .toolbar-tools-summary {
+    box-shadow: inset 0 -4px 0 #b7d35a !important;
+  }
+
+  .reference-toolbar.toolbar-clean-v21367 .toolbar-tools-chevron {
+    flex: 0 0 auto !important;
+    transition: transform .18s ease !important;
+  }
+
+  .reference-toolbar.toolbar-clean-v21367 .toolbar-tools-chevron.open {
+    transform: rotate(180deg) !important;
+  }
+
+  .reference-toolbar.toolbar-clean-v21367 > .toolbar-status-card {
+    grid-column: 3 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 14px !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+  }
+
+  .reference-toolbar.toolbar-clean-v21367 > .toolbar-status-card span {
+    min-width: 0 !important;
+  }
+
+  .reference-toolbar.toolbar-clean-v21367 > .toolbar-status-card b {
+    display: block !important;
+    white-space: nowrap !important;
+  }
+
+  .reference-toolbar.toolbar-clean-v21367 > .toolbar-status-card small {
+    display: block !important;
+    max-width: 105px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .reference-toolbar.toolbar-clean-v21367 > .toolbar-account-card {
+    grid-column: 4 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 8px 10px !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+  }
+
+  .reference-toolbar.toolbar-clean-v21367 > .toolbar-account-card .user-chip {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+  }
+
+  .reference-toolbar.toolbar-clean-v21367 > .toolbar-account-card .user-chip b,
+  .reference-toolbar.toolbar-clean-v21367 > .toolbar-account-card .user-chip small {
+    display: block !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  /* Working body-level Tools menu */
+  .toolbar-tools-menu.toolbar-tools-menu-portal {
+    position: fixed !important;
+    top: var(--toolbar-tools-top) !important;
+    left: var(--toolbar-tools-left) !important;
+    right: auto !important;
+    bottom: auto !important;
+    width: var(--toolbar-tools-width) !important;
+    min-width: 260px !important;
+    max-width: calc(100vw - 24px) !important;
+    max-height: var(--toolbar-tools-max-height) !important;
+    z-index: 100000 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+}
+
+/* 1181-1550px desktop: same geometry, slightly tighter outer cells. */
+@media (min-width: 1181px) and (max-width: 1550px) {
+  .reference-toolbar.toolbar-clean-v21367 {
+    grid-template-columns:
+      minmax(235px, 290px)
+      minmax(500px, 1fr)
+      minmax(118px, 145px)
+      minmax(205px, 255px) !important;
+    gap: 7px !important;
+    padding-inline: 9px !important;
+  }
+
+  .reference-toolbar.toolbar-clean-v21367 .toolbar-nav-v21367 > .toolbar-tile,
+  .reference-toolbar.toolbar-clean-v21367 .toolbar-nav-v21367 .toolbar-tools-summary {
+    padding-inline: 9px !important;
+    gap: 7px !important;
+  }
+
+  .reference-toolbar.toolbar-clean-v21367 .toolbar-nav-v21367 > .toolbar-tile > span,
+  .reference-toolbar.toolbar-clean-v21367 .toolbar-nav-v21367 .toolbar-tools-summary > span {
+    font-size: 11px !important;
+  }
+
+  .reference-toolbar.toolbar-clean-v21367 > .toolbar-status-card small {
+    display: none !important;
+  }
+}
+
+/* Narrow desktop: preserve the four cells and use compact labels/icons. */
+@media (min-width: 761px) and (max-width: 1180px) {
+  .reference-toolbar.toolbar-clean-v21367 {
+    grid-template-columns:
+      minmax(175px, 205px)
+      minmax(300px, 1fr)
+      62px
+      minmax(145px, 175px) !important;
+    gap: 5px !important;
+    padding-inline: 6px !important;
+  }
+
+  .reference-toolbar.toolbar-clean-v21367 .toolbar-nav-v21367 > .toolbar-tile,
+  .reference-toolbar.toolbar-clean-v21367 .toolbar-nav-v21367 .toolbar-tools-summary {
+    padding-inline: 5px !important;
+    gap: 5px !important;
+  }
+
+  .reference-toolbar.toolbar-clean-v21367 .toolbar-nav-v21367 > .toolbar-tile > span,
+  .reference-toolbar.toolbar-clean-v21367 .toolbar-nav-v21367 .toolbar-tools-summary > span {
+    font-size: 9px !important;
+  }
+
+  .reference-toolbar.toolbar-clean-v21367 > .toolbar-status-card {
+    padding: 0 !important;
+  }
+
+  .reference-toolbar.toolbar-clean-v21367 > .toolbar-status-card > span {
+    display: none !important;
+  }
+
+  .reference-toolbar.toolbar-clean-v21367 > .toolbar-account-card .user-chip small {
+    display: none !important;
+  }
+}

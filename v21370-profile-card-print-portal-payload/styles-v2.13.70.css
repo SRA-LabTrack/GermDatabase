@@ -1,0 +1,87 @@
+
+/* ================================================================
+   v2.13.70 PROFILE CARD PRINT MENU PORTAL
+   ================================================================ */
+
+/*
+  The collection-card Print menu is now rendered under document.body.
+  This class is intentionally independent of .record-card, .record-body,
+  and footer overflow rules.
+*/
+.profile-card-print-popover {
+  display: grid !important;
+  gap: 4px !important;
+  max-width: calc(100vw - 24px) !important;
+  padding: 7px !important;
+  margin: 0 !important;
+  border: 1px solid rgba(48, 92, 56, .17) !important;
+  border-radius: 15px !important;
+  background: rgba(252, 254, 250, .995) !important;
+  box-shadow:
+    0 18px 48px rgba(25, 57, 32, .22),
+    inset 0 1px 0 rgba(255, 255, 255, .94) !important;
+  backdrop-filter: blur(14px);
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+.profile-card-print-popover > button {
+  appearance: none !important;
+  position: relative !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  display: grid !important;
+  gap: 4px !important;
+  padding: 11px 12px !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 10px !important;
+  background: transparent !important;
+  color: #2b5839 !important;
+  text-align: left !important;
+  cursor: pointer !important;
+  font: inherit !important;
+  box-sizing: border-box !important;
+}
+
+.profile-card-print-popover > button:hover,
+.profile-card-print-popover > button:focus-visible {
+  background: #eef6e9 !important;
+  outline: none !important;
+}
+
+.profile-card-print-popover > button:focus-visible {
+  box-shadow: inset 0 0 0 2px rgba(67, 133, 90, .28) !important;
+}
+
+.profile-card-print-popover > button:disabled {
+  opacity: .6 !important;
+  cursor: wait !important;
+}
+
+.profile-card-print-popover > button + button {
+  border-top: 1px solid rgba(48, 92, 56, .09) !important;
+}
+
+.profile-card-print-popover strong {
+  display: block !important;
+  color: #2b5839 !important;
+  font-size: 11px !important;
+  line-height: 1.25 !important;
+}
+
+.profile-card-print-popover span {
+  display: block !important;
+  color: #78867b !important;
+  font-size: 8.5px !important;
+  line-height: 1.45 !important;
+  white-space: normal !important;
+}
+
+/* The old inline menu is no longer rendered. Keep it harmless if stale markup exists. */
+.germplasm-card-print-menu {
+  max-width: calc(100vw - 24px);
+}

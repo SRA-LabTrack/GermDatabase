@@ -1,0 +1,13 @@
+CaneSprout v2.13.51
+Breeding Reports
+
+- Adds Weekly, Monthly, Quarterly, and Annual breeding reports.
+- Available to both users and administrators through Combination Registry.
+- Shows dated female × male crosses for the selected reporting period.
+- Adds computed counts for crosses, unique pairings, female parents, male parents,
+  and active breeding days.
+- Adds optional live cloud inclusion for manually registered combinations.
+- Adds "Include Technical Report" with objective, methodology, observations/findings,
+  and recommendations.
+- Printable/downloadable report output.
+- Historical workbook records prefer source_date_text when parseable.

@@ -1,0 +1,6 @@
+CaneSprout v2.13.57
+Breeding Reports Portal Position Fix
+
+- Fixes Breeding Reports button appearing unresponsive.
+- Resolves legacy inset:auto!important conflict.
+- Keeps report portal visible, clickable, and scrollable below the top toolbar.

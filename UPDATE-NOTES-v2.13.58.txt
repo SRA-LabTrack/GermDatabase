@@ -1,0 +1,7 @@
+CaneSprout v2.13.58
+Monthly Breeding Report Month + Year Selection
+
+- Replaces the native month picker with explicit Month and Year controls.
+- Month uses January–December dropdown.
+- Year uses a separate numeric field.
+- Keeps backward compatibility with existing YYYY-MM values.
