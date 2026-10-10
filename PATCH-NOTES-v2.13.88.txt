@@ -1,0 +1,60 @@
+CaneSprout v2.13.87 -> v2.13.88
+GERMPLASM WORKBOOK UPDATE / SAFE UPSERT PATCH
+
+SOURCE
+------
+Characterization and other attributes 10_07_2026(2).xlsx
+Canonical project copy after successful import: Characterization.xlsx
+
+WHAT THIS PATCH DOES
+--------------------
+- Reads 932 named germplasm rows from the supplied workbook.
+- Updates an existing record when the workbook row can be matched safely.
+- Creates a new core + details record when the variety/observation does not exist.
+- Never deletes a registry record just because it is absent from this workbook.
+- Never uses an incoming blank cell to erase an existing nonblank value.
+- Preserves repeated source observations rather than collapsing them into one record.
+- Merges characterization values into traits_json when that field exists.
+- Merges Origin and Photo/Documentation values into details_json when that field exists.
+- Updates direct Appwrite attributes only when the live collection actually has those attributes.
+- Backs up the current local Characterization.xlsx, seed/characterization.json, package.json,
+  and public/version.json before local replacement/version changes.
+- Writes a detailed run report to reports/germplasm-workbook-update-v2.13.88.json.
+
+WORKBOOK AUDIT
+--------------
+934 data rows after the two header rows
+932 rows with a Variety value
+928 unique canonical variety identities
+2 blank-Variety rows skipped: Excel rows 806 and 895
+
+Four canonical identities occur more than once and are intentionally preserved as separate observations:
+- Phil 93-190-2349: rows 353 and 360
+- Phil 00-2569: rows 434 and 903
+- VMC 73-229: rows 712 and 717
+- Phil 98-01-0007 / PHIL 98-01-0007: rows 807 and 885
+
+IMPORTANT SAFETY BEHAVIOR
+-------------------------
+The updater first performs a live preflight. If an existing identity is ambiguous and cannot be tied to a
+specific workbook source row, the patch stops BEFORE writing anything. It also checks required Appwrite
+attributes and configured string sizes before writing.
+
+APPWRITE KEY
+------------
+The live upsert uses a temporary server API key from APPWRITE_API_KEY (or CANESPROUT_APPWRITE_API_KEY)
+in .env/.env.local. Do not place the key in source control. Remove/revoke the temporary key after the update.
+Default project settings retained for this registry:
+Endpoint: https://fra.cloud.appwrite.io/v1
+Project: 6a744cda00030236187b
+Database: germdatabase
+
+HOW TO APPLY
+------------
+1. Extract the contents of this ZIP directly into the CaneSprout v2.13.87 project root.
+2. Make sure the temporary Appwrite API key is available in .env or .env.local.
+3. Double-click APPLY-GERMPLASM-WORKBOOK-UPDATE-v2.13.88.cmd.
+4. The script runs a dry-run/preflight first. Only if it passes does it perform the live upsert.
+5. Review reports/germplasm-workbook-update-v2.13.88.json after completion.
+
+The patch is designed to be rerun safely. It does not auto-delete or auto-merge conflicting historical observations.

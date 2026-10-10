@@ -1,6 +1,7 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
+  BookOpenText,
   ChevronDown,
   Dna,
   FileSpreadsheet,
@@ -20,6 +21,7 @@ export default function DesktopPrimaryNav({
   germplasmActive = false,
   pedigreeActive = false,
   mapActive = false,
+  breedingProgramActive = false,
   toolsActive = false,
   excelActive = false,
   addRecordActive = false,
@@ -29,6 +31,7 @@ export default function DesktopPrimaryNav({
   onGermplasm,
   onPedigree,
   onMap,
+  onBreedingProgram,
   onExcelTools,
   onAddRecord,
   onCombinationRegistry,
@@ -50,10 +53,21 @@ export default function DesktopPrimaryNav({
     if (!button) return;
 
     const rect = button.getBoundingClientRect();
-    const viewportWidth = Math.max(320, window.innerWidth || document.documentElement.clientWidth || 320);
-    const viewportHeight = Math.max(320, window.innerHeight || document.documentElement.clientHeight || 320);
+    const viewportWidth = Math.max(
+      320,
+      window.innerWidth || document.documentElement.clientWidth || 320
+    );
+    const viewportHeight = Math.max(
+      320,
+      window.innerHeight || document.documentElement.clientHeight || 320
+    );
+
     const width = Math.min(350, viewportWidth - 24);
-    const left = clamp(rect.right - width, 12, Math.max(12, viewportWidth - width - 12));
+    const left = clamp(
+      rect.right - width,
+      12,
+      Math.max(12, viewportWidth - width - 12)
+    );
     const top = Math.max(8, rect.bottom + 8);
     const maxHeight = Math.max(190, viewportHeight - top - 12);
 
@@ -62,6 +76,7 @@ export default function DesktopPrimaryNav({
 
   useLayoutEffect(() => {
     if (!toolsOpen) return undefined;
+
     updateMenuPosition();
 
     function reposition() {
@@ -143,7 +158,7 @@ export default function DesktopPrimaryNav({
       >
         <Plus size={20} />
         <span>
-          <strong>Add record</strong>
+          <strong>Add Record</strong>
           <small>Register a new sugarcane variety</small>
         </span>
       </button>
@@ -181,7 +196,7 @@ export default function DesktopPrimaryNav({
 
   return (
     <>
-      <nav className="cs-primary-nav" aria-label="Primary registry navigation">
+      <nav className="cs-primary-nav cs-primary-nav--five" aria-label="Primary registry navigation">
         <button
           type="button"
           className={`cs-primary-nav__item ${germplasmActive ? 'active' : ''}`}
@@ -213,6 +228,16 @@ export default function DesktopPrimaryNav({
         </button>
 
         <button
+          type="button"
+          className={`cs-primary-nav__item cs-primary-nav__breeding ${breedingProgramActive ? 'active' : ''}`}
+          aria-pressed={breedingProgramActive}
+          onClick={onBreedingProgram}
+        >
+          <BookOpenText size={22} />
+          <span>Breeding Program</span>
+        </button>
+
+        <button
           ref={toolsButtonRef}
           type="button"
           className={`cs-primary-nav__item cs-primary-nav__tools ${toolsOpen || toolsActive ? 'active' : ''}`}
@@ -225,6 +250,7 @@ export default function DesktopPrimaryNav({
           <ChevronDown className={toolsOpen ? 'open' : ''} size={15} />
         </button>
       </nav>
+
       {toolsMenu}
     </>
   );

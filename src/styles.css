@@ -14262,3 +14262,3705 @@ body:has(.export-excel-modal) #cs-bg-settings-button {
 .variety-map-canvas:not(.variety-map-first-redirect) .leaflet-tooltip-pane {
   transition: opacity .20s ease;
 }
+
+/* ================================================================
+   v2.13.77 BREEDING PROGRAM
+   SOP library + Research Archive + Variety Brochure
+   ================================================================ */
+
+.breeding-program-backdrop {
+  position: fixed;
+  inset: var(--breeding-program-top, 12px) 0 0;
+  z-index: 95000;
+  padding: 18px 22px 24px;
+  background: rgba(25, 48, 33, .34);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  overflow: hidden;
+}
+
+.breeding-program-shell {
+  width: min(1760px, calc(100vw - 44px));
+  height: calc(100vh - var(--breeding-program-top, 12px) - 36px);
+  margin: 0 auto;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.76);
+  border-radius: 26px;
+  background: linear-gradient(145deg, rgba(250,253,247,.985), rgba(246,249,232,.985));
+  box-shadow: 0 30px 90px rgba(23, 53, 31, .25);
+}
+
+.breeding-program-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  padding: 20px 24px 18px;
+  border-bottom: 1px solid #dbe6d8;
+  background: linear-gradient(120deg, rgba(255,255,255,.78), rgba(250,249,223,.74));
+}
+
+.breeding-program-heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.breeding-program-heading-icon {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  color: #2f7044;
+  background: linear-gradient(145deg, #e3f1d7, #f4ed9d);
+}
+
+.breeding-program-heading > div {
+  min-width: 0;
+}
+
+.breeding-program-heading small,
+.breeding-program-section-heading small,
+.brochure-intro small {
+  display: block;
+  color: #7d8c7f;
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.breeding-program-heading h2 {
+  margin: 2px 0 1px;
+  color: #174126;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 29px;
+  font-weight: 500;
+  line-height: 1.05;
+}
+
+.breeding-program-heading p {
+  margin: 0;
+  color: #748276;
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+.breeding-program-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  min-height: 76px;
+  border-bottom: 1px solid #dce7d9;
+  background: rgba(248,251,245,.96);
+}
+
+.breeding-program-tabs > button {
+  appearance: none;
+  display: grid;
+  grid-template-columns: 29px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 13px 18px;
+  border: 0;
+  border-right: 1px solid #dce7d9;
+  background: transparent;
+  color: #315b3d;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+}
+
+.breeding-program-tabs > button:last-child { border-right: 0; }
+.breeding-program-tabs > button:hover { background: #eff6e9; }
+.breeding-program-tabs > button.active {
+  color: #fff;
+  background: linear-gradient(135deg, #2f7e49, #4e913f);
+  box-shadow: inset 0 -4px 0 #c7dd62;
+}
+
+.breeding-program-tabs strong,
+.breeding-program-tabs small {
+  display: block;
+}
+.breeding-program-tabs strong { font-size: 11px; }
+.breeding-program-tabs small { margin-top: 2px; color: #7c8b7e; font-size: 7.5px; line-height: 1.25; }
+.breeding-program-tabs > button.active small { color: rgba(255,255,255,.74); }
+
+.breeding-program-content {
+  min-height: 0;
+  overflow: auto;
+  padding: 22px 24px 34px;
+  scrollbar-gutter: stable;
+}
+
+.breeding-program-pane {
+  width: min(1540px, 100%);
+  margin: 0 auto;
+  display: grid;
+  gap: 18px;
+}
+
+.breeding-program-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.breeding-program-summary > div {
+  min-height: 84px;
+  padding: 14px 16px;
+  border: 1px solid #dce7d9;
+  border-radius: 15px;
+  background: rgba(255,255,255,.76);
+}
+
+.breeding-program-summary strong {
+  display: block;
+  color: #1c4c30;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 25px;
+  font-weight: 500;
+}
+
+.breeding-program-summary span {
+  display: block;
+  margin-top: 4px;
+  color: #778379;
+  font-size: 8.5px;
+}
+
+.breeding-program-search-row {
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 13px;
+  border: 1px solid #d4e1d1;
+  background: #fff;
+  color: #4f7659;
+}
+
+.breeding-program-search-row input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #244c32;
+  font: inherit;
+  font-size: 11px;
+}
+
+.breeding-program-section-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 14px;
+  padding-top: 2px;
+}
+
+.breeding-program-section-heading h3,
+.brochure-intro h3 {
+  margin: 2px 0 0;
+  color: #204d31;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 21px;
+  font-weight: 500;
+}
+
+.breeding-program-section-heading > span {
+  color: #7f8c81;
+  font-size: 8px;
+}
+
+.protocol-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 11px;
+}
+
+.protocol-card {
+  min-width: 0;
+  padding: 15px;
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  gap: 10px;
+  border: 1px solid #dce6d9;
+  border-radius: 16px;
+  background: rgba(255,255,255,.84);
+  box-shadow: 0 8px 22px rgba(37,73,44,.05);
+}
+
+.protocol-card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.protocol-file-icon {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  color: #2e7246;
+  background: #eaf4e1;
+}
+
+.protocol-card small {
+  color: #758477;
+  font-size: 7.5px;
+  font-weight: 800;
+  letter-spacing: .07em;
+}
+
+.protocol-card h4 {
+  margin: 2px 0 0;
+  color: #28553a;
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.protocol-card p {
+  margin: 0;
+  color: #78847a;
+  font-size: 8.5px;
+  line-height: 1.5;
+}
+
+.protocol-card-status {
+  padding: 7px 8px;
+  border-radius: 8px;
+  background: #fbf8df;
+  color: #7b7653;
+  font-size: 7.5px;
+}
+
+.protocol-card footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.breeding-program-document-list {
+  display: grid;
+  gap: 7px;
+}
+
+.breeding-program-document-list > article {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid #dde7da;
+  border-radius: 12px;
+  background: rgba(255,255,255,.78);
+}
+
+.breeding-program-doc-icon {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  color: #2e7044;
+  background: #edf5e8;
+}
+
+.breeding-program-document-list strong,
+.breeding-program-document-list small,
+.breeding-program-document-list span {
+  display: block;
+}
+
+.breeding-program-document-list strong { color: #2b5739; font-size: 10px; }
+.breeding-program-document-list small { color: #819083; font-size: 7.5px; }
+.breeding-program-document-list span { margin-top: 2px; color: #7d897e; font-size: 7.5px; }
+.breeding-program-document-list p { margin: 4px 0 0; color: #7d897e; font-size: 8px; line-height: 1.4; }
+
+.breeding-program-doc-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.breeding-program-upload {
+  padding: 16px;
+  display: grid;
+  gap: 13px;
+  border: 1px solid #d9e6d6;
+  border-radius: 16px;
+  background: linear-gradient(145deg, rgba(245,250,239,.94), rgba(255,252,228,.88));
+}
+
+.breeding-program-upload-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #315e3e;
+}
+
+.breeding-program-upload-heading strong,
+.breeding-program-upload-heading span {
+  display: block;
+}
+
+.breeding-program-upload-heading strong { font-size: 11px; }
+.breeding-program-upload-heading span { margin-top: 2px; color: #7b887c; font-size: 8px; }
+
+.breeding-program-upload-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+}
+
+.breeding-program-upload-grid label {
+  display: grid;
+  gap: 4px;
+}
+
+.breeding-program-upload-grid label.wide { grid-column: 1 / -1; }
+.breeding-program-upload-grid label > span {
+  color: #52705a;
+  font-size: 7.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.breeding-program-upload-grid input,
+.breeding-program-upload-grid textarea {
+  width: 100%;
+  border: 1px solid #cfddcc;
+  border-radius: 8px;
+  padding: 9px 10px;
+  outline: 0;
+  background: #fff;
+  color: #2d5539;
+  font: inherit;
+  font-size: 9px;
+}
+
+.breeding-program-upload-grid textarea { resize: vertical; }
+
+.breeding-program-setup-note,
+.breeding-program-inline-error {
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 8.5px;
+  line-height: 1.45;
+}
+
+.breeding-program-setup-note {
+  border: 1px solid #ddd8a6;
+  background: #fffbe5;
+  color: #756f4f;
+}
+
+.breeding-program-inline-error {
+  border: 1px solid #ebc8c8;
+  background: #fff3f3;
+  color: #934a4a;
+}
+
+.research-archive-controls {
+  display: grid;
+  grid-template-columns: minmax(300px, 1fr) 180px auto;
+  align-items: stretch;
+  gap: 9px;
+}
+
+.research-year-filter {
+  position: relative;
+  min-height: 50px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 7px;
+  padding: 0 11px;
+  border: 1px solid #d4e1d1;
+  background: #fff;
+}
+
+.research-year-filter > span {
+  color: #788779;
+  font-size: 7.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.research-year-filter select {
+  min-width: 0;
+  appearance: none;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #31563b;
+  font: inherit;
+  font-size: 9px;
+}
+
+.research-card-list {
+  display: grid;
+  gap: 7px;
+}
+
+.research-card {
+  overflow: hidden;
+  border: 1px solid #dce7d9;
+  border-radius: 12px;
+  background: rgba(255,255,255,.82);
+}
+
+.research-card-main {
+  appearance: none;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 66px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 11px;
+  padding: 12px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+}
+
+.research-card-main:hover { background: #f6faf3; }
+
+.research-year {
+  padding: 7px 6px;
+  border-radius: 8px;
+  background: #edf5e7;
+  color: #3c6d49;
+  font-size: 9px;
+  font-weight: 850;
+  text-align: center;
+}
+
+.research-copy {
+  min-width: 0;
+}
+
+.research-copy strong,
+.research-copy small {
+  display: block;
+}
+
+.research-copy strong {
+  color: #285239;
+  font-size: 10.5px;
+  line-height: 1.3;
+}
+
+.research-copy small {
+  margin-top: 3px;
+  color: #758277;
+  font-size: 8px;
+}
+
+.research-copy p {
+  margin: 5px 0 0;
+  max-height: 2.8em;
+  overflow: hidden;
+  color: #7c887d;
+  font-size: 8px;
+  line-height: 1.4;
+}
+
+.research-card.expanded .research-copy p { max-height: none; }
+.research-card-main > svg { margin-top: 5px; color: #6d7f70; transition: transform .16s ease; }
+.research-card-main > svg.open { transform: rotate(180deg); }
+
+.research-card-detail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px 12px;
+  padding: 11px 89px 13px;
+  border-top: 1px solid #e6ede3;
+  background: #fbfcf9;
+  color: #7b887d;
+  font-size: 8px;
+}
+
+.research-card-detail p {
+  flex-basis: 100%;
+  margin: 2px 0 0;
+  color: #536a58;
+  font-size: 8.5px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.breeding-program-loading {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 15px;
+  color: #667c6b;
+  font-size: 9px;
+}
+
+.breeding-program-load-more { justify-self: center; }
+
+.brochure-intro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 16px 18px;
+  border-radius: 16px;
+  color: #285139;
+  background: linear-gradient(120deg, #eef7e7, #fff5bc);
+  border: 1px solid #dce5bf;
+}
+
+.brochure-intro p {
+  max-width: 850px;
+  margin: 6px 0 0;
+  color: #6d7d70;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.brochure-search-wrap {
+  position: relative;
+}
+
+.brochure-search-results {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 5px);
+  z-index: 20;
+  display: grid;
+  max-height: 300px;
+  overflow: auto;
+  border: 1px solid #d6e2d3;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 18px 40px rgba(28,65,38,.16);
+}
+
+.brochure-search-results button {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 12px;
+  border: 0;
+  border-bottom: 1px solid #eef2ec;
+  background: transparent;
+  color: #31593d;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  font-size: 9px;
+}
+
+.brochure-search-results button:hover { background: #f0f6eb; }
+
+.brochure-empty {
+  min-height: 260px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 8px;
+  border: 1px dashed #ccdcca;
+  border-radius: 17px;
+  color: #769078;
+  background: rgba(255,255,255,.52);
+  text-align: center;
+}
+
+.brochure-empty strong { color: #41644a; font-size: 11px; }
+.brochure-empty span { color: #7f8c81; font-size: 8px; }
+
+.brochure-preview-shell {
+  display: grid;
+  gap: 10px;
+}
+
+.brochure-preview {
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(300px, .9fr) minmax(360px, 1.1fr);
+  grid-template-areas:
+    "photo identity"
+    "facts facts";
+  border: 1px solid #d9e4d5;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 14px 34px rgba(28,65,38,.08);
+}
+
+.brochure-preview-photo {
+  grid-area: photo;
+  min-height: 315px;
+  display: grid;
+  place-items: center;
+  color: #658365;
+  background-color: #e9efae;
+  background-size: cover;
+  background-position: center;
+}
+
+.brochure-preview-photo span {
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.76);
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.brochure-preview-identity {
+  grid-area: identity;
+  padding: 34px 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: #fff;
+  background:
+    radial-gradient(circle at 86% 10%, rgba(227,236,104,.38), transparent 33%),
+    linear-gradient(135deg,#173f28,#2f7746);
+}
+
+.brochure-preview-identity > small {
+  color: #d8e8c6;
+  font-size: 8px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+}
+
+.brochure-preview-identity h2 {
+  margin: 12px 0 5px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 34px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.brochure-preview-identity p {
+  margin: 0;
+  max-width: 520px;
+  color: #dce9dd;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.brochure-preview-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 18px;
+}
+
+.brochure-preview-chips span {
+  padding: 6px 9px;
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 999px;
+  background: rgba(255,255,255,.08);
+  font-size: 8px;
+}
+
+.brochure-preview-facts {
+  grid-area: facts;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+  padding: 16px;
+  background: #fafcf7;
+}
+
+.brochure-preview-facts > div {
+  min-width: 0;
+  padding: 10px 11px;
+  border: 1px solid #dfe8dc;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.brochure-preview-facts > div.wide { grid-column: span 3; }
+.brochure-preview-facts small,
+.brochure-preview-facts strong { display: block; }
+.brochure-preview-facts small {
+  color: #7f8d80;
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.brochure-preview-facts strong {
+  margin-top: 3px;
+  color: #2c5338;
+  font-size: 9px;
+  overflow-wrap: anywhere;
+}
+
+.brochure-preview-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brochure-preview-actions span { color: #7d897e; font-size: 8px; }
+
+/* In-app printable brochure overlay */
+.cs-brochure-preview-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483100;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  background: #e7eee3;
+}
+
+.cs-brochure-preview-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #d4e0d1;
+  background: #fbfdf9;
+}
+
+.cs-brochure-preview-toolbar strong,
+.cs-brochure-preview-toolbar span { display: block; }
+.cs-brochure-preview-toolbar strong { color: #28543a; font-size: 10px; }
+.cs-brochure-preview-toolbar span { margin-top: 2px; color: #7a887c; font-size: 7.5px; }
+
+.cs-brochure-preview-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.cs-brochure-preview-actions button {
+  appearance: none;
+  min-height: 36px;
+  padding: 8px 12px;
+  border: 1px solid #c9d8c5;
+  border-radius: 8px;
+  background: #fff;
+  color: #31593d;
+  cursor: pointer;
+  font: inherit;
+  font-size: 8.5px;
+  font-weight: 800;
+}
+
+.cs-brochure-preview-actions button.primary {
+  border-color: #315f3d;
+  background: #315f3d;
+  color: #fff;
+}
+
+.cs-brochure-preview-frame {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #e7eee3;
+}
+
+@media (max-width: 1100px) {
+  .protocol-card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .research-archive-controls { grid-template-columns: 1fr 160px; }
+  .research-archive-controls > a { grid-column: 1 / -1; justify-self: start; }
+  .brochure-preview { grid-template-columns: 1fr; grid-template-areas: "photo" "identity" "facts"; }
+  .brochure-preview-photo { min-height: 280px; }
+}
+
+@media (max-width: 760px) {
+  .breeding-program-backdrop { inset: 0; padding: 0; }
+  .breeding-program-shell {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+  }
+  .breeding-program-header {
+    align-items: flex-start;
+    padding: 14px;
+  }
+  .breeding-program-heading-icon { display: none; }
+  .breeding-program-heading h2 { font-size: 23px; }
+  .breeding-program-tabs { grid-template-columns: 1fr; }
+  .breeding-program-tabs > button {
+    min-height: 58px;
+    border-right: 0;
+    border-bottom: 1px solid #dce7d9;
+  }
+  .breeding-program-content { padding: 14px; }
+  .breeding-program-summary,
+  .protocol-card-grid,
+  .breeding-program-upload-grid,
+  .research-archive-controls,
+  .brochure-preview-facts {
+    grid-template-columns: 1fr;
+  }
+  .breeding-program-upload-grid label.wide,
+  .brochure-preview-facts > div.wide { grid-column: auto; }
+  .breeding-program-document-list > article { grid-template-columns: 36px minmax(0,1fr); }
+  .breeding-program-doc-actions { grid-column: 1 / -1; justify-content: flex-start; }
+  .research-card-main { grid-template-columns: 54px minmax(0,1fr) auto; }
+  .research-card-detail { padding: 10px 12px 12px; }
+  .brochure-preview-identity { padding: 24px 20px; }
+  .brochure-preview-identity h2 { font-size: 29px; }
+  .brochure-preview-actions { align-items: flex-start; flex-direction: column; }
+  .cs-brochure-preview-toolbar { align-items: flex-start; flex-direction: column; }
+  .cs-brochure-preview-actions { width: 100%; flex-wrap: wrap; }
+}
+
+/* ================================================================
+   v2.13.78 BROCHURE-FIRST GERMPLASM COLLECTION
+   Reference layout: whole variety + stalk + eye/bud, then characteristics
+   ================================================================ */
+
+.collection-brochure-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483250;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(14, 43, 32, .34);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.collection-brochure-modal {
+  width: min(1180px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.78);
+  border-radius: 0;
+  background: #f6f7f3;
+  box-shadow: 0 34px 100px rgba(9, 34, 24, .34);
+}
+
+.collection-brochure-windowbar,
+.collection-brochure-actions {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 16px;
+  background: rgba(251,253,249,.985);
+}
+
+.collection-brochure-windowbar {
+  justify-content: space-between;
+  border-bottom: 1px solid #dfe7dc;
+}
+
+.collection-brochure-windowbar small,
+.collection-brochure-windowbar strong {
+  display: block;
+}
+
+.collection-brochure-windowbar small {
+  color: #78887c;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .10em;
+  text-transform: uppercase;
+}
+
+.collection-brochure-windowbar strong {
+  margin-top: 2px;
+  color: #28533a;
+  font-size: 12px;
+}
+
+.collection-brochure-actions {
+  border-top: 1px solid #dfe7dc;
+  box-shadow: 0 -10px 28px rgba(26, 58, 37, .05);
+}
+
+.collection-brochure-scroll {
+  min-height: 0;
+  overflow: auto;
+  padding: 18px;
+  overscroll-behavior: contain;
+  background:
+    radial-gradient(circle at 14% 12%, rgba(170,205,97,.14), transparent 22%),
+    linear-gradient(145deg,#e9efea,#f3f1df);
+}
+
+.collection-brochure-loading {
+  min-height: 420px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 9px;
+  color: #62776a;
+  font-size: 10px;
+}
+
+.collection-brochure-sheet {
+  width: min(860px, 100%);
+  margin: 0 auto;
+  overflow: hidden;
+  background: #f7f7f4;
+  box-shadow: 0 18px 54px rgba(26, 54, 41, .18);
+}
+
+.collection-brochure-masthead {
+  min-height: 220px;
+  padding: 35px 38px 30px;
+  text-align: center;
+  color: #fff;
+  background:
+    radial-gradient(circle at 87% 19%, rgba(169,215,82,.18), transparent 24%),
+    linear-gradient(135deg,#123b4a,#163c49 58%,#173e45);
+}
+
+.collection-brochure-institution {
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+
+.collection-brochure-center {
+  margin-top: 3px;
+  color: #e4ece7;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 12px;
+  font-style: italic;
+  letter-spacing: .06em;
+}
+
+.collection-brochure-masthead h1 {
+  margin: 33px 0 8px;
+  color: #7fe054;
+  font-size: clamp(34px, 5vw, 54px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: .035em;
+  overflow-wrap: anywhere;
+}
+
+.collection-brochure-parentage {
+  color: #8ddd60;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: .035em;
+}
+
+.collection-brochure-division {
+  margin-top: 14px;
+  font-size: 11px;
+  font-style: italic;
+  font-weight: 800;
+  letter-spacing: .16em;
+}
+
+.collection-brochure-photo-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.84fr) minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  padding: 24px 25px 9px;
+}
+
+.collection-brochure-photo-side {
+  display: grid;
+  gap: 18px;
+  align-content: center;
+}
+
+.collection-brochure-photo {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid #e1e5df;
+  background: #edf1eb;
+}
+
+.collection-brochure-photo-main {
+  min-height: 540px;
+}
+
+.collection-brochure-photo-stalk {
+  min-height: 225px;
+  border-radius: 18px;
+}
+
+.collection-brochure-photo-eye {
+  width: min(250px, 100%);
+  aspect-ratio: 1;
+  justify-self: center;
+  border-radius: 50%;
+}
+
+.collection-brochure-photo img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.collection-brochure-photo figcaption {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(15,48,44,.72);
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.collection-brochure-photo-na {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 8px;
+  color: #7d8b83;
+  background:
+    linear-gradient(135deg,rgba(225,232,221,.86),rgba(247,243,221,.94));
+}
+
+.collection-brochure-photo-na span {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.collection-brochure-photo-na strong {
+  color: #65746b;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 34px;
+  line-height: 1;
+}
+
+.collection-brochure-characteristics {
+  padding: 8px 25px 27px;
+}
+
+.collection-brochure-characteristics h2 {
+  margin: 0 0 14px;
+  color: #123e50;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 850;
+  letter-spacing: .025em;
+}
+
+.collection-brochure-characteristic-table {
+  display: grid;
+}
+
+.collection-brochure-characteristic-row {
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr);
+  gap: 18px;
+  padding: 4px 0;
+  color: #434e49;
+  font-size: 10px;
+  line-height: 1.36;
+}
+
+.collection-brochure-characteristic-row b {
+  color: #2b3c39;
+  font-style: italic;
+}
+
+.collection-brochure-characteristic-row span {
+  overflow-wrap: anywhere;
+}
+
+.collection-brochure-note {
+  display: flex;
+  justify-content: center;
+  padding: 0 25px 20px;
+  color: #879188;
+  font-size: 8px;
+  text-align: center;
+}
+
+.collection-brochure-expand {
+  min-width: 175px;
+}
+
+/* Photo form taxonomy added for brochure-specific plant parts. */
+.photo-category-card:has(.photo-category-heading strong) {
+  scroll-margin-top: 24px;
+}
+
+@media (max-width: 760px) {
+  .collection-brochure-backdrop {
+    padding: 0;
+  }
+
+  .collection-brochure-modal {
+    width: 100%;
+    max-height: 100dvh;
+    height: 100dvh;
+  }
+
+  .collection-brochure-scroll {
+    padding: 0;
+  }
+
+  .collection-brochure-sheet {
+    width: 100%;
+    box-shadow: none;
+  }
+
+  .collection-brochure-masthead {
+    min-height: 190px;
+    padding: 27px 18px 25px;
+  }
+
+  .collection-brochure-institution {
+    font-size: 11px;
+  }
+
+  .collection-brochure-center {
+    font-size: 9px;
+  }
+
+  .collection-brochure-masthead h1 {
+    margin-top: 25px;
+    font-size: 37px;
+  }
+
+  .collection-brochure-parentage {
+    font-size: 11px;
+  }
+
+  .collection-brochure-photo-layout {
+    grid-template-columns: 1fr;
+    padding: 14px;
+  }
+
+  .collection-brochure-photo-main {
+    min-height: 62vh;
+  }
+
+  .collection-brochure-photo-side {
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+  }
+
+  .collection-brochure-photo-stalk {
+    min-height: 210px;
+  }
+
+  .collection-brochure-photo-eye {
+    width: min(43vw, 210px);
+  }
+
+  .collection-brochure-characteristics {
+    padding: 8px 14px 22px;
+  }
+
+  .collection-brochure-characteristics h2 {
+    font-size: 14px;
+  }
+
+  .collection-brochure-characteristic-row {
+    grid-template-columns: 1fr;
+    gap: 2px;
+    padding: 6px 0;
+    border-bottom: 1px solid #e6e9e3;
+  }
+
+  .collection-brochure-actions {
+    flex-wrap: wrap;
+  }
+
+  .collection-brochure-actions .footer-spacer {
+    display: none;
+  }
+
+  .collection-brochure-actions > button {
+    flex: 1;
+  }
+}
+
+/* ================================================================
+   v2.13.79 LARGER + CLICKABLE VARIETY BROCHURE
+   ================================================================ */
+
+.collection-brochure-backdrop {
+  padding: 8px !important;
+}
+
+.collection-brochure-modal {
+  width: min(1500px, calc(100vw - 16px)) !important;
+  max-height: calc(100dvh - 16px) !important;
+  height: calc(100dvh - 16px);
+}
+
+.collection-brochure-scroll {
+  padding: 12px !important;
+}
+
+.collection-brochure-sheet {
+  width: min(1100px, 100%) !important;
+}
+
+.collection-brochure-masthead {
+  min-height: 255px !important;
+  padding: 42px 48px 34px !important;
+}
+
+.collection-brochure-institution {
+  font-size: 17px !important;
+}
+
+.collection-brochure-center {
+  font-size: 13px !important;
+}
+
+.collection-brochure-masthead h1 {
+  margin-top: 38px !important;
+  font-size: clamp(42px, 5.2vw, 64px) !important;
+}
+
+.collection-brochure-parentage {
+  font-size: 16px !important;
+}
+
+.collection-brochure-division {
+  font-size: 12px !important;
+}
+
+.collection-brochure-photo-layout {
+  gap: 18px !important;
+  padding: 30px 32px 12px !important;
+}
+
+.collection-brochure-photo-main {
+  min-height: 680px !important;
+}
+
+.collection-brochure-photo-stalk {
+  min-height: 290px !important;
+}
+
+.collection-brochure-photo-eye {
+  width: min(310px, 100%) !important;
+}
+
+.collection-brochure-characteristics {
+  padding: 10px 32px 34px !important;
+}
+
+.collection-brochure-characteristics h2 {
+  font-size: 20px !important;
+}
+
+.collection-brochure-windowbar {
+  min-height: 64px;
+}
+
+.collection-brochure-window-hint {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #6f8174;
+  font-size: 8.5px;
+  font-weight: 750;
+}
+
+.collection-brochure-parentage-button {
+  appearance: none;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  padding: 5px 9px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  transition: background .16s ease, border-color .16s ease, transform .16s ease;
+}
+
+.collection-brochure-parentage-button:hover,
+.collection-brochure-parentage-button:focus-visible {
+  background: rgba(255,255,255,.10);
+  border-color: rgba(255,255,255,.22);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.collection-brochure-photo-button {
+  appearance: none;
+  padding: 0;
+  cursor: zoom-in;
+  text-align: left;
+  transition: transform .17s ease, box-shadow .17s ease, border-color .17s ease;
+}
+
+.collection-brochure-photo-button:hover,
+.collection-brochure-photo-button:focus-visible {
+  border-color: rgba(40, 94, 58, .38);
+  box-shadow: 0 14px 30px rgba(24, 61, 36, .15);
+  outline: none;
+  transform: translateY(-2px);
+}
+
+.collection-brochure-photo-button img {
+  transition: transform .22s ease;
+}
+
+.collection-brochure-photo-button:hover img {
+  transform: scale(1.018);
+}
+
+.collection-brochure-photo-caption {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(15,48,44,.72);
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.collection-brochure-photo-zoom {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 8px;
+  border-radius: 999px;
+  color: #234b33;
+  background: rgba(255,255,255,.88);
+  box-shadow: 0 6px 18px rgba(20,52,30,.12);
+  font-size: 7.5px;
+  font-weight: 850;
+  opacity: .88;
+}
+
+.collection-brochure-photo-na small {
+  max-width: 180px;
+  color: #87928a;
+  font-size: 7.5px;
+  text-align: center;
+}
+
+.collection-brochure-characteristics-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  color: #62796d;
+}
+
+.collection-brochure-characteristics-heading > div {
+  text-align: center;
+}
+
+.collection-brochure-characteristics-heading h2 {
+  margin-bottom: 4px !important;
+}
+
+.collection-brochure-characteristics-heading span {
+  color: #7e8c84;
+  font-size: 8px;
+}
+
+.collection-brochure-characteristic-row {
+  appearance: none;
+  width: 100%;
+  grid-template-columns: 220px minmax(0, 1fr) 22px !important;
+  align-items: center;
+  gap: 18px !important;
+  padding: 8px 10px !important;
+  border: 0;
+  border-bottom: 1px solid #e5e9e2;
+  border-radius: 8px;
+  background: transparent;
+  color: #434e49;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  transition: background .15s ease, transform .15s ease;
+}
+
+.collection-brochure-characteristic-row:hover,
+.collection-brochure-characteristic-row:focus-visible {
+  background: #eef5e9;
+  outline: none;
+  transform: translateX(2px);
+}
+
+.collection-brochure-characteristic-row > svg {
+  color: #6f8375;
+}
+
+.collection-brochure-photo-lightbox,
+.collection-brochure-detail-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483290;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(10, 31, 24, .74);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.collection-brochure-photo-lightbox-card {
+  width: min(1400px, calc(100vw - 48px));
+  height: min(900px, calc(100dvh - 48px));
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+  background: #f8faf6;
+  box-shadow: 0 30px 100px rgba(0,0,0,.35);
+}
+
+.collection-brochure-photo-lightbox-card > header,
+.collection-brochure-detail-card > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #dce5d9;
+  background: #fbfdf9;
+}
+
+.collection-brochure-photo-lightbox-card header small,
+.collection-brochure-photo-lightbox-card header strong,
+.collection-brochure-detail-card header small,
+.collection-brochure-detail-card header strong {
+  display: block;
+}
+
+.collection-brochure-photo-lightbox-card header small,
+.collection-brochure-detail-card header small {
+  color: #7f8d82;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.collection-brochure-photo-lightbox-card header strong,
+.collection-brochure-detail-card header strong {
+  margin-top: 2px;
+  color: #28543a;
+  font-size: 13px;
+}
+
+.collection-brochure-photo-lightbox-image {
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  overflow: auto;
+  padding: 18px;
+  background:
+    radial-gradient(circle at center, rgba(239,245,235,.96), rgba(218,228,219,.96));
+}
+
+.collection-brochure-photo-lightbox-image img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  box-shadow: 0 16px 44px rgba(24,54,34,.18);
+}
+
+.collection-brochure-detail-card {
+  width: min(820px, calc(100vw - 48px));
+  max-height: min(620px, calc(100dvh - 48px));
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+  background: #fbfdf9;
+  box-shadow: 0 30px 100px rgba(0,0,0,.34);
+}
+
+.collection-brochure-detail-value {
+  overflow: auto;
+  padding: 28px 30px 32px;
+  color: #294e35;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(22px, 2.2vw, 32px);
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background:
+    radial-gradient(circle at 92% 10%, rgba(218,229,99,.18), transparent 28%),
+    linear-gradient(145deg,#f8fbf5,#fffbea);
+}
+
+@media (max-width: 760px) {
+  .collection-brochure-modal {
+    width: 100% !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+  }
+
+  .collection-brochure-window-hint {
+    display: none;
+  }
+
+  .collection-brochure-masthead {
+    min-height: 210px !important;
+    padding: 28px 18px 24px !important;
+  }
+
+  .collection-brochure-masthead h1 {
+    font-size: 40px !important;
+  }
+
+  .collection-brochure-photo-layout {
+    padding: 14px !important;
+  }
+
+  .collection-brochure-photo-main {
+    min-height: 68vh !important;
+  }
+
+  .collection-brochure-photo-stalk {
+    min-height: 235px !important;
+  }
+
+  .collection-brochure-photo-eye {
+    width: min(44vw, 230px) !important;
+  }
+
+  .collection-brochure-characteristics {
+    padding: 8px 14px 24px !important;
+  }
+
+  .collection-brochure-characteristic-row {
+    grid-template-columns: 1fr 22px !important;
+    gap: 5px 10px !important;
+    padding: 9px 8px !important;
+  }
+
+  .collection-brochure-characteristic-row b {
+    grid-column: 1;
+  }
+
+  .collection-brochure-characteristic-row span {
+    grid-column: 1;
+  }
+
+  .collection-brochure-characteristic-row > svg {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+
+  .collection-brochure-photo-lightbox,
+  .collection-brochure-detail-viewer {
+    padding: 8px;
+  }
+
+  .collection-brochure-photo-lightbox-card {
+    width: calc(100vw - 16px);
+    height: calc(100dvh - 16px);
+  }
+
+  .collection-brochure-detail-card {
+    width: calc(100vw - 16px);
+    max-height: calc(100dvh - 16px);
+  }
+
+  .collection-brochure-detail-value {
+    padding: 22px 18px;
+    font-size: 23px;
+  }
+}
+
+/* ================================================================
+   v2.13.80 MAIN BREEDING PROGRAM NAV + BROCHURE MOTION POLISH
+   ================================================================ */
+
+/* Five equal primary destinations:
+   Germplasm | Pedigree | Map | Breeding Program | Tools */
+.cs-primary-nav.cs-primary-nav--five {
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+}
+
+.cs-primary-nav.cs-primary-nav--five .cs-primary-nav__item {
+  min-width: 0;
+  justify-content: center;
+  gap: 8px;
+}
+
+.cs-primary-nav.cs-primary-nav--five .cs-primary-nav__item > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Make the brochure just a bit larger than v2.13.79. */
+.collection-brochure-backdrop {
+  padding: 4px !important;
+  animation: csBrochureBackdropIn .22s ease-out both;
+}
+
+.collection-brochure-modal {
+  width: min(1600px, calc(100vw - 8px)) !important;
+  height: calc(100dvh - 8px) !important;
+  max-height: calc(100dvh - 8px) !important;
+  animation: csBrochureWindowIn .30s cubic-bezier(.2,.8,.2,1) both;
+  transform-origin: center 46%;
+}
+
+.collection-brochure-scroll {
+  padding: 8px !important;
+}
+
+.collection-brochure-sheet {
+  width: min(1180px, 100%) !important;
+  animation: csBrochureSheetIn .36s cubic-bezier(.2,.8,.2,1) both;
+}
+
+.collection-brochure-photo-main {
+  min-height: 720px !important;
+}
+
+.collection-brochure-photo-stalk {
+  min-height: 315px !important;
+}
+
+.collection-brochure-photo-eye {
+  width: min(335px, 100%) !important;
+}
+
+.collection-brochure-photo-button,
+.collection-brochure-characteristic-row,
+.collection-brochure-parentage-button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.collection-brochure-photo-button:active {
+  transform: scale(.992) !important;
+}
+
+.collection-brochure-characteristic-row:active {
+  transform: translateX(3px) scale(.997) !important;
+}
+
+.collection-brochure-parentage-button:active {
+  transform: scale(.985) !important;
+}
+
+/* Clicked photo transition. */
+.collection-brochure-photo-lightbox {
+  animation: csBrochureOverlayIn .20s ease-out both;
+}
+
+.collection-brochure-photo-lightbox-card {
+  animation: csBrochurePhotoCardIn .28s cubic-bezier(.18,.82,.22,1) both;
+  transform-origin: center center;
+}
+
+.collection-brochure-photo-lightbox-image img {
+  animation: csBrochureImageIn .34s cubic-bezier(.18,.82,.22,1) both;
+}
+
+/* Clicked detail transition. */
+.collection-brochure-detail-viewer {
+  animation: csBrochureOverlayIn .20s ease-out both;
+}
+
+.collection-brochure-detail-card {
+  animation: csBrochureDetailCardIn .28s cubic-bezier(.18,.82,.22,1) both;
+  transform-origin: center center;
+}
+
+.collection-brochure-detail-value {
+  animation: csBrochureDetailTextIn .30s .04s ease-out both;
+}
+
+/* Existing full profile opens with a clear transition when user chooses
+   "Expand full details" from the brochure. */
+.detail-profile-backdrop {
+  animation: csFullProfileBackdropIn .22s ease-out both;
+}
+
+.detail-profile-backdrop > * {
+  animation: csFullProfilePanelIn .30s cubic-bezier(.18,.82,.22,1) both;
+}
+
+/* Breeding Program top-level section and its tabs receive a smooth page swap. */
+.breeding-program-backdrop {
+  animation: csBreedingProgramBackdropIn .20s ease-out both;
+}
+
+.breeding-program-shell {
+  animation: csBreedingProgramShellIn .30s cubic-bezier(.18,.82,.22,1) both;
+}
+
+.breeding-program-tabs > button {
+  transition:
+    background .20s ease,
+    color .20s ease,
+    box-shadow .20s ease,
+    transform .16s ease;
+}
+
+.breeding-program-tabs > button:active {
+  transform: scale(.992);
+}
+
+.breeding-program-content > .breeding-program-pane {
+  animation: csBreedingProgramPaneIn .28s cubic-bezier(.18,.82,.22,1) both;
+}
+
+/* The toolbar item itself gets a small polished state change. */
+.cs-primary-nav.cs-primary-nav--five .cs-primary-nav__item {
+  transition:
+    background .18s ease,
+    color .18s ease,
+    box-shadow .18s ease,
+    transform .15s ease;
+}
+
+.cs-primary-nav.cs-primary-nav--five .cs-primary-nav__item:active {
+  transform: scale(.985);
+}
+
+@keyframes csBrochureBackdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes csBrochureWindowIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(.982);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes csBrochureSheetIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(.992);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes csBrochureOverlayIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes csBrochurePhotoCardIn {
+  from {
+    opacity: 0;
+    transform: scale(.94) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes csBrochureImageIn {
+  from {
+    opacity: 0;
+    transform: scale(.975);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes csBrochureDetailCardIn {
+  from {
+    opacity: 0;
+    transform: scale(.94) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes csBrochureDetailTextIn {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes csFullProfileBackdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes csFullProfilePanelIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes csBreedingProgramBackdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes csBreedingProgramShellIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(.988);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes csBreedingProgramPaneIn {
+  from {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Keep navigation readable on narrower desktop windows. */
+@media (max-width: 1220px) and (min-width: 761px) {
+  .cs-primary-nav.cs-primary-nav--five .cs-primary-nav__item {
+    gap: 5px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .cs-primary-nav.cs-primary-nav--five .cs-primary-nav__item > span {
+    font-size: .92em;
+  }
+}
+
+@media (max-width: 760px) {
+  .collection-brochure-modal {
+    width: 100% !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+  }
+
+  .collection-brochure-photo-main {
+    min-height: 72vh !important;
+  }
+
+  .collection-brochure-photo-stalk {
+    min-height: 250px !important;
+  }
+
+  .collection-brochure-photo-eye {
+    width: min(46vw, 245px) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .collection-brochure-backdrop,
+  .collection-brochure-modal,
+  .collection-brochure-sheet,
+  .collection-brochure-photo-lightbox,
+  .collection-brochure-photo-lightbox-card,
+  .collection-brochure-photo-lightbox-image img,
+  .collection-brochure-detail-viewer,
+  .collection-brochure-detail-card,
+  .collection-brochure-detail-value,
+  .detail-profile-backdrop,
+  .detail-profile-backdrop > *,
+  .breeding-program-backdrop,
+  .breeding-program-shell,
+  .breeding-program-content > .breeding-program-pane {
+    animation: none !important;
+  }
+
+  .collection-brochure-photo-button,
+  .collection-brochure-characteristic-row,
+  .collection-brochure-parentage-button,
+  .breeding-program-tabs > button,
+  .cs-primary-nav.cs-primary-nav--five .cs-primary-nav__item {
+    transition: none !important;
+  }
+}
+
+/* ================================================================
+   v2.13.81 BROCHURE SIZE RESET
+   Restore v2.13.78 on-screen dimensions while retaining v2.13.79+
+   clickability and v2.13.80 transitions/main navigation.
+   ================================================================ */
+
+.collection-brochure-backdrop {
+  padding: 16px !important;
+}
+
+.collection-brochure-modal {
+  width: min(1180px, calc(100vw - 32px)) !important;
+  height: auto !important;
+  max-height: calc(100dvh - 32px) !important;
+}
+
+.collection-brochure-scroll {
+  padding: 18px !important;
+}
+
+.collection-brochure-sheet {
+  width: min(860px, 100%) !important;
+}
+
+.collection-brochure-masthead {
+  min-height: 220px !important;
+  padding: 35px 38px 30px !important;
+}
+
+.collection-brochure-institution {
+  font-size: 15px !important;
+}
+
+.collection-brochure-center {
+  font-size: 12px !important;
+}
+
+.collection-brochure-masthead h1 {
+  margin: 33px 0 8px !important;
+  font-size: clamp(34px, 5vw, 54px) !important;
+}
+
+.collection-brochure-parentage {
+  font-size: 14px !important;
+}
+
+.collection-brochure-division {
+  margin-top: 14px !important;
+  font-size: 11px !important;
+}
+
+.collection-brochure-photo-layout {
+  gap: 14px !important;
+  padding: 24px 25px 9px !important;
+}
+
+.collection-brochure-photo-main {
+  min-height: 540px !important;
+}
+
+.collection-brochure-photo-stalk {
+  min-height: 225px !important;
+}
+
+.collection-brochure-photo-eye {
+  width: min(250px, 100%) !important;
+}
+
+.collection-brochure-characteristics {
+  padding: 8px 25px 27px !important;
+}
+
+.collection-brochure-characteristics h2 {
+  font-size: 17px !important;
+}
+
+.collection-brochure-characteristic-row {
+  grid-template-columns: 190px minmax(0, 1fr) 22px !important;
+  gap: 18px !important;
+  padding: 5px 8px !important;
+  font-size: 10px !important;
+}
+
+.collection-brochure-windowbar {
+  min-height: auto !important;
+}
+
+@media (max-width: 760px) {
+  .collection-brochure-backdrop {
+    padding: 0 !important;
+  }
+
+  .collection-brochure-modal {
+    width: 100% !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+  }
+
+  .collection-brochure-scroll {
+    padding: 0 !important;
+  }
+
+  .collection-brochure-sheet {
+    width: 100% !important;
+  }
+
+  .collection-brochure-masthead {
+    min-height: 190px !important;
+    padding: 27px 18px 25px !important;
+  }
+
+  .collection-brochure-institution {
+    font-size: 11px !important;
+  }
+
+  .collection-brochure-center {
+    font-size: 9px !important;
+  }
+
+  .collection-brochure-masthead h1 {
+    margin-top: 25px !important;
+    font-size: 37px !important;
+  }
+
+  .collection-brochure-parentage {
+    font-size: 11px !important;
+  }
+
+  .collection-brochure-photo-layout {
+    padding: 14px !important;
+  }
+
+  .collection-brochure-photo-main {
+    min-height: 62vh !important;
+  }
+
+  .collection-brochure-photo-stalk {
+    min-height: 210px !important;
+  }
+
+  .collection-brochure-photo-eye {
+    width: min(43vw, 210px) !important;
+  }
+
+  .collection-brochure-characteristics {
+    padding: 8px 14px 22px !important;
+  }
+
+  .collection-brochure-characteristics h2 {
+    font-size: 14px !important;
+  }
+
+  .collection-brochure-characteristic-row {
+    grid-template-columns: 1fr 22px !important;
+    gap: 4px 8px !important;
+    padding: 7px 6px !important;
+  }
+}
+
+/* ================================================================
+   v2.13.82 BREEDING PROGRAM NAV LABEL + RESEARCH PDF VIEWER + EDIT
+   ================================================================ */
+
+/* Force the five primary sections to actually fit inside the navigation
+   track. This also prevents the fifth Tools cell from disappearing behind
+   the Online/account utilities on narrower desktop widths. */
+.app-header .cs-primary-nav.cs-primary-nav--five,
+.clean-toolbar .cs-primary-nav.cs-primary-nav--five,
+.cs-primary-nav.cs-primary-nav--five {
+  display: grid !important;
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(0, 1fr)
+    minmax(0, .9fr)
+    minmax(0, 1.34fr)
+    minmax(0, .82fr) !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  overflow: visible !important;
+}
+
+.app-header .cs-primary-nav.cs-primary-nav--five .cs-primary-nav__item,
+.clean-toolbar .cs-primary-nav.cs-primary-nav--five .cs-primary-nav__item,
+.cs-primary-nav.cs-primary-nav--five .cs-primary-nav__item {
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+.cs-primary-nav.cs-primary-nav--five .cs-primary-nav__breeding {
+  gap: 7px !important;
+}
+
+.cs-primary-nav.cs-primary-nav--five .cs-primary-nav__breeding > span {
+  display: block !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: normal !important;
+  line-height: 1.08 !important;
+  text-align: center !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+}
+
+.cs-primary-nav.cs-primary-nav--five .cs-primary-nav__tools > span {
+  overflow: visible !important;
+  text-overflow: clip !important;
+}
+
+/* ----------------------------------------------------------------
+   Clickable Research Archive cards
+   ---------------------------------------------------------------- */
+
+.research-card-list--clickable {
+  display: grid;
+  gap: 8px;
+}
+
+.research-card--pdf {
+  appearance: none;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 12px;
+  padding: 13px 14px;
+  border: 1px solid #dce7d9;
+  border-radius: 12px;
+  background: rgba(255,255,255,.86);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  transition:
+    transform .16s ease,
+    border-color .16s ease,
+    box-shadow .16s ease,
+    background .16s ease;
+}
+
+.research-card--pdf:hover,
+.research-card--pdf:focus-visible {
+  outline: none;
+  transform: translateY(-2px);
+  border-color: #b9cfb8;
+  background: #fbfdf9;
+  box-shadow: 0 12px 28px rgba(30,67,39,.09);
+}
+
+.research-card--pdf:active {
+  transform: translateY(0) scale(.997);
+}
+
+.research-card--pdf .research-copy {
+  min-width: 0;
+}
+
+.research-card--pdf .research-copy strong,
+.research-card--pdf .research-copy small {
+  display: block;
+}
+
+.research-card--pdf .research-copy strong {
+  color: #285239;
+  font-size: 10.5px;
+  line-height: 1.35;
+}
+
+.research-card--pdf .research-copy small {
+  margin-top: 3px;
+  color: #748176;
+  font-size: 8px;
+}
+
+.research-card--pdf .research-copy p {
+  margin: 6px 0 0;
+  max-height: 3.1em;
+  overflow: hidden;
+  color: #7a887c;
+  font-size: 8px;
+  line-height: 1.52;
+}
+
+.research-card-open {
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 9px;
+  border: 1px solid #cfdcc9;
+  border-radius: 8px;
+  color: #326241;
+  background: #f5f9f1;
+  font-size: 8px;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+/* ----------------------------------------------------------------
+   PDF-style research viewer
+   ---------------------------------------------------------------- */
+
+.research-pdf-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483340;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(18, 42, 31, .68);
+  backdrop-filter: blur(11px);
+  -webkit-backdrop-filter: blur(11px);
+  animation: csResearchPdfBackdropIn .20s ease-out both;
+}
+
+.research-pdf-shell {
+  width: min(1260px, calc(100vw - 36px));
+  height: min(930px, calc(100dvh - 36px));
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+  background: #e7eee8;
+  box-shadow: 0 30px 100px rgba(0,0,0,.32);
+  animation: csResearchPdfShellIn .28s cubic-bezier(.18,.82,.22,1) both;
+}
+
+.research-pdf-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 11px 13px;
+  border-bottom: 1px solid #d6e2d4;
+  background: #fbfdf9;
+}
+
+.research-pdf-toolbar > div:first-child {
+  min-width: 0;
+}
+
+.research-pdf-toolbar small,
+.research-pdf-toolbar strong {
+  display: block;
+}
+
+.research-pdf-toolbar small {
+  color: #7d897f;
+  font-size: 7.5px;
+  font-weight: 850;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.research-pdf-toolbar strong {
+  max-width: 700px;
+  margin-top: 2px;
+  overflow: hidden;
+  color: #28543a;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.research-pdf-toolbar > div:last-child {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+.research-pdf-scroll {
+  min-height: 0;
+  overflow: auto;
+  padding: 22px;
+  scrollbar-gutter: stable;
+}
+
+.research-pdf-paper {
+  width: min(210mm, 100%);
+  min-height: 277mm;
+  margin: 0 auto;
+  padding: 18mm 17mm 17mm;
+  color: #263d33;
+  background: #fff;
+  box-shadow: 0 16px 45px rgba(29,58,40,.15);
+}
+
+.research-pdf-kicker {
+  color: #718076;
+  font-size: 8pt;
+  font-weight: 850;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.research-pdf-paper h1 {
+  margin: 6mm 0 5mm;
+  color: #1f5033;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 23pt;
+  font-weight: 500;
+  line-height: 1.18;
+}
+
+.research-pdf-meta {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: 5px;
+}
+
+.research-pdf-meta > div {
+  padding: 8px 9px;
+  border: 1px solid #dfe8dc;
+  background: #f8faf6;
+}
+
+.research-pdf-meta span,
+.research-pdf-meta strong {
+  display: block;
+}
+
+.research-pdf-meta span {
+  color: #849087;
+  font-size: 6.8pt;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.research-pdf-meta strong {
+  margin-top: 3px;
+  color: #345642;
+  font-size: 8.5pt;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.research-pdf-paper hr {
+  margin: 8mm 0;
+  border: 0;
+  border-top: 1px solid #dce5d9;
+}
+
+.research-pdf-paper h2 {
+  margin: 0 0 5mm;
+  color: #2a5639;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 14pt;
+  font-weight: 500;
+}
+
+.research-pdf-abstract {
+  color: #34483e;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 10.5pt;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.research-pdf-paper > footer {
+  margin-top: 14mm;
+  padding-top: 4mm;
+  display: flex;
+  justify-content: space-between;
+  gap: 10mm;
+  border-top: 1px solid #e2e9df;
+  color: #879189;
+  font-size: 7pt;
+}
+
+/* ----------------------------------------------------------------
+   Administrator metadata editor
+   ---------------------------------------------------------------- */
+
+.breeding-entry-editor-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483360;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(18, 42, 31, .62);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: csResearchPdfBackdropIn .18s ease-out both;
+}
+
+.breeding-entry-editor {
+  width: min(880px, calc(100vw - 40px));
+  max-height: calc(100dvh - 40px);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.8);
+  border-radius: 18px;
+  background: #fbfdf9;
+  box-shadow: 0 30px 100px rgba(0,0,0,.28);
+  animation: csResearchPdfShellIn .26s cubic-bezier(.18,.82,.22,1) both;
+}
+
+.breeding-entry-editor > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 16px 18px;
+  border-bottom: 1px solid #dce6d9;
+  background: linear-gradient(120deg,#f7fbf3,#fffbe8);
+}
+
+.breeding-entry-editor header small {
+  display: block;
+  color: #7c8a7e;
+  font-size: 7.5px;
+  font-weight: 850;
+  letter-spacing: .10em;
+  text-transform: uppercase;
+}
+
+.breeding-entry-editor header h3 {
+  margin: 3px 0 0;
+  color: #245137;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 21px;
+  font-weight: 500;
+}
+
+.breeding-entry-editor-fields {
+  min-height: 0;
+  overflow: auto;
+  padding: 17px 18px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 11px;
+}
+
+.breeding-entry-editor-fields label {
+  display: grid;
+  gap: 5px;
+}
+
+.breeding-entry-editor-fields label.wide {
+  grid-column: 1 / -1;
+}
+
+.breeding-entry-editor-fields label > span {
+  color: #56705d;
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.breeding-entry-editor-fields input,
+.breeding-entry-editor-fields textarea {
+  width: 100%;
+  border: 1px solid #ceddca;
+  border-radius: 8px;
+  padding: 10px 11px;
+  outline: 0;
+  color: #2e5339;
+  background: #fff;
+  font: inherit;
+  font-size: 9px;
+}
+
+.breeding-entry-editor-fields input:focus,
+.breeding-entry-editor-fields textarea:focus {
+  border-color: #6e9a70;
+  box-shadow: 0 0 0 3px rgba(87,139,86,.10);
+}
+
+.breeding-entry-editor-fields textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.breeding-entry-editor-fields input:disabled {
+  background: #eef2ec;
+  color: #7f8981;
+}
+
+.breeding-entry-editor-note {
+  margin: 0 18px 13px;
+  padding: 10px 11px;
+  border: 1px solid #ded9a8;
+  border-radius: 9px;
+  color: #746e50;
+  background: #fffbe5;
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+.breeding-entry-editor > .breeding-program-inline-error {
+  margin: 0 18px 13px;
+}
+
+.breeding-entry-editor > footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 18px;
+  border-top: 1px solid #dce6d9;
+  background: #f8faf6;
+}
+
+@keyframes csResearchPdfBackdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes csResearchPdfShellIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Print only the active research PDF-style study. */
+@media print {
+  body:has(.research-pdf-viewer) * {
+    visibility: hidden !important;
+  }
+
+  body:has(.research-pdf-viewer) .research-pdf-viewer,
+  body:has(.research-pdf-viewer) .research-pdf-viewer * {
+    visibility: visible !important;
+  }
+
+  body:has(.research-pdf-viewer) .research-pdf-viewer {
+    position: absolute !important;
+    inset: 0 !important;
+    display: block !important;
+    padding: 0 !important;
+    background: #fff !important;
+    backdrop-filter: none !important;
+  }
+
+  body:has(.research-pdf-viewer) .research-pdf-shell {
+    width: 100% !important;
+    height: auto !important;
+    display: block !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+    background: #fff !important;
+  }
+
+  body:has(.research-pdf-viewer) .research-pdf-toolbar {
+    display: none !important;
+  }
+
+  body:has(.research-pdf-viewer) .research-pdf-scroll {
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+
+  body:has(.research-pdf-viewer) .research-pdf-paper {
+    width: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 12mm 14mm !important;
+    box-shadow: none !important;
+  }
+}
+
+@media (max-width: 1220px) and (min-width: 761px) {
+  .cs-primary-nav.cs-primary-nav--five .cs-primary-nav__item {
+    gap: 4px !important;
+    padding-left: 5px !important;
+    padding-right: 5px !important;
+  }
+
+  .cs-primary-nav.cs-primary-nav--five .cs-primary-nav__breeding > span {
+    font-size: .86em !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .research-card--pdf {
+    grid-template-columns: 54px minmax(0, 1fr);
+  }
+
+  .research-card-open {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .research-pdf-viewer,
+  .breeding-entry-editor-backdrop {
+    padding: 0;
+  }
+
+  .research-pdf-shell,
+  .breeding-entry-editor {
+    width: 100%;
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 0;
+  }
+
+  .research-pdf-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .research-pdf-toolbar > div:last-child {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .research-pdf-scroll {
+    padding: 0;
+  }
+
+  .research-pdf-paper {
+    width: 100%;
+    min-height: 100%;
+    padding: 22px 18px;
+    box-shadow: none;
+  }
+
+  .research-pdf-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .breeding-entry-editor-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .breeding-entry-editor-fields label.wide {
+    grid-column: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .research-card--pdf,
+  .research-pdf-viewer,
+  .research-pdf-shell,
+  .breeding-entry-editor-backdrop,
+  .breeding-entry-editor {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ================================================================
+   v2.13.84 RESTORE TOOLS AS FIFTH MAIN NAVIGATION SECTION
+   Germplasm | Pedigree | Map | Breeding Program | Tools
+   ================================================================ */
+
+/* The primary nav is always exactly five visible cells. */
+.cs-primary-nav.cs-primary-nav--five {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  grid-auto-flow: column !important;
+  grid-auto-columns: minmax(0, 1fr) !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  overflow: visible !important;
+}
+
+/* Neutralize older toolbar patches that could clip or hide the fifth cell. */
+.cs-primary-nav.cs-primary-nav--five > .cs-primary-nav__item {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+  grid-row: 1 !important;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  height: 100% !important;
+  overflow: hidden !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 7px !important;
+  padding: 0 8px !important;
+  white-space: nowrap !important;
+}
+
+/* Pin every item to its intended main-section column. */
+.cs-primary-nav.cs-primary-nav--five > .cs-primary-nav__item:nth-child(1) {
+  grid-column: 1 !important;
+}
+
+.cs-primary-nav.cs-primary-nav--five > .cs-primary-nav__item:nth-child(2) {
+  grid-column: 2 !important;
+}
+
+.cs-primary-nav.cs-primary-nav--five > .cs-primary-nav__item:nth-child(3) {
+  grid-column: 3 !important;
+}
+
+.cs-primary-nav.cs-primary-nav--five > .cs-primary-nav__item:nth-child(4) {
+  grid-column: 4 !important;
+}
+
+.cs-primary-nav.cs-primary-nav--five > .cs-primary-nav__item:nth-child(5) {
+  grid-column: 5 !important;
+}
+
+/* Tools must never be suppressed by any older compact-toolbar CSS. */
+.cs-primary-nav.cs-primary-nav--five > .cs-primary-nav__tools {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+.cs-primary-nav.cs-primary-nav--five > .cs-primary-nav__item > span {
+  display: block !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  font-size: 12px !important;
+  line-height: 1.1 !important;
+}
+
+/* Breeding Program is the one label allowed to use two lines so it can stay
+   complete while still leaving a full fifth cell for Tools. */
+.cs-primary-nav.cs-primary-nav--five > .cs-primary-nav__breeding > span {
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: normal !important;
+  text-align: center !important;
+  line-height: 1.05 !important;
+}
+
+/* Tools text must stay fully visible. */
+.cs-primary-nav.cs-primary-nav--five > .cs-primary-nav__tools > span {
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: nowrap !important;
+}
+
+/* Portal dropdown remains independent from the toolbar's overflow/stacking. */
+.cs-tools-popover {
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+}
+
+/* Keep each historical Tools action available. */
+.cs-tools-popover > button {
+  display: grid !important;
+  grid-template-columns: 28px minmax(0, 1fr) !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+
+.cs-tools-popover > button > span {
+  min-width: 0 !important;
+}
+
+/* Give the navigation track enough shrinkability before Online/account. */
+.clean-toolbar .cs-primary-nav.cs-primary-nav--five,
+.reference-toolbar .cs-primary-nav.cs-primary-nav--five,
+.app-header .cs-primary-nav.cs-primary-nav--five {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+}
+
+/* Laptop widths: preserve all five sections, only make their captions denser. */
+@media (max-width: 1380px) and (min-width: 761px) {
+  .cs-primary-nav.cs-primary-nav--five > .cs-primary-nav__item {
+    gap: 4px !important;
+    padding: 0 5px !important;
+  }
+
+  .cs-primary-nav.cs-primary-nav--five > .cs-primary-nav__item > svg {
+    width: 19px !important;
+    height: 19px !important;
+    flex: 0 0 auto !important;
+  }
+
+  .cs-primary-nav.cs-primary-nav--five > .cs-primary-nav__item > span {
+    font-size: 10.5px !important;
+  }
+
+  .cs-primary-nav.cs-primary-nav--five > .cs-primary-nav__tools > svg:last-child {
+    width: 12px !important;
+    height: 12px !important;
+  }
+}
+
+/* Very compact desktop/tablet widths: keep all five hit areas visible and
+   switch to icon-first, but never remove Tools itself. */
+@media (max-width: 980px) and (min-width: 681px) {
+  .cs-primary-nav.cs-primary-nav--five > .cs-primary-nav__item {
+    gap: 2px !important;
+    padding: 0 3px !important;
+  }
+
+  .cs-primary-nav.cs-primary-nav--five > .cs-primary-nav__item > span {
+    font-size: 9px !important;
+  }
+
+  .cs-primary-nav.cs-primary-nav--five > .cs-primary-nav__breeding > span {
+    line-height: 1 !important;
+  }
+}
+
+@media (max-width: 680px) {
+  .cs-primary-nav.cs-primary-nav--five {
+    grid-template-columns: repeat(5, minmax(44px, 1fr)) !important;
+  }
+
+  .cs-primary-nav.cs-primary-nav--five > .cs-primary-nav__item {
+    gap: 0 !important;
+    padding: 0 !important;
+  }
+
+  .cs-primary-nav.cs-primary-nav--five > .cs-primary-nav__item > span {
+    display: none !important;
+  }
+
+  .cs-primary-nav.cs-primary-nav--five > .cs-primary-nav__tools > svg:last-child {
+    display: none !important;
+  }
+}
+
+/* ================================================================
+   v2.13.85 MAP-STYLE BREEDING PROGRAM WORKSPACE
+   Makes Breeding Program use the same visual language as Variety Map:
+   full workspace, square frame, strong header, compact close control,
+   fixed navigation strip, and a single internal scroll surface.
+   ================================================================ */
+
+/* Cover the application workspace like Variety Map instead of appearing as
+   a floating rounded dialog below the main toolbar. */
+.breeding-program-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2147483200 !important;
+  display: grid !important;
+  place-items: stretch !important;
+  padding: 24px !important;
+  overflow: hidden !important;
+  background:
+    linear-gradient(rgba(27, 58, 40, .28), rgba(27, 58, 40, .28)),
+    rgba(222, 232, 219, .58) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+
+/* The shell now reads as a dedicated page/workspace rather than a card. */
+.breeding-program-shell {
+  position: relative !important;
+  width: 100% !important;
+  height: calc(100dvh - 48px) !important;
+  max-width: none !important;
+  max-height: none !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  display: grid !important;
+  grid-template-rows: auto auto minmax(0, 1fr) !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(43, 82, 54, .18) !important;
+  border-radius: 0 !important;
+  background:
+    linear-gradient(135deg, rgba(249, 251, 244, .985), rgba(255, 253, 230, .965)) !important;
+  box-shadow: 0 24px 70px rgba(22, 48, 33, .20) !important;
+}
+
+/* ---------------------------------------------------------------
+   Header: match the Variety Map's large title block.
+   --------------------------------------------------------------- */
+
+.breeding-program-header {
+  position: relative !important;
+  z-index: 3 !important;
+  min-height: 184px !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 24px !important;
+  padding: 32px 36px 28px !important;
+  border-bottom: 1px solid rgba(53, 91, 59, .14) !important;
+  background:
+    radial-gradient(circle at 92% 12%, rgba(227, 232, 102, .15), transparent 28%),
+    linear-gradient(135deg, rgba(248, 251, 244, .98), rgba(255, 253, 231, .96)) !important;
+}
+
+.breeding-program-heading {
+  min-width: 0 !important;
+  display: grid !important;
+  grid-template-columns: 34px minmax(0, 1fr) !important;
+  align-items: start !important;
+  gap: 14px !important;
+}
+
+.breeding-program-heading-icon {
+  width: 34px !important;
+  height: 34px !important;
+  margin-top: 2px !important;
+  display: grid !important;
+  place-items: center !important;
+  border-radius: 0 !important;
+  color: #2a6b42 !important;
+  background: transparent !important;
+}
+
+.breeding-program-heading-icon svg {
+  width: 24px !important;
+  height: 24px !important;
+}
+
+.breeding-program-heading > div {
+  min-width: 0 !important;
+}
+
+.breeding-program-heading small {
+  display: block !important;
+  margin: 0 0 8px !important;
+  color: #2f6844 !important;
+  font-size: 11px !important;
+  font-weight: 900 !important;
+  letter-spacing: .14em !important;
+  text-transform: uppercase !important;
+}
+
+.breeding-program-heading h2 {
+  margin: 0 !important;
+  color: #17492f !important;
+  font-family: Georgia, "Times New Roman", serif !important;
+  font-size: clamp(38px, 4.2vw, 55px) !important;
+  font-weight: 500 !important;
+  line-height: .98 !important;
+  letter-spacing: -.025em !important;
+}
+
+.breeding-program-heading p {
+  max-width: 880px !important;
+  margin: 14px 0 0 !important;
+  color: #617468 !important;
+  font-size: 14px !important;
+  line-height: 1.45 !important;
+}
+
+/* Turn the existing text Close button into the square map-style X control.
+   No component rewrite is needed and accessibility text remains in the DOM. */
+.breeding-program-header > .secondary-button {
+  flex: 0 0 58px !important;
+  width: 58px !important;
+  min-width: 58px !important;
+  max-width: 58px !important;
+  height: 58px !important;
+  min-height: 58px !important;
+  margin-top: 0 !important;
+  padding: 0 !important;
+  display: grid !important;
+  place-items: center !important;
+  gap: 0 !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(52, 93, 62, .17) !important;
+  border-radius: 0 !important;
+  color: #285d3c !important;
+  background: rgba(255,255,255,.78) !important;
+  font-size: 0 !important;
+  box-shadow: none !important;
+}
+
+.breeding-program-header > .secondary-button svg {
+  width: 24px !important;
+  height: 24px !important;
+}
+
+.breeding-program-header > .secondary-button:hover,
+.breeding-program-header > .secondary-button:focus-visible {
+  border-color: rgba(46, 100, 60, .32) !important;
+  background: #f5f9f0 !important;
+  outline: none !important;
+}
+
+/* ---------------------------------------------------------------
+   Section navigation: fixed strip directly below the header.
+   --------------------------------------------------------------- */
+
+.breeding-program-tabs {
+  position: relative !important;
+  z-index: 3 !important;
+  min-height: 96px !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  border-bottom: 1px solid rgba(53, 91, 59, .16) !important;
+  background: rgba(248, 251, 245, .94) !important;
+}
+
+.breeding-program-tabs > button {
+  position: relative !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 96px !important;
+  display: grid !important;
+  grid-template-columns: 32px minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 14px !important;
+  padding: 18px 26px !important;
+  overflow: hidden !important;
+  border: 0 !important;
+  border-right: 1px solid rgba(53, 91, 59, .14) !important;
+  border-radius: 0 !important;
+  color: #315d40 !important;
+  background: rgba(249, 252, 246, .90) !important;
+  text-align: left !important;
+  box-shadow: none !important;
+}
+
+.breeding-program-tabs > button:last-child {
+  border-right: 0 !important;
+}
+
+.breeding-program-tabs > button > svg {
+  width: 23px !important;
+  height: 23px !important;
+}
+
+.breeding-program-tabs > button > span {
+  min-width: 0 !important;
+}
+
+.breeding-program-tabs > button strong,
+.breeding-program-tabs > button small {
+  display: block !important;
+  min-width: 0 !important;
+}
+
+.breeding-program-tabs > button strong {
+  color: inherit !important;
+  font-size: 13px !important;
+  line-height: 1.2 !important;
+}
+
+.breeding-program-tabs > button small {
+  margin-top: 4px !important;
+  overflow: hidden !important;
+  color: #7a8b80 !important;
+  font-size: 8.5px !important;
+  line-height: 1.35 !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.breeding-program-tabs > button.active {
+  color: #fff !important;
+  background:
+    linear-gradient(135deg, #2d7847, #4a9446) !important;
+}
+
+.breeding-program-tabs > button.active::after {
+  content: "" !important;
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  height: 5px !important;
+  background: #dce86f !important;
+}
+
+.breeding-program-tabs > button.active small {
+  color: rgba(255,255,255,.78) !important;
+}
+
+/* ---------------------------------------------------------------
+   Content: one full internal scrolling workspace, just like the map.
+   --------------------------------------------------------------- */
+
+.breeding-program-content {
+  position: relative !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding: 24px 30px 34px !important;
+  scrollbar-gutter: stable !important;
+  overscroll-behavior: contain !important;
+  background:
+    linear-gradient(180deg, rgba(246, 250, 242, .94), rgba(250, 252, 247, .98)) !important;
+}
+
+.breeding-program-content > .breeding-program-pane {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+}
+
+/* Remove the "dialog inside a dialog" feel from the first-level blocks. */
+.breeding-program-summary {
+  gap: 12px !important;
+}
+
+.breeding-program-summary > div {
+  border-radius: 0 !important;
+  border-color: rgba(55, 93, 60, .14) !important;
+  background: rgba(255,255,255,.74) !important;
+  box-shadow: none !important;
+}
+
+.breeding-program-search-row,
+.research-archive-controls,
+.protocol-card,
+.breeding-program-document-list > article,
+.breeding-program-upload,
+.brochure-intro,
+.brochure-preview-shell,
+.brochure-empty {
+  border-radius: 0 !important;
+}
+
+/* The map workspace uses crisp panels instead of large pill/card radii. */
+.protocol-card-grid {
+  gap: 12px !important;
+}
+
+.protocol-card {
+  border-color: rgba(51, 91, 58, .14) !important;
+  box-shadow: none !important;
+}
+
+.protocol-card:hover {
+  border-color: rgba(47, 104, 62, .28) !important;
+  box-shadow: 0 10px 24px rgba(35, 71, 43, .07) !important;
+}
+
+/* Keep long research archive work readable inside the internal workspace. */
+.research-card-list {
+  padding-bottom: 4px !important;
+}
+
+/* ---------------------------------------------------------------
+   Responsive behavior
+   --------------------------------------------------------------- */
+
+@media (max-width: 980px) {
+  .breeding-program-backdrop {
+    padding: 12px !important;
+  }
+
+  .breeding-program-shell {
+    height: calc(100dvh - 24px) !important;
+  }
+
+  .breeding-program-header {
+    min-height: 150px !important;
+    padding: 24px 22px 20px !important;
+  }
+
+  .breeding-program-heading {
+    grid-template-columns: 28px minmax(0, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  .breeding-program-heading h2 {
+    font-size: 38px !important;
+  }
+
+  .breeding-program-heading p {
+    margin-top: 10px !important;
+    font-size: 11px !important;
+  }
+
+  .breeding-program-header > .secondary-button {
+    flex-basis: 50px !important;
+    width: 50px !important;
+    min-width: 50px !important;
+    max-width: 50px !important;
+    height: 50px !important;
+    min-height: 50px !important;
+  }
+
+  .breeding-program-tabs,
+  .breeding-program-tabs > button {
+    min-height: 78px !important;
+  }
+
+  .breeding-program-tabs > button {
+    grid-template-columns: 24px minmax(0,1fr) !important;
+    gap: 8px !important;
+    padding: 12px 14px !important;
+  }
+
+  .breeding-program-tabs > button small {
+    display: none !important;
+  }
+
+  .breeding-program-content {
+    padding: 16px 18px 26px !important;
+  }
+}
+
+@media (max-width: 680px) {
+  .breeding-program-backdrop {
+    padding: 0 !important;
+  }
+
+  .breeding-program-shell {
+    height: 100dvh !important;
+    border: 0 !important;
+  }
+
+  .breeding-program-header {
+    min-height: 126px !important;
+    padding: 18px 14px 14px !important;
+  }
+
+  .breeding-program-heading {
+    grid-template-columns: 22px minmax(0, 1fr) !important;
+  }
+
+  .breeding-program-heading-icon {
+    width: 22px !important;
+    height: 22px !important;
+  }
+
+  .breeding-program-heading-icon svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  .breeding-program-heading small {
+    margin-bottom: 5px !important;
+    font-size: 8px !important;
+  }
+
+  .breeding-program-heading h2 {
+    font-size: 30px !important;
+  }
+
+  .breeding-program-heading p {
+    display: none !important;
+  }
+
+  .breeding-program-header > .secondary-button {
+    flex-basis: 42px !important;
+    width: 42px !important;
+    min-width: 42px !important;
+    max-width: 42px !important;
+    height: 42px !important;
+    min-height: 42px !important;
+  }
+
+  .breeding-program-tabs,
+  .breeding-program-tabs > button {
+    min-height: 64px !important;
+  }
+
+  .breeding-program-tabs > button {
+    grid-template-columns: 1fr !important;
+    place-items: center !important;
+    gap: 4px !important;
+    padding: 8px 4px !important;
+    text-align: center !important;
+  }
+
+  .breeding-program-tabs > button > svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  .breeding-program-tabs > button strong {
+    font-size: 9px !important;
+  }
+
+  .breeding-program-content {
+    padding: 12px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .breeding-program-backdrop,
+  .breeding-program-shell,
+  .breeding-program-content > .breeding-program-pane {
+    animation: none !important;
+  }
+}
+
+/* ================================================================
+   v2.13.86 BREEDING PROGRAM CONTENT-SPACE REBALANCE
+   Shrinks header/navigation and gives the active section more room.
+   ================================================================ */
+
+/* Slightly reduce the perimeter so the workspace itself gets more area. */
+.breeding-program-backdrop {
+  padding: 16px !important;
+}
+
+.breeding-program-shell {
+  height: calc(100dvh - 32px) !important;
+  grid-template-rows: 118px 66px minmax(0, 1fr) !important;
+}
+
+/* ----------------------------------------------------------------
+   Compact header
+   ---------------------------------------------------------------- */
+
+.breeding-program-header {
+  min-height: 118px !important;
+  height: 118px !important;
+  padding: 18px 24px 16px !important;
+  align-items: center !important;
+}
+
+.breeding-program-heading {
+  grid-template-columns: 26px minmax(0, 1fr) !important;
+  gap: 10px !important;
+  align-items: center !important;
+}
+
+.breeding-program-heading-icon {
+  width: 26px !important;
+  height: 26px !important;
+  margin-top: 0 !important;
+}
+
+.breeding-program-heading-icon svg {
+  width: 21px !important;
+  height: 21px !important;
+}
+
+.breeding-program-heading small {
+  margin: 0 0 4px !important;
+  font-size: 8.5px !important;
+  letter-spacing: .12em !important;
+}
+
+.breeding-program-heading h2 {
+  font-size: clamp(30px, 3vw, 42px) !important;
+  line-height: 1 !important;
+}
+
+.breeding-program-heading p {
+  max-width: 900px !important;
+  margin: 7px 0 0 !important;
+  font-size: 10px !important;
+  line-height: 1.35 !important;
+}
+
+/* Smaller X, still easy to hit. */
+.breeding-program-header > .secondary-button {
+  flex: 0 0 44px !important;
+  width: 44px !important;
+  min-width: 44px !important;
+  max-width: 44px !important;
+  height: 44px !important;
+  min-height: 44px !important;
+}
+
+.breeding-program-header > .secondary-button svg {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+/* ----------------------------------------------------------------
+   Compact section navigation
+   ---------------------------------------------------------------- */
+
+.breeding-program-tabs {
+  min-height: 66px !important;
+  height: 66px !important;
+}
+
+.breeding-program-tabs > button {
+  min-height: 66px !important;
+  height: 66px !important;
+  grid-template-columns: 24px minmax(0, 1fr) !important;
+  gap: 9px !important;
+  padding: 9px 18px !important;
+}
+
+.breeding-program-tabs > button > svg {
+  width: 19px !important;
+  height: 19px !important;
+}
+
+.breeding-program-tabs > button strong {
+  font-size: 10.5px !important;
+  line-height: 1.1 !important;
+}
+
+.breeding-program-tabs > button small {
+  margin-top: 2px !important;
+  font-size: 7px !important;
+  line-height: 1.2 !important;
+}
+
+/* Slightly thinner active underline. */
+.breeding-program-tabs > button.active::after {
+  height: 4px !important;
+}
+
+/* ----------------------------------------------------------------
+   Give the actual section contents the visual priority.
+   ---------------------------------------------------------------- */
+
+.breeding-program-content {
+  padding: 16px 22px 24px !important;
+}
+
+.breeding-program-content > .breeding-program-pane {
+  min-height: 100% !important;
+}
+
+/* Reduce the opening dashboard cards so they do not consume the newly
+   recovered content area. */
+.breeding-program-summary {
+  gap: 10px !important;
+  margin-bottom: 14px !important;
+}
+
+.breeding-program-summary > div {
+  min-height: 82px !important;
+  padding: 14px 18px !important;
+}
+
+.breeding-program-summary > div strong {
+  font-size: 25px !important;
+  line-height: 1 !important;
+}
+
+.breeding-program-summary > div span {
+  margin-top: 7px !important;
+  font-size: 8px !important;
+}
+
+/* Search/filter controls become denser too. */
+.breeding-program-search-row {
+  min-height: 54px !important;
+  padding: 0 14px !important;
+}
+
+.research-archive-controls {
+  gap: 10px !important;
+  margin-bottom: 14px !important;
+}
+
+.breeding-program-section-heading {
+  margin-top: 14px !important;
+  margin-bottom: 10px !important;
+}
+
+.breeding-program-section-heading h3 {
+  margin-top: 2px !important;
+  font-size: 24px !important;
+}
+
+/* Protocol cards show more of the actual library at once. */
+.protocol-card-grid {
+  gap: 10px !important;
+}
+
+.protocol-card {
+  padding: 14px !important;
+}
+
+.protocol-card-top {
+  gap: 10px !important;
+}
+
+.protocol-card p {
+  margin-top: 8px !important;
+  line-height: 1.42 !important;
+}
+
+/* Research list gets more breathing room horizontally and more entries
+   visible vertically. */
+.research-card--pdf {
+  padding: 10px 12px !important;
+}
+
+/* Uploaded document list is slightly denser. */
+.breeding-program-document-list > article {
+  padding: 11px 12px !important;
+}
+
+/* Upload form remains usable but no longer dominates the screen. */
+.breeding-program-upload {
+  padding: 14px !important;
+  margin-top: 16px !important;
+}
+
+/* Variety Brochure content gets a larger working zone too. */
+.brochure-intro {
+  padding: 16px !important;
+  margin-bottom: 12px !important;
+}
+
+.brochure-preview-shell {
+  margin-top: 12px !important;
+}
+
+/* ----------------------------------------------------------------
+   Responsive behavior
+   ---------------------------------------------------------------- */
+
+@media (max-width: 980px) {
+  .breeding-program-backdrop {
+    padding: 10px !important;
+  }
+
+  .breeding-program-shell {
+    height: calc(100dvh - 20px) !important;
+    grid-template-rows: 104px 60px minmax(0, 1fr) !important;
+  }
+
+  .breeding-program-header {
+    min-height: 104px !important;
+    height: 104px !important;
+    padding: 14px 18px 12px !important;
+  }
+
+  .breeding-program-heading h2 {
+    font-size: 32px !important;
+  }
+
+  .breeding-program-heading p {
+    font-size: 9px !important;
+  }
+
+  .breeding-program-tabs,
+  .breeding-program-tabs > button {
+    min-height: 60px !important;
+    height: 60px !important;
+  }
+
+  .breeding-program-tabs > button {
+    padding: 7px 10px !important;
+  }
+
+  .breeding-program-content {
+    padding: 12px 14px 20px !important;
+  }
+
+  .breeding-program-summary > div {
+    min-height: 74px !important;
+    padding: 11px 13px !important;
+  }
+}
+
+@media (max-width: 680px) {
+  .breeding-program-backdrop {
+    padding: 0 !important;
+  }
+
+  .breeding-program-shell {
+    height: 100dvh !important;
+    grid-template-rows: 82px 54px minmax(0, 1fr) !important;
+  }
+
+  .breeding-program-header {
+    min-height: 82px !important;
+    height: 82px !important;
+    padding: 10px 12px !important;
+  }
+
+  .breeding-program-heading small {
+    font-size: 6.8px !important;
+  }
+
+  .breeding-program-heading h2 {
+    font-size: 26px !important;
+  }
+
+  .breeding-program-heading p {
+    display: none !important;
+  }
+
+  .breeding-program-header > .secondary-button {
+    flex-basis: 38px !important;
+    width: 38px !important;
+    min-width: 38px !important;
+    max-width: 38px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+  }
+
+  .breeding-program-tabs,
+  .breeding-program-tabs > button {
+    min-height: 54px !important;
+    height: 54px !important;
+  }
+
+  .breeding-program-tabs > button {
+    grid-template-columns: 1fr !important;
+    place-items: center !important;
+    padding: 5px 3px !important;
+    gap: 2px !important;
+  }
+
+  .breeding-program-tabs > button > svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  .breeding-program-tabs > button strong {
+    font-size: 8px !important;
+  }
+
+  .breeding-program-tabs > button small {
+    display: none !important;
+  }
+
+  .breeding-program-content {
+    padding: 9px !important;
+  }
+
+  .breeding-program-summary {
+    gap: 6px !important;
+  }
+
+  .breeding-program-summary > div {
+    min-height: 64px !important;
+    padding: 9px !important;
+  }
+}

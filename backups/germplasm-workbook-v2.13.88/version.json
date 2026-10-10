@@ -1,0 +1,7 @@
+{
+  "version": "2.13.86",
+  "channel": "stable",
+  "notes": "Rebalances the Breeding Program map-style workspace so the header and section navigation are smaller and SOP, Research Archive, and Variety Brochure content gets substantially more visible space.",
+  "migration": "combination-registry-v2100",
+  "updated": "2026-10-10"
+}

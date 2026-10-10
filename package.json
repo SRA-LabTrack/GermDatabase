@@ -1,7 +1,7 @@
 {
   "name": "canesprout-registry",
   "private": true,
-  "version": "2.13.76",
+  "version": "2.13.88",
   "description": "Sugarcane Germplasm Resource Database unified web + Electron offline-first edition with red-font Origin/other attributes, A:CH Excel support, local desktop enrollment, persistent offline mutation queues, and paced Appwrite reconnect sync.",
   "main": "electron/main.cjs",
   "author": "SRA-LabTrack",
@@ -76,7 +76,18 @@
     "verify:breeding-history-suggestions": "node scripts/verify-breeding-history-suggestions-v2.13.73.mjs",
     "verify:variety-map-first-redirect": "node scripts/verify-variety-map-first-redirect-v2.13.74.mjs",
     "verify:variety-map-build-repair": "node scripts/verify-variety-map-build-repair-v2.13.75.mjs",
-    "verify:germplasm-pedigree-title": "node scripts/verify-germplasm-pedigree-title-v2.13.76.mjs"
+    "verify:germplasm-pedigree-title": "node scripts/verify-germplasm-pedigree-title-v2.13.76.mjs",
+    "setup:breeding-program": "node scripts/setup-breeding-program-v2.13.83.mjs",
+    "verify:breeding-program": "node scripts/verify-breeding-program-v2.13.77.mjs",
+    "verify:brochure-first": "node scripts/verify-brochure-first-v2.13.78.mjs",
+    "verify:brochure-interaction": "node scripts/verify-brochure-interaction-v2.13.79.mjs",
+    "verify:brochure-main-nav": "node scripts/verify-brochure-main-nav-v2.13.80.mjs",
+    "verify:brochure-size-reset": "node scripts/verify-brochure-size-reset-v2.13.81.mjs",
+    "verify:breeding-program-edit-viewer": "node scripts/verify-breeding-program-edit-viewer-v2.13.82.mjs",
+    "verify:breeding-storage-reuse": "node scripts/verify-breeding-storage-reuse-v2.13.83.mjs",
+    "verify:main-tools-nav": "node scripts/verify-main-tools-nav-v2.13.84.mjs",
+    "verify:breeding-map-layout": "node scripts/verify-breeding-map-layout-v2.13.85.mjs",
+    "verify:breeding-content-space": "node scripts/verify-breeding-content-space-v2.13.86.mjs"
   },
   "dependencies": {
     "appwrite": "^26.2.0",

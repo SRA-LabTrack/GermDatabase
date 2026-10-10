@@ -38,6 +38,7 @@ const failedUntil = new Map();
 export const APPWRITE_PROJECT_ID = String(import.meta.env.VITE_APPWRITE_PROJECT_ID || '6a744cda00030236187b').trim();
 export const DATABASE_ID = String(import.meta.env.VITE_APPWRITE_DATABASE_ID || 'germdatabase').trim();
 export const MEDIA_BUCKET_ID = String(import.meta.env.VITE_APPWRITE_MEDIA_BUCKET_ID || 'germ-media').trim();
+export const BREEDING_BUCKET_ID = MEDIA_BUCKET_ID;
 
 export const ADMIN_LABEL = 'canesproutadmin';
 
@@ -45,7 +46,8 @@ export const COLLECTIONS = {
   records: 'sugarcane_registry_core',
   details: 'sugarcane_registry_details',
   requests: 'registry_change_requests',
-  combinations: 'sugarcane_combination_registry'
+  combinations: 'sugarcane_combination_registry',
+  breedingDocuments: 'breeding_program_documents'
 };
 
 export const client = new Client().setEndpoint(activeEndpoint).setProject(APPWRITE_PROJECT_ID);

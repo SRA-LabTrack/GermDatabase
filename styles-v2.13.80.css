@@ -1,0 +1,331 @@
+
+/* ================================================================
+   v2.13.80 MAIN BREEDING PROGRAM NAV + BROCHURE MOTION POLISH
+   ================================================================ */
+
+/* Five equal primary destinations:
+   Germplasm | Pedigree | Map | Breeding Program | Tools */
+.cs-primary-nav.cs-primary-nav--five {
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+}
+
+.cs-primary-nav.cs-primary-nav--five .cs-primary-nav__item {
+  min-width: 0;
+  justify-content: center;
+  gap: 8px;
+}
+
+.cs-primary-nav.cs-primary-nav--five .cs-primary-nav__item > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Make the brochure just a bit larger than v2.13.79. */
+.collection-brochure-backdrop {
+  padding: 4px !important;
+  animation: csBrochureBackdropIn .22s ease-out both;
+}
+
+.collection-brochure-modal {
+  width: min(1600px, calc(100vw - 8px)) !important;
+  height: calc(100dvh - 8px) !important;
+  max-height: calc(100dvh - 8px) !important;
+  animation: csBrochureWindowIn .30s cubic-bezier(.2,.8,.2,1) both;
+  transform-origin: center 46%;
+}
+
+.collection-brochure-scroll {
+  padding: 8px !important;
+}
+
+.collection-brochure-sheet {
+  width: min(1180px, 100%) !important;
+  animation: csBrochureSheetIn .36s cubic-bezier(.2,.8,.2,1) both;
+}
+
+.collection-brochure-photo-main {
+  min-height: 720px !important;
+}
+
+.collection-brochure-photo-stalk {
+  min-height: 315px !important;
+}
+
+.collection-brochure-photo-eye {
+  width: min(335px, 100%) !important;
+}
+
+.collection-brochure-photo-button,
+.collection-brochure-characteristic-row,
+.collection-brochure-parentage-button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.collection-brochure-photo-button:active {
+  transform: scale(.992) !important;
+}
+
+.collection-brochure-characteristic-row:active {
+  transform: translateX(3px) scale(.997) !important;
+}
+
+.collection-brochure-parentage-button:active {
+  transform: scale(.985) !important;
+}
+
+/* Clicked photo transition. */
+.collection-brochure-photo-lightbox {
+  animation: csBrochureOverlayIn .20s ease-out both;
+}
+
+.collection-brochure-photo-lightbox-card {
+  animation: csBrochurePhotoCardIn .28s cubic-bezier(.18,.82,.22,1) both;
+  transform-origin: center center;
+}
+
+.collection-brochure-photo-lightbox-image img {
+  animation: csBrochureImageIn .34s cubic-bezier(.18,.82,.22,1) both;
+}
+
+/* Clicked detail transition. */
+.collection-brochure-detail-viewer {
+  animation: csBrochureOverlayIn .20s ease-out both;
+}
+
+.collection-brochure-detail-card {
+  animation: csBrochureDetailCardIn .28s cubic-bezier(.18,.82,.22,1) both;
+  transform-origin: center center;
+}
+
+.collection-brochure-detail-value {
+  animation: csBrochureDetailTextIn .30s .04s ease-out both;
+}
+
+/* Existing full profile opens with a clear transition when user chooses
+   "Expand full details" from the brochure. */
+.detail-profile-backdrop {
+  animation: csFullProfileBackdropIn .22s ease-out both;
+}
+
+.detail-profile-backdrop > * {
+  animation: csFullProfilePanelIn .30s cubic-bezier(.18,.82,.22,1) both;
+}
+
+/* Breeding Program top-level section and its tabs receive a smooth page swap. */
+.breeding-program-backdrop {
+  animation: csBreedingProgramBackdropIn .20s ease-out both;
+}
+
+.breeding-program-shell {
+  animation: csBreedingProgramShellIn .30s cubic-bezier(.18,.82,.22,1) both;
+}
+
+.breeding-program-tabs > button {
+  transition:
+    background .20s ease,
+    color .20s ease,
+    box-shadow .20s ease,
+    transform .16s ease;
+}
+
+.breeding-program-tabs > button:active {
+  transform: scale(.992);
+}
+
+.breeding-program-content > .breeding-program-pane {
+  animation: csBreedingProgramPaneIn .28s cubic-bezier(.18,.82,.22,1) both;
+}
+
+/* The toolbar item itself gets a small polished state change. */
+.cs-primary-nav.cs-primary-nav--five .cs-primary-nav__item {
+  transition:
+    background .18s ease,
+    color .18s ease,
+    box-shadow .18s ease,
+    transform .15s ease;
+}
+
+.cs-primary-nav.cs-primary-nav--five .cs-primary-nav__item:active {
+  transform: scale(.985);
+}
+
+@keyframes csBrochureBackdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes csBrochureWindowIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(.982);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes csBrochureSheetIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(.992);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes csBrochureOverlayIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes csBrochurePhotoCardIn {
+  from {
+    opacity: 0;
+    transform: scale(.94) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes csBrochureImageIn {
+  from {
+    opacity: 0;
+    transform: scale(.975);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes csBrochureDetailCardIn {
+  from {
+    opacity: 0;
+    transform: scale(.94) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes csBrochureDetailTextIn {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes csFullProfileBackdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes csFullProfilePanelIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes csBreedingProgramBackdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes csBreedingProgramShellIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(.988);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes csBreedingProgramPaneIn {
+  from {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Keep navigation readable on narrower desktop windows. */
+@media (max-width: 1220px) and (min-width: 761px) {
+  .cs-primary-nav.cs-primary-nav--five .cs-primary-nav__item {
+    gap: 5px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .cs-primary-nav.cs-primary-nav--five .cs-primary-nav__item > span {
+    font-size: .92em;
+  }
+}
+
+@media (max-width: 760px) {
+  .collection-brochure-modal {
+    width: 100% !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+  }
+
+  .collection-brochure-photo-main {
+    min-height: 72vh !important;
+  }
+
+  .collection-brochure-photo-stalk {
+    min-height: 250px !important;
+  }
+
+  .collection-brochure-photo-eye {
+    width: min(46vw, 245px) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .collection-brochure-backdrop,
+  .collection-brochure-modal,
+  .collection-brochure-sheet,
+  .collection-brochure-photo-lightbox,
+  .collection-brochure-photo-lightbox-card,
+  .collection-brochure-photo-lightbox-image img,
+  .collection-brochure-detail-viewer,
+  .collection-brochure-detail-card,
+  .collection-brochure-detail-value,
+  .detail-profile-backdrop,
+  .detail-profile-backdrop > *,
+  .breeding-program-backdrop,
+  .breeding-program-shell,
+  .breeding-program-content > .breeding-program-pane {
+    animation: none !important;
+  }
+
+  .collection-brochure-photo-button,
+  .collection-brochure-characteristic-row,
+  .collection-brochure-parentage-button,
+  .breeding-program-tabs > button,
+  .cs-primary-nav.cs-primary-nav--five .cs-primary-nav__item {
+    transition: none !important;
+  }
+}

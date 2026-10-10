@@ -1,0 +1,339 @@
+
+/* ================================================================
+   v2.13.86 BREEDING PROGRAM CONTENT-SPACE REBALANCE
+   Shrinks header/navigation and gives the active section more room.
+   ================================================================ */
+
+/* Slightly reduce the perimeter so the workspace itself gets more area. */
+.breeding-program-backdrop {
+  padding: 16px !important;
+}
+
+.breeding-program-shell {
+  height: calc(100dvh - 32px) !important;
+  grid-template-rows: 118px 66px minmax(0, 1fr) !important;
+}
+
+/* ----------------------------------------------------------------
+   Compact header
+   ---------------------------------------------------------------- */
+
+.breeding-program-header {
+  min-height: 118px !important;
+  height: 118px !important;
+  padding: 18px 24px 16px !important;
+  align-items: center !important;
+}
+
+.breeding-program-heading {
+  grid-template-columns: 26px minmax(0, 1fr) !important;
+  gap: 10px !important;
+  align-items: center !important;
+}
+
+.breeding-program-heading-icon {
+  width: 26px !important;
+  height: 26px !important;
+  margin-top: 0 !important;
+}
+
+.breeding-program-heading-icon svg {
+  width: 21px !important;
+  height: 21px !important;
+}
+
+.breeding-program-heading small {
+  margin: 0 0 4px !important;
+  font-size: 8.5px !important;
+  letter-spacing: .12em !important;
+}
+
+.breeding-program-heading h2 {
+  font-size: clamp(30px, 3vw, 42px) !important;
+  line-height: 1 !important;
+}
+
+.breeding-program-heading p {
+  max-width: 900px !important;
+  margin: 7px 0 0 !important;
+  font-size: 10px !important;
+  line-height: 1.35 !important;
+}
+
+/* Smaller X, still easy to hit. */
+.breeding-program-header > .secondary-button {
+  flex: 0 0 44px !important;
+  width: 44px !important;
+  min-width: 44px !important;
+  max-width: 44px !important;
+  height: 44px !important;
+  min-height: 44px !important;
+}
+
+.breeding-program-header > .secondary-button svg {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+/* ----------------------------------------------------------------
+   Compact section navigation
+   ---------------------------------------------------------------- */
+
+.breeding-program-tabs {
+  min-height: 66px !important;
+  height: 66px !important;
+}
+
+.breeding-program-tabs > button {
+  min-height: 66px !important;
+  height: 66px !important;
+  grid-template-columns: 24px minmax(0, 1fr) !important;
+  gap: 9px !important;
+  padding: 9px 18px !important;
+}
+
+.breeding-program-tabs > button > svg {
+  width: 19px !important;
+  height: 19px !important;
+}
+
+.breeding-program-tabs > button strong {
+  font-size: 10.5px !important;
+  line-height: 1.1 !important;
+}
+
+.breeding-program-tabs > button small {
+  margin-top: 2px !important;
+  font-size: 7px !important;
+  line-height: 1.2 !important;
+}
+
+/* Slightly thinner active underline. */
+.breeding-program-tabs > button.active::after {
+  height: 4px !important;
+}
+
+/* ----------------------------------------------------------------
+   Give the actual section contents the visual priority.
+   ---------------------------------------------------------------- */
+
+.breeding-program-content {
+  padding: 16px 22px 24px !important;
+}
+
+.breeding-program-content > .breeding-program-pane {
+  min-height: 100% !important;
+}
+
+/* Reduce the opening dashboard cards so they do not consume the newly
+   recovered content area. */
+.breeding-program-summary {
+  gap: 10px !important;
+  margin-bottom: 14px !important;
+}
+
+.breeding-program-summary > div {
+  min-height: 82px !important;
+  padding: 14px 18px !important;
+}
+
+.breeding-program-summary > div strong {
+  font-size: 25px !important;
+  line-height: 1 !important;
+}
+
+.breeding-program-summary > div span {
+  margin-top: 7px !important;
+  font-size: 8px !important;
+}
+
+/* Search/filter controls become denser too. */
+.breeding-program-search-row {
+  min-height: 54px !important;
+  padding: 0 14px !important;
+}
+
+.research-archive-controls {
+  gap: 10px !important;
+  margin-bottom: 14px !important;
+}
+
+.breeding-program-section-heading {
+  margin-top: 14px !important;
+  margin-bottom: 10px !important;
+}
+
+.breeding-program-section-heading h3 {
+  margin-top: 2px !important;
+  font-size: 24px !important;
+}
+
+/* Protocol cards show more of the actual library at once. */
+.protocol-card-grid {
+  gap: 10px !important;
+}
+
+.protocol-card {
+  padding: 14px !important;
+}
+
+.protocol-card-top {
+  gap: 10px !important;
+}
+
+.protocol-card p {
+  margin-top: 8px !important;
+  line-height: 1.42 !important;
+}
+
+/* Research list gets more breathing room horizontally and more entries
+   visible vertically. */
+.research-card--pdf {
+  padding: 10px 12px !important;
+}
+
+/* Uploaded document list is slightly denser. */
+.breeding-program-document-list > article {
+  padding: 11px 12px !important;
+}
+
+/* Upload form remains usable but no longer dominates the screen. */
+.breeding-program-upload {
+  padding: 14px !important;
+  margin-top: 16px !important;
+}
+
+/* Variety Brochure content gets a larger working zone too. */
+.brochure-intro {
+  padding: 16px !important;
+  margin-bottom: 12px !important;
+}
+
+.brochure-preview-shell {
+  margin-top: 12px !important;
+}
+
+/* ----------------------------------------------------------------
+   Responsive behavior
+   ---------------------------------------------------------------- */
+
+@media (max-width: 980px) {
+  .breeding-program-backdrop {
+    padding: 10px !important;
+  }
+
+  .breeding-program-shell {
+    height: calc(100dvh - 20px) !important;
+    grid-template-rows: 104px 60px minmax(0, 1fr) !important;
+  }
+
+  .breeding-program-header {
+    min-height: 104px !important;
+    height: 104px !important;
+    padding: 14px 18px 12px !important;
+  }
+
+  .breeding-program-heading h2 {
+    font-size: 32px !important;
+  }
+
+  .breeding-program-heading p {
+    font-size: 9px !important;
+  }
+
+  .breeding-program-tabs,
+  .breeding-program-tabs > button {
+    min-height: 60px !important;
+    height: 60px !important;
+  }
+
+  .breeding-program-tabs > button {
+    padding: 7px 10px !important;
+  }
+
+  .breeding-program-content {
+    padding: 12px 14px 20px !important;
+  }
+
+  .breeding-program-summary > div {
+    min-height: 74px !important;
+    padding: 11px 13px !important;
+  }
+}
+
+@media (max-width: 680px) {
+  .breeding-program-backdrop {
+    padding: 0 !important;
+  }
+
+  .breeding-program-shell {
+    height: 100dvh !important;
+    grid-template-rows: 82px 54px minmax(0, 1fr) !important;
+  }
+
+  .breeding-program-header {
+    min-height: 82px !important;
+    height: 82px !important;
+    padding: 10px 12px !important;
+  }
+
+  .breeding-program-heading small {
+    font-size: 6.8px !important;
+  }
+
+  .breeding-program-heading h2 {
+    font-size: 26px !important;
+  }
+
+  .breeding-program-heading p {
+    display: none !important;
+  }
+
+  .breeding-program-header > .secondary-button {
+    flex-basis: 38px !important;
+    width: 38px !important;
+    min-width: 38px !important;
+    max-width: 38px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+  }
+
+  .breeding-program-tabs,
+  .breeding-program-tabs > button {
+    min-height: 54px !important;
+    height: 54px !important;
+  }
+
+  .breeding-program-tabs > button {
+    grid-template-columns: 1fr !important;
+    place-items: center !important;
+    padding: 5px 3px !important;
+    gap: 2px !important;
+  }
+
+  .breeding-program-tabs > button > svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  .breeding-program-tabs > button strong {
+    font-size: 8px !important;
+  }
+
+  .breeding-program-tabs > button small {
+    display: none !important;
+  }
+
+  .breeding-program-content {
+    padding: 9px !important;
+  }
+
+  .breeding-program-summary {
+    gap: 6px !important;
+  }
+
+  .breeding-program-summary > div {
+    min-height: 64px !important;
+    padding: 9px !important;
+  }
+}

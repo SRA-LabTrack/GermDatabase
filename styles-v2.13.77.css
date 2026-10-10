@@ -1,0 +1,860 @@
+
+/* ================================================================
+   v2.13.77 BREEDING PROGRAM
+   SOP library + Research Archive + Variety Brochure
+   ================================================================ */
+
+.breeding-program-backdrop {
+  position: fixed;
+  inset: var(--breeding-program-top, 12px) 0 0;
+  z-index: 95000;
+  padding: 18px 22px 24px;
+  background: rgba(25, 48, 33, .34);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  overflow: hidden;
+}
+
+.breeding-program-shell {
+  width: min(1760px, calc(100vw - 44px));
+  height: calc(100vh - var(--breeding-program-top, 12px) - 36px);
+  margin: 0 auto;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.76);
+  border-radius: 26px;
+  background: linear-gradient(145deg, rgba(250,253,247,.985), rgba(246,249,232,.985));
+  box-shadow: 0 30px 90px rgba(23, 53, 31, .25);
+}
+
+.breeding-program-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  padding: 20px 24px 18px;
+  border-bottom: 1px solid #dbe6d8;
+  background: linear-gradient(120deg, rgba(255,255,255,.78), rgba(250,249,223,.74));
+}
+
+.breeding-program-heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.breeding-program-heading-icon {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  color: #2f7044;
+  background: linear-gradient(145deg, #e3f1d7, #f4ed9d);
+}
+
+.breeding-program-heading > div {
+  min-width: 0;
+}
+
+.breeding-program-heading small,
+.breeding-program-section-heading small,
+.brochure-intro small {
+  display: block;
+  color: #7d8c7f;
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.breeding-program-heading h2 {
+  margin: 2px 0 1px;
+  color: #174126;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 29px;
+  font-weight: 500;
+  line-height: 1.05;
+}
+
+.breeding-program-heading p {
+  margin: 0;
+  color: #748276;
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+.breeding-program-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  min-height: 76px;
+  border-bottom: 1px solid #dce7d9;
+  background: rgba(248,251,245,.96);
+}
+
+.breeding-program-tabs > button {
+  appearance: none;
+  display: grid;
+  grid-template-columns: 29px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 13px 18px;
+  border: 0;
+  border-right: 1px solid #dce7d9;
+  background: transparent;
+  color: #315b3d;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+}
+
+.breeding-program-tabs > button:last-child { border-right: 0; }
+.breeding-program-tabs > button:hover { background: #eff6e9; }
+.breeding-program-tabs > button.active {
+  color: #fff;
+  background: linear-gradient(135deg, #2f7e49, #4e913f);
+  box-shadow: inset 0 -4px 0 #c7dd62;
+}
+
+.breeding-program-tabs strong,
+.breeding-program-tabs small {
+  display: block;
+}
+.breeding-program-tabs strong { font-size: 11px; }
+.breeding-program-tabs small { margin-top: 2px; color: #7c8b7e; font-size: 7.5px; line-height: 1.25; }
+.breeding-program-tabs > button.active small { color: rgba(255,255,255,.74); }
+
+.breeding-program-content {
+  min-height: 0;
+  overflow: auto;
+  padding: 22px 24px 34px;
+  scrollbar-gutter: stable;
+}
+
+.breeding-program-pane {
+  width: min(1540px, 100%);
+  margin: 0 auto;
+  display: grid;
+  gap: 18px;
+}
+
+.breeding-program-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.breeding-program-summary > div {
+  min-height: 84px;
+  padding: 14px 16px;
+  border: 1px solid #dce7d9;
+  border-radius: 15px;
+  background: rgba(255,255,255,.76);
+}
+
+.breeding-program-summary strong {
+  display: block;
+  color: #1c4c30;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 25px;
+  font-weight: 500;
+}
+
+.breeding-program-summary span {
+  display: block;
+  margin-top: 4px;
+  color: #778379;
+  font-size: 8.5px;
+}
+
+.breeding-program-search-row {
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 13px;
+  border: 1px solid #d4e1d1;
+  background: #fff;
+  color: #4f7659;
+}
+
+.breeding-program-search-row input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #244c32;
+  font: inherit;
+  font-size: 11px;
+}
+
+.breeding-program-section-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 14px;
+  padding-top: 2px;
+}
+
+.breeding-program-section-heading h3,
+.brochure-intro h3 {
+  margin: 2px 0 0;
+  color: #204d31;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 21px;
+  font-weight: 500;
+}
+
+.breeding-program-section-heading > span {
+  color: #7f8c81;
+  font-size: 8px;
+}
+
+.protocol-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 11px;
+}
+
+.protocol-card {
+  min-width: 0;
+  padding: 15px;
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  gap: 10px;
+  border: 1px solid #dce6d9;
+  border-radius: 16px;
+  background: rgba(255,255,255,.84);
+  box-shadow: 0 8px 22px rgba(37,73,44,.05);
+}
+
+.protocol-card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.protocol-file-icon {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  color: #2e7246;
+  background: #eaf4e1;
+}
+
+.protocol-card small {
+  color: #758477;
+  font-size: 7.5px;
+  font-weight: 800;
+  letter-spacing: .07em;
+}
+
+.protocol-card h4 {
+  margin: 2px 0 0;
+  color: #28553a;
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.protocol-card p {
+  margin: 0;
+  color: #78847a;
+  font-size: 8.5px;
+  line-height: 1.5;
+}
+
+.protocol-card-status {
+  padding: 7px 8px;
+  border-radius: 8px;
+  background: #fbf8df;
+  color: #7b7653;
+  font-size: 7.5px;
+}
+
+.protocol-card footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.breeding-program-document-list {
+  display: grid;
+  gap: 7px;
+}
+
+.breeding-program-document-list > article {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid #dde7da;
+  border-radius: 12px;
+  background: rgba(255,255,255,.78);
+}
+
+.breeding-program-doc-icon {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  color: #2e7044;
+  background: #edf5e8;
+}
+
+.breeding-program-document-list strong,
+.breeding-program-document-list small,
+.breeding-program-document-list span {
+  display: block;
+}
+
+.breeding-program-document-list strong { color: #2b5739; font-size: 10px; }
+.breeding-program-document-list small { color: #819083; font-size: 7.5px; }
+.breeding-program-document-list span { margin-top: 2px; color: #7d897e; font-size: 7.5px; }
+.breeding-program-document-list p { margin: 4px 0 0; color: #7d897e; font-size: 8px; line-height: 1.4; }
+
+.breeding-program-doc-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.breeding-program-upload {
+  padding: 16px;
+  display: grid;
+  gap: 13px;
+  border: 1px solid #d9e6d6;
+  border-radius: 16px;
+  background: linear-gradient(145deg, rgba(245,250,239,.94), rgba(255,252,228,.88));
+}
+
+.breeding-program-upload-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #315e3e;
+}
+
+.breeding-program-upload-heading strong,
+.breeding-program-upload-heading span {
+  display: block;
+}
+
+.breeding-program-upload-heading strong { font-size: 11px; }
+.breeding-program-upload-heading span { margin-top: 2px; color: #7b887c; font-size: 8px; }
+
+.breeding-program-upload-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+}
+
+.breeding-program-upload-grid label {
+  display: grid;
+  gap: 4px;
+}
+
+.breeding-program-upload-grid label.wide { grid-column: 1 / -1; }
+.breeding-program-upload-grid label > span {
+  color: #52705a;
+  font-size: 7.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.breeding-program-upload-grid input,
+.breeding-program-upload-grid textarea {
+  width: 100%;
+  border: 1px solid #cfddcc;
+  border-radius: 8px;
+  padding: 9px 10px;
+  outline: 0;
+  background: #fff;
+  color: #2d5539;
+  font: inherit;
+  font-size: 9px;
+}
+
+.breeding-program-upload-grid textarea { resize: vertical; }
+
+.breeding-program-setup-note,
+.breeding-program-inline-error {
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 8.5px;
+  line-height: 1.45;
+}
+
+.breeding-program-setup-note {
+  border: 1px solid #ddd8a6;
+  background: #fffbe5;
+  color: #756f4f;
+}
+
+.breeding-program-inline-error {
+  border: 1px solid #ebc8c8;
+  background: #fff3f3;
+  color: #934a4a;
+}
+
+.research-archive-controls {
+  display: grid;
+  grid-template-columns: minmax(300px, 1fr) 180px auto;
+  align-items: stretch;
+  gap: 9px;
+}
+
+.research-year-filter {
+  position: relative;
+  min-height: 50px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 7px;
+  padding: 0 11px;
+  border: 1px solid #d4e1d1;
+  background: #fff;
+}
+
+.research-year-filter > span {
+  color: #788779;
+  font-size: 7.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.research-year-filter select {
+  min-width: 0;
+  appearance: none;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #31563b;
+  font: inherit;
+  font-size: 9px;
+}
+
+.research-card-list {
+  display: grid;
+  gap: 7px;
+}
+
+.research-card {
+  overflow: hidden;
+  border: 1px solid #dce7d9;
+  border-radius: 12px;
+  background: rgba(255,255,255,.82);
+}
+
+.research-card-main {
+  appearance: none;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 66px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 11px;
+  padding: 12px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+}
+
+.research-card-main:hover { background: #f6faf3; }
+
+.research-year {
+  padding: 7px 6px;
+  border-radius: 8px;
+  background: #edf5e7;
+  color: #3c6d49;
+  font-size: 9px;
+  font-weight: 850;
+  text-align: center;
+}
+
+.research-copy {
+  min-width: 0;
+}
+
+.research-copy strong,
+.research-copy small {
+  display: block;
+}
+
+.research-copy strong {
+  color: #285239;
+  font-size: 10.5px;
+  line-height: 1.3;
+}
+
+.research-copy small {
+  margin-top: 3px;
+  color: #758277;
+  font-size: 8px;
+}
+
+.research-copy p {
+  margin: 5px 0 0;
+  max-height: 2.8em;
+  overflow: hidden;
+  color: #7c887d;
+  font-size: 8px;
+  line-height: 1.4;
+}
+
+.research-card.expanded .research-copy p { max-height: none; }
+.research-card-main > svg { margin-top: 5px; color: #6d7f70; transition: transform .16s ease; }
+.research-card-main > svg.open { transform: rotate(180deg); }
+
+.research-card-detail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px 12px;
+  padding: 11px 89px 13px;
+  border-top: 1px solid #e6ede3;
+  background: #fbfcf9;
+  color: #7b887d;
+  font-size: 8px;
+}
+
+.research-card-detail p {
+  flex-basis: 100%;
+  margin: 2px 0 0;
+  color: #536a58;
+  font-size: 8.5px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.breeding-program-loading {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 15px;
+  color: #667c6b;
+  font-size: 9px;
+}
+
+.breeding-program-load-more { justify-self: center; }
+
+.brochure-intro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 16px 18px;
+  border-radius: 16px;
+  color: #285139;
+  background: linear-gradient(120deg, #eef7e7, #fff5bc);
+  border: 1px solid #dce5bf;
+}
+
+.brochure-intro p {
+  max-width: 850px;
+  margin: 6px 0 0;
+  color: #6d7d70;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.brochure-search-wrap {
+  position: relative;
+}
+
+.brochure-search-results {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 5px);
+  z-index: 20;
+  display: grid;
+  max-height: 300px;
+  overflow: auto;
+  border: 1px solid #d6e2d3;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 18px 40px rgba(28,65,38,.16);
+}
+
+.brochure-search-results button {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 12px;
+  border: 0;
+  border-bottom: 1px solid #eef2ec;
+  background: transparent;
+  color: #31593d;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  font-size: 9px;
+}
+
+.brochure-search-results button:hover { background: #f0f6eb; }
+
+.brochure-empty {
+  min-height: 260px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 8px;
+  border: 1px dashed #ccdcca;
+  border-radius: 17px;
+  color: #769078;
+  background: rgba(255,255,255,.52);
+  text-align: center;
+}
+
+.brochure-empty strong { color: #41644a; font-size: 11px; }
+.brochure-empty span { color: #7f8c81; font-size: 8px; }
+
+.brochure-preview-shell {
+  display: grid;
+  gap: 10px;
+}
+
+.brochure-preview {
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(300px, .9fr) minmax(360px, 1.1fr);
+  grid-template-areas:
+    "photo identity"
+    "facts facts";
+  border: 1px solid #d9e4d5;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 14px 34px rgba(28,65,38,.08);
+}
+
+.brochure-preview-photo {
+  grid-area: photo;
+  min-height: 315px;
+  display: grid;
+  place-items: center;
+  color: #658365;
+  background-color: #e9efae;
+  background-size: cover;
+  background-position: center;
+}
+
+.brochure-preview-photo span {
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.76);
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.brochure-preview-identity {
+  grid-area: identity;
+  padding: 34px 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: #fff;
+  background:
+    radial-gradient(circle at 86% 10%, rgba(227,236,104,.38), transparent 33%),
+    linear-gradient(135deg,#173f28,#2f7746);
+}
+
+.brochure-preview-identity > small {
+  color: #d8e8c6;
+  font-size: 8px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+}
+
+.brochure-preview-identity h2 {
+  margin: 12px 0 5px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 34px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.brochure-preview-identity p {
+  margin: 0;
+  max-width: 520px;
+  color: #dce9dd;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.brochure-preview-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 18px;
+}
+
+.brochure-preview-chips span {
+  padding: 6px 9px;
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 999px;
+  background: rgba(255,255,255,.08);
+  font-size: 8px;
+}
+
+.brochure-preview-facts {
+  grid-area: facts;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+  padding: 16px;
+  background: #fafcf7;
+}
+
+.brochure-preview-facts > div {
+  min-width: 0;
+  padding: 10px 11px;
+  border: 1px solid #dfe8dc;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.brochure-preview-facts > div.wide { grid-column: span 3; }
+.brochure-preview-facts small,
+.brochure-preview-facts strong { display: block; }
+.brochure-preview-facts small {
+  color: #7f8d80;
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.brochure-preview-facts strong {
+  margin-top: 3px;
+  color: #2c5338;
+  font-size: 9px;
+  overflow-wrap: anywhere;
+}
+
+.brochure-preview-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brochure-preview-actions span { color: #7d897e; font-size: 8px; }
+
+/* In-app printable brochure overlay */
+.cs-brochure-preview-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483100;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  background: #e7eee3;
+}
+
+.cs-brochure-preview-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #d4e0d1;
+  background: #fbfdf9;
+}
+
+.cs-brochure-preview-toolbar strong,
+.cs-brochure-preview-toolbar span { display: block; }
+.cs-brochure-preview-toolbar strong { color: #28543a; font-size: 10px; }
+.cs-brochure-preview-toolbar span { margin-top: 2px; color: #7a887c; font-size: 7.5px; }
+
+.cs-brochure-preview-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.cs-brochure-preview-actions button {
+  appearance: none;
+  min-height: 36px;
+  padding: 8px 12px;
+  border: 1px solid #c9d8c5;
+  border-radius: 8px;
+  background: #fff;
+  color: #31593d;
+  cursor: pointer;
+  font: inherit;
+  font-size: 8.5px;
+  font-weight: 800;
+}
+
+.cs-brochure-preview-actions button.primary {
+  border-color: #315f3d;
+  background: #315f3d;
+  color: #fff;
+}
+
+.cs-brochure-preview-frame {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #e7eee3;
+}
+
+@media (max-width: 1100px) {
+  .protocol-card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .research-archive-controls { grid-template-columns: 1fr 160px; }
+  .research-archive-controls > a { grid-column: 1 / -1; justify-self: start; }
+  .brochure-preview { grid-template-columns: 1fr; grid-template-areas: "photo" "identity" "facts"; }
+  .brochure-preview-photo { min-height: 280px; }
+}
+
+@media (max-width: 760px) {
+  .breeding-program-backdrop { inset: 0; padding: 0; }
+  .breeding-program-shell {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+  }
+  .breeding-program-header {
+    align-items: flex-start;
+    padding: 14px;
+  }
+  .breeding-program-heading-icon { display: none; }
+  .breeding-program-heading h2 { font-size: 23px; }
+  .breeding-program-tabs { grid-template-columns: 1fr; }
+  .breeding-program-tabs > button {
+    min-height: 58px;
+    border-right: 0;
+    border-bottom: 1px solid #dce7d9;
+  }
+  .breeding-program-content { padding: 14px; }
+  .breeding-program-summary,
+  .protocol-card-grid,
+  .breeding-program-upload-grid,
+  .research-archive-controls,
+  .brochure-preview-facts {
+    grid-template-columns: 1fr;
+  }
+  .breeding-program-upload-grid label.wide,
+  .brochure-preview-facts > div.wide { grid-column: auto; }
+  .breeding-program-document-list > article { grid-template-columns: 36px minmax(0,1fr); }
+  .breeding-program-doc-actions { grid-column: 1 / -1; justify-content: flex-start; }
+  .research-card-main { grid-template-columns: 54px minmax(0,1fr) auto; }
+  .research-card-detail { padding: 10px 12px 12px; }
+  .brochure-preview-identity { padding: 24px 20px; }
+  .brochure-preview-identity h2 { font-size: 29px; }
+  .brochure-preview-actions { align-items: flex-start; flex-direction: column; }
+  .cs-brochure-preview-toolbar { align-items: flex-start; flex-direction: column; }
+  .cs-brochure-preview-actions { width: 100%; flex-wrap: wrap; }
+}

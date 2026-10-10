@@ -1,0 +1,4759 @@
+{
+  "patch_version": "2.13.88",
+  "started_at": "2026-10-10T08:31:07.748Z",
+  "endpoint": "https://fra.cloud.appwrite.io/v1",
+  "project_id": "6a744cda00030236187b",
+  "database_id": "germdatabase",
+  "collections": {
+    "core": "sugarcane_registry_core",
+    "details": "sugarcane_registry_details"
+  },
+  "before": {
+    "core": 950,
+    "details": 950
+  },
+  "planned": {
+    "update": 931,
+    "create": 1
+  },
+  "results": {
+    "updated": [
+      {
+        "source_row": 3,
+        "variety": "Phil 5001",
+        "document_id": "sc_055f041fb0caa62590f8297f56"
+      },
+      {
+        "source_row": 4,
+        "variety": "Phil 5333",
+        "document_id": "sc_de661b25723682a023b9f1015e"
+      },
+      {
+        "source_row": 5,
+        "variety": "Phil 53-147",
+        "document_id": "sc_52967b40f1099b4e1bf765e985"
+      },
+      {
+        "source_row": 6,
+        "variety": "Phil 53-200",
+        "document_id": "sc_0a86b712a3e1715c717d25b87d"
+      },
+      {
+        "source_row": 7,
+        "variety": "Phil 54-42",
+        "document_id": "sc_8b3f76b6c503e559c80fc8e426"
+      },
+      {
+        "source_row": 8,
+        "variety": "Phil 54-49",
+        "document_id": "sc_3466efcc8659163277cffbb204"
+      },
+      {
+        "source_row": 9,
+        "variety": "Phil 54-60",
+        "document_id": "sc_707c5421ed90b658649f91d1e2"
+      },
+      {
+        "source_row": 10,
+        "variety": "Phil 55-220",
+        "document_id": "sc_0875125c2147623fb42aa4a9b9"
+      },
+      {
+        "source_row": 11,
+        "variety": "Phil 56-226",
+        "document_id": "sc_08aec3304c3c182490a191ba2f"
+      },
+      {
+        "source_row": 12,
+        "variety": "Phil 56-59",
+        "document_id": "sc_e43c4c11b859156a987803aa1b"
+      },
+      {
+        "source_row": 13,
+        "variety": "Phil 56-95",
+        "document_id": "sc_6d702dd292536bf8e5373d0fc9"
+      },
+      {
+        "source_row": 14,
+        "variety": "Phil 58-260",
+        "document_id": "sc_c3db6cd8e11a514f3eec35d828"
+      },
+      {
+        "source_row": 15,
+        "variety": "Phil 58-451",
+        "document_id": "sc_d0e34d9c667742296eb754a9da"
+      },
+      {
+        "source_row": 16,
+        "variety": "Phil 58-47",
+        "document_id": "sc_7e12a60f5882551fbdac48d861"
+      },
+      {
+        "source_row": 17,
+        "variety": "Phil 5911",
+        "document_id": "sc_0d664780348698a6b24ce6b60c"
+      },
+      {
+        "source_row": 18,
+        "variety": "Phil 5913",
+        "document_id": "sc_c55fcbefd2672ee804423108f1"
+      },
+      {
+        "source_row": 19,
+        "variety": "Phil 5917",
+        "document_id": "sc_c3ad12ef5b854e2b328a35e6fc"
+      },
+      {
+        "source_row": 20,
+        "variety": "Phil 5919",
+        "document_id": "sc_f8a86ecb0ba8d059a8884c9191"
+      },
+      {
+        "source_row": 21,
+        "variety": "Phil 6011",
+        "document_id": "sc_5497dc7d54f83a04201dc74e96"
+      },
+      {
+        "source_row": 22,
+        "variety": "Phil 6019",
+        "document_id": "sc_0f80411c46cbee70a3e58c2ffe"
+      },
+      {
+        "source_row": 23,
+        "variety": "Phil 6023",
+        "document_id": "sc_4d5250607b7ea6f661486e6dbd"
+      },
+      {
+        "source_row": 24,
+        "variety": "Phil 6025",
+        "document_id": "sc_bd889cc3ad5bb55c1e815b1899"
+      },
+      {
+        "source_row": 25,
+        "variety": "Phil 6027",
+        "document_id": "sc_0a756cb4bc950f249616322fdc"
+      },
+      {
+        "source_row": 26,
+        "variety": "Phil 6029",
+        "document_id": "sc_b63f32af0b6f4be3301073308b"
+      },
+      {
+        "source_row": 27,
+        "variety": "Phil 6111",
+        "document_id": "sc_ae2da73423b929d9e136c53095"
+      },
+      {
+        "source_row": 28,
+        "variety": "Phil 6119",
+        "document_id": "sc_c0f7838a3b7af0de928267acd6"
+      },
+      {
+        "source_row": 29,
+        "variety": "Phil 6121",
+        "document_id": "sc_a23047a0ed87b0a78f4bf3b737"
+      },
+      {
+        "source_row": 30,
+        "variety": "Phil 6129",
+        "document_id": "sc_9432df399ba45a13d57c0e7e7d"
+      },
+      {
+        "source_row": 31,
+        "variety": "Phil 6213",
+        "document_id": "sc_2d21ac9dea6df1eccfc904ffec"
+      },
+      {
+        "source_row": 32,
+        "variety": "Phil 6215",
+        "document_id": "sc_6d182aafc1d8a3b5aac5521f26"
+      },
+      {
+        "source_row": 33,
+        "variety": "Phil 6217",
+        "document_id": "sc_5d36ce531bfd3512c8070fc71e"
+      },
+      {
+        "source_row": 34,
+        "variety": "Phil 6229?6227",
+        "document_id": "sc_f0b0f3f79aef02a012e76715df"
+      },
+      {
+        "source_row": 35,
+        "variety": "Phil 6235",
+        "document_id": "sc_b334bcce9b85c675ec629abaeb"
+      },
+      {
+        "source_row": 36,
+        "variety": "Phil 6243",
+        "document_id": "sc_27106b4e381067571cf7908e07"
+      },
+      {
+        "source_row": 37,
+        "variety": "Phil 6311",
+        "document_id": "sc_c798331caa6d81184e74c5a112"
+      },
+      {
+        "source_row": 38,
+        "variety": "Phil 6317",
+        "document_id": "sc_a5ae0bc0dd47458bed30a72d02"
+      },
+      {
+        "source_row": 39,
+        "variety": "Phil 6319",
+        "document_id": "sc_f91fdfc39be23092d59abf94dd"
+      },
+      {
+        "source_row": 40,
+        "variety": "Phil 6321",
+        "document_id": "sc_1f76f096c128d5f0dc0d00659c"
+      },
+      {
+        "source_row": 41,
+        "variety": "Phil 6333",
+        "document_id": "sc_5afeb45fa387197c1f5f18cb3f"
+      },
+      {
+        "source_row": 42,
+        "variety": "Phil 6335",
+        "document_id": "sc_411af7cc2994f16e6ec87cae7b"
+      },
+      {
+        "source_row": 43,
+        "variety": "Phil 6337",
+        "document_id": "sc_20cc82aa99df45b73e3cefbc1e"
+      },
+      {
+        "source_row": 44,
+        "variety": "Phil 6413",
+        "document_id": "sc_71936d9cec49f46f07cb1670b6"
+      },
+      {
+        "source_row": 45,
+        "variety": "Phil 6417",
+        "document_id": "sc_fc303d1536922e4852012cfca0"
+      },
+      {
+        "source_row": 46,
+        "variety": "Phil 6421",
+        "document_id": "sc_214fed4e4ca4c75afecdc617f8"
+      },
+      {
+        "source_row": 47,
+        "variety": "Phil 64-2227",
+        "document_id": "sc_c9b053fe09059dbeeb3c7111e9"
+      },
+      {
+        "source_row": 48,
+        "variety": "Phil 6429",
+        "document_id": "sc_4ae9bba72861b58ea1cbb2d0bd"
+      },
+      {
+        "source_row": 49,
+        "variety": "Phil 6435",
+        "document_id": "sc_ea04c1bc62c7a94553e8d80408"
+      },
+      {
+        "source_row": 50,
+        "variety": "Phil 6443",
+        "document_id": "sc_e9bcdebc65b749fc842d2cd17d"
+      },
+      {
+        "source_row": 51,
+        "variety": "Phil 6513",
+        "document_id": "sc_276b73989a26a444e7d36a569d"
+      },
+      {
+        "source_row": 52,
+        "variety": "Phil 6553",
+        "document_id": "sc_567040403951ccb40563c1c9f3"
+      },
+      {
+        "source_row": 53,
+        "variety": "Phil 6559",
+        "document_id": "sc_cdb7991436a366a874199f4e47"
+      },
+      {
+        "source_row": 54,
+        "variety": "Phil 6607",
+        "document_id": "sc_896b6cb5218e2668beaae8438a"
+      },
+      {
+        "source_row": 55,
+        "variety": "Phil 6614",
+        "document_id": "sc_d7191fd2e9ea63f1509a1e5b0d"
+      },
+      {
+        "source_row": 56,
+        "variety": "Phil 66-4669? 4667",
+        "document_id": "sc_80980616ecc69acf072a3d7207"
+      },
+      {
+        "source_row": 57,
+        "variety": "Phil 6723",
+        "document_id": "sc_2a8871f480ea6f48e47251ecff"
+      },
+      {
+        "source_row": 58,
+        "variety": "Phil 6843",
+        "document_id": "sc_4614067f0e402af90ff620841d"
+      },
+      {
+        "source_row": 59,
+        "variety": "Phil 6877",
+        "document_id": "sc_7b1d18e34d794763aaf1224e9c"
+      },
+      {
+        "source_row": 60,
+        "variety": "Phil 7083",
+        "document_id": "sc_86207342e077bf7fe5d0d2b7bf"
+      },
+      {
+        "source_row": 61,
+        "variety": "Phil 7115",
+        "document_id": "sc_80e825f90f27f7c739604502dd"
+      },
+      {
+        "source_row": 62,
+        "variety": "Phil 7117",
+        "document_id": "sc_8392137cff328309298c178e46"
+      },
+      {
+        "source_row": 63,
+        "variety": "Phil 7177",
+        "document_id": "sc_a7d0f2679752f16b7eb70f7f37"
+      },
+      {
+        "source_row": 64,
+        "variety": "Phil 7217",
+        "document_id": "sc_d42fa23b2cb4a5ce0e815ac0d7"
+      },
+      {
+        "source_row": 65,
+        "variety": "Phil 7228",
+        "document_id": "sc_897a7c555c90b16f0cc0839d74"
+      },
+      {
+        "source_row": 66,
+        "variety": "Phil 7270",
+        "document_id": "sc_71cf6e0b2c5ecca0d1c1aeea1d"
+      },
+      {
+        "source_row": 67,
+        "variety": "Phil 73P1669",
+        "document_id": "sc_432fa9c9a76b1614b24686fc80"
+      },
+      {
+        "source_row": 68,
+        "variety": "Phil 7323",
+        "document_id": "sc_e2e1af42b5221d201afdfb734c"
+      },
+      {
+        "source_row": 69,
+        "variety": "Phil 7325",
+        "document_id": "sc_065122caeabda9bb6e0d6d195b"
+      },
+      {
+        "source_row": 70,
+        "variety": "Phil 7329",
+        "document_id": "sc_8c605f8f8805a349a10fa87c36"
+      },
+      {
+        "source_row": 71,
+        "variety": "Phil 7330",
+        "document_id": "sc_528a9e9bdd798152eae9b2c2ee"
+      },
+      {
+        "source_row": 72,
+        "variety": "Phil 73P2109",
+        "document_id": "sc_9a57f25d0dea633e066b7eac8b"
+      },
+      {
+        "source_row": 73,
+        "variety": "Phil 7444",
+        "document_id": "sc_bce9862ada808d34288546555e"
+      },
+      {
+        "source_row": 74,
+        "variety": "Phil 7464",
+        "document_id": "sc_1eb8ef7becdb92f1c7fc0e2bda"
+      },
+      {
+        "source_row": 75,
+        "variety": "Phil 7481",
+        "document_id": "sc_bc7ce1ba37cec8ab0ab9c08aab"
+      },
+      {
+        "source_row": 76,
+        "variety": "Phil 7493",
+        "document_id": "sc_00dfbe62e2149ec943c3fa854b"
+      },
+      {
+        "source_row": 77,
+        "variety": "Phil 7495",
+        "document_id": "sc_23252fbf1ddd120a39d6783a24"
+      },
+      {
+        "source_row": 78,
+        "variety": "Phil 7497",
+        "document_id": "sc_627598cd3a44d3fc80597dd74f"
+      },
+      {
+        "source_row": 79,
+        "variety": "Phil 7499",
+        "document_id": "sc_d915caa2f82e2e04839c9eec57"
+      },
+      {
+        "source_row": 80,
+        "variety": "Phil 75-2363",
+        "document_id": "sc_f2f487ee23d011a069ae43da3a"
+      },
+      {
+        "source_row": 81,
+        "variety": "Phil 7533",
+        "document_id": "sc_ca30a467b299b7219de875c68e"
+      },
+      {
+        "source_row": 82,
+        "variety": "Phil 7535",
+        "document_id": "sc_94f25e12d59903e6f6996a9dd5"
+      },
+      {
+        "source_row": 83,
+        "variety": "Phil 7539",
+        "document_id": "sc_e3a361d409496c4829ea6b5739"
+      },
+      {
+        "source_row": 84,
+        "variety": "Phil 7544",
+        "document_id": "sc_0cac43d549a2ba742454ddee76"
+      },
+      {
+        "source_row": 85,
+        "variety": "Phil 7641",
+        "document_id": "sc_0baf288f55775a26e8084d3719"
+      },
+      {
+        "source_row": 86,
+        "variety": "Phil 7643",
+        "document_id": "sc_011620e5ebd608da1198ffb6a4"
+      },
+      {
+        "source_row": 87,
+        "variety": "Phil 76-801",
+        "document_id": "sc_2a13f086970d2b9c14c087a5fb"
+      },
+      {
+        "source_row": 88,
+        "variety": "Phil 76-803",
+        "document_id": "sc_96afc91a0ff00c85145a52d9d1"
+      },
+      {
+        "source_row": 89,
+        "variety": "Phil 7701",
+        "document_id": "sc_e6a2db359b19b195054a424f02"
+      },
+      {
+        "source_row": 90,
+        "variety": "Phil 7707",
+        "document_id": "sc_3b001259b5e1fd28a18f3af54d"
+      },
+      {
+        "source_row": 91,
+        "variety": "Phil 7710",
+        "document_id": "sc_3efaa0c880fd6726a859bb0050"
+      },
+      {
+        "source_row": 92,
+        "variety": "Phil 7747",
+        "document_id": "sc_3e52b9ca8aa9da1ebeedbc2fca"
+      },
+      {
+        "source_row": 93,
+        "variety": "Phil 7749",
+        "document_id": "sc_7d702962ada58fe0520e4d7585"
+      },
+      {
+        "source_row": 94,
+        "variety": "Phil 7761",
+        "document_id": "sc_2a6cfce8ab1b9839b745d787b5"
+      },
+      {
+        "source_row": 95,
+        "variety": "Phil 7779",
+        "document_id": "sc_48095a3b7eec2c81070228942c"
+      },
+      {
+        "source_row": 96,
+        "variety": "Phil 7808",
+        "document_id": "sc_1b6d2273e6b4ca60c6e1456db8"
+      },
+      {
+        "source_row": 97,
+        "variety": "Phil 7809",
+        "document_id": "sc_57374791e1d985c8926fb8fac4"
+      },
+      {
+        "source_row": 98,
+        "variety": "Phil 78-1440",
+        "document_id": "sc_4445dd7fdfba74805ff793037f"
+      },
+      {
+        "source_row": 99,
+        "variety": "Phil 78-3981",
+        "document_id": "sc_985f05d083389a500464cc232e"
+      },
+      {
+        "source_row": 100,
+        "variety": "Phil 79-27-0015",
+        "document_id": "sc_7000f811636a1248cb284a3d29"
+      },
+      {
+        "source_row": 101,
+        "variety": "Phil 79-27-0019",
+        "document_id": "sc_54e1f2acf3155d276f86288ac5"
+      },
+      {
+        "source_row": 102,
+        "variety": "Phil 79-46-1465",
+        "document_id": "sc_b926b266fbb90c9321dfe75f47"
+      },
+      {
+        "source_row": 103,
+        "variety": "Phil 79-161-1497",
+        "document_id": "sc_b1bad4f2b60705f5d2438ea94d"
+      },
+      {
+        "source_row": 104,
+        "variety": "Phil 79-24-1769",
+        "document_id": "sc_150692f6d3eb18df98fdba8061"
+      },
+      {
+        "source_row": 105,
+        "variety": "Phil 79-11-1807",
+        "document_id": "sc_cc79cc9a2b3e09d0005acf3004"
+      },
+      {
+        "source_row": 106,
+        "variety": "Phil 79-57-1915",
+        "document_id": "sc_555d15252dbd49373d0734edd9"
+      },
+      {
+        "source_row": 107,
+        "variety": "POJ 213-VMC",
+        "document_id": "sc_01e73a1520c57b699e7578a434"
+      },
+      {
+        "source_row": 108,
+        "variety": "Phil 79-69-2077",
+        "document_id": "sc_8acd9076a36ee3a85b13f85b0f"
+      },
+      {
+        "source_row": 109,
+        "variety": "Phil 79-183-2233",
+        "document_id": "sc_c96f87df66f71d8d40a0a8c20d"
+      },
+      {
+        "source_row": 110,
+        "variety": "Phil 83-331",
+        "document_id": "sc_b119a1f01030bc4a01cbf5ef09"
+      },
+      {
+        "source_row": 111,
+        "variety": "Phil 79-189-2223",
+        "document_id": "sc_fff9e3d5b261ddf36a93865462"
+      },
+      {
+        "source_row": 112,
+        "variety": "Phil 79-53-2377",
+        "document_id": "sc_f49415fc1065a402c0a439156a"
+      },
+      {
+        "source_row": 113,
+        "variety": "Phil 79-27-2481",
+        "document_id": "sc_88f0c95eff48e51a3c6b6beff5"
+      },
+      {
+        "source_row": 114,
+        "variety": "Phil 79-4-2583",
+        "document_id": "sc_b06344d902e51244fba071aec0"
+      },
+      {
+        "source_row": 115,
+        "variety": "Phil 79-175-2611",
+        "document_id": "sc_1ba94913361a766389ea896821"
+      },
+      {
+        "source_row": 116,
+        "variety": "Phil 79-163-2613",
+        "document_id": "sc_251ececb9bdeb1a1bf4c7241c5"
+      },
+      {
+        "source_row": 117,
+        "variety": "Phil 79-3013",
+        "document_id": "sc_7deb3bd6be59027785797db036"
+      },
+      {
+        "source_row": 118,
+        "variety": "Phil 79-3319",
+        "document_id": "sc_331352bcf7b7049202b9767456"
+      },
+      {
+        "source_row": 119,
+        "variety": "Phil 79-3385",
+        "document_id": "sc_7787eb43eba71928f2326eed56"
+      },
+      {
+        "source_row": 120,
+        "variety": "Phil 7948",
+        "document_id": "sc_3555c290493d895d2db1f56a30"
+      },
+      {
+        "source_row": 121,
+        "variety": "Phil 80-0343",
+        "document_id": "sc_011f26e37608a8774647854202"
+      },
+      {
+        "source_row": 122,
+        "variety": "Phil 8005",
+        "document_id": "sc_2bbd33eb897d763b4b50b41d5f"
+      },
+      {
+        "source_row": 123,
+        "variety": "Phil 80-0843",
+        "document_id": "sc_91fcd97055bdfd828ae24833e8"
+      },
+      {
+        "source_row": 124,
+        "variety": "Phil 8011",
+        "document_id": "sc_15d667e8b407830ddb056750b2"
+      },
+      {
+        "source_row": 125,
+        "variety": "Phil 8013",
+        "document_id": "sc_901fdaaa85ff8dd4db320ee5d8"
+      },
+      {
+        "source_row": 126,
+        "variety": "Phil 80-177-2023",
+        "document_id": "sc_6315ae05ebaddee11a722cd8e4"
+      },
+      {
+        "source_row": 127,
+        "variety": "Phil 80-2227",
+        "document_id": "sc_618fbd22c8df07edf80229aff7"
+      },
+      {
+        "source_row": 128,
+        "variety": "Phil 80-2287",
+        "document_id": "sc_29966c30150d30e6cfd54552f9"
+      },
+      {
+        "source_row": 129,
+        "variety": "Phil 80-29-2151",
+        "document_id": "sc_e63b1cb3fc8f946feb9f4221ff"
+      },
+      {
+        "source_row": 130,
+        "variety": "Phil 80-30-0183",
+        "document_id": "sc_91c7390a8e0c247349eaf95f05"
+      },
+      {
+        "source_row": 131,
+        "variety": "Phil 80-4-0213",
+        "document_id": "sc_8078fdf3da08bb3f2e29934e1f"
+      },
+      {
+        "source_row": 132,
+        "variety": "Phil 80-5609",
+        "document_id": "sc_3d4ea888590d44ac44bc90c695"
+      },
+      {
+        "source_row": 133,
+        "variety": "Phil 80-5613",
+        "document_id": "sc_41e355dfd601b20aa61524ec54"
+      },
+      {
+        "source_row": 134,
+        "variety": "Phil 80-5619",
+        "document_id": "sc_3050540f05d8fd027a12907c78"
+      },
+      {
+        "source_row": 135,
+        "variety": "Phil 80-5651",
+        "document_id": "sc_11cd8b2d062825b3a51d01ac03"
+      },
+      {
+        "source_row": 136,
+        "variety": "Phil 80-5669",
+        "document_id": "sc_16aa9663597d42e09d389b41ba"
+      },
+      {
+        "source_row": 137,
+        "variety": "Phil 80-5711",
+        "document_id": "sc_77ff15a18db0db55db7d6a660c"
+      },
+      {
+        "source_row": 138,
+        "variety": "Phil 80-5769",
+        "document_id": "sc_3f4c5f46532d28b75b124d133c"
+      },
+      {
+        "source_row": 139,
+        "variety": "Phil 80-5803",
+        "document_id": "sc_651a7a177ea9c78701c39f17cf"
+      },
+      {
+        "source_row": 140,
+        "variety": "Phil 80-5839",
+        "document_id": "sc_368bb64c34364ddca94d6117af"
+      },
+      {
+        "source_row": 141,
+        "variety": "Phil 80-5847",
+        "document_id": "sc_ffdbcfac38e4fc2d37712f495b"
+      },
+      {
+        "source_row": 142,
+        "variety": "Phil 80-649-5669",
+        "document_id": "sc_cab413239196d3fd5fae0a42e0"
+      },
+      {
+        "source_row": 143,
+        "variety": "Phil 80-740-8011",
+        "document_id": "sc_e02248cc61a45a2bcda29ec11d"
+      },
+      {
+        "source_row": 144,
+        "variety": "Phil 80-8-0631",
+        "document_id": "sc_984e6ef37c5813ce56faf60584"
+      },
+      {
+        "source_row": 145,
+        "variety": "Phil 80-8-0635",
+        "document_id": "sc_9604cff933836b279cf532e58a"
+      },
+      {
+        "source_row": 146,
+        "variety": "Phil 8093",
+        "document_id": "sc_ed564d24beaae1c61245b07ff1"
+      },
+      {
+        "source_row": 147,
+        "variety": "Phil 81-139-0843",
+        "document_id": "sc_9543bdff15e02ae7997c139693"
+      },
+      {
+        "source_row": 148,
+        "variety": "Phil 81-304-3149",
+        "document_id": "sc_9609974a400afcc6ecaede162d"
+      },
+      {
+        "source_row": 149,
+        "variety": "Phil 81-313-3763",
+        "document_id": "sc_37afd4a23cbf34078c42cca75c"
+      },
+      {
+        "source_row": 150,
+        "variety": "Phil 81-329-3805",
+        "document_id": "sc_e570340ef65d6d22aa9db70510"
+      },
+      {
+        "source_row": 151,
+        "variety": "Phil 81-341-3415",
+        "document_id": "sc_86ee03ad8a9f1e9bf3dd3c6182"
+      },
+      {
+        "source_row": 152,
+        "variety": "Phil 81-349-4727",
+        "document_id": "sc_25082bf69198f48e427fd273f4"
+      },
+      {
+        "source_row": 153,
+        "variety": "Phil 81-350-4731",
+        "document_id": "sc_2a8a83490a919921d3c57262c2"
+      },
+      {
+        "source_row": 154,
+        "variety": "Phil 81-350-4797",
+        "document_id": "sc_c762e823c37b956da6b38e5b43"
+      },
+      {
+        "source_row": 155,
+        "variety": "Phil 81-4197",
+        "document_id": "sc_780f89a3bb51078e53530e7e7b"
+      },
+      {
+        "source_row": 156,
+        "variety": "Phil 81-4199",
+        "document_id": "sc_711b6dcc7d330c1086c6cff112"
+      },
+      {
+        "source_row": 157,
+        "variety": "Phil 81-466-3201",
+        "document_id": "sc_b997bd00a843b4324743edab82"
+      },
+      {
+        "source_row": 158,
+        "variety": "Phil 81-347-1247",
+        "document_id": "sc_05f81e0cef0cdc24cff00fe52e"
+      },
+      {
+        "source_row": 159,
+        "variety": "Phil 81-571-0067",
+        "document_id": "sc_72a4a920be672a7910dfe6fa4a"
+      },
+      {
+        "source_row": 160,
+        "variety": "Phil 81-624-0101",
+        "document_id": "sc_23bb6bc655382facf406dfe253"
+      },
+      {
+        "source_row": 161,
+        "variety": "Phil 81-625-0627",
+        "document_id": "sc_94891c345dff54ddbb9861a0d9"
+      },
+      {
+        "source_row": 162,
+        "variety": "Phil 8164",
+        "document_id": "sc_4d3e212395c9c2ad0e02bcb9ad"
+      },
+      {
+        "source_row": 163,
+        "variety": "Phil 81-674-1591",
+        "document_id": "sc_a0da15a3f2818c4a79f702cc5f"
+      },
+      {
+        "source_row": 164,
+        "variety": "Phil 8184",
+        "document_id": "sc_3bd97cb547dd7caedffc4c2c31"
+      },
+      {
+        "source_row": 165,
+        "variety": "Phil 82-129-1715",
+        "document_id": "sc_156316629f7166862e807f6386"
+      },
+      {
+        "source_row": 166,
+        "variety": "Phil 82-177-2023",
+        "document_id": "sc_1bbb5ab9b3925aeea798ee5fd7"
+      },
+      {
+        "source_row": 167,
+        "variety": "Phil 82-219-2013",
+        "document_id": "sc_ec877e60ebc7155e871e4cfa0c"
+      },
+      {
+        "source_row": 168,
+        "variety": "Phil 82-242-2109",
+        "document_id": "sc_6338978fb5f811a2b0211a7484"
+      },
+      {
+        "source_row": 169,
+        "variety": "Phil 82-331-4089",
+        "document_id": "sc_70a8f9c5e0e00121782774d6ff"
+      },
+      {
+        "source_row": 170,
+        "variety": "Phil 82-53-147",
+        "document_id": "sc_3de806ab48bd7a01a8a291153f"
+      },
+      {
+        "source_row": 171,
+        "variety": "Phil 82-626-2287",
+        "document_id": "sc_dd3768abb7ac9bd93a1cc5655c"
+      },
+      {
+        "source_row": 172,
+        "variety": "Phil 82-649-2669",
+        "document_id": "sc_93bdf49c4d9bc1de85c4c389c5"
+      },
+      {
+        "source_row": 173,
+        "variety": "Phil 82-733-2551",
+        "document_id": "sc_460480e2edb67201b7a8019771"
+      },
+      {
+        "source_row": 174,
+        "variety": "Phil 82-1015-4669",
+        "document_id": "sc_f45d9c6cae777310f3a1dd67d8"
+      },
+      {
+        "source_row": 175,
+        "variety": "Phil 83-129-3401",
+        "document_id": "sc_ca6be36fc6b038f6bede6a5585"
+      },
+      {
+        "source_row": 176,
+        "variety": "Phil 83-1309-1715",
+        "document_id": "sc_1f9ac634c75291d7bed2bc6cb8"
+      },
+      {
+        "source_row": 177,
+        "variety": "Phil 83-1309-1795",
+        "document_id": "sc_abc35fe13ff602f323874f62e0"
+      },
+      {
+        "source_row": 178,
+        "variety": "Phil 83-1311-2005",
+        "document_id": "sc_45447a837a8923cfd500a261c0"
+      },
+      {
+        "source_row": 179,
+        "variety": "Phil 83-23-5739",
+        "document_id": "sc_b454f0c3859a63dbacf16e95f0"
+      },
+      {
+        "source_row": 180,
+        "variety": "Phil 83-24-5741",
+        "document_id": "sc_80f32719a4cfeaa3fd1e147489"
+      },
+      {
+        "source_row": 181,
+        "variety": "Phil 83-24-5741 Tc",
+        "document_id": "sc_6447c80a8fad413951b12e419d"
+      },
+      {
+        "source_row": 182,
+        "variety": "Phil 83-260-3903",
+        "document_id": "sc_e8f4dd2b79990e458f2c3f98cf"
+      },
+      {
+        "source_row": 183,
+        "variety": "Phil 83-30-5733",
+        "document_id": "sc_3138e67cec4a6e4aa7cad1623c"
+      },
+      {
+        "source_row": 184,
+        "variety": "Phil 83-331-4089",
+        "document_id": "sc_28e7799272d09f3b53ba176c96"
+      },
+      {
+        "source_row": 185,
+        "variety": "Phil 83-331-4098",
+        "document_id": "sc_90f6c845015021abae5f0fdf47"
+      },
+      {
+        "source_row": 186,
+        "variety": "Phil 83-340-0511",
+        "document_id": "sc_e6c705ee9f6320b7619fadfb8d"
+      },
+      {
+        "source_row": 187,
+        "variety": "Phil 83-341-3415",
+        "document_id": "sc_bb4483426021c47e81747d768e"
+      },
+      {
+        "source_row": 188,
+        "variety": "Phil 83-529-0325",
+        "document_id": "sc_1f9f629a336f4563cca0769959"
+      },
+      {
+        "source_row": 189,
+        "variety": "Phil 83-546-0511",
+        "document_id": "sc_f593cd7eae0942ddf8b0937661"
+      },
+      {
+        "source_row": 190,
+        "variety": "Phil 8361",
+        "document_id": "sc_a932580e5dcd7efdc716c48ecc"
+      },
+      {
+        "source_row": 191,
+        "variety": "Phil 83-730-0085",
+        "document_id": "sc_787a22263c2832d9d223cadba9"
+      },
+      {
+        "source_row": 192,
+        "variety": "Phil 83-933-5029",
+        "document_id": "sc_bfa92e2ce70711af22d8f13f1d"
+      },
+      {
+        "source_row": 193,
+        "variety": "Phil 84-0199",
+        "document_id": "sc_c3acc83db8d30c90a8a66861a5"
+      },
+      {
+        "source_row": 194,
+        "variety": "Phil 84-155-0799",
+        "document_id": "sc_0db3d161d82ba3dc03ffae1c0e"
+      },
+      {
+        "source_row": 195,
+        "variety": "Phil 84-18-4309",
+        "document_id": "sc_8f2426bec8fd10b410c6d9f3c6"
+      },
+      {
+        "source_row": 196,
+        "variety": "Phil 84-202-4077",
+        "document_id": "sc_46187d768f0faefe6f5a17e3f3"
+      },
+      {
+        "source_row": 197,
+        "variety": "P 6461",
+        "document_id": "sc_706ace42d8150105bb3a012251"
+      },
+      {
+        "source_row": 198,
+        "variety": "PT-3385",
+        "document_id": "sc_894409e40dbab0bd0ee34ce709"
+      },
+      {
+        "source_row": 199,
+        "variety": "Phil 84-471-6535",
+        "document_id": "sc_75cb2fca7ddb58558da5438a0f"
+      },
+      {
+        "source_row": 200,
+        "variety": "Phil 84-519-6509",
+        "document_id": "sc_1d6269795a9f0c23f1d2385005"
+      },
+      {
+        "source_row": 201,
+        "variety": "Phil 84-524-6559",
+        "document_id": "sc_57fe797a56bae312c6ac25762d"
+      },
+      {
+        "source_row": 202,
+        "variety": "Phil 85-53-2401",
+        "document_id": "sc_ad7e4c646546c848819a4d5e73"
+      },
+      {
+        "source_row": 203,
+        "variety": "Phil 8471",
+        "document_id": "sc_8d5feafdf02280d017fc77606f"
+      },
+      {
+        "source_row": 204,
+        "variety": "Phil 8477",
+        "document_id": "sc_0e7629e5b66789ec7b09e76cf8"
+      },
+      {
+        "source_row": 205,
+        "variety": "Phil 8479",
+        "document_id": "sc_9a11c716fcd88c4baecd547e28"
+      },
+      {
+        "source_row": 206,
+        "variety": "Phil 84-97-3325",
+        "document_id": "sc_e9d90ee6cb298a771e6a20a695"
+      },
+      {
+        "source_row": 207,
+        "variety": "Phil 84-97-3375",
+        "document_id": "sc_1dc845eefad09671b8c3cd5e1c"
+      },
+      {
+        "source_row": 208,
+        "variety": "Phil 85-1041-4739",
+        "document_id": "sc_d51747ee3f9d6cb9edcaae10f6"
+      },
+      {
+        "source_row": 209,
+        "variety": "Phil 85-1343-3117",
+        "document_id": "sc_73ab4afdbc2217d6844d0c5c2b"
+      },
+      {
+        "source_row": 210,
+        "variety": "Phil 85-134-3341",
+        "document_id": "sc_03ecaa985c4d5544841830f5cd"
+      },
+      {
+        "source_row": 211,
+        "variety": "Phil 85-1399-3093",
+        "document_id": "sc_1f4d97e9a8bdd545fb7fca6f40"
+      },
+      {
+        "source_row": 212,
+        "variety": "Phil 85-1415-3185",
+        "document_id": "sc_69fb8b95a22fbef9bc9630a876"
+      },
+      {
+        "source_row": 213,
+        "variety": "Phil 85-17-4309",
+        "document_id": "sc_fe8382475f6c904ca774cbbd73"
+      },
+      {
+        "source_row": 214,
+        "variety": "Phil 85-175-2363",
+        "document_id": "sc_46aad4be190622f19672897046"
+      },
+      {
+        "source_row": 215,
+        "variety": "Phil 85-18-2225",
+        "document_id": "sc_f45da5756eb46e3da7c3717b2e"
+      },
+      {
+        "source_row": 216,
+        "variety": "Phil 85-23-4345?",
+        "document_id": "sc_695337c4005664c2b2d464c99f"
+      },
+      {
+        "source_row": 217,
+        "variety": "Phil 85-314-4170",
+        "document_id": "sc_7ee565864c485409d47295fe65"
+      },
+      {
+        "source_row": 218,
+        "variety": "Phil 85-464-0685",
+        "document_id": "sc_d8be79c18f9a081e957bea2d77"
+      },
+      {
+        "source_row": 219,
+        "variety": "Phil 85-468-6525",
+        "document_id": "sc_6cfa4a0ab747bdf18baeac0cf7"
+      },
+      {
+        "source_row": 220,
+        "variety": "Phil 85-566-0349",
+        "document_id": "sc_d102bf8d7374edc6a91863ba50"
+      },
+      {
+        "source_row": 221,
+        "variety": "Phil 85-692-1418",
+        "document_id": "sc_4526f640548bb8716429a757a6"
+      },
+      {
+        "source_row": 222,
+        "variety": "Phil 85-71-2347",
+        "document_id": "sc_6fcb641c620aebb83fbc4f36f5"
+      },
+      {
+        "source_row": 223,
+        "variety": "Phil 85-71-2353",
+        "document_id": "sc_e051ee0bd1e3ac857dc123ad00"
+      },
+      {
+        "source_row": 224,
+        "variety": "Phil 85-75-2363",
+        "document_id": "sc_96eb2de26a7e0ad740b119d9f9"
+      },
+      {
+        "source_row": 225,
+        "variety": "Phil 8583",
+        "document_id": "sc_208b8c4e01752dafafeff683ca"
+      },
+      {
+        "source_row": 226,
+        "variety": "Phil 86-99-2461",
+        "document_id": "sc_b0a79437594d2615b94dda971a"
+      },
+      {
+        "source_row": 227,
+        "variety": "Phil 86-120-1119",
+        "document_id": "sc_e449bf2999698598e529aeef08"
+      },
+      {
+        "source_row": 228,
+        "variety": "Phil 86-130-1157",
+        "document_id": "sc_0b402b7acb54f8f9ee0bc74d24"
+      },
+      {
+        "source_row": 229,
+        "variety": "Phil 86-30-0457",
+        "document_id": "sc_021406d830e979a544256c99fa"
+      },
+      {
+        "source_row": 230,
+        "variety": "Phil 86-661-0291",
+        "document_id": "sc_561b32310da210e9bdc43e1972"
+      },
+      {
+        "source_row": 231,
+        "variety": "Phil 86-740-1315",
+        "document_id": "sc_ff4c1766073aaf475c0409b108"
+      },
+      {
+        "source_row": 232,
+        "variety": "Phil 86-782-1445",
+        "document_id": "sc_61970012afff8d569ca9abef4e"
+      },
+      {
+        "source_row": 233,
+        "variety": "Phil 86-782-1545",
+        "document_id": "sc_669cd1b7e5d62115f920de6744"
+      },
+      {
+        "source_row": 234,
+        "variety": "Phil 87-0835",
+        "document_id": "sc_a425ac90848b590bc583a9d713"
+      },
+      {
+        "source_row": 235,
+        "variety": "Phil 87-0927",
+        "document_id": "sc_7254e0c5c798790e76d9ce980a"
+      },
+      {
+        "source_row": 236,
+        "variety": "Phil 8715",
+        "document_id": "sc_ea63d0ad6af989d2839095d6bf"
+      },
+      {
+        "source_row": 237,
+        "variety": "Phil 87-543-0733",
+        "document_id": "sc_f3c5dd509dfd1b20ad42b3c4a0"
+      },
+      {
+        "source_row": 238,
+        "variety": "Phil 87-17-0037",
+        "document_id": "sc_6e66394114c5ebfa466e1a2872"
+      },
+      {
+        "source_row": 239,
+        "variety": "Phil 87-195-0409",
+        "document_id": "sc_02fa78dd951bb30ebf5a9ea6a7"
+      },
+      {
+        "source_row": 240,
+        "variety": "Phil 87-20-0183",
+        "document_id": "sc_eeaf37a0ae626de73c648deeeb"
+      },
+      {
+        "source_row": 241,
+        "variety": "Phil 87-20-1920",
+        "document_id": "sc_b8c41e2f1943be2e403011d6c3"
+      },
+      {
+        "source_row": 242,
+        "variety": "Phil 87-202-4077",
+        "document_id": "sc_3ee90f39380252358ea31ed840"
+      },
+      {
+        "source_row": 243,
+        "variety": "Phil 8727",
+        "document_id": "sc_867d241519cf3e6985c8f4da60"
+      },
+      {
+        "source_row": 244,
+        "variety": "Phil 87-27-0133",
+        "document_id": "sc_64e7d670d94dbed1b33dfdb903"
+      },
+      {
+        "source_row": 245,
+        "variety": "Phil 87-30-0121",
+        "document_id": "sc_456af9d8a957a44eab15027a59"
+      },
+      {
+        "source_row": 246,
+        "variety": "Phil 87-30-0171",
+        "document_id": "sc_099c28a5f6d481e45250f555a1"
+      },
+      {
+        "source_row": 247,
+        "variety": "Phil 87-30-0183",
+        "document_id": "sc_9af457709b8ffae515fac2b312"
+      },
+      {
+        "source_row": 248,
+        "variety": "Phil 87-56-0435",
+        "document_id": "sc_349cd25c56b367d8f2c8f536ec"
+      },
+      {
+        "source_row": 249,
+        "variety": "Phil 87-90-0565",
+        "document_id": "sc_7155f8acef2a2a5fb0f934b110"
+      },
+      {
+        "source_row": 250,
+        "variety": "Phil 88-121-0363",
+        "document_id": "sc_1cb5fb45f9555e4f4930b07f28"
+      },
+      {
+        "source_row": 251,
+        "variety": "Phil 88-1431",
+        "document_id": "sc_c823b69a05bbac99a3c27fcb5f"
+      },
+      {
+        "source_row": 252,
+        "variety": "Phil 88-189-0877",
+        "document_id": "sc_97aa3dbf859c88756ceedf9d8e"
+      },
+      {
+        "source_row": 253,
+        "variety": "Phil 88-26-0985",
+        "document_id": "sc_48c362405457ce10298a72ae8a"
+      },
+      {
+        "source_row": 254,
+        "variety": "Phil 88-119-0357",
+        "document_id": "sc_cd4455fd5ed89f0ae3a78956dd"
+      },
+      {
+        "source_row": 255,
+        "variety": "Phil 8835",
+        "document_id": "sc_b1fcf71a8cb49dfde2a137a3f4"
+      },
+      {
+        "source_row": 256,
+        "variety": "Phil 8839",
+        "document_id": "sc_24bad2cd93d6501b4412986317"
+      },
+      {
+        "source_row": 257,
+        "variety": "Phil 88-626-1431",
+        "document_id": "sc_5a2dde7705bb4abe3f180513ef"
+      },
+      {
+        "source_row": 258,
+        "variety": "Phil 88-626-1689",
+        "document_id": "sc_66c3d191840db060933b7132e6"
+      },
+      {
+        "source_row": 259,
+        "variety": "Phil 88-626-1691",
+        "document_id": "sc_868c58174e5ea4365aba161b4a"
+      },
+      {
+        "source_row": 260,
+        "variety": "Phil 88-696-1845",
+        "document_id": "sc_14f4e2be2eeaa8d3805be413ac"
+      },
+      {
+        "source_row": 261,
+        "variety": "Phil 88-786-1925",
+        "document_id": "sc_2d53e846e78a6e6a14849323a2"
+      },
+      {
+        "source_row": 262,
+        "variety": "Phil 89-1011",
+        "document_id": "sc_2f96a2e960ead2e0fad7ab06fc"
+      },
+      {
+        "source_row": 263,
+        "variety": "Phil 89-36-0455",
+        "document_id": "sc_3b944163761b4d16bbd7d9db84"
+      },
+      {
+        "source_row": 264,
+        "variety": "Phil 89-502-0575",
+        "document_id": "sc_ce56494b4c3d3e3792162b50e9"
+      },
+      {
+        "source_row": 265,
+        "variety": "Phil 89-531-1031",
+        "document_id": "sc_1c1fc412ab8aa31a150a6600f6"
+      },
+      {
+        "source_row": 266,
+        "variety": "Phil 89-540-1071",
+        "document_id": "sc_ba6dc1c71fb5a563f24d13f663"
+      },
+      {
+        "source_row": 267,
+        "variety": "Phil 89-598-1435",
+        "document_id": "sc_6ddf73e4d7370159f48ab9cfd7"
+      },
+      {
+        "source_row": 268,
+        "variety": "Phil 89-66-0051",
+        "document_id": "sc_fe7b71a640103324a06e6db9b8"
+      },
+      {
+        "source_row": 269,
+        "variety": "Phil 89-661-1517",
+        "document_id": "sc_74b9dfe1ad6035ee765c10b810"
+      },
+      {
+        "source_row": 270,
+        "variety": "Phil 89-676-1611",
+        "document_id": "sc_9e224299ae020a9ebf07018760"
+      },
+      {
+        "source_row": 271,
+        "variety": "Phil 89-78-0211",
+        "document_id": "sc_9d5682837150ebd039ece9980c"
+      },
+      {
+        "source_row": 272,
+        "variety": "Phil 89-90-0495",
+        "document_id": "sc_b46fe0bd60a4eeedd45cd5367a"
+      },
+      {
+        "source_row": 273,
+        "variety": "Phil 89-107-0733",
+        "document_id": "sc_e1e9eba3c4ec2341b03011f665"
+      },
+      {
+        "source_row": 274,
+        "variety": "Phil 90-40-0173",
+        "document_id": "sc_6649284462cd3e24820b038e79"
+      },
+      {
+        "source_row": 275,
+        "variety": "Phil 90-0343",
+        "document_id": "sc_5b7db5d9b8459b22bf1653eb3b"
+      },
+      {
+        "source_row": 276,
+        "variety": "Phil 90-0345",
+        "document_id": "sc_dfe84f2b2f83008ec4e3435a6f"
+      },
+      {
+        "source_row": 277,
+        "variety": "Phil 90-0505",
+        "document_id": "sc_0fae2ed537d942fdca1b5eafb6"
+      },
+      {
+        "source_row": 278,
+        "variety": "Phil 90-59-0547",
+        "document_id": "sc_4b1f0b7e75a97d700e70062456"
+      },
+      {
+        "source_row": 279,
+        "variety": "Phil 90-1080-1097",
+        "document_id": "sc_802d1596e55c2e853804edb10b"
+      },
+      {
+        "source_row": 280,
+        "variety": "Phil 90-1083-1107",
+        "document_id": "sc_33856416973c61d80c0426dc60"
+      },
+      {
+        "source_row": 281,
+        "variety": "Phil 90-1147-1191",
+        "document_id": "sc_dcef3890e77b64c53f8ebd817a"
+      },
+      {
+        "source_row": 282,
+        "variety": "Phil 90-117-0799",
+        "document_id": "sc_8d7f6728d3aa6547bc244b2423"
+      },
+      {
+        "source_row": 283,
+        "variety": "Phil 90-1237",
+        "document_id": "sc_487ff29a0fb15a6e8447896300"
+      },
+      {
+        "source_row": 284,
+        "variety": "Phil 90-1238-1259",
+        "document_id": "sc_9e4b16f121a2b24e7256a16a95"
+      },
+      {
+        "source_row": 285,
+        "variety": "Phil 90-124-0837",
+        "document_id": "sc_defa18fd3e6220b2a101f03820"
+      },
+      {
+        "source_row": 286,
+        "variety": "Phil 90-157-0953",
+        "document_id": "sc_09bcb1b47175bb8d6fa372c68e"
+      },
+      {
+        "source_row": 287,
+        "variety": "Phil 90-19-0085",
+        "document_id": "sc_e21dc14963cf751c36b46ddbe4"
+      },
+      {
+        "source_row": 288,
+        "variety": "Phil 90-267",
+        "document_id": "sc_fbbb1be7b67d2e243d592e105c"
+      },
+      {
+        "source_row": 289,
+        "variety": "Phil 90-271",
+        "document_id": "sc_af06b7a68bb5017f4477b31d29"
+      },
+      {
+        "source_row": 290,
+        "variety": "Phil 90-2799",
+        "document_id": "sc_6e6d6c53fb9873195c65719cd0"
+      },
+      {
+        "source_row": 291,
+        "variety": "Phil 90-28-0143",
+        "document_id": "sc_68eb7898b0f64e122bdbefeca0"
+      },
+      {
+        "source_row": 292,
+        "variety": "Phil 90-0288",
+        "document_id": "sc_2d134b900724e6da12f69d25ad"
+      },
+      {
+        "source_row": 293,
+        "variety": "Phil 90-0173",
+        "document_id": "sc_90b368f876dcdff8b8280f982d"
+      },
+      {
+        "source_row": 294,
+        "variety": "Phil 90-0745",
+        "document_id": "sc_194c2d433a5b2462e55c7d97ba"
+      },
+      {
+        "source_row": 295,
+        "variety": "Phil 90-60-0557",
+        "document_id": "sc_6a07c4f5ebca92f842f7141bac"
+      },
+      {
+        "source_row": 296,
+        "variety": "Phil 90-61-0567",
+        "document_id": "sc_36c98b1cfd384f7c0815bbba9c"
+      },
+      {
+        "source_row": 297,
+        "variety": "Phil 90-67-0615",
+        "document_id": "sc_1349ce0287505590bd61a28586"
+      },
+      {
+        "source_row": 298,
+        "variety": "Phil 90-73-0655",
+        "document_id": "sc_a5ed03e11d28bffe296f43e6a5"
+      },
+      {
+        "source_row": 299,
+        "variety": "Phil 90-81-0313 or 0713",
+        "document_id": "sc_3dbe6eae30d44d6d5453d02eaf"
+      },
+      {
+        "source_row": 300,
+        "variety": "Phil 90-90-0385",
+        "document_id": "sc_47c7d41c1a3b360e3b0e12d8d9"
+      },
+      {
+        "source_row": 301,
+        "variety": "Phil 90-91-0429",
+        "document_id": "sc_452933c2f955372756b56e7b36"
+      },
+      {
+        "source_row": 302,
+        "variety": "Phil 90-91-0439",
+        "document_id": "sc_1093319063b693f8e97b2c8e77"
+      },
+      {
+        "source_row": 303,
+        "variety": "Phil 91-0489",
+        "document_id": "sc_6ca77e57a4f506ac8e87ea4dff"
+      },
+      {
+        "source_row": 304,
+        "variety": "Phil 91-0707",
+        "document_id": "sc_555975bc9061dbe5c8bb596780"
+      },
+      {
+        "source_row": 305,
+        "variety": "Phil 91-0861/91-15-0861",
+        "document_id": "sc_e936b5ceec840fdf77ab5e50d6"
+      },
+      {
+        "source_row": 306,
+        "variety": "Phil 91-1091",
+        "document_id": "sc_59d141a70e7750a79adb61886c"
+      },
+      {
+        "source_row": 307,
+        "variety": "Phil 91-110-0807",
+        "document_id": "sc_74da57830f72dea3dc4ec4dd9e"
+      },
+      {
+        "source_row": 308,
+        "variety": "Phil 91-117-0873",
+        "document_id": "sc_23a43586613bb59c2b76edae21"
+      },
+      {
+        "source_row": 309,
+        "variety": "Phil 91-120-0909",
+        "document_id": "sc_fec0620281a1d81014202fa5f1"
+      },
+      {
+        "source_row": 310,
+        "variety": "Phil 91-138-0985",
+        "document_id": "sc_a3bbf5efc9b72ff93e02e38d87"
+      },
+      {
+        "source_row": 311,
+        "variety": "Phil 91-158-1143",
+        "document_id": "sc_1eac98739a8fefad987f6b278f"
+      },
+      {
+        "source_row": 312,
+        "variety": "Phil 91-182-1217",
+        "document_id": "sc_00cf276c97ce31010d10d3f7b7"
+      },
+      {
+        "source_row": 313,
+        "variety": "Phil 91-201-1269",
+        "document_id": "sc_305c4e9e0c3caa3e162ff14524"
+      },
+      {
+        "source_row": 314,
+        "variety": "Phil 91-213-1369",
+        "document_id": "sc_429c3f4aa7ee6d1f0c8dcd31d2"
+      },
+      {
+        "source_row": 315,
+        "variety": "Phil 91-30-0235",
+        "document_id": "sc_aa233ae3d0eb87098e14b2081e"
+      },
+      {
+        "source_row": 316,
+        "variety": "Phil 91-30-0237",
+        "document_id": "sc_f111a53e6c46184d258fa07eb5"
+      },
+      {
+        "source_row": 317,
+        "variety": "Phil 91-5-0037",
+        "document_id": "sc_2c75ae484c3a02dff54b99976a"
+      },
+      {
+        "source_row": 318,
+        "variety": "Phil 91-54-0485",
+        "document_id": "sc_4e1a8349cbcba4861537c06d60"
+      },
+      {
+        "source_row": 319,
+        "variety": "Phil 91-73-0605",
+        "document_id": "sc_266bde880061df9354b9bfce7b"
+      },
+      {
+        "source_row": 320,
+        "variety": "Phil 91-77-0623 or 71-0623",
+        "document_id": "sc_2f0276afaf34c68595e5a386ad"
+      },
+      {
+        "source_row": 321,
+        "variety": "Pindas",
+        "document_id": "sc_c4cd65e055ceebb860b5cbbc32"
+      },
+      {
+        "source_row": 322,
+        "variety": "Phil 91-85-0647",
+        "document_id": "sc_8a99e1ed1f45652f3c9fa51ed9"
+      },
+      {
+        "source_row": 323,
+        "variety": "Phil 91-85-0661",
+        "document_id": "sc_c39877304c39ce8882161379e8"
+      },
+      {
+        "source_row": 324,
+        "variety": "Phil 91-95-0701",
+        "document_id": "sc_2c4704b5002c560fa83a561293"
+      },
+      {
+        "source_row": 325,
+        "variety": "Phil 92-0051",
+        "document_id": "sc_752d80074c8ed693f3bfddf576"
+      },
+      {
+        "source_row": 326,
+        "variety": "Phil 92-0435",
+        "document_id": "sc_d9d1bb76741ceb02ed48687cdd"
+      },
+      {
+        "source_row": 327,
+        "variety": "Phil 92-0577",
+        "document_id": "sc_ffd108c78e0597ce969a5e8a54"
+      },
+      {
+        "source_row": 328,
+        "variety": "Phil 92-0751",
+        "document_id": "sc_f3da132c029b5baba4e1eb9710"
+      },
+      {
+        "source_row": 329,
+        "variety": "Phil 92-01-0009",
+        "document_id": "sc_1f9f0df55e30e3d831361a086d"
+      },
+      {
+        "source_row": 330,
+        "variety": "Phil 92-100-1299",
+        "document_id": "sc_17fe0e94ce24d3a8cc55b31cf0"
+      },
+      {
+        "source_row": 331,
+        "variety": "Phil 92-1209",
+        "document_id": "sc_3f9c8599d55f322e6da8b3d9c1"
+      },
+      {
+        "source_row": 332,
+        "variety": "Phil 92-1249",
+        "document_id": "sc_a2d8790a9984a42818679cc297"
+      },
+      {
+        "source_row": 333,
+        "variety": "Phil 92-149-1589",
+        "document_id": "sc_36d27440bcd9f1f9e62eb613a3"
+      },
+      {
+        "source_row": 334,
+        "variety": "Phil 92-19-0385",
+        "document_id": "sc_e4a3c53002036be7b010d2df32"
+      },
+      {
+        "source_row": 335,
+        "variety": "Phil 92-2025",
+        "document_id": "sc_ee2422a5ce3be60ef4b44ee7f4"
+      },
+      {
+        "source_row": 336,
+        "variety": "Phil 92-2071",
+        "document_id": "sc_fc4797809befee47d89a84c0f2"
+      },
+      {
+        "source_row": 337,
+        "variety": "Phil 92-2075",
+        "document_id": "sc_b751b9bb6513976edb0e811d86"
+      },
+      {
+        "source_row": 338,
+        "variety": "Phil 92-22-0447",
+        "document_id": "sc_4023c283ab890c2ca66b0410f2"
+      },
+      {
+        "source_row": 339,
+        "variety": "Phil 92-202-2047",
+        "document_id": "sc_93003776acb3f68e62b9e4e32f"
+      },
+      {
+        "source_row": 340,
+        "variety": "Phil 92-29-0521",
+        "document_id": "sc_fcf11f3ceaff86a2609a7e7dbc"
+      },
+      {
+        "source_row": 341,
+        "variety": "Phil 92-29-0535",
+        "document_id": "sc_217f1f190ef534a4231b8c1d3b"
+      },
+      {
+        "source_row": 342,
+        "variety": "Phil 92-3-0023",
+        "document_id": "sc_12f4ba3bdf383104a361cf9137"
+      },
+      {
+        "source_row": 343,
+        "variety": "Phil 92-30-0545",
+        "document_id": "sc_fe3a58924d2252149fd89b63f4"
+      },
+      {
+        "source_row": 344,
+        "variety": "Phil 92-32-0577",
+        "document_id": "sc_2381e28e24a410338307d6e8bb"
+      },
+      {
+        "source_row": 345,
+        "variety": "Phil 92-37-0687",
+        "document_id": "sc_d48628301e6c4e83207f32521c"
+      },
+      {
+        "source_row": 346,
+        "variety": "Phil 92-41-0729",
+        "document_id": "sc_3de94b7e8c3b6cb942365b556d"
+      },
+      {
+        "source_row": 347,
+        "variety": "Phil 92-75-1091",
+        "document_id": "sc_1a52bbfbbb28745bd5964df385"
+      },
+      {
+        "source_row": 348,
+        "variety": "Phil 92-8835",
+        "document_id": "sc_d8343d9668aa745f56f2e0cb9c"
+      },
+      {
+        "source_row": 349,
+        "variety": "Phil 92-98-1257",
+        "document_id": "sc_60c8dd7f748d5c9aa73855ae5b"
+      },
+      {
+        "source_row": 350,
+        "variety": "Phil 93-0761",
+        "document_id": "sc_8d6e53c491b5ac8293d577eac8"
+      },
+      {
+        "source_row": 351,
+        "variety": "Phil 93-10-0085",
+        "document_id": "sc_a7cd5a1e40697f06be48e63ab2"
+      },
+      {
+        "source_row": 352,
+        "variety": "Phil 93-123-1293",
+        "document_id": "sc_853d36d47a51af6b94f6d291d6"
+      },
+      {
+        "source_row": 353,
+        "variety": "Phil 93-190-2349",
+        "document_id": "sc_6f170c3b3a3ea55e1bae92ccc5"
+      },
+      {
+        "source_row": 354,
+        "variety": "Phil 93-175-2139",
+        "document_id": "sc_5fcf615ff9cf2932f88b4fe06e"
+      },
+      {
+        "source_row": 355,
+        "variety": "Phil 93-208-2593",
+        "document_id": "sc_2776d9a6a2e081855001c61f51"
+      },
+      {
+        "source_row": 356,
+        "variety": "Phil 93-219-2877",
+        "document_id": "sc_715a65cb49c2de1bc12f81adba"
+      },
+      {
+        "source_row": 357,
+        "variety": "Phil 93-219-2889",
+        "document_id": "sc_323e9d65f2174685933a09137e"
+      },
+      {
+        "source_row": 358,
+        "variety": "Phil 93-221-2985",
+        "document_id": "sc_baa57dc868758472246007a0d3"
+      },
+      {
+        "source_row": 359,
+        "variety": "Phil 93-227-3155",
+        "document_id": "sc_5ea616fbff07c029302f4df21e"
+      },
+      {
+        "source_row": 360,
+        "variety": "Phil 93-190-2349",
+        "document_id": "sc_6ebd25a1527a580a02a8e59b31"
+      },
+      {
+        "source_row": 361,
+        "variety": "Phil 93-239-3301",
+        "document_id": "sc_8a995c988dc2ca651e2500a938"
+      },
+      {
+        "source_row": 362,
+        "variety": "Phil 93-256-3443",
+        "document_id": "sc_4c4abfd6c62bdac03ff8f58f5d"
+      },
+      {
+        "source_row": 363,
+        "variety": "Phil 93-262-3535",
+        "document_id": "sc_2958c5321181c944072feed4bc"
+      },
+      {
+        "source_row": 364,
+        "variety": "Phil 93-271-3605",
+        "document_id": "sc_6536fd3588aa2f6f52ea8a5bfb"
+      },
+      {
+        "source_row": 365,
+        "variety": "Phil 93-284-3859",
+        "document_id": "sc_24c1d799176613cdc694b63dd9"
+      },
+      {
+        "source_row": 366,
+        "variety": "Phil 93-295-3957",
+        "document_id": "sc_a88ff816150770183a91612c86"
+      },
+      {
+        "source_row": 367,
+        "variety": "Phil 93-3-0013",
+        "document_id": "sc_470b70a00a46724ca8bf76d803"
+      },
+      {
+        "source_row": 368,
+        "variety": "Phil 93-300-4027",
+        "document_id": "sc_2b6455301d319d729a7370b7db"
+      },
+      {
+        "source_row": 369,
+        "variety": "Phil 93-323-4191",
+        "document_id": "sc_82e4009bd927c84e2705c4fd94"
+      },
+      {
+        "source_row": 370,
+        "variety": "Phil 93-34-6385",
+        "document_id": "sc_53f0d921829da555e557b338bf"
+      },
+      {
+        "source_row": 371,
+        "variety": "Phil 93-3583",
+        "document_id": "sc_bb3e416f5a16bc8d2c0ba89947"
+      },
+      {
+        "source_row": 372,
+        "variety": "Phil 93-3727",
+        "document_id": "sc_fb8b4beb23cdd5110dbb75f6d9"
+      },
+      {
+        "source_row": 373,
+        "variety": "Phil 93-3849",
+        "document_id": "sc_62e992c29d2ebeea73891b632f"
+      },
+      {
+        "source_row": 374,
+        "variety": "Phil 93-394-4509",
+        "document_id": "sc_fc4b6be7d142a6472bf7acac8d"
+      },
+      {
+        "source_row": 375,
+        "variety": "Phil 93-4159",
+        "document_id": "sc_9d3286104ffbb4eb7f4a1600a5"
+      },
+      {
+        "source_row": 376,
+        "variety": "Phil 93-48-0489",
+        "document_id": "sc_e9d291f696a32b0321a15a0b2d"
+      },
+      {
+        "source_row": 377,
+        "variety": "Phil 93-59-0713",
+        "document_id": "sc_95b4f465fd36f2b1f0c8f1f1cf"
+      },
+      {
+        "source_row": 378,
+        "variety": "Phil 93-59-0731",
+        "document_id": "sc_c6ad12dfd2f829086f58d5ca36"
+      },
+      {
+        "source_row": 379,
+        "variety": "Phil 93-65-0775",
+        "document_id": "sc_6a7609fbc4601d27754c843ea5"
+      },
+      {
+        "source_row": 380,
+        "variety": "Phil 93-68-0857",
+        "document_id": "sc_734bbb5f99293123e997642df5"
+      },
+      {
+        "source_row": 381,
+        "variety": "Phil 93-68-0869",
+        "document_id": "sc_5be36048df8ea153abdedff28d"
+      },
+      {
+        "source_row": 382,
+        "variety": "Phil 93-68-0871",
+        "document_id": "sc_a76510df2ecb89501354a47bef"
+      },
+      {
+        "source_row": 383,
+        "variety": "Phil 94-0043",
+        "document_id": "sc_c8b84e16a6974e9a075ee013e5"
+      },
+      {
+        "source_row": 384,
+        "variety": "Phil 94-0221",
+        "document_id": "sc_6cb99183cd5b5040a26bbf08c2"
+      },
+      {
+        "source_row": 385,
+        "variety": "Phil 94-0279",
+        "document_id": "sc_212e486ba494e610057ad20ced"
+      },
+      {
+        "source_row": 386,
+        "variety": "Phil 94-0913",
+        "document_id": "sc_710e983d040ffa081269a5742b"
+      },
+      {
+        "source_row": 387,
+        "variety": "Phil 94-1005",
+        "document_id": "sc_640dc715954e28e6f351db8924"
+      },
+      {
+        "source_row": 388,
+        "variety": "Phil 94-2445",
+        "document_id": "sc_715b285972c20363b581905e5e"
+      },
+      {
+        "source_row": 389,
+        "variety": "Phil 94-3491",
+        "document_id": "sc_1f440a0ce73d9ea7862be4ba29"
+      },
+      {
+        "source_row": 390,
+        "variety": "Phil 94-3531",
+        "document_id": "sc_d931508cd6f20ee23673256cce"
+      },
+      {
+        "source_row": 391,
+        "variety": "Phil 95-1029",
+        "document_id": "sc_ab66f287c5a2c2b6ccb3649e6e"
+      },
+      {
+        "source_row": 392,
+        "variety": "Phil 95-1421",
+        "document_id": "sc_b8501546e1582944824fddd18b"
+      },
+      {
+        "source_row": 393,
+        "variety": "Phil 95-3025",
+        "document_id": "sc_a69398de95a4d8d8b2e36d4cd8"
+      },
+      {
+        "source_row": 394,
+        "variety": "Phil 95-3877",
+        "document_id": "sc_218304cd07b921d1b8489f7360"
+      },
+      {
+        "source_row": 395,
+        "variety": "Phil 95-4627",
+        "document_id": "sc_6160d57c904217067dcdc9de2e"
+      },
+      {
+        "source_row": 396,
+        "variety": "Phil 95-0579",
+        "document_id": "sc_70b219e56012d211bd8dd06aac"
+      },
+      {
+        "source_row": 397,
+        "variety": "Phil 96-0637",
+        "document_id": "sc_8eaa85a50f4ed892e7ef49aa12"
+      },
+      {
+        "source_row": 398,
+        "variety": "Phil 96-1781",
+        "document_id": "sc_c42aef671d7dad75ada7da6904"
+      },
+      {
+        "source_row": 399,
+        "variety": "Phil 96-2691",
+        "document_id": "sc_f77695eb7ce7fd6d0c0def9c78"
+      },
+      {
+        "source_row": 400,
+        "variety": "Phil 96-2983",
+        "document_id": "sc_4e0f18c2d8f9f62672f4b84f3e"
+      },
+      {
+        "source_row": 401,
+        "variety": "Phil 96-3239",
+        "document_id": "sc_7d162cbb1ea76f473ded1dec22"
+      },
+      {
+        "source_row": 402,
+        "variety": "Phil 96-3263",
+        "document_id": "sc_d86fc7e47fff8fa221fdc4ab98"
+      },
+      {
+        "source_row": 403,
+        "variety": "Phil 96-4153",
+        "document_id": "sc_5b8334b09d85fd19242c3ad83c"
+      },
+      {
+        "source_row": 404,
+        "variety": "Phil 97-2339",
+        "document_id": "sc_8359893a4342ba18905f3925cc"
+      },
+      {
+        "source_row": 405,
+        "variety": "Phil 97-2383",
+        "document_id": "sc_945d0692501ebaa4fe783fc027"
+      },
+      {
+        "source_row": 406,
+        "variety": "Phil 97-1123",
+        "document_id": "sc_bfa0c9109e30407fb265c65f16"
+      },
+      {
+        "source_row": 407,
+        "variety": "Phil 97-0687",
+        "document_id": "sc_3db0e878c050d86066f216c29f"
+      },
+      {
+        "source_row": 408,
+        "variety": "Phil 97-0673",
+        "document_id": "sc_78b30b41d9ac20d43b6f1ff814"
+      },
+      {
+        "source_row": 409,
+        "variety": "Phil 97-2423",
+        "document_id": "sc_8161a6166a44007c5120e4202b"
+      },
+      {
+        "source_row": 410,
+        "variety": "Aqual",
+        "document_id": "sc_45887de608705b90585c3126ef"
+      },
+      {
+        "source_row": 411,
+        "variety": "Assam red",
+        "document_id": "sc_960c0c4b4260715340a5e8a82c"
+      },
+      {
+        "source_row": 412,
+        "variety": "Akoki green",
+        "document_id": "sc_90e8dd206156522a12aa017dc7"
+      },
+      {
+        "source_row": 413,
+        "variety": "Australia",
+        "document_id": "sc_0aa2fe67f0fc254f843b031980"
+      },
+      {
+        "source_row": 414,
+        "variety": "Brazilian",
+        "document_id": "sc_1e78e279359943658f5d513789"
+      },
+      {
+        "source_row": 415,
+        "variety": "BA 11569/63",
+        "document_id": "sc_0c464fd1c22e94f07593b89da9"
+      },
+      {
+        "source_row": 416,
+        "variety": "B 13",
+        "document_id": "sc_fdb855ccdb46c2483fa042ab13"
+      },
+      {
+        "source_row": 417,
+        "variety": "B 5210",
+        "document_id": "sc_54fe00e69481424583b9abafc7"
+      },
+      {
+        "source_row": 418,
+        "variety": "B 3337",
+        "document_id": "sc_025c39189020a0649b1373ad51"
+      },
+      {
+        "source_row": 419,
+        "variety": "B 46-3646",
+        "document_id": "sc_ba9763110c0242f56e632dffc0"
+      },
+      {
+        "source_row": 420,
+        "variety": "Berlin",
+        "document_id": "sc_087ad2b2dc3ff0ae5cf2eea6cc"
+      },
+      {
+        "source_row": 421,
+        "variety": "B 3439",
+        "document_id": "sc_2722da67872d6672b27104775f"
+      },
+      {
+        "source_row": 422,
+        "variety": "B 49-227",
+        "document_id": "sc_f356e21482f5bd182d6e871180"
+      },
+      {
+        "source_row": 423,
+        "variety": "B 0-14",
+        "document_id": "sc_3b6898fd989087d6f82761ea56"
+      },
+      {
+        "source_row": 424,
+        "variety": "B 43-391",
+        "document_id": "sc_fd79b6733c53eaaf43eb360ddb"
+      },
+      {
+        "source_row": 425,
+        "variety": "Bekur Palite Banay",
+        "document_id": "sc_451d95b84aae8af233fea61241"
+      },
+      {
+        "source_row": 426,
+        "variety": "B 47-255",
+        "document_id": "sc_07c6c6fd88c55bac405021b1dd"
+      },
+      {
+        "source_row": 427,
+        "variety": "B 43-47",
+        "document_id": "sc_4372c535691399c41484ad5b20"
+      },
+      {
+        "source_row": 428,
+        "variety": "B 45-151",
+        "document_id": "sc_1085f515c54848fea5edfecf24"
+      },
+      {
+        "source_row": 429,
+        "variety": "B 54-227",
+        "document_id": "sc_752eef09d4ad54d260985cb15e"
+      },
+      {
+        "source_row": 430,
+        "variety": "B 37-161",
+        "document_id": "sc_959bad46f3b472dcb4db353ea3"
+      },
+      {
+        "source_row": 431,
+        "variety": "B 17-261",
+        "document_id": "sc_6a96565443c83df642b04e0a94"
+      },
+      {
+        "source_row": 432,
+        "variety": "B 54-142",
+        "document_id": "sc_966350082054adbb9518c5a411"
+      },
+      {
+        "source_row": 433,
+        "variety": "B 50-414",
+        "document_id": "sc_0dd6e3ae8a535836f477ba5704"
+      },
+      {
+        "source_row": 435,
+        "variety": "B 43-337",
+        "document_id": "sc_46df73a4777a6d26cdd8d60da8"
+      },
+      {
+        "source_row": 436,
+        "variety": "BN 368",
+        "document_id": "sc_9d80f05336a7ac9f987575eb7d"
+      },
+      {
+        "source_row": 437,
+        "variety": "CAC 71-221",
+        "document_id": "sc_fe309250b2b5b49c726ae2435a"
+      },
+      {
+        "source_row": 438,
+        "variety": "CAC 71-250",
+        "document_id": "sc_49097a770c9d2f68345bf4b4e3"
+      },
+      {
+        "source_row": 439,
+        "variety": "CAC 71-3",
+        "document_id": "sc_3a12984bb5e02b8b2b9c4ff50d"
+      },
+      {
+        "source_row": 440,
+        "variety": "CAC 71-4",
+        "document_id": "sc_76e4f4d8cdaab5f7afaf6a3f73"
+      },
+      {
+        "source_row": 441,
+        "variety": "CAC 275",
+        "document_id": "sc_d4e759a4e5fc023f58cce683d1"
+      },
+      {
+        "source_row": 442,
+        "variety": "CAC 71-224",
+        "document_id": "sc_8d07855fda02b697a972e73439"
+      },
+      {
+        "source_row": 443,
+        "variety": "CAC 71-254",
+        "document_id": "sc_19da8e471a284f756a78037978"
+      },
+      {
+        "source_row": 444,
+        "variety": "CAC 310",
+        "document_id": "sc_215435041143288fe0d7850b1c"
+      },
+      {
+        "source_row": 445,
+        "variety": "CAC 298",
+        "document_id": "sc_33deb08b369935005d4c92650c"
+      },
+      {
+        "source_row": 446,
+        "variety": "CAC 58-360",
+        "document_id": "sc_ebbe83ea2ef47afa53e7f998ce"
+      },
+      {
+        "source_row": 447,
+        "variety": "CAC 34-3",
+        "document_id": "sc_9f589777e1bf8796b5c84aa5c7"
+      },
+      {
+        "source_row": 448,
+        "variety": "CAC 58-30",
+        "document_id": "sc_2e426750e4d3a53b3791e053c2"
+      },
+      {
+        "source_row": 449,
+        "variety": "CAC 5775?/5776",
+        "document_id": "sc_72db3164838a261af02ecb1e19"
+      },
+      {
+        "source_row": 450,
+        "variety": "CoL 39",
+        "document_id": "sc_f03b4b6ee43628b8ccb3a5db01"
+      },
+      {
+        "source_row": 451,
+        "variety": "CB 47-15",
+        "document_id": "sc_c9f3b5c348124e110a4cf52708"
+      },
+      {
+        "source_row": 452,
+        "variety": "CL 49-200",
+        "document_id": "sc_ca964be8503186baa079f40b59"
+      },
+      {
+        "source_row": 453,
+        "variety": "Comus",
+        "document_id": "sc_67685eb851b3b4c5dcdc039de2"
+      },
+      {
+        "source_row": 454,
+        "variety": "CB 45-3",
+        "document_id": "sc_5d30f0b627690febabfd3ab720"
+      },
+      {
+        "source_row": 455,
+        "variety": "Clone 133",
+        "document_id": "sc_398caf998599efb4d82f53cbfa"
+      },
+      {
+        "source_row": 456,
+        "variety": "Co 527",
+        "document_id": "sc_b753898ca1774acb801da48ec0"
+      },
+      {
+        "source_row": 457,
+        "variety": "Co 301",
+        "document_id": "sc_24b7d885aec685f7dec911af69"
+      },
+      {
+        "source_row": 458,
+        "variety": "Co 449",
+        "document_id": "sc_a3a56c99a885c4aa4fdcfe1480"
+      },
+      {
+        "source_row": 459,
+        "variety": "Co 285",
+        "document_id": "sc_4725ef20ed64af4f6937bacb47"
+      },
+      {
+        "source_row": 460,
+        "variety": "Co 740",
+        "document_id": "sc_e078ef04d6edf6d47988e81f8e"
+      },
+      {
+        "source_row": 461,
+        "variety": "Co 62-172",
+        "document_id": "sc_b0cd7d58ae9bd51df7fe3f9224"
+      },
+      {
+        "source_row": 462,
+        "variety": "Co 415",
+        "document_id": "sc_eb8cf748fb144e2e32d333289f"
+      },
+      {
+        "source_row": 463,
+        "variety": "Co 453",
+        "document_id": "sc_5ac17b5d02061af265b1376c28"
+      },
+      {
+        "source_row": 464,
+        "variety": "Co 421",
+        "document_id": "sc_9579d39ca57b1e045f01be9780"
+      },
+      {
+        "source_row": 465,
+        "variety": "Co 313",
+        "document_id": "sc_e92877f5cc02e7053415efac96"
+      },
+      {
+        "source_row": 466,
+        "variety": "Co 420",
+        "document_id": "sc_5a7d0f1d0847adcdc1251bf2e7"
+      },
+      {
+        "source_row": 467,
+        "variety": "Co 65-357",
+        "document_id": "sc_93a18c50afca45af97490cd8c5"
+      },
+      {
+        "source_row": 468,
+        "variety": "Co 611",
+        "document_id": "sc_6a3c85228f5e6f3525a3b457a5"
+      },
+      {
+        "source_row": 469,
+        "variety": "Co 650",
+        "document_id": "sc_c7029b539c2405839a64434c05"
+      },
+      {
+        "source_row": 470,
+        "variety": "Co 1158",
+        "document_id": "sc_deffda77b01a27d72f08dbb3ef"
+      },
+      {
+        "source_row": 471,
+        "variety": "Co 774",
+        "document_id": "sc_f29ef3bb7d26d51a86c6c11eb0"
+      },
+      {
+        "source_row": 472,
+        "variety": "Co 57-542",
+        "document_id": "sc_ca3f80cec9a883fb21f7d2a34b"
+      },
+      {
+        "source_row": 473,
+        "variety": "Co 257",
+        "document_id": "sc_975c0053fd53151505bf2b47b0"
+      },
+      {
+        "source_row": 474,
+        "variety": "Co 655",
+        "document_id": "sc_6c38b912c77f06c77e69be18bd"
+      },
+      {
+        "source_row": 475,
+        "variety": "Co 975",
+        "document_id": "sc_85cefa3cdfab70836ae74e2892"
+      },
+      {
+        "source_row": 476,
+        "variety": "Co 62-175",
+        "document_id": "sc_4709494cd4911d8f70b5387a38"
+      },
+      {
+        "source_row": 477,
+        "variety": "Co 331",
+        "document_id": "sc_67c51c7c7e1cd55f21b9fbb7c0"
+      },
+      {
+        "source_row": 478,
+        "variety": "Co 467",
+        "document_id": "sc_4fb78b94fe36fd4c4925ca2e8c"
+      },
+      {
+        "source_row": 479,
+        "variety": "Co 997",
+        "document_id": "sc_1ed5730b391ada1577d416fc46"
+      },
+      {
+        "source_row": 480,
+        "variety": "Co 29/co119",
+        "document_id": "sc_b478182c2708e29cbfed23b85f"
+      },
+      {
+        "source_row": 481,
+        "variety": "Co 785",
+        "document_id": "sc_9aeb7a135ef1679e06c498bf60"
+      },
+      {
+        "source_row": 482,
+        "variety": "Cos 740",
+        "document_id": "sc_e8c100a4ba34d45139395c6585"
+      },
+      {
+        "source_row": 483,
+        "variety": "Cos 785",
+        "document_id": "sc_3624a9045e74ebdfb165198f40"
+      },
+      {
+        "source_row": 484,
+        "variety": "Cos 655",
+        "document_id": "sc_489a652aaf862f565297a9a1f0"
+      },
+      {
+        "source_row": 485,
+        "variety": "Cos 455",
+        "document_id": "sc_b0df50277d732e91fb141f387a"
+      },
+      {
+        "source_row": 486,
+        "variety": "Cos 715",
+        "document_id": "sc_e18cbe3896d93f97b87b398078"
+      },
+      {
+        "source_row": 487,
+        "variety": "Cos 997",
+        "document_id": "sc_433153e2be6fefb11117c8dd09"
+      },
+      {
+        "source_row": 488,
+        "variety": "Cos 301",
+        "document_id": "sc_79aace51b0c79edabe5192dfe2"
+      },
+      {
+        "source_row": 489,
+        "variety": "Cos 443",
+        "document_id": "sc_c883e4747854e37708e9a4cd3d"
+      },
+      {
+        "source_row": 490,
+        "variety": "HOCP 93-750",
+        "document_id": "sc_3e7241e0793075a13115ecf280"
+      },
+      {
+        "source_row": 491,
+        "variety": "LCP 85-384",
+        "document_id": "sc_f40e6ea8fb78d73099fde3783b"
+      },
+      {
+        "source_row": 492,
+        "variety": "Cp 44-155",
+        "document_id": "sc_3c6ad5ef98caabdb4227455517"
+      },
+      {
+        "source_row": 493,
+        "variety": "Cp 80-1743",
+        "document_id": "sc_0aaa06242263a5ac1a868536bb"
+      },
+      {
+        "source_row": 494,
+        "variety": "Cp 72-2686/CP72-2683",
+        "document_id": "sc_793906f6568c3a3032f7806bb2"
+      },
+      {
+        "source_row": 495,
+        "variety": "Cp 85-1382",
+        "document_id": "sc_570760e97f5e7a9ccd4973585f"
+      },
+      {
+        "source_row": 496,
+        "variety": "Cp 88-1761/CP 88-1461",
+        "document_id": "sc_2c9f55c53ba3f886e9583d4c9f"
+      },
+      {
+        "source_row": 497,
+        "variety": "Cp 74-2002",
+        "document_id": "sc_c4b8e4a3ec6ea37c2e1f500878"
+      },
+      {
+        "source_row": 498,
+        "variety": "Cp 2802",
+        "document_id": "sc_3bad5029004e26f02843500279"
+      },
+      {
+        "source_row": 499,
+        "variety": "Cp 36-116",
+        "document_id": "sc_5b37adb101a3de38160d6bacaa"
+      },
+      {
+        "source_row": 500,
+        "variety": "Cp 84-1198",
+        "document_id": "sc_682579bda8af3a49ea1067287b"
+      },
+      {
+        "source_row": 501,
+        "variety": "Cp 81-1254",
+        "document_id": "sc_e55be650f5729f811504c9b5cd"
+      },
+      {
+        "source_row": 502,
+        "variety": "Cp 72-370",
+        "document_id": "sc_16e6bb6f2f6c617a5a0ae7a328"
+      },
+      {
+        "source_row": 503,
+        "variety": "Cp 29-116",
+        "document_id": "sc_c0a5d29c1652dbc4bcfc3ab829"
+      },
+      {
+        "source_row": 504,
+        "variety": "Cp 85-384",
+        "document_id": "sc_deff47fdf02b4f0b467d8b4581"
+      },
+      {
+        "source_row": 505,
+        "variety": "Cp 73-327",
+        "document_id": "sc_cfcfc0482b26cac694b403d5b5"
+      },
+      {
+        "source_row": 506,
+        "variety": "Cp 71-1194",
+        "document_id": "sc_00401c37692518b02fde99029d"
+      },
+      {
+        "source_row": 507,
+        "variety": "Cp 74-2003",
+        "document_id": "sc_e1fd554c80fef4ef859b3bdec3"
+      },
+      {
+        "source_row": 508,
+        "variety": "Cp 76-340",
+        "document_id": "sc_74e9fd4b021d1c2ce1daf1ee24"
+      },
+      {
+        "source_row": 509,
+        "variety": "Cp 76-1312",
+        "document_id": "sc_157a3f0962480a785761c61d33"
+      },
+      {
+        "source_row": 510,
+        "variety": "Cp 72-1312",
+        "document_id": "sc_033db0daffa2e1dfa079efc1d1"
+      },
+      {
+        "source_row": 511,
+        "variety": "Cp 75-327",
+        "document_id": "sc_b21a2503386c230d87aafe2364"
+      },
+      {
+        "source_row": 512,
+        "variety": "Cp 76-1133",
+        "document_id": "sc_83e5e97b95eea043162beb5158"
+      },
+      {
+        "source_row": 513,
+        "variety": "Cp 34-78",
+        "document_id": "sc_f963c6f36cd8cd91337c585033"
+      },
+      {
+        "source_row": 514,
+        "variety": "Cp 36-105",
+        "document_id": "sc_aa76aff4027f6fd71f0546621e"
+      },
+      {
+        "source_row": 515,
+        "variety": "Cp 36-183",
+        "document_id": "sc_360c15e9b2aba7b431d84418d1"
+      },
+      {
+        "source_row": 516,
+        "variety": "Cp 69-1052",
+        "document_id": "sc_0a069082d913749b5b65a473a0"
+      },
+      {
+        "source_row": 517,
+        "variety": "Cp 70-1527",
+        "document_id": "sc_1a3d649cc0ffaf8c2f83ab2e96"
+      },
+      {
+        "source_row": 518,
+        "variety": "Cp 56-526",
+        "document_id": "sc_fa78a27eba97d0085df559c796"
+      },
+      {
+        "source_row": 519,
+        "variety": "Cp 55-38",
+        "document_id": "sc_8fd161ed2a1ac6474629b9b8c6"
+      },
+      {
+        "source_row": 520,
+        "variety": "Cp 43-47",
+        "document_id": "sc_39a0fa7ac26fc3b11d1e975690"
+      },
+      {
+        "source_row": 521,
+        "variety": "Cp 52-43",
+        "document_id": "sc_02b18df26dde71310c36f2e9fe"
+      },
+      {
+        "source_row": 522,
+        "variety": "Cp 70-1153",
+        "document_id": "sc_aa28bac32e4da249769be042c8"
+      },
+      {
+        "source_row": 523,
+        "variety": "Cp 36-111",
+        "document_id": "sc_55cf361740553d6569c7449364"
+      },
+      {
+        "source_row": 524,
+        "variety": "Cp 50-11",
+        "document_id": "sc_90471c0615fe9248a93970df17"
+      },
+      {
+        "source_row": 525,
+        "variety": "Cp 31-588",
+        "document_id": "sc_94781a9cd59e6e6abdedc05d84"
+      },
+      {
+        "source_row": 526,
+        "variety": "Cp 49-7",
+        "document_id": "sc_aef469de2ec7f4b533aa1368f8"
+      },
+      {
+        "source_row": 527,
+        "variety": "Cp 70-321",
+        "document_id": "sc_e004840ad1f505a680a541d7f7"
+      },
+      {
+        "source_row": 528,
+        "variety": "Cp 63-306",
+        "document_id": "sc_9c858bb16c95ecd9d447ee1ca2"
+      },
+      {
+        "source_row": 529,
+        "variety": "Cp 50-10",
+        "document_id": "sc_9f003475924cb0b5781407857d"
+      },
+      {
+        "source_row": 530,
+        "variety": "Cp 62-611",
+        "document_id": "sc_9de7278ae14d17f4221c1971e9"
+      },
+      {
+        "source_row": 531,
+        "variety": "Cp 52-1",
+        "document_id": "sc_c3ad2041b5a9b9de81f491ef51"
+      },
+      {
+        "source_row": 532,
+        "variety": "Cp 46-143",
+        "document_id": "sc_94116d6aa03436d4637d547aab"
+      },
+      {
+        "source_row": 533,
+        "variety": "Cp 36-59",
+        "document_id": "sc_4c6f6d01b952d444d50b70fb50"
+      },
+      {
+        "source_row": 534,
+        "variety": "Cp 57-614",
+        "document_id": "sc_578ec4fd74109ffe6142fe901a"
+      },
+      {
+        "source_row": 535,
+        "variety": "Cp 67-611",
+        "document_id": "sc_3ffe324700afa60a21a4ac95e5"
+      },
+      {
+        "source_row": 536,
+        "variety": "Cp 29-320",
+        "document_id": "sc_f8ae5a9df95af8345e5da0ffda"
+      },
+      {
+        "source_row": 537,
+        "variety": "Cp 48-103",
+        "document_id": "sc_b2dd76d8d45542874b4f3c0977"
+      },
+      {
+        "source_row": 538,
+        "variety": "Cp 29-291",
+        "document_id": "sc_de0933cc2b666c3218043849cd"
+      },
+      {
+        "source_row": 539,
+        "variety": "Cp 47-15",
+        "document_id": "sc_c4431a0d2c8799481d1d50723c"
+      },
+      {
+        "source_row": 540,
+        "variety": "Cp 50-28",
+        "document_id": "sc_93396ef3771f718ebda5eb0b7d"
+      },
+      {
+        "source_row": 541,
+        "variety": "Cp 64-143",
+        "document_id": "sc_abc14cfa03cde578120102eb60"
+      },
+      {
+        "source_row": 542,
+        "variety": "D 175/59",
+        "document_id": "sc_37a7fefeae6cc4ebdea1cc4961"
+      },
+      {
+        "source_row": 543,
+        "variety": "DB 5/55",
+        "document_id": "sc_3bd7a905bd4bfca55e14e13b9f"
+      },
+      {
+        "source_row": 544,
+        "variety": "Dol white",
+        "document_id": "sc_ff31569e198d307c22e36f4835"
+      },
+      {
+        "source_row": 545,
+        "variety": "EK 28",
+        "document_id": "sc_8216a1c07e4b6a63cdf689cb4b"
+      },
+      {
+        "source_row": 546,
+        "variety": "Eros",
+        "document_id": "sc_8269f56466ecfcbb49ee15374d"
+      },
+      {
+        "source_row": 547,
+        "variety": "F 160",
+        "document_id": "sc_1ba3a02f38132cd3b89b2c36bb"
+      },
+      {
+        "source_row": 548,
+        "variety": "F 155",
+        "document_id": "sc_fe2c328dbb73b13454a95a1e80"
+      },
+      {
+        "source_row": 549,
+        "variety": "F 150",
+        "document_id": "sc_41a7e751df5d91f287aaed3d6e"
+      },
+      {
+        "source_row": 550,
+        "variety": "F 108/F109",
+        "document_id": "sc_e0227e54fa2b37bd321a6e4e9b"
+      },
+      {
+        "source_row": 551,
+        "variety": "F 131",
+        "document_id": "sc_8f9ead5ce620af9ba61fc3a9a0"
+      },
+      {
+        "source_row": 552,
+        "variety": "F 151",
+        "document_id": "sc_8780e9decb60bae4c91bf160b1"
+      },
+      {
+        "source_row": 553,
+        "variety": "F 100",
+        "document_id": "sc_b9b0e96b991860fcc6135a0d77"
+      },
+      {
+        "source_row": 554,
+        "variety": "F 164",
+        "document_id": "sc_c3eadd563e1bf60510f731b88c"
+      },
+      {
+        "source_row": 555,
+        "variety": "F 157",
+        "document_id": "sc_cbb9df621400111f093fb1644e"
+      },
+      {
+        "source_row": 556,
+        "variety": "F 173",
+        "document_id": "sc_8f2b82bbeaf63f68d07bfb2087"
+      },
+      {
+        "source_row": 557,
+        "variety": "F 139",
+        "document_id": "sc_c34109ff9d3811a55b217a3951"
+      },
+      {
+        "source_row": 558,
+        "variety": "Galba",
+        "document_id": "sc_35254927b17fd20f8f71b25f8a"
+      },
+      {
+        "source_row": 559,
+        "variety": "H 70-9388",
+        "document_id": "sc_23143e27b82fec11f26fddb2c1"
+      },
+      {
+        "source_row": 560,
+        "variety": "H 79-901",
+        "document_id": "sc_71439b0c8cf80ed69b01728f62"
+      },
+      {
+        "source_row": 561,
+        "variety": "H 59-3182",
+        "document_id": "sc_e538b0bfee01039fd61aae463f"
+      },
+      {
+        "source_row": 562,
+        "variety": "H 60-8489",
+        "document_id": "sc_5930d7f92a58f687d39009d4f1"
+      },
+      {
+        "source_row": 563,
+        "variety": "H 62-3541",
+        "document_id": "sc_09d801d3c40cb5aae668ff99e7"
+      },
+      {
+        "source_row": 564,
+        "variety": "H 60-170",
+        "document_id": "sc_a0f1936e588ee2f9405f0d9451"
+      },
+      {
+        "source_row": 565,
+        "variety": "H 58-1545",
+        "document_id": "sc_08e50140daa1e4698864cc19b6"
+      },
+      {
+        "source_row": 566,
+        "variety": "H 57-5174",
+        "document_id": "sc_8fc72e6a505b6bdbc905da6dd0"
+      },
+      {
+        "source_row": 567,
+        "variety": "H 32-1178",
+        "document_id": "sc_7c613a452401d4a88f52d8f674"
+      },
+      {
+        "source_row": 568,
+        "variety": "H 38-3915",
+        "document_id": "sc_5435ba69960e6937361c6dd0e7"
+      },
+      {
+        "source_row": 569,
+        "variety": "H 32-2177",
+        "document_id": "sc_766a838ec5fcd29222f89a0a5d"
+      },
+      {
+        "source_row": 570,
+        "variety": "H 65-5802",
+        "document_id": "sc_12ce2301541a9ae78883bf53a4"
+      },
+      {
+        "source_row": 571,
+        "variety": "H 66-4669",
+        "document_id": "sc_af675a7557b62cf450857c491d"
+      },
+      {
+        "source_row": 572,
+        "variety": "H 5880",
+        "document_id": "sc_3a8c266ac570e211a71ea7b7c4"
+      },
+      {
+        "source_row": 573,
+        "variety": "H 62-431",
+        "document_id": "sc_1377384209fbeaf433185d367c"
+      },
+      {
+        "source_row": 574,
+        "variety": "H 64-1663",
+        "document_id": "sc_6b9f5365b2f1cedd7e525c14ef"
+      },
+      {
+        "source_row": 575,
+        "variety": "H 58-6297",
+        "document_id": "sc_53cb58287f8dd445182803987b"
+      },
+      {
+        "source_row": 576,
+        "variety": "H 32-4078",
+        "document_id": "sc_de1658a8b64772744fd5c13852"
+      },
+      {
+        "source_row": 577,
+        "variety": "H 61-5433?",
+        "document_id": "sc_0d0a6354e144e6225bdd7ef32f"
+      },
+      {
+        "source_row": 578,
+        "variety": "H 64-4819",
+        "document_id": "sc_3927f1661dfea986cb5d7ba936"
+      },
+      {
+        "source_row": 579,
+        "variety": "H 65-2207",
+        "document_id": "sc_3a54c395bbdbb112458a3c7ae8"
+      },
+      {
+        "source_row": 580,
+        "variety": "H 64-1831",
+        "document_id": "sc_b56cd02be31e1b6ff6d623f74b"
+      },
+      {
+        "source_row": 581,
+        "variety": "H 60-2437",
+        "document_id": "sc_a7e4f708dafa800b844416bda4"
+      },
+      {
+        "source_row": 582,
+        "variety": "H 65-8055",
+        "document_id": "sc_0e2ab1b0aad502e7664403581c"
+      },
+      {
+        "source_row": 583,
+        "variety": "H 65-6401",
+        "document_id": "sc_910182db30ed889d7efcd28ba8"
+      },
+      {
+        "source_row": 584,
+        "variety": "H 39-3181",
+        "document_id": "sc_4e82d55fddfdb91348eda95588"
+      },
+      {
+        "source_row": 585,
+        "variety": "H 39-2915",
+        "document_id": "sc_135591c14154ec9a140bab4412"
+      },
+      {
+        "source_row": 586,
+        "variety": "H 58-0439",
+        "document_id": "sc_27dcad7b1df5bd033560d667aa"
+      },
+      {
+        "source_row": 587,
+        "variety": "H 57-6466",
+        "document_id": "sc_f0399649e22947597b10b7798f"
+      },
+      {
+        "source_row": 588,
+        "variety": "H 61-4931",
+        "document_id": "sc_cb91ca2d1c6c5ed653cbd9e3a2"
+      },
+      {
+        "source_row": 589,
+        "variety": "H 65-1476",
+        "document_id": "sc_09163cac96601665c7f087dc08"
+      },
+      {
+        "source_row": 590,
+        "variety": "H 64-5542",
+        "document_id": "sc_2c7fe5208f4f58cf3f8f07214b"
+      },
+      {
+        "source_row": 591,
+        "variety": "H 69-0536",
+        "document_id": "sc_d7a6edb91e1f4fac3b4cd6b866"
+      },
+      {
+        "source_row": 592,
+        "variety": "H 58-8070",
+        "document_id": "sc_574f307f3f3386e8c801760e78"
+      },
+      {
+        "source_row": 593,
+        "variety": "H 39-0318?",
+        "document_id": "sc_f0be8c20971af713537446a4be"
+      },
+      {
+        "source_row": 594,
+        "variety": "H 60-2315",
+        "document_id": "sc_918fd604791e4460fdc3535235"
+      },
+      {
+        "source_row": 595,
+        "variety": "H 62-8369",
+        "document_id": "sc_c8379ebea2d4df66ca6b97adf0"
+      },
+      {
+        "source_row": 596,
+        "variety": "H 51-2124",
+        "document_id": "sc_a43283afea837e4ac0fda09c7e"
+      },
+      {
+        "source_row": 597,
+        "variety": "HOCP 89-831",
+        "document_id": "sc_c67ab6c58e15e1c5571cf2cbfa"
+      },
+      {
+        "source_row": 598,
+        "variety": "HOCP 92-631",
+        "document_id": "sc_3d4dfe19b46060b85d7a4e18d1"
+      },
+      {
+        "source_row": 599,
+        "variety": "HOCP 88-750",
+        "document_id": "sc_6ebc6c0308e76a394a8c163d5c"
+      },
+      {
+        "source_row": 600,
+        "variety": "HPCO 49-262",
+        "document_id": "sc_205dd461b4f563e9e95c708773"
+      },
+      {
+        "source_row": 601,
+        "variety": "Louisiana",
+        "document_id": "sc_f4130e097a43a3abe9464dfe18"
+      },
+      {
+        "source_row": 602,
+        "variety": "Labaina",
+        "document_id": "sc_b6ef442dcd243cce7870f79388"
+      },
+      {
+        "source_row": 603,
+        "variety": "LF 73-145",
+        "document_id": "sc_312780229f9dce324897154991"
+      },
+      {
+        "source_row": 604,
+        "variety": "LF 71-689",
+        "document_id": "sc_f7b0b967de62cffc9639246e72"
+      },
+      {
+        "source_row": 605,
+        "variety": "LF 71-2667",
+        "document_id": "sc_e5128631f3faef0ec21d1d9cb5"
+      },
+      {
+        "source_row": 606,
+        "variety": "LF 71-2715",
+        "document_id": "sc_5cce5f66f353f9912a7ab51e39"
+      },
+      {
+        "source_row": 607,
+        "variety": "LF 63-863",
+        "document_id": "sc_a155786cdffeabde65b4b6a4e6"
+      },
+      {
+        "source_row": 608,
+        "variety": "LF 73-360",
+        "document_id": "sc_4a09ec5a1f02921d5c5262b5e1"
+      },
+      {
+        "source_row": 609,
+        "variety": "LF 79-3460",
+        "document_id": "sc_887a31f3225d9d0f3b2253e206"
+      },
+      {
+        "source_row": 610,
+        "variety": "LF 73-30",
+        "document_id": "sc_03bd59e1bcefdf86abb12e4107"
+      },
+      {
+        "source_row": 611,
+        "variety": "LF 79-1169",
+        "document_id": "sc_b345fe5e6382724b328dc8754c"
+      },
+      {
+        "source_row": 612,
+        "variety": "LF 68-10-204",
+        "document_id": "sc_79682cae020fca1440ef6b6853"
+      },
+      {
+        "source_row": 613,
+        "variety": "LF 63-51",
+        "document_id": "sc_8d83fbda605b5028994b270975"
+      },
+      {
+        "source_row": 614,
+        "variety": "LF 55-8283",
+        "document_id": "sc_18635a434684df8559e7c38a73"
+      },
+      {
+        "source_row": 615,
+        "variety": "LF 73-25",
+        "document_id": "sc_f4f1e3bc929362422c92d30b77"
+      },
+      {
+        "source_row": 616,
+        "variety": "LF 72-2209/LF 72-2207",
+        "document_id": "sc_763ca5e3415566c8d1467cd4a5"
+      },
+      {
+        "source_row": 617,
+        "variety": "LF 73-135",
+        "document_id": "sc_9a3c13b2c28cd1650881f5e9ab"
+      },
+      {
+        "source_row": 618,
+        "variety": "LF 72-2241",
+        "document_id": "sc_3a666c41bc9093fdc061c2830d"
+      },
+      {
+        "source_row": 619,
+        "variety": "LF 68-1092",
+        "document_id": "sc_083b8d7cddfe18386a6c420cfa"
+      },
+      {
+        "source_row": 620,
+        "variety": "LF 79-85",
+        "document_id": "sc_df262fb04c9d9ed9f65653229f"
+      },
+      {
+        "source_row": 621,
+        "variety": "LF 73-251",
+        "document_id": "sc_a1c39eb679a0e97bc5f160b38a"
+      },
+      {
+        "source_row": 622,
+        "variety": "LF 72-2214",
+        "document_id": "sc_426b5b5da07b061db84ccd0a74"
+      },
+      {
+        "source_row": 623,
+        "variety": "LF 79-3162",
+        "document_id": "sc_a3dc85711acb98cc0ebaf92444"
+      },
+      {
+        "source_row": 624,
+        "variety": "LF 71-4144",
+        "document_id": "sc_91e72bcb1522f60ab2bee896c9"
+      },
+      {
+        "source_row": 625,
+        "variety": "LF 71-2264",
+        "document_id": "sc_8d23d25855c8201fbae2541c15"
+      },
+      {
+        "source_row": 626,
+        "variety": "LF 3353",
+        "document_id": "sc_3d8e5688252727421a6002e6ba"
+      },
+      {
+        "source_row": 627,
+        "variety": "LF 68-9917",
+        "document_id": "sc_0cd44b3571640119974de850ee"
+      },
+      {
+        "source_row": 628,
+        "variety": "LF 79-3474",
+        "document_id": "sc_c2db5377ab847f40808ea962a6"
+      },
+      {
+        "source_row": 629,
+        "variety": "LF 32-15",
+        "document_id": "sc_1718a9fbba894617fec2a342cb"
+      },
+      {
+        "source_row": 630,
+        "variety": "LF 79-1160",
+        "document_id": "sc_4a32fdaf53e02e7b1fdb59f0c1"
+      },
+      {
+        "source_row": 631,
+        "variety": "LF 79-3240",
+        "document_id": "sc_a24f11e2d53a0f53fd4b68002e"
+      },
+      {
+        "source_row": 632,
+        "variety": "LF 79-346",
+        "document_id": "sc_b6b298829c150d3f7270018464"
+      },
+      {
+        "source_row": 633,
+        "variety": "LF 79-3285",
+        "document_id": "sc_7da5614f5fc17823f79c82963e"
+      },
+      {
+        "source_row": 634,
+        "variety": "LF 73-2401",
+        "document_id": "sc_dc0e5682dcede487e78a103536"
+      },
+      {
+        "source_row": 635,
+        "variety": "LF 71-300",
+        "document_id": "sc_687482282647454067c28325bc"
+      },
+      {
+        "source_row": 636,
+        "variety": "LF 79-3291",
+        "document_id": "sc_26768cea350bce2322e3054d75"
+      },
+      {
+        "source_row": 637,
+        "variety": "LF 79-3339",
+        "document_id": "sc_9186d7006a3bb3db5394eaf004"
+      },
+      {
+        "source_row": 638,
+        "variety": "LF 79-3464",
+        "document_id": "sc_7dbc54649101852b650482bc73"
+      },
+      {
+        "source_row": 639,
+        "variety": "LF 79-3264",
+        "document_id": "sc_b68b68c4b8ab0f6f035c9933d5"
+      },
+      {
+        "source_row": 640,
+        "variety": "LF 73-224",
+        "document_id": "sc_80af4b362c5a9f587552d3a6db"
+      },
+      {
+        "source_row": 641,
+        "variety": "LF 79-3330",
+        "document_id": "sc_4aebed99e94f7d2665b10cc54a"
+      },
+      {
+        "source_row": 642,
+        "variety": "LF 73-211",
+        "document_id": "sc_c39ca7392471de466e86d97461"
+      },
+      {
+        "source_row": 643,
+        "variety": "LF 79-470",
+        "document_id": "sc_85a8ede8d58a365aac29bbcb29"
+      },
+      {
+        "source_row": 644,
+        "variety": "LF 32-58",
+        "document_id": "sc_b906209f9f56008e1725377604"
+      },
+      {
+        "source_row": 645,
+        "variety": "LF 79-2165",
+        "document_id": "sc_305de8682d700d26c3238c2ba5"
+      },
+      {
+        "source_row": 646,
+        "variety": "LF 71-2693",
+        "document_id": "sc_d3fb137d39aaee3bd1245660a2"
+      },
+      {
+        "source_row": 647,
+        "variety": "LF 79-183",
+        "document_id": "sc_a1a34afe7491b4f57f674d03d4"
+      },
+      {
+        "source_row": 648,
+        "variety": "LF 71-8334/8338",
+        "document_id": "sc_49c23bf08e8b804f5de4ae7c76"
+      },
+      {
+        "source_row": 649,
+        "variety": "M 31/45/M31/34",
+        "document_id": "sc_f73371e3c97e6c882e1e07bc38"
+      },
+      {
+        "source_row": 650,
+        "variety": "M 99/45",
+        "document_id": "sc_e1aae837d83f6ec176cdad8c36"
+      },
+      {
+        "source_row": 651,
+        "variety": "M 477",
+        "document_id": "sc_e73f3b6033a46b4db58d88ebbb"
+      },
+      {
+        "source_row": 652,
+        "variety": "Mentor",
+        "document_id": "sc_20b755b237bff545ccd7ae2a33"
+      },
+      {
+        "source_row": 653,
+        "variety": "Mex 57-473",
+        "document_id": "sc_e11fa6b812416caad9e9b07da1"
+      },
+      {
+        "source_row": 654,
+        "variety": "N:CO 310",
+        "document_id": "sc_847443e9441af7c81f564be340"
+      },
+      {
+        "source_row": 655,
+        "variety": "N:CO 330",
+        "document_id": "sc_22cae98c595b08029bc3431bd3"
+      },
+      {
+        "source_row": 656,
+        "variety": "Ogles Selection",
+        "document_id": "sc_2f2dcdd9ebad5a01fc43aab2c9"
+      },
+      {
+        "source_row": 657,
+        "variety": "P 57-33",
+        "document_id": "sc_b9d43702e9d5649e84c618955f"
+      },
+      {
+        "source_row": 658,
+        "variety": "P 62-15",
+        "document_id": "sc_e2714e5d1aa39db75ca9ccaa0e"
+      },
+      {
+        "source_row": 659,
+        "variety": "Pansahi 204",
+        "document_id": "sc_1ff885f8642b661c4b4c766279"
+      },
+      {
+        "source_row": 660,
+        "variety": "Q 96",
+        "document_id": "sc_ac1b4c23e4a2062930648fc827"
+      },
+      {
+        "source_row": 661,
+        "variety": "Q 138",
+        "document_id": "sc_096ecee672dbb8f2082a4a951f"
+      },
+      {
+        "source_row": 662,
+        "variety": "R 339",
+        "document_id": "sc_82cc58dabd60980033c9d7ce1a"
+      },
+      {
+        "source_row": 663,
+        "variety": "R 397",
+        "document_id": "sc_c553f59fb598790a5a6b96344a"
+      },
+      {
+        "source_row": 664,
+        "variety": "Ragman",
+        "document_id": "sc_a3f50f42901698678c37d46c8d"
+      },
+      {
+        "source_row": 665,
+        "variety": "Saipan Green",
+        "document_id": "sc_e3aaa5bfd79d06a96897c7f69a"
+      },
+      {
+        "source_row": 666,
+        "variety": "Thailand",
+        "document_id": "sc_347e65701cedf487efd431b407"
+      },
+      {
+        "source_row": 667,
+        "variety": "Trojan",
+        "document_id": "sc_400b2b5c8cdc259794e8d2417c"
+      },
+      {
+        "source_row": 668,
+        "variety": "Tuc 6740",
+        "document_id": "sc_0220e39f10ade6ae429505207a"
+      },
+      {
+        "source_row": 669,
+        "variety": "V 76-105",
+        "document_id": "sc_2376df680336356422cb60d38c"
+      },
+      {
+        "source_row": 670,
+        "variety": "V 85-02",
+        "document_id": "sc_f6a9e37d55f29eae97260b8587"
+      },
+      {
+        "source_row": 671,
+        "variety": "V 39-249 VMC",
+        "document_id": "sc_6846f164a22881cb358cc68701"
+      },
+      {
+        "source_row": 672,
+        "variety": "V 74-354 VMC",
+        "document_id": "sc_25582e10bbea7818a575452219"
+      },
+      {
+        "source_row": 673,
+        "variety": "V 82-1337 VMC",
+        "document_id": "sc_238f8f602ffaf5a476d7b14f7a"
+      },
+      {
+        "source_row": 674,
+        "variety": "V 3",
+        "document_id": "sc_20d024d019e25da7285215b47c"
+      },
+      {
+        "source_row": 675,
+        "variety": "V 81-192 VMC",
+        "document_id": "sc_cd318028f686bcf06d8bc92fe5"
+      },
+      {
+        "source_row": 676,
+        "variety": "Vesta",
+        "document_id": "sc_ee2bcaf161622e73072f914f10"
+      },
+      {
+        "source_row": 677,
+        "variety": "V 73-291",
+        "document_id": "sc_a0188b6c9c3438e068291adfc9"
+      },
+      {
+        "source_row": 678,
+        "variety": "V 77-354",
+        "document_id": "sc_1f5dec66794f6aae2f3c9643d6"
+      },
+      {
+        "source_row": 679,
+        "variety": "V 1",
+        "document_id": "sc_bffec74536191e917f5f2a8cb2"
+      },
+      {
+        "source_row": 680,
+        "variety": "V 67-233 VMC",
+        "document_id": "sc_c01eacb8990fe15313e5e32080"
+      },
+      {
+        "source_row": 681,
+        "variety": "V 81-53",
+        "document_id": "sc_68648bf093a76398d2d58e588e"
+      },
+      {
+        "source_row": 682,
+        "variety": "V 13",
+        "document_id": "sc_49b42ace66577ff09cccec829d"
+      },
+      {
+        "source_row": 683,
+        "variety": "VMC 85-599",
+        "document_id": "sc_60b780320a582a0ac7ba529dc5"
+      },
+      {
+        "source_row": 684,
+        "variety": "VMC 86-550",
+        "document_id": "sc_17c840696c29cc5467da3f2602"
+      },
+      {
+        "source_row": 685,
+        "variety": "VMC 84-524",
+        "document_id": "sc_50a65c22f772f23fc194b92554"
+      },
+      {
+        "source_row": 686,
+        "variety": "VMC 87-95",
+        "document_id": "sc_01884e5fb4b5b250d2910326ff"
+      },
+      {
+        "source_row": 687,
+        "variety": "VMC 84-549",
+        "document_id": "sc_3a1e15ef88dfce012fc554d87d"
+      },
+      {
+        "source_row": 688,
+        "variety": "VMC 74-527",
+        "document_id": "sc_bf6ea2c1bc225c179088ff9ffa"
+      },
+      {
+        "source_row": 689,
+        "variety": "VMC 87-599",
+        "document_id": "sc_cf6f1a5f404f74ddb1379d7938"
+      },
+      {
+        "source_row": 690,
+        "variety": "VMC 69-490",
+        "document_id": "sc_751edfa3c569be67acdb090c6f"
+      },
+      {
+        "source_row": 691,
+        "variety": "VMC 529/527",
+        "document_id": "sc_61d0b3eb31010b3c9561c06bb5"
+      },
+      {
+        "source_row": 692,
+        "variety": "VMC 51-30",
+        "document_id": "sc_6c177a5681d82a7746caaa8c05"
+      },
+      {
+        "source_row": 693,
+        "variety": "VMC 71-39",
+        "document_id": "sc_f0070515ad0bed2b4d6cbad123"
+      },
+      {
+        "source_row": 694,
+        "variety": "VMC 69-143",
+        "document_id": "sc_0342bbd4324796be6eb7934813"
+      },
+      {
+        "source_row": 695,
+        "variety": "VMC 228",
+        "document_id": "sc_7fbca9a5d8a19d99432b3b9a7a"
+      },
+      {
+        "source_row": 696,
+        "variety": "VMC 616",
+        "document_id": "sc_e6e0742f3d8e27350c90023b4a"
+      },
+      {
+        "source_row": 697,
+        "variety": "VMC 72-25",
+        "document_id": "sc_2245fc2cca5f440d9a2cb55d80"
+      },
+      {
+        "source_row": 698,
+        "variety": "VMC 95-88",
+        "document_id": "sc_a96de78d7d42b1c0fafd099bc9"
+      },
+      {
+        "source_row": 699,
+        "variety": "VMC 52-38",
+        "document_id": "sc_a1bd4cb58d4e1761d3dfb15f8a"
+      },
+      {
+        "source_row": 700,
+        "variety": "VMC 90-239",
+        "document_id": "sc_fa7242e79274023124d154f655"
+      },
+      {
+        "source_row": 701,
+        "variety": "VMC 73-27",
+        "document_id": "sc_28a5af86b3988002b7a0eaf88e"
+      },
+      {
+        "source_row": 702,
+        "variety": "VMC 67-527",
+        "document_id": "sc_6cbe0761544fdbe74bfaa0840d"
+      },
+      {
+        "source_row": 703,
+        "variety": "VMC 57-23",
+        "document_id": "sc_e5a71b8cb4dc33e9742a7cd20d"
+      },
+      {
+        "source_row": 704,
+        "variety": "VMC 180",
+        "document_id": "sc_2cd566a4ad6b7e8eecd7d9819a"
+      },
+      {
+        "source_row": 705,
+        "variety": "VMC 95-168",
+        "document_id": "sc_ec776543e4958ac54d36e8ff90"
+      },
+      {
+        "source_row": 706,
+        "variety": "VMC 95-37",
+        "document_id": "sc_d62a6b5ea04658f6743a1cc98d"
+      },
+      {
+        "source_row": 707,
+        "variety": "VMC 95-153",
+        "document_id": "sc_d416f24899e1260a55d641a8e6"
+      },
+      {
+        "source_row": 708,
+        "variety": "VMC 52-17",
+        "document_id": "sc_2bedbf0f22507c309b80fd0d31"
+      },
+      {
+        "source_row": 709,
+        "variety": "VMC 73-29",
+        "document_id": "sc_3ae00febe004068b88ece400a6"
+      },
+      {
+        "source_row": 710,
+        "variety": "VMC 52-36",
+        "document_id": "sc_1e5cf2f370fb01ba6368479b2c"
+      },
+      {
+        "source_row": 711,
+        "variety": "VMC 52-29",
+        "document_id": "sc_9a3a7a9d93b71c4ff00400ed46"
+      },
+      {
+        "source_row": 712,
+        "variety": "VMC 73-229",
+        "document_id": "sc_f944598cfa956b448997221642"
+      },
+      {
+        "source_row": 713,
+        "variety": "VMC 71-40",
+        "document_id": "sc_0a064c67ec01ac2a445e81737f"
+      },
+      {
+        "source_row": 714,
+        "variety": "VMC 47-138",
+        "document_id": "sc_f82737522bb1384afb9ab8f786"
+      },
+      {
+        "source_row": 715,
+        "variety": "VMC 5225",
+        "document_id": "sc_d37fba49b387d0ccc8ed4ea3ca"
+      },
+      {
+        "source_row": 716,
+        "variety": "VMC 713",
+        "document_id": "sc_fc72d868bb80403bc0d6e7cef2"
+      },
+      {
+        "source_row": 717,
+        "variety": "VMC 73-229",
+        "document_id": "sc_a816c6fdac1dbe0de67811b90a"
+      },
+      {
+        "source_row": 718,
+        "variety": "VMC 71-148",
+        "document_id": "sc_83c34c4b25023ac02afe627b5c"
+      },
+      {
+        "source_row": 719,
+        "variety": "VMC 90-57",
+        "document_id": "sc_f8510dc7e3d8e749e4be6ed124"
+      },
+      {
+        "source_row": 720,
+        "variety": "VMC 84-947",
+        "document_id": "sc_9d04341607795a078a6c6cdd50"
+      },
+      {
+        "source_row": 721,
+        "variety": "Q 77",
+        "document_id": "sc_c5d55a40ae2443d98a2602c51f"
+      },
+      {
+        "source_row": 722,
+        "variety": "Q 49",
+        "document_id": "sc_6e29d866dad8a0807b7fc532fd"
+      },
+      {
+        "source_row": 723,
+        "variety": "Q 113",
+        "document_id": "sc_2909ce396d3630007a46c592f8"
+      },
+      {
+        "source_row": 724,
+        "variety": "Q 119",
+        "document_id": "sc_1d6f9742dce50aa08e2e6d653c"
+      },
+      {
+        "source_row": 725,
+        "variety": "V 83-773",
+        "document_id": "sc_ab9779081677e3c929336994ba"
+      },
+      {
+        "source_row": 726,
+        "variety": "V 69-498",
+        "document_id": "sc_328f818ce82f1e54d744f4e485"
+      },
+      {
+        "source_row": 727,
+        "variety": "Q 117",
+        "document_id": "sc_3ba64d5aa87e25e581456f27cf"
+      },
+      {
+        "source_row": 728,
+        "variety": "Q 95",
+        "document_id": "sc_2e978bdc8df3d869b0ca9f44ad"
+      },
+      {
+        "source_row": 729,
+        "variety": "Q 122",
+        "document_id": "sc_f59a80b2b0e93b315fab62aa44"
+      },
+      {
+        "source_row": 730,
+        "variety": "Q 60",
+        "document_id": "sc_3c8854c04b7d88978490252e30"
+      },
+      {
+        "source_row": 731,
+        "variety": "Q 81",
+        "document_id": "sc_04aac32d07b8d0d1bd80c4fbb5"
+      },
+      {
+        "source_row": 732,
+        "variety": "PSA 1",
+        "document_id": "sc_8e2f1738e6fff582b6e2116ae3"
+      },
+      {
+        "source_row": 733,
+        "variety": "PSA 61",
+        "document_id": "sc_70a7f34cacda8e4b96fba142d0"
+      },
+      {
+        "source_row": 734,
+        "variety": "PSA 91",
+        "document_id": "sc_4e75f2f82bb45574bb1d2e952f"
+      },
+      {
+        "source_row": 735,
+        "variety": "PSA 46",
+        "document_id": "sc_7ad5e8179af6aecb0f37f09248"
+      },
+      {
+        "source_row": 736,
+        "variety": "PR 1013",
+        "document_id": "sc_41370f4ee9f3b5e1b6f1dddff3"
+      },
+      {
+        "source_row": 737,
+        "variety": "PR 905 VMC",
+        "document_id": "sc_3f2cf75500b4a648eb2bc26854"
+      },
+      {
+        "source_row": 738,
+        "variety": "PR 980 VMC",
+        "document_id": "sc_e26cf4a380c71cd38b03a52c50"
+      },
+      {
+        "source_row": 739,
+        "variety": "POJ  2440",
+        "document_id": "sc_6bd3f1fa6c3e3bd6b98cf6089b"
+      },
+      {
+        "source_row": 740,
+        "variety": "POJ 2967",
+        "document_id": "sc_97344ba79cd8d83c25c80c8308"
+      },
+      {
+        "source_row": 741,
+        "variety": "POJ 222",
+        "document_id": "sc_c355205f5bfb71792e373808ab"
+      },
+      {
+        "source_row": 742,
+        "variety": "CAC 257",
+        "document_id": "sc_72df0f9c7d1ff81aa949784c33"
+      },
+      {
+        "source_row": 743,
+        "variety": "Clow Green",
+        "document_id": "sc_076e6575ea3b7d714a2cba41f1"
+      },
+      {
+        "source_row": 744,
+        "variety": "Ch 41-70",
+        "document_id": "sc_54ffce473eca17faa5b721c4a9"
+      },
+      {
+        "source_row": 745,
+        "variety": "Co 55-38",
+        "document_id": "sc_72e3937798a75fb0e0e55870ba"
+      },
+      {
+        "source_row": 746,
+        "variety": "Cos 243",
+        "document_id": "sc_14c960527c6917bdb2106f9e03"
+      },
+      {
+        "source_row": 747,
+        "variety": "Co 799",
+        "document_id": "sc_b39ea5f6e916e5de44f61d84fa"
+      },
+      {
+        "source_row": 748,
+        "variety": "Co 5754",
+        "document_id": "sc_f084c4db50fd54baeb44b2c68b"
+      },
+      {
+        "source_row": 749,
+        "variety": "Co 63-588",
+        "document_id": "sc_f5a5e757639bf1f36cdb0db242"
+      },
+      {
+        "source_row": 750,
+        "variety": "Chunnee",
+        "document_id": "sc_64ae115b17b405657a193905e3"
+      },
+      {
+        "source_row": 751,
+        "variety": "Cp 5659",
+        "document_id": "sc_7f56a4a75687e0b32ca9b7f6cb"
+      },
+      {
+        "source_row": 752,
+        "variety": "Cp 36-120",
+        "document_id": "sc_5be6c8fd1795d9a5669a2e710f"
+      },
+      {
+        "source_row": 753,
+        "variety": "Cp 34-120",
+        "document_id": "sc_831717e8b5112fc0a991d2bc1c"
+      },
+      {
+        "source_row": 754,
+        "variety": "Cp 42-43",
+        "document_id": "sc_7680cc33dfacd5f68ff8ba7cc9"
+      },
+      {
+        "source_row": 755,
+        "variety": "Cp 61-39",
+        "document_id": "sc_947893928a094ef48d18a5c1ee"
+      },
+      {
+        "source_row": 756,
+        "variety": "Fiji 57",
+        "document_id": "sc_6738ec0a98016dff1b5d3a4ccb"
+      },
+      {
+        "source_row": 757,
+        "variety": "H 66-6729",
+        "document_id": "sc_08fc558ffe0b51392df8fa90dd"
+      },
+      {
+        "source_row": 758,
+        "variety": "H 66-8531",
+        "document_id": "sc_281cabfba02f594713dc857f69"
+      },
+      {
+        "source_row": 759,
+        "variety": "H 68-8726",
+        "document_id": "sc_d6bbd266ba32b3e2a2dfbda788"
+      },
+      {
+        "source_row": 760,
+        "variety": "H 35-42",
+        "document_id": "sc_0e73b034a07d949c0ea2596d9d"
+      },
+      {
+        "source_row": 761,
+        "variety": "H 64-4497/4479",
+        "document_id": "sc_04230a4f8f9815bfae03714659"
+      },
+      {
+        "source_row": 762,
+        "variety": "H 64-6330",
+        "document_id": "sc_603a91699031a95d7331b58321"
+      },
+      {
+        "source_row": 763,
+        "variety": "H 66-8590",
+        "document_id": "sc_6b4f845daf94de998809724b2b"
+      },
+      {
+        "source_row": 764,
+        "variety": "H 62-1418",
+        "document_id": "sc_f3b38013d4d4d3a5cf46def56a"
+      },
+      {
+        "source_row": 765,
+        "variety": "H 59-8775",
+        "document_id": "sc_5fe7fa7589f5e74fa4f5cfe94b"
+      },
+      {
+        "source_row": 766,
+        "variety": "H 65-4825",
+        "document_id": "sc_a6401792e13cfa492c48397bb4"
+      },
+      {
+        "source_row": 767,
+        "variety": "H 61-1664",
+        "document_id": "sc_ccf3f1b236cc85659b83455bf2"
+      },
+      {
+        "source_row": 768,
+        "variety": "H 68-1470",
+        "document_id": "sc_b8e325ca97db08faaaabf2f06f"
+      },
+      {
+        "source_row": 769,
+        "variety": "H 61-4431",
+        "document_id": "sc_ab7cecb1b23888861b6fd01c9c"
+      },
+      {
+        "source_row": 770,
+        "variety": "Hind special",
+        "document_id": "sc_ea405afc86d106cc02142c05f6"
+      },
+      {
+        "source_row": 771,
+        "variety": "HPCO 47-262",
+        "document_id": "sc_3bb4b18615a36876142daf1860"
+      },
+      {
+        "source_row": 772,
+        "variety": "IK",
+        "document_id": "sc_ce5505812c4d1de083205e8cfe"
+      },
+      {
+        "source_row": 773,
+        "variety": "IK 5",
+        "document_id": "sc_ac16b120b74d8394217d07b2d7"
+      },
+      {
+        "source_row": 774,
+        "variety": "Jab cba",
+        "document_id": "sc_fa490e61957f73a51bf1d7f84c"
+      },
+      {
+        "source_row": 775,
+        "variety": "KT 17",
+        "document_id": "sc_2dd6ea5e8340112e9b43a1496f"
+      },
+      {
+        "source_row": 776,
+        "variety": "Lag 71 Tc",
+        "document_id": "sc_bcbc1a90c03d8dc2bd20f1940d"
+      },
+      {
+        "source_row": 777,
+        "variety": "Lag 71 T3",
+        "document_id": "sc_98ae251dea60db3d7bac7070b6"
+      },
+      {
+        "source_row": 778,
+        "variety": "LF 31-346",
+        "document_id": "sc_da807e0f36e7d1318bcca39073"
+      },
+      {
+        "source_row": 779,
+        "variety": "LF 68-1062",
+        "document_id": "sc_289a5854507124939f9ccd72b1"
+      },
+      {
+        "source_row": 780,
+        "variety": "LF 36-819",
+        "document_id": "sc_d498fdf314a518230dd838c6ed"
+      },
+      {
+        "source_row": 781,
+        "variety": "M 33/66",
+        "document_id": "sc_cc8febf04c33fc69e287f872e5"
+      },
+      {
+        "source_row": 782,
+        "variety": "Mandalay/Manolalay",
+        "document_id": "sc_448a19d0ec166a2cf9219fc19a"
+      },
+      {
+        "source_row": 783,
+        "variety": "P 62-55",
+        "document_id": "sc_d7a0c316ad563b65a9b542c97e"
+      },
+      {
+        "source_row": 784,
+        "variety": "P 59-688/P59-638?",
+        "document_id": "sc_86cefbd7f5ef0e0c51b18b1a4d"
+      },
+      {
+        "source_row": 785,
+        "variety": "Palawan white",
+        "document_id": "sc_f81780d92f2510767637624929"
+      },
+      {
+        "source_row": 786,
+        "variety": "Pampanga red",
+        "document_id": "sc_829d753de425feda471f16f198"
+      },
+      {
+        "source_row": 787,
+        "variety": "Serius",
+        "document_id": "sc_ef3581779c3c17b03d8f15ecfe"
+      },
+      {
+        "source_row": 788,
+        "variety": "Ses 208",
+        "document_id": "sc_4619b1453149320bcc97bc70ad"
+      },
+      {
+        "source_row": 789,
+        "variety": "S.I. 16/S.16",
+        "document_id": "sc_96dc5a379bf4a3efe9e560c28c"
+      },
+      {
+        "source_row": 790,
+        "variety": "Sp 200",
+        "document_id": "sc_666b55eeae6f7555d32978f91f"
+      },
+      {
+        "source_row": 791,
+        "variety": "SW 3",
+        "document_id": "sc_60535bebbd9e6bfefdaf4bf067"
+      },
+      {
+        "source_row": 792,
+        "variety": "Tigbao No. 1",
+        "document_id": "sc_61fe6374bf0db3f7141e76e067"
+      },
+      {
+        "source_row": 793,
+        "variety": "Pindas/Pindan",
+        "document_id": "sc_b89475ceb0d263686c96efecca"
+      },
+      {
+        "source_row": 794,
+        "variety": "Phil 90-09-0049",
+        "document_id": "sc_b8c4e4dcc3d42adc36faba9ed6"
+      },
+      {
+        "source_row": 795,
+        "variety": "Phil 93-118-1207",
+        "document_id": "sc_eb37c21c8428566c8dfa24baf1"
+      },
+      {
+        "source_row": 796,
+        "variety": "Phil 93-1601",
+        "document_id": "sc_963807f5827a2edc26c00e3a9b"
+      },
+      {
+        "source_row": 797,
+        "variety": "Phil 95-1051/Phil95-0351",
+        "document_id": "sc_a0fe49119fd0e2027e9f86b3d3"
+      },
+      {
+        "source_row": 798,
+        "variety": "Phil 97-2041",
+        "document_id": "sc_64de1f6456f16c6a825a0d720e"
+      },
+      {
+        "source_row": 799,
+        "variety": "IPB2",
+        "document_id": "sc_2683d4ad0b4b0891a9d6fc2d0a"
+      },
+      {
+        "source_row": 800,
+        "variety": "IPB4",
+        "document_id": "sc_3cee0d858619affea92d2ae83d"
+      },
+      {
+        "source_row": 801,
+        "variety": "IPB5",
+        "document_id": "sc_a03f031226b199b0e6d974da49"
+      },
+      {
+        "source_row": 802,
+        "variety": "IPB7",
+        "document_id": "sc_31e05d332602a9572fb97babe6"
+      },
+      {
+        "source_row": 803,
+        "variety": "IPB9",
+        "document_id": "sc_529a43527470eaebfc3f5ed5cb"
+      },
+      {
+        "source_row": 804,
+        "variety": "IPB10",
+        "document_id": "sc_b9e8c795e657d5c509164976f7"
+      },
+      {
+        "source_row": 805,
+        "variety": "IPB12",
+        "document_id": "sc_df309e39ec775e74a4a4a30265"
+      },
+      {
+        "source_row": 807,
+        "variety": "Phil 98-01-0007",
+        "document_id": "sc_b570165eabbdd88bc0f9d571e2"
+      },
+      {
+        "source_row": 808,
+        "variety": "Phil 98-37-0255",
+        "document_id": "sc_d63371011300aaaed50aef5eec"
+      },
+      {
+        "source_row": 809,
+        "variety": "Phil 98-84-0733",
+        "document_id": "sc_3de80b2c390cdcec6548f4f1fc"
+      },
+      {
+        "source_row": 810,
+        "variety": "Phil 98-138-1661",
+        "document_id": "sc_3931bd37f33607f3bc64278ba3"
+      },
+      {
+        "source_row": 811,
+        "variety": "Phil 98-148-1831",
+        "document_id": "sc_63c8ce1474017367d83fade4db"
+      },
+      {
+        "source_row": 812,
+        "variety": "Phil 98-149-1863",
+        "document_id": "sc_40a05e066c0e2451be8efc2ccd"
+      },
+      {
+        "source_row": 813,
+        "variety": "Phil 98-153-2025",
+        "document_id": "sc_d6a74f5ea6aceb63213ff9b662"
+      },
+      {
+        "source_row": 814,
+        "variety": "Phil 98-157-2137",
+        "document_id": "sc_7e15cea94ceb6932901c351c13"
+      },
+      {
+        "source_row": 815,
+        "variety": "Phil 98-212-3061",
+        "document_id": "sc_de98dcc0fdbb72234ae493b214"
+      },
+      {
+        "source_row": 816,
+        "variety": "Phil 98-223-3131",
+        "document_id": "sc_26d70e7df9b36dfb5eb38a858d"
+      },
+      {
+        "source_row": 817,
+        "variety": "Phil 98-238-3403",
+        "document_id": "sc_58100a5cc6936480c539061989"
+      },
+      {
+        "source_row": 818,
+        "variety": "Phil 98-260-3433",
+        "document_id": "sc_97f432cdb05f9040850f313cb4"
+      },
+      {
+        "source_row": 819,
+        "variety": "Phil 99-0177",
+        "document_id": "sc_ba46f3eb8a996a605db60f60d0"
+      },
+      {
+        "source_row": 820,
+        "variety": "Phil 99-0383",
+        "document_id": "sc_9defb57ecd3bbe010ebb1f7a41"
+      },
+      {
+        "source_row": 821,
+        "variety": "Phil 99-0925",
+        "document_id": "sc_02697a38a0b8505cebb125e6b8"
+      },
+      {
+        "source_row": 822,
+        "variety": "Phil 99-1189",
+        "document_id": "sc_c133cfe6a0ce09080cf49888d2"
+      },
+      {
+        "source_row": 823,
+        "variety": "Phil 99-1327",
+        "document_id": "sc_0e14be5ccfbde14cbd598a3bc0"
+      },
+      {
+        "source_row": 824,
+        "variety": "Phil 99-179-1331",
+        "document_id": "sc_c30a4e00e875a81a4da0cdfb49"
+      },
+      {
+        "source_row": 825,
+        "variety": "Phil 99-1429",
+        "document_id": "sc_33169e30ae747aa28ffcfad517"
+      },
+      {
+        "source_row": 826,
+        "variety": "Phil 99-4459",
+        "document_id": "sc_8c268d124099f80fb84fa37fbf"
+      },
+      {
+        "source_row": 827,
+        "variety": "Phil 99-1523",
+        "document_id": "sc_725a7f9a79ed35f4caedbd1fac"
+      },
+      {
+        "source_row": 828,
+        "variety": "Phil 99-1549",
+        "document_id": "sc_2ac8fd396be022d8a20be4d593"
+      },
+      {
+        "source_row": 829,
+        "variety": "Phil 99-1023",
+        "document_id": "sc_c7f8e7d7d893bd473f48af7b07"
+      },
+      {
+        "source_row": 830,
+        "variety": "Phil 99-248-1675",
+        "document_id": "sc_58ee7f74583b06739a977064be"
+      },
+      {
+        "source_row": 831,
+        "variety": "Phil 99-1715",
+        "document_id": "sc_08d8c6c2881ca6556847c93390"
+      },
+      {
+        "source_row": 832,
+        "variety": "Phil 99-1793",
+        "document_id": "sc_46fe3ff6f36dcc7d652df11000"
+      },
+      {
+        "source_row": 833,
+        "variety": "Phil 99-2343",
+        "document_id": "sc_b669e9fbcc67794566bddebdd3"
+      },
+      {
+        "source_row": 834,
+        "variety": "Phil 99-2641",
+        "document_id": "sc_1ee81bd54cced9588090d8bedc"
+      },
+      {
+        "source_row": 835,
+        "variety": "Phil 99-2899",
+        "document_id": "sc_eca8d70fbf4b5e7fe87829d411"
+      },
+      {
+        "source_row": 836,
+        "variety": "Phil 99-2929",
+        "document_id": "sc_3f269eb544d44996ccb776542e"
+      },
+      {
+        "source_row": 837,
+        "variety": "Phil 99-354-2991",
+        "document_id": "sc_8e6bf832029217d5eebe41a009"
+      },
+      {
+        "source_row": 838,
+        "variety": "Phil 00-35-0249",
+        "document_id": "sc_8254608923a9d366c4b55de3e8"
+      },
+      {
+        "source_row": 839,
+        "variety": "Phil 00-89-0599",
+        "document_id": "sc_5584605cb79a7b7fbe62afa36b"
+      },
+      {
+        "source_row": 840,
+        "variety": "Phil 00-89-0601",
+        "document_id": "sc_028e06a85042be8a3011e3b2a4"
+      },
+      {
+        "source_row": 841,
+        "variety": "Phil 00-91-0627",
+        "document_id": "sc_f44fd97589dc5e5756e0d5cf0c"
+      },
+      {
+        "source_row": 842,
+        "variety": "Phil 00-141-1115",
+        "document_id": "sc_d52c5b66b2ad28872c509230a5"
+      },
+      {
+        "source_row": 843,
+        "variety": "Phil 00-156-1161",
+        "document_id": "sc_b74bd2807199c757750214c1ca"
+      },
+      {
+        "source_row": 844,
+        "variety": "Phil 00-176-1323",
+        "document_id": "sc_fb5b7fbeef6189a163f7a562a8"
+      },
+      {
+        "source_row": 845,
+        "variety": "Phil 00-185-1419",
+        "document_id": "sc_1bb880811000ee74c3366c2eb3"
+      },
+      {
+        "source_row": 846,
+        "variety": "Phil 00-195-1491",
+        "document_id": "6ac5c2a80037677d6093"
+      },
+      {
+        "source_row": 847,
+        "variety": "Phil 00-204-1537",
+        "document_id": "sc_8b07edc87077903f9be088e845"
+      },
+      {
+        "source_row": 848,
+        "variety": "Phil 00-278-1893",
+        "document_id": "sc_e2f6068d7610c4f6423aaf1f49"
+      },
+      {
+        "source_row": 849,
+        "variety": "Phil 00-276-1901",
+        "document_id": "sc_c83f1d2594a509b949c081c1fd"
+      },
+      {
+        "source_row": 850,
+        "variety": "Phil 00-282-1937",
+        "document_id": "sc_785ba37c9487486de5ae5d016a"
+      },
+      {
+        "source_row": 851,
+        "variety": "Phil 00-354-2425",
+        "document_id": "sc_74b66fdde84b20e6a496013612"
+      },
+      {
+        "source_row": 852,
+        "variety": "Phil 00-357-2137",
+        "document_id": "sc_111a4850aa57a0e25bc2fef118"
+      },
+      {
+        "source_row": 853,
+        "variety": "Phil 00-365-2569",
+        "document_id": "sc_b13becc3cbc2a3c209aab74ca1"
+      },
+      {
+        "source_row": 854,
+        "variety": "Phil 03-11-0167",
+        "document_id": "sc_dea04d3e42140fcfc5ddf5eaa0"
+      },
+      {
+        "source_row": 855,
+        "variety": "Phil 03-17-0217",
+        "document_id": "sc_8cf8673b641e704d2a678b8b6c"
+      },
+      {
+        "source_row": 856,
+        "variety": "Phil 03-46-0617",
+        "document_id": "sc_13a9ea9bcb00b425193f75e486"
+      },
+      {
+        "source_row": 857,
+        "variety": "Phil 03-0699",
+        "document_id": "sc_cb651c70da8ff1c546e411bc5c"
+      },
+      {
+        "source_row": 858,
+        "variety": "Phil 03-96-0933",
+        "document_id": "sc_6a4ffa54c37c3f24d70bb22ada"
+      },
+      {
+        "source_row": 859,
+        "variety": "Phil 03-154-1389",
+        "document_id": "sc_6f666f74a9cfcbd165e66fdb76"
+      },
+      {
+        "source_row": 860,
+        "variety": "Phil 03-158-1503",
+        "document_id": "sc_f9913c3c8f9676ba5526f2d10b"
+      },
+      {
+        "source_row": 861,
+        "variety": "Phil 03-163-1577",
+        "document_id": "sc_6d2f5ccfb568d7033cd60d71ff"
+      },
+      {
+        "source_row": 862,
+        "variety": "Phil 03-175-1729",
+        "document_id": "sc_59bd77f6a02561fed77f40dd70"
+      },
+      {
+        "source_row": 863,
+        "variety": "Phil 03-208-2063",
+        "document_id": "sc_fdd77fbd78f54303d2d47038d6"
+      },
+      {
+        "source_row": 864,
+        "variety": "Phil 04-0017",
+        "document_id": "sc_3cfa091bffde30acf6ec8e0ce1"
+      },
+      {
+        "source_row": 865,
+        "variety": "Phil 04-0707",
+        "document_id": "sc_1822fe79abd2a5986a1eb1f4b7"
+      },
+      {
+        "source_row": 866,
+        "variety": "Phil 04-0827",
+        "document_id": "sc_1c5d57b1e5bfc8adef82826fc8"
+      },
+      {
+        "source_row": 867,
+        "variety": "Phil 04-0917",
+        "document_id": "sc_1951de24ff214d14d6b43fc2a1"
+      },
+      {
+        "source_row": 868,
+        "variety": "Phil 04-1011",
+        "document_id": "sc_4a2dd24baf4efdc0f75597aa5d"
+      },
+      {
+        "source_row": 869,
+        "variety": "Phil 04-1195",
+        "document_id": "sc_ede021a547c361c15ea8ddbdb3"
+      },
+      {
+        "source_row": 870,
+        "variety": "Phil 04-1719",
+        "document_id": "sc_11662385f8409b908bc583b57b"
+      },
+      {
+        "source_row": 871,
+        "variety": "Phil 04-1981",
+        "document_id": "sc_33519deb59320ad0d21639a55c"
+      },
+      {
+        "source_row": 872,
+        "variety": "PSR 99-85",
+        "document_id": "sc_4733767dc59cfae52ac8a65bde"
+      },
+      {
+        "source_row": 873,
+        "variety": "PSR 99-105",
+        "document_id": "sc_e6769b6ff14a72ef747c857d59"
+      },
+      {
+        "source_row": 874,
+        "variety": "PSR 2000-23",
+        "document_id": "sc_44a6d47d8cfabe6660a075a66b"
+      },
+      {
+        "source_row": 875,
+        "variety": "PSR 2000-36",
+        "document_id": "sc_f73219cffe1ead2489287b284f"
+      },
+      {
+        "source_row": 876,
+        "variety": "PSR 2000-71",
+        "document_id": "sc_4628f6bc9a6455b9804c79b417"
+      },
+      {
+        "source_row": 877,
+        "variety": "PSR 2000-161",
+        "document_id": "sc_b622016de5922ee10290b548a9"
+      },
+      {
+        "source_row": 878,
+        "variety": "PSR 2000-343",
+        "document_id": "sc_79a72bcab8acfefc9c945f5dbb"
+      },
+      {
+        "source_row": 879,
+        "variety": "PSR 2001-46",
+        "document_id": "sc_a470e16bd0f89e96d4fb6b3854"
+      },
+      {
+        "source_row": 880,
+        "variety": "Phil 05-0645",
+        "document_id": "sc_1093c9bd05c464d5e217da0215"
+      },
+      {
+        "source_row": 881,
+        "variety": "Phil 05-1197",
+        "document_id": "sc_6a2942f01d8951ab27bcae849b"
+      },
+      {
+        "source_row": 882,
+        "variety": "Phil 06-1899",
+        "document_id": "sc_14bdc827c45fdf6a6597e5448a"
+      },
+      {
+        "source_row": 883,
+        "variety": "Phil 06-2289",
+        "document_id": "sc_12a9f27d48aba46a3e7b48c295"
+      },
+      {
+        "source_row": 884,
+        "variety": "Phil 08-0909",
+        "document_id": "sc_669701b42f147b726d1099050b"
+      },
+      {
+        "source_row": 885,
+        "variety": "PHIL 98-01-0007",
+        "document_id": "sc_b52b29aa350887b53d4785418a"
+      },
+      {
+        "source_row": 886,
+        "variety": "Phil 07-0573",
+        "document_id": "sc_4966eda5dd20c3d948baa6c22a"
+      },
+      {
+        "source_row": 887,
+        "variety": "Phil 07-0027",
+        "document_id": "sc_849cda816861377abbf238500c"
+      },
+      {
+        "source_row": 888,
+        "variety": "Phil 07-0411",
+        "document_id": "sc_ce0d4b4838ab5bc8531617aafa"
+      },
+      {
+        "source_row": 889,
+        "variety": "Phil 07-2319",
+        "document_id": "sc_5e4d439dcd4b0d14859b8adcc9"
+      },
+      {
+        "source_row": 890,
+        "variety": "Phil 07-0243",
+        "document_id": "sc_b396e9fcadd1f24342b5131151"
+      },
+      {
+        "source_row": 891,
+        "variety": "Phil 07-0563",
+        "document_id": "sc_07ea5343cd5dd2082734e68eee"
+      },
+      {
+        "source_row": 892,
+        "variety": "Phil 07-2081",
+        "document_id": "sc_edbab2bef9793c1b2b66a0dbcf"
+      },
+      {
+        "source_row": 893,
+        "variety": "Phil 07-359",
+        "document_id": "sc_27a39805997dc4b40ecbfda99e"
+      },
+      {
+        "source_row": 894,
+        "variety": "AJAX",
+        "document_id": "sc_c73b30e221367600d2694b6847"
+      },
+      {
+        "source_row": 896,
+        "variety": "Phil 08-17-0161",
+        "document_id": "sc_7e38b6a46ee1cc7b5370013b93"
+      },
+      {
+        "source_row": 897,
+        "variety": "Phil 08-79-0777",
+        "document_id": "sc_9fa53dc1a654ee38aa24ab755a"
+      },
+      {
+        "source_row": 898,
+        "variety": "Phil 08-93-1009",
+        "document_id": "sc_a0f67d9fb727c86154c498b680"
+      },
+      {
+        "source_row": 899,
+        "variety": "Phil 08-105-2131",
+        "document_id": "sc_6713cdbb76fcbc9adbda5a9420"
+      },
+      {
+        "source_row": 900,
+        "variety": "Phil 08-108-1307",
+        "document_id": "sc_36481b941dfde2a6be4e8e9d7e"
+      },
+      {
+        "source_row": 901,
+        "variety": "Phil 08-108-1355",
+        "document_id": "sc_39adf19751f8704ebed39304aa"
+      },
+      {
+        "source_row": 902,
+        "variety": "Phil 00-0791",
+        "document_id": "sc_7958464a69feb82252b0817947"
+      },
+      {
+        "source_row": 903,
+        "variety": "Phil 00-2569",
+        "document_id": "sc_da6b18203bd1b20daff19497ec"
+      },
+      {
+        "source_row": 904,
+        "variety": "Phil 09-1-0015",
+        "document_id": "sc_1821c3f8cffffed23340195e1a"
+      },
+      {
+        "source_row": 905,
+        "variety": "Phil 09-2-0035",
+        "document_id": "sc_53a86c9d195be11d0429c97db8"
+      },
+      {
+        "source_row": 906,
+        "variety": "Phil 09-7-0097",
+        "document_id": "sc_aae3b7651b8b9d072a53e36fa9"
+      },
+      {
+        "source_row": 907,
+        "variety": "Phil 09-12-0125",
+        "document_id": "sc_b50a1bbb7aab88ce2cd9c33900"
+      },
+      {
+        "source_row": 908,
+        "variety": "Phil 09-166-1567",
+        "document_id": "sc_d5c9ff066fd912ec649c6e012e"
+      },
+      {
+        "source_row": 909,
+        "variety": "Phil 09-209-1867",
+        "document_id": "sc_c759f01f9a5386ad1581ad68e0"
+      },
+      {
+        "source_row": 910,
+        "variety": "Phil 09-217-1963",
+        "document_id": "sc_106a575c49e67ab9ba42c41699"
+      },
+      {
+        "source_row": 911,
+        "variety": "Phil 09-217-1969",
+        "document_id": "sc_d21faa0a526d2402c59acc9e20"
+      },
+      {
+        "source_row": 912,
+        "variety": "Phil 09-236-2147",
+        "document_id": "sc_b877499b958e214754700609e6"
+      },
+      {
+        "source_row": 913,
+        "variety": "CYZ 93-159",
+        "document_id": "sc_43bceb9562a02ab3ea4184b44f"
+      },
+      {
+        "source_row": 914,
+        "variety": "Phil 10-4-0149",
+        "document_id": "sc_6c75bb88779b63c59626f119b9"
+      },
+      {
+        "source_row": 915,
+        "variety": "Phil 10-38-0487",
+        "document_id": "sc_be55ed7ece07efd95d414fc1c7"
+      },
+      {
+        "source_row": 916,
+        "variety": "Phil 10-48-0645",
+        "document_id": "sc_5e53faccfd2b780107fd2fe483"
+      },
+      {
+        "source_row": 917,
+        "variety": "Phil 10-6-0077",
+        "document_id": "sc_9137ffe2036e5579560a22fd89"
+      },
+      {
+        "source_row": 918,
+        "variety": "Phil 10-12-0185",
+        "document_id": "sc_99c23b823826cc073b7677ac8a"
+      },
+      {
+        "source_row": 919,
+        "variety": "Phil 10-81-0733",
+        "document_id": "sc_e1c1209baeb7912ac0dcc76bd8"
+      },
+      {
+        "source_row": 920,
+        "variety": "Phil 10-26-0357",
+        "document_id": "sc_a3f3fb0055b5da89484f73d656"
+      },
+      {
+        "source_row": 921,
+        "variety": "Phil 10-73-0901",
+        "document_id": "sc_9a4553e2bbea95f8cf654e61b2"
+      },
+      {
+        "source_row": 922,
+        "variety": "Phil 11-0237",
+        "document_id": "sc_14cec0f496f976cb2e7e5aae20"
+      },
+      {
+        "source_row": 923,
+        "variety": "Phil 11-0899",
+        "document_id": "sc_29dd3a155d25ba5e354c5981a1"
+      },
+      {
+        "source_row": 924,
+        "variety": "Phil 11-49-0809",
+        "document_id": "sc_0068b521e1085c0816e638a4f3"
+      },
+      {
+        "source_row": 925,
+        "variety": "Phil 11-1121",
+        "document_id": "sc_f95f848176f03a2bc63f3b4918"
+      },
+      {
+        "source_row": 926,
+        "variety": "Phil 11-1683",
+        "document_id": "sc_d543d29c263ef7f64e12b90d38"
+      },
+      {
+        "source_row": 927,
+        "variety": "Phil 12-52-0455",
+        "document_id": "sc_7d0c3889abaee55687cc7a449a"
+      },
+      {
+        "source_row": 928,
+        "variety": "Phil 12-61-0609",
+        "document_id": "sc_918e792605dbe51564c7d3a64c"
+      },
+      {
+        "source_row": 929,
+        "variety": "Phil 12-52-0483",
+        "document_id": "sc_f8c3600045697f0e7e6e62a09d"
+      },
+      {
+        "source_row": 930,
+        "variety": "Phil 12-08-0089",
+        "document_id": "sc_111e2ec36f0ae290e61901782e"
+      },
+      {
+        "source_row": 931,
+        "variety": "Phil 12-02-0011",
+        "document_id": "sc_ffd27a9af6d9b0da2e848266d4"
+      },
+      {
+        "source_row": 932,
+        "variety": "Phil 12-61-0623",
+        "document_id": "sc_da75524c00d68e210ba9b1b22d"
+      },
+      {
+        "source_row": 933,
+        "variety": "Phil 12-88-1019",
+        "document_id": "sc_29ca52a81cee487761c8952351"
+      },
+      {
+        "source_row": 934,
+        "variety": "Phil 12-119-1373",
+        "document_id": "sc_3c24cfb5b25e0080f659c5df20"
+      },
+      {
+        "source_row": 935,
+        "variety": "Phil 12-99-1153",
+        "document_id": "sc_8944cf44c0c218af99a0803d25"
+      },
+      {
+        "source_row": 936,
+        "variety": "Phil 12-105-1203",
+        "document_id": "sc_447432d9508dd515862a7affd2"
+      }
+    ],
+    "created": [
+      {
+        "source_row": 434,
+        "variety": "Phil 00-2569",
+        "document_id": "sc_6eac65e04d017c40fd20a640"
+      }
+    ],
+    "errors": []
+  },
+  "workbook": {
+    "uploaded_name": "Characterization and other attributes 10_07_2026(2).xlsx",
+    "canonical_name": "Characterization.xlsx",
+    "sheet": "Sheet1",
+    "total_rows_including_headers": 936,
+    "data_rows": 934,
+    "named_rows": 932,
+    "blank_variety_rows": [
+      806,
+      895
+    ],
+    "unique_canonical_varieties": 928,
+    "duplicate_canonical_groups": {
+      "PHIL931902349": [
+        {
+          "source_row": 353,
+          "variety": "Phil 93-190-2349"
+        },
+        {
+          "source_row": 360,
+          "variety": "Phil 93-190-2349"
+        }
+      ],
+      "PHIL002569": [
+        {
+          "source_row": 434,
+          "variety": "Phil 00-2569"
+        },
+        {
+          "source_row": 903,
+          "variety": "Phil 00-2569"
+        }
+      ],
+      "VMC73229": [
+        {
+          "source_row": 712,
+          "variety": "VMC 73-229"
+        },
+        {
+          "source_row": 717,
+          "variety": "VMC 73-229"
+        }
+      ],
+      "PHIL98010007": [
+        {
+          "source_row": 807,
+          "variety": "Phil 98-01-0007"
+        },
+        {
+          "source_row": 885,
+          "variety": "PHIL 98-01-0007"
+        }
+      ]
+    }
+  },
+  "finished_at": "2026-10-10T08:55:32.041Z",
+  "local": {
+    "characterization": "Characterization.xlsx",
+    "seed": {
+      "skipped": false,
+      "updated": 930,
+      "created": 2,
+      "conflicts": 0,
+      "total": 952
+    },
+    "package_version": "2.13.88",
+    "public_version": "2.13.88"
+  },
+  "completed_at": "2026-10-10T08:55:32.887Z",
+  "after": {
+    "core": 951,
+    "details": 951
+  }
+}

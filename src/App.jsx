@@ -43,9 +43,11 @@ const SpreadsheetEditorModal = lazy(() => import('./components/SpreadsheetEditor
 const CombinationRegistryModal = lazy(() => import('./components/CombinationRegistryModal.jsx'));
 const PedigreeModal = lazy(() => import('./components/PedigreeModal.jsx'));
 const VarietyMapModal = lazy(() => import('./components/VarietyMapModal.jsx'));
+const BreedingProgramModal = lazy(() => import('./components/BreedingProgramModal.jsx'));
+const VarietyBrochureModal = lazy(() => import('./components/VarietyBrochureModal.jsx'));
 
 const APP_NAME = 'Sugarcane Germplasm Resource Database';
-const APP_VERSION = '2.13.76';
+const APP_VERSION = '2.13.86';
 const USER_CACHE_KEY = 'sugarcane-registry-user-v230';
 const ROLE_REFRESH_PREFIX = 'canesprout-role-refresh-v251:';
 const MANUAL_REFRESH_COOLDOWN_MS = 30_000;
@@ -411,7 +413,7 @@ function RecordCard({ record, onOpen, index }) {
       className={`record-card germplasm-card viewport-card clickable-record-card ${visible ? 'is-visible' : ''}`}
       style={{ '--card-delay': `${Math.min(index % 6, 5) * 34}ms` }}
       tabIndex={0}
-      aria-label={`Open ${record.variety || 'unnamed variety'} profile`}
+      aria-label={`Open ${record.variety || 'unnamed variety'} brochure`}
       onClick={() => onOpen(record.$id)}
       onKeyDown={(event) => {
         if (event.key === 'Enter' || event.key === ' ') {
@@ -438,7 +440,7 @@ function RecordCard({ record, onOpen, index }) {
           <span className="preview-wide preview-disease"><small>Reaction to Diseases</small><b>{disease}</b></span>
         </div>
         <footer className="germplasm-card-footer">
-          <span>Preview only. Open the profile for complete characterization data.</span>
+          <span>Brochure preview available. Expand the brochure for complete characterization data.</span>
           <div className="germplasm-card-actions" onClick={(event) => event.stopPropagation()} onKeyDown={(event) => event.stopPropagation()}>
             <div className="germplasm-card-print-action">
               <button
@@ -462,7 +464,7 @@ function RecordCard({ record, onOpen, index }) {
                 onComplete={(event) => printFromCard(event, 'complete')}
               />
             </div>
-            <button type="button" className="primary-button view-profile-button" onClick={(event) => { event.stopPropagation(); onOpen(record.$id); }}>View Profile <ArrowUpRight size={16} /></button>
+            <button type="button" className="primary-button view-profile-button" onClick={(event) => { event.stopPropagation(); onOpen(record.$id); }}>View Brochure <ArrowUpRight size={16} /></button>
           </div>
         </footer>
       </div>
@@ -517,6 +519,7 @@ export default function App() {
   const [searchMatchMode, setSearchMatchMode] = useState('');
   const [refreshKey, setRefreshKey] = useState(0);
   const [detailId, setDetailId] = useState('');
+  const [brochureId, setBrochureId] = useState('');
   const [editRecord, setEditRecord] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [showImport, setShowImport] = useState(false);
@@ -530,6 +533,7 @@ export default function App() {
   const [showPedigree, setShowPedigree] = useState(false);
   const [pedigreeInitialVariety, setPedigreeInitialVariety] = useState('');
   const [showMap, setShowMap] = useState(false);
+  const [showBreedingProgram, setShowBreedingProgram] = useState(false);
   const [adminCenterTab, setAdminCenterTab] = useState('approvals');
   const [submissionNotice, setSubmissionNotice] = useState('');
   const submissionNoticeTimerRef = useRef(0);
@@ -1028,6 +1032,7 @@ export default function App() {
 
   async function openEdit(record) {
     setDetailId('');
+    setBrochureId('');
     try {
       const full = record?.$id ? await getRecord(record.$id) : record;
       setEditRecord(full);
@@ -1310,6 +1315,10 @@ export default function App() {
                 <Dna size={20} />
                 <span><strong>Combination Registry</strong><small>Search and record male × female crosses</small></span>
               </button>
+              <button type="button" onClick={() => { setMobileToolbarOpen(false); setShowExcelMenu(false); setShowForm(false); setEditRecord(null); setShowAdminCenter(false); setShowOfflineQueue(false); setShowImport(false); setShowExportExcel(false); setShowSpreadsheetEditor(false); setShowCombinationRegistry(false); setShowPedigree(false); setShowMap(false); setShowBreedingProgram(true); }}>
+                <Sprout size={20} />
+                <span><strong>Breeding Program</strong><small>SOPs, research archive, and variety brochures</small></span>
+              </button>
               {isAdmin && (
                 <>
                   <button type="button" onClick={() => { setMobileToolbarOpen(false); setShowExcelMenu(false); setShowCombinationRegistry(false); openAdminCenter('approvals'); }}>
@@ -1364,13 +1373,14 @@ export default function App() {
 
         {!isMobileToolbar && (<>
         <DesktopPrimaryNav
-          germplasmActive={!showImport && !showExcelMenu && !showExportExcel && !showSpreadsheetEditor && !showForm && !showAdminCenter && !showCombinationRegistry && !showPedigree && !showMap}
+          germplasmActive={!showImport && !showExcelMenu && !showExportExcel && !showSpreadsheetEditor && !showForm && !showAdminCenter && !showCombinationRegistry && !showPedigree && !showMap && !showBreedingProgram}
           pedigreeActive={showPedigree}
           mapActive={showMap}
           toolsActive={showExcelMenu || showImport || showExportExcel || showSpreadsheetEditor || showForm || showCombinationRegistry || showAdminCenter}
           excelActive={showExcelMenu || showImport || showExportExcel || showSpreadsheetEditor}
           addRecordActive={showForm}
           combinationActive={showCombinationRegistry}
+          breedingProgramActive={showBreedingProgram}
           adminActive={showAdminCenter}
           isAdmin={isAdmin}
           onGermplasm={() => {
@@ -1378,6 +1388,7 @@ export default function App() {
             setShowCombinationRegistry(false);
             setShowPedigree(false);
             setShowMap(false);
+            setShowBreedingProgram(false);
             goToGermplasmCollection();
           }}
           onPedigree={() => {
@@ -1391,6 +1402,7 @@ export default function App() {
             setShowSpreadsheetEditor(false);
             setShowCombinationRegistry(false);
             setShowMap(false);
+            setShowBreedingProgram(false);
             setPedigreeInitialVariety('');
             setShowPedigree(true);
           }}
@@ -1405,6 +1417,7 @@ export default function App() {
             setShowSpreadsheetEditor(false);
             setShowCombinationRegistry(false);
             setShowPedigree(false);
+            setShowBreedingProgram(false);
             setShowMap(true);
           }}
           onExcelTools={() => {
@@ -1413,11 +1426,13 @@ export default function App() {
             setEditRecord(null);
             setShowAdminCenter(false);
             setShowOfflineQueue(false);
+            setShowBreedingProgram(false);
             setShowExcelMenu(true);
           }}
           onAddRecord={() => {
             setShowExcelMenu(false);
             setShowCombinationRegistry(false);
+            setShowBreedingProgram(false);
             setEditRecord(null);
             setShowForm(true);
           }}
@@ -1430,7 +1445,22 @@ export default function App() {
             setShowImport(false);
             setShowExportExcel(false);
             setShowSpreadsheetEditor(false);
+            setShowBreedingProgram(false);
             setShowCombinationRegistry(true);
+          }}
+          onBreedingProgram={() => {
+            setShowExcelMenu(false);
+            setShowForm(false);
+            setEditRecord(null);
+            setShowAdminCenter(false);
+            setShowOfflineQueue(false);
+            setShowImport(false);
+            setShowExportExcel(false);
+            setShowSpreadsheetEditor(false);
+            setShowCombinationRegistry(false);
+            setShowPedigree(false);
+            setShowMap(false);
+            setShowBreedingProgram(true);
           }}
           onAdminCenter={() => {
             setShowExcelMenu(false);
@@ -1641,7 +1671,7 @@ export default function App() {
         {listError && <div className="alert error">{listError}</div>}
 
         <div className="record-grid">
-          {loading ? Array.from({ length: 6 }, (_, index) => <SkeletonCard key={index} />) : photoFirstBrowseRecords(records, { searchInput, recentMode }).map((record, index) => <RecordCard key={record.$id} record={record} index={index} onOpen={setDetailId} />)}
+          {loading ? Array.from({ length: 6 }, (_, index) => <SkeletonCard key={index} />) : photoFirstBrowseRecords(records, { searchInput, recentMode }).map((record, index) => <RecordCard key={record.$id} record={record} index={index} onOpen={setBrochureId} />)}
         </div>
         {!loading && !records.length && <div className="empty-state"><SugarcaneIcon size={38} /><h3>{recentMode ? 'No recently added records' : searchInput.trim() && searchInput.trim().length < SEARCH_MIN ? `Type at least ${SEARCH_MIN} characters` : searchInput.trim() ? 'No matching sugarcane records' : 'No sugarcane records available'}</h3><p>{recentMode ? 'No registry entries were returned for the recent-record view.' : searchInput.trim() && searchInput.trim().length < SEARCH_MIN ? 'Short searches stay entirely on this device, so Appwrite receives zero requests.' : searchInput.trim() ? `No ${SEARCH_SCOPES[searchScope].label.toLowerCase()} match was returned for “${searchInput.trim()}”. Try another term or search field.` : 'Add or import a sugarcane record to begin.'}</p></div>}
         {!loading && hasMore && <div className="load-more-row"><button className="secondary-button load-more" onClick={loadMore} disabled={loadingMore}>{loadingMore ? <><LoaderCircle className="spin" size={17} /> Loading {PAGE_SIZE} more…</> : `Load ${PAGE_SIZE} more`}</button><small>More records are fetched only when requested.</small></div>}
@@ -1650,6 +1680,7 @@ export default function App() {
       <footer className="app-footer"><span><SugarcaneIcon size={17} /> {APP_NAME} v{APP_VERSION}</span><span>{desktopMode ? 'Installed desktop mirror • one-login offline access • persistent local queue • reconnect Appwrite sync' : 'Versioned offline app shell • persistent IndexedDB workspace • paced direct Appwrite sync • storage-efficient WebP media'}</span></footer>
 
       <Suspense fallback={<ModalLoading />}>
+        {brochureId && <VarietyBrochureModal recordId={brochureId} onClose={() => setBrochureId('')} onExpandDetails={(recordId) => setDetailId(recordId)} />}
         {detailId && <DetailModal recordId={detailId} actor={user} online={online} isAdmin={isAdmin} onClose={() => setDetailId('')} onEdit={openEdit} onOpenPedigree={!desktopMode ? (record) => { setDetailId(''); setShowMap(false); setPedigreeInitialVariety(record?.variety || ''); setShowPedigree(true); } : undefined} onDeleted={({ record } = {}) => { if (record) setRecords((current) => current.filter((item) => item.$id !== record.$id)); else refreshRegistry(); }} onQueuedDelete={handleQueuedDelete} />}
         {showForm && <RecordFormModal initial={editRecord} actor={user} isAdmin={isAdmin} online={online} onClose={() => { setShowForm(false); setEditRecord(null); }} onSaved={({ type, variety, record }) => { clearListCache(); if (record && !searchInput.trim() && !recentMode) { setRecords((current) => [record, ...current.filter((item) => item.$id !== record.$id)].slice(0, PAGE_SIZE)); } else { refreshRegistry(); } showCompletionNotice(type === 'edit' ? `${variety} was updated successfully.` : `${variety} was registered successfully.`); }} onSubmitted={({ type, variety }) => { showCompletionNotice(`${variety} ${type === 'edit' ? 'edit' : 'registration'} submitted for administrator approval.`); }} onQueued={handleQueuedOffline} />}
         {showImport && isAdmin && <ImportModal actor={user} online={online} onClose={() => setShowImport(false)} onImported={({ created = 0, updated = 0, queued = 0, total = 0, scope, variety, offline: importedOffline = false, message = '' }) => { if (importedOffline) setRefreshKey((value) => value + 1); else refreshRegistry(); const subject = message || (scope === 'specific' && variety ? `${variety} imported successfully.` : `Excel import completed for ${total} ${total === 1 ? 'variety' : 'varieties'}.`); showCompletionNotice(importedOffline ? subject : `${subject} ${created} added, ${updated} updated.${queued ? ` ${queued} queued.` : ''}`, 7000); }} />}
@@ -1660,6 +1691,7 @@ export default function App() {
         {showCombinationRegistry && <CombinationRegistryModal actor={user} isAdmin={isAdmin} onClose={() => setShowCombinationRegistry(false)} onChanged={() => { clearListCache(); }} onNotice={(message) => showCompletionNotice(message, 7000)} toolbarBottom={toolbarBottom} />}
         {showPedigree && !desktopMode && <PedigreeModal initialVariety={pedigreeInitialVariety} onClose={() => { setShowPedigree(false); setPedigreeInitialVariety(''); }} onOpenProfile={(recordId) => { setShowPedigree(false); setPedigreeInitialVariety(''); setDetailId(recordId); }} />}
         {showMap && !desktopMode && <VarietyMapModal onClose={() => setShowMap(false)} onOpenProfile={(recordId) => { setDetailId(recordId); }} />}
+        {showBreedingProgram && <BreedingProgramModal actor={user} isAdmin={isAdmin} online={online} toolbarBottom={toolbarBottom} onClose={() => setShowBreedingProgram(false)} />}
       </Suspense>
     </main>
   );

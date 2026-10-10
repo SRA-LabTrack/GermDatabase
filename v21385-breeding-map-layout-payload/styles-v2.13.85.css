@@ -1,0 +1,461 @@
+
+/* ================================================================
+   v2.13.85 MAP-STYLE BREEDING PROGRAM WORKSPACE
+   Makes Breeding Program use the same visual language as Variety Map:
+   full workspace, square frame, strong header, compact close control,
+   fixed navigation strip, and a single internal scroll surface.
+   ================================================================ */
+
+/* Cover the application workspace like Variety Map instead of appearing as
+   a floating rounded dialog below the main toolbar. */
+.breeding-program-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2147483200 !important;
+  display: grid !important;
+  place-items: stretch !important;
+  padding: 24px !important;
+  overflow: hidden !important;
+  background:
+    linear-gradient(rgba(27, 58, 40, .28), rgba(27, 58, 40, .28)),
+    rgba(222, 232, 219, .58) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+
+/* The shell now reads as a dedicated page/workspace rather than a card. */
+.breeding-program-shell {
+  position: relative !important;
+  width: 100% !important;
+  height: calc(100dvh - 48px) !important;
+  max-width: none !important;
+  max-height: none !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  display: grid !important;
+  grid-template-rows: auto auto minmax(0, 1fr) !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(43, 82, 54, .18) !important;
+  border-radius: 0 !important;
+  background:
+    linear-gradient(135deg, rgba(249, 251, 244, .985), rgba(255, 253, 230, .965)) !important;
+  box-shadow: 0 24px 70px rgba(22, 48, 33, .20) !important;
+}
+
+/* ---------------------------------------------------------------
+   Header: match the Variety Map's large title block.
+   --------------------------------------------------------------- */
+
+.breeding-program-header {
+  position: relative !important;
+  z-index: 3 !important;
+  min-height: 184px !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 24px !important;
+  padding: 32px 36px 28px !important;
+  border-bottom: 1px solid rgba(53, 91, 59, .14) !important;
+  background:
+    radial-gradient(circle at 92% 12%, rgba(227, 232, 102, .15), transparent 28%),
+    linear-gradient(135deg, rgba(248, 251, 244, .98), rgba(255, 253, 231, .96)) !important;
+}
+
+.breeding-program-heading {
+  min-width: 0 !important;
+  display: grid !important;
+  grid-template-columns: 34px minmax(0, 1fr) !important;
+  align-items: start !important;
+  gap: 14px !important;
+}
+
+.breeding-program-heading-icon {
+  width: 34px !important;
+  height: 34px !important;
+  margin-top: 2px !important;
+  display: grid !important;
+  place-items: center !important;
+  border-radius: 0 !important;
+  color: #2a6b42 !important;
+  background: transparent !important;
+}
+
+.breeding-program-heading-icon svg {
+  width: 24px !important;
+  height: 24px !important;
+}
+
+.breeding-program-heading > div {
+  min-width: 0 !important;
+}
+
+.breeding-program-heading small {
+  display: block !important;
+  margin: 0 0 8px !important;
+  color: #2f6844 !important;
+  font-size: 11px !important;
+  font-weight: 900 !important;
+  letter-spacing: .14em !important;
+  text-transform: uppercase !important;
+}
+
+.breeding-program-heading h2 {
+  margin: 0 !important;
+  color: #17492f !important;
+  font-family: Georgia, "Times New Roman", serif !important;
+  font-size: clamp(38px, 4.2vw, 55px) !important;
+  font-weight: 500 !important;
+  line-height: .98 !important;
+  letter-spacing: -.025em !important;
+}
+
+.breeding-program-heading p {
+  max-width: 880px !important;
+  margin: 14px 0 0 !important;
+  color: #617468 !important;
+  font-size: 14px !important;
+  line-height: 1.45 !important;
+}
+
+/* Turn the existing text Close button into the square map-style X control.
+   No component rewrite is needed and accessibility text remains in the DOM. */
+.breeding-program-header > .secondary-button {
+  flex: 0 0 58px !important;
+  width: 58px !important;
+  min-width: 58px !important;
+  max-width: 58px !important;
+  height: 58px !important;
+  min-height: 58px !important;
+  margin-top: 0 !important;
+  padding: 0 !important;
+  display: grid !important;
+  place-items: center !important;
+  gap: 0 !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(52, 93, 62, .17) !important;
+  border-radius: 0 !important;
+  color: #285d3c !important;
+  background: rgba(255,255,255,.78) !important;
+  font-size: 0 !important;
+  box-shadow: none !important;
+}
+
+.breeding-program-header > .secondary-button svg {
+  width: 24px !important;
+  height: 24px !important;
+}
+
+.breeding-program-header > .secondary-button:hover,
+.breeding-program-header > .secondary-button:focus-visible {
+  border-color: rgba(46, 100, 60, .32) !important;
+  background: #f5f9f0 !important;
+  outline: none !important;
+}
+
+/* ---------------------------------------------------------------
+   Section navigation: fixed strip directly below the header.
+   --------------------------------------------------------------- */
+
+.breeding-program-tabs {
+  position: relative !important;
+  z-index: 3 !important;
+  min-height: 96px !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  border-bottom: 1px solid rgba(53, 91, 59, .16) !important;
+  background: rgba(248, 251, 245, .94) !important;
+}
+
+.breeding-program-tabs > button {
+  position: relative !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 96px !important;
+  display: grid !important;
+  grid-template-columns: 32px minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 14px !important;
+  padding: 18px 26px !important;
+  overflow: hidden !important;
+  border: 0 !important;
+  border-right: 1px solid rgba(53, 91, 59, .14) !important;
+  border-radius: 0 !important;
+  color: #315d40 !important;
+  background: rgba(249, 252, 246, .90) !important;
+  text-align: left !important;
+  box-shadow: none !important;
+}
+
+.breeding-program-tabs > button:last-child {
+  border-right: 0 !important;
+}
+
+.breeding-program-tabs > button > svg {
+  width: 23px !important;
+  height: 23px !important;
+}
+
+.breeding-program-tabs > button > span {
+  min-width: 0 !important;
+}
+
+.breeding-program-tabs > button strong,
+.breeding-program-tabs > button small {
+  display: block !important;
+  min-width: 0 !important;
+}
+
+.breeding-program-tabs > button strong {
+  color: inherit !important;
+  font-size: 13px !important;
+  line-height: 1.2 !important;
+}
+
+.breeding-program-tabs > button small {
+  margin-top: 4px !important;
+  overflow: hidden !important;
+  color: #7a8b80 !important;
+  font-size: 8.5px !important;
+  line-height: 1.35 !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.breeding-program-tabs > button.active {
+  color: #fff !important;
+  background:
+    linear-gradient(135deg, #2d7847, #4a9446) !important;
+}
+
+.breeding-program-tabs > button.active::after {
+  content: "" !important;
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  height: 5px !important;
+  background: #dce86f !important;
+}
+
+.breeding-program-tabs > button.active small {
+  color: rgba(255,255,255,.78) !important;
+}
+
+/* ---------------------------------------------------------------
+   Content: one full internal scrolling workspace, just like the map.
+   --------------------------------------------------------------- */
+
+.breeding-program-content {
+  position: relative !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding: 24px 30px 34px !important;
+  scrollbar-gutter: stable !important;
+  overscroll-behavior: contain !important;
+  background:
+    linear-gradient(180deg, rgba(246, 250, 242, .94), rgba(250, 252, 247, .98)) !important;
+}
+
+.breeding-program-content > .breeding-program-pane {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+}
+
+/* Remove the "dialog inside a dialog" feel from the first-level blocks. */
+.breeding-program-summary {
+  gap: 12px !important;
+}
+
+.breeding-program-summary > div {
+  border-radius: 0 !important;
+  border-color: rgba(55, 93, 60, .14) !important;
+  background: rgba(255,255,255,.74) !important;
+  box-shadow: none !important;
+}
+
+.breeding-program-search-row,
+.research-archive-controls,
+.protocol-card,
+.breeding-program-document-list > article,
+.breeding-program-upload,
+.brochure-intro,
+.brochure-preview-shell,
+.brochure-empty {
+  border-radius: 0 !important;
+}
+
+/* The map workspace uses crisp panels instead of large pill/card radii. */
+.protocol-card-grid {
+  gap: 12px !important;
+}
+
+.protocol-card {
+  border-color: rgba(51, 91, 58, .14) !important;
+  box-shadow: none !important;
+}
+
+.protocol-card:hover {
+  border-color: rgba(47, 104, 62, .28) !important;
+  box-shadow: 0 10px 24px rgba(35, 71, 43, .07) !important;
+}
+
+/* Keep long research archive work readable inside the internal workspace. */
+.research-card-list {
+  padding-bottom: 4px !important;
+}
+
+/* ---------------------------------------------------------------
+   Responsive behavior
+   --------------------------------------------------------------- */
+
+@media (max-width: 980px) {
+  .breeding-program-backdrop {
+    padding: 12px !important;
+  }
+
+  .breeding-program-shell {
+    height: calc(100dvh - 24px) !important;
+  }
+
+  .breeding-program-header {
+    min-height: 150px !important;
+    padding: 24px 22px 20px !important;
+  }
+
+  .breeding-program-heading {
+    grid-template-columns: 28px minmax(0, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  .breeding-program-heading h2 {
+    font-size: 38px !important;
+  }
+
+  .breeding-program-heading p {
+    margin-top: 10px !important;
+    font-size: 11px !important;
+  }
+
+  .breeding-program-header > .secondary-button {
+    flex-basis: 50px !important;
+    width: 50px !important;
+    min-width: 50px !important;
+    max-width: 50px !important;
+    height: 50px !important;
+    min-height: 50px !important;
+  }
+
+  .breeding-program-tabs,
+  .breeding-program-tabs > button {
+    min-height: 78px !important;
+  }
+
+  .breeding-program-tabs > button {
+    grid-template-columns: 24px minmax(0,1fr) !important;
+    gap: 8px !important;
+    padding: 12px 14px !important;
+  }
+
+  .breeding-program-tabs > button small {
+    display: none !important;
+  }
+
+  .breeding-program-content {
+    padding: 16px 18px 26px !important;
+  }
+}
+
+@media (max-width: 680px) {
+  .breeding-program-backdrop {
+    padding: 0 !important;
+  }
+
+  .breeding-program-shell {
+    height: 100dvh !important;
+    border: 0 !important;
+  }
+
+  .breeding-program-header {
+    min-height: 126px !important;
+    padding: 18px 14px 14px !important;
+  }
+
+  .breeding-program-heading {
+    grid-template-columns: 22px minmax(0, 1fr) !important;
+  }
+
+  .breeding-program-heading-icon {
+    width: 22px !important;
+    height: 22px !important;
+  }
+
+  .breeding-program-heading-icon svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  .breeding-program-heading small {
+    margin-bottom: 5px !important;
+    font-size: 8px !important;
+  }
+
+  .breeding-program-heading h2 {
+    font-size: 30px !important;
+  }
+
+  .breeding-program-heading p {
+    display: none !important;
+  }
+
+  .breeding-program-header > .secondary-button {
+    flex-basis: 42px !important;
+    width: 42px !important;
+    min-width: 42px !important;
+    max-width: 42px !important;
+    height: 42px !important;
+    min-height: 42px !important;
+  }
+
+  .breeding-program-tabs,
+  .breeding-program-tabs > button {
+    min-height: 64px !important;
+  }
+
+  .breeding-program-tabs > button {
+    grid-template-columns: 1fr !important;
+    place-items: center !important;
+    gap: 4px !important;
+    padding: 8px 4px !important;
+    text-align: center !important;
+  }
+
+  .breeding-program-tabs > button > svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  .breeding-program-tabs > button strong {
+    font-size: 9px !important;
+  }
+
+  .breeding-program-content {
+    padding: 12px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .breeding-program-backdrop,
+  .breeding-program-shell,
+  .breeding-program-content > .breeding-program-pane {
+    animation: none !important;
+  }
+}
