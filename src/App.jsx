@@ -13,7 +13,6 @@ import {
   clearListCache,
   clearQueryCache,
   exportAllRecords,
-  fileViewUrl,
   getRecord,
   getLocalRecordPreview,
   listRecentRecords,
@@ -26,6 +25,7 @@ import { prepareOfflineWorkspace } from './lib/offlineApp';
 import { getRegistryStats, subscribeRegistryStats } from './lib/registryStats';
 import SugarcaneIcon from './components/SugarcaneIcon.jsx';
 import ProfileCardPrintMenu from './components/ProfileCardPrintMenu.jsx';
+import StorageImage from './components/StorageImage.jsx';
 import DesktopPrimaryNav from './components/DesktopPrimaryNav.jsx';
 import { LegalPolicyModal, PolicyAcceptanceModal } from './components/LegalPolicyModal.jsx';
 import { policyPrefs, requiresPolicyAcceptance } from './lib/legalPolicy';
@@ -47,7 +47,7 @@ const BreedingProgramModal = lazy(() => import('./components/BreedingProgramModa
 const VarietyBrochureModal = lazy(() => import('./components/VarietyBrochureModal.jsx'));
 
 const APP_NAME = 'Sugarcane Germplasm Resource Database';
-const APP_VERSION = '2.13.86';
+const APP_VERSION = '2.13.91';
 const USER_CACHE_KEY = 'sugarcane-registry-user-v230';
 const ROLE_REFRESH_PREFIX = 'canesprout-role-refresh-v251:';
 const MANUAL_REFRESH_COOLDOWN_MS = 30_000;
@@ -384,7 +384,6 @@ function useViewportReveal() {
 }
 
 function RecordCard({ record, onOpen, index }) {
-  const image = fileViewUrl(record.thumbnail_file_id);
   const [cardRef, visible] = useViewportReveal();
   const [profilePreview, setProfilePreview] = useState(record.__bundledSnapshot ? record : null);
   const [cardPrintMenuOpen, setCardPrintMenuOpen] = useState(false);
@@ -404,6 +403,18 @@ function RecordCard({ record, onOpen, index }) {
   }, [visible, record.$id, record.variety]);
 
   const preview = profilePreview || record;
+  const imageFileId = String(
+    preview?.thumbnail_file_id ||
+    preview?.thumb_file_ids?.[0] ||
+    record?.thumbnail_file_id ||
+    ''
+  ).trim();
+  const imageFallbackId = String(
+    preview?.primary_file_id ||
+    preview?.photo_file_ids?.[0] ||
+    ''
+  ).trim();
+  const hasImage = Boolean(imageFileId || imageFallbackId);
   const missing = profilePreview ? 'Not recorded' : 'Loading…';
   const parentFemale = normalizeVarietyDisplay(safeGermplasmPreviewText(preview.parentage_female, ''));
   const parentMale = normalizeVarietyDisplay(safeGermplasmPreviewText(preview.parentage_male, ''));
@@ -460,8 +471,8 @@ function RecordCard({ record, onOpen, index }) {
         }
       }}
     >
-      <div className={`record-image ${image ? 'has-image' : ''}`}>
-        {image ? <img src={image} alt={record.variety || 'Sugarcane germplasm'} loading="lazy" decoding="async" fetchPriority="low" /> : <div className="record-placeholder"><SugarcaneIcon size={44} /><span>Germplasm photo optional</span></div>}
+      <div className={`record-image ${hasImage ? 'has-image' : ''}`}>
+        {hasImage ? <StorageImage fileId={imageFileId || imageFallbackId} fallbackFileId={imageFallbackId} alt={record.variety || 'Sugarcane germplasm'} loading="lazy" decoding="async" fetchPriority="low" /> : <div className="record-placeholder"><SugarcaneIcon size={44} /><span>Germplasm photo optional</span></div>}
         <span className={`record-status ${record.__offlinePending ? 'pending-sync' : ''}`}>{record.__offlinePending ? 'Pending sync' : record.__offlineSnapshot ? 'Offline cached' : 'Germplasm accession'}</span>
       </div>
       <div className="record-body">

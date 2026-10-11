@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Info, LoaderCircle, Maximize2, Printer, X, ZoomIn } from 'lucide-react';
-import { fileViewUrl, getRecord } from '../lib/registryApi';
+import { getRecord } from '../lib/registryApi';
 import { normalizeVarietyDisplay } from '../lib/legacyHyv';
 import { resolveRecordParentage } from '../lib/sourceParentage';
 import { brochurePhotoSlots } from '../lib/photoSections';
 import { brochureCharacteristics, openVarietyBrochure } from '../lib/varietyBrochure';
+import StorageImage from './StorageImage.jsx';
 
 function shown(value, fallback = 'N/A') {
   const valueText = String(value ?? '').trim();
@@ -12,10 +13,11 @@ function shown(value, fallback = 'N/A') {
 }
 
 function PartPhoto({ record, index, label, className = '', onOpen }) {
-  const fileId = index >= 0 ? record?.photo_file_ids?.[index] : '';
-  const url = fileId ? fileViewUrl(fileId) : '';
+  const fileId = index >= 0 ? String(record?.photo_file_ids?.[index] || '').trim() : '';
+  const thumbId = index >= 0 ? String(record?.thumb_file_ids?.[index] || '').trim() : '';
+  const displayId = thumbId || fileId;
 
-  if (!url) {
+  if (!displayId) {
     return (
       <div className={`collection-brochure-photo collection-brochure-photo-na ${className}`}>
         <span>{label}</span>
@@ -29,11 +31,11 @@ function PartPhoto({ record, index, label, className = '', onOpen }) {
     <button
       type="button"
       className={`collection-brochure-photo collection-brochure-photo-button ${className}`}
-      onClick={() => onOpen?.({ url, label })}
+      onClick={() => onOpen?.({ fileId: fileId || displayId, fallbackFileId: thumbId, label })}
       aria-label={`Open full-size ${label} photo`}
       title={`Click to enlarge ${label}`}
     >
-      <img src={url} alt={`${record?.variety || 'Sugarcane'} ${label}`} loading="eager" decoding="async" />
+      <StorageImage fileId={displayId} fallbackFileId={fileId} alt={`${record?.variety || 'Sugarcane'} ${label}`} loading="eager" decoding="async" />
       <span className="collection-brochure-photo-caption">{label}</span>
       <span className="collection-brochure-photo-zoom"><ZoomIn size={16} /> Enlarge</span>
     </button>
@@ -280,7 +282,7 @@ export default function VarietyBrochureModal({
               </button>
             </header>
             <div className="collection-brochure-photo-lightbox-image">
-              <img src={selectedPhoto.url} alt={`${record?.variety || 'Sugarcane'} ${selectedPhoto.label}`} />
+              <StorageImage fileId={selectedPhoto.fileId} fallbackFileId={selectedPhoto.fallbackFileId} alt={`${record?.variety || 'Sugarcane'} ${selectedPhoto.label}`} />
             </div>
           </div>
         </div>

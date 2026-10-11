@@ -1,0 +1,61 @@
+CaneSprout v2.13.90 -> v2.13.91
+GERMPLASM / REGISTRY IMAGE ACCESS FIX
+=====================================
+
+Scope
+-----
+This is not only a Variety Brochure fix.
+
+The patch updates image rendering throughout:
+- Germplasm / Registry collection cards
+- Variety Brochure modal
+- Brochure photo lightbox
+- Full Germplasm details / Photo documentation
+- Registry edit form existing-photo previews
+- Printable / downloadable variety brochure
+
+What was happening
+------------------
+CaneSprout stores germplasm photos in the shared Appwrite Storage bucket.
+Direct <img> URLs can fail on deployed browsers when a file requires logged-in
+read permission and browser privacy/cross-site cookie rules prevent the image
+request from carrying the Appwrite session.
+
+The old UI then showed broken images even though the file ID was still present.
+
+Fix
+---
+Images still try the normal lightweight URL first.
+If it fails, CaneSprout now:
+1. Uses the already logged-in Appwrite account to create a short-lived JWT.
+2. Fetches the same private Storage file with authenticated Appwrite headers.
+3. Displays it through a local browser blob URL.
+4. Falls back between thumbnail and original file IDs where both exist.
+5. Embeds authenticated data URLs in printable brochures.
+
+This does NOT make germplasm images public.
+This does NOT delete or rewrite Appwrite records or file permissions.
+
+Apply
+-----
+Extract directly into:
+D:\Germ\CaneSprout-Registry-v2.13.0-ELECTRON-OFFLINE-COMPLETE
+
+Then run:
+
+cd /d D:\Germ\CaneSprout-Registry-v2.13.0-ELECTRON-OFFLINE-COMPLETE
+
+APPLY-GERMPLASM-IMAGES-v2.13.91.cmd
+
+npm.cmd pkg get version
+npm.cmd run verify:germplasm-images
+npm.cmd run build
+
+Expected version:
+"2.13.91"
+
+Expected verification:
+26/26 checks passed.
+
+After Vercel deploys the commit, refresh the website once. v2.13.91 also bumps
+the service-worker cache so stale image-rendering JavaScript is replaced.

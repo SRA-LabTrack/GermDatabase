@@ -5,11 +5,12 @@ import { printVarietyProfile } from '../lib/profilePrint.js';
 import TraitValue from './TraitValue.jsx';
 import { CHARACTERIZATION_GROUPS, NEW_TEMPLATE_GROUP_TITLES } from '../lib/characterizationFields';
 import { GERMINATION_FIELDS } from '../lib/germinationFields';
-import { deleteRecord, deleteRecordByVariety, fileViewUrl, getRecord } from '../lib/registryApi';
+import { deleteRecord, deleteRecordByVariety, getRecord } from '../lib/registryApi';
 import { queueOfflineDelete } from '../lib/offlineQueue';
 import { isNetworkFailure } from '../lib/appwrite';
 import { messageFor, pct } from '../lib/registryUi';
 import { PHOTO_DOCUMENTATION_SECTIONS, normalizedPhotoCategories } from '../lib/photoSections';
+import StorageImage from './StorageImage.jsx';
 import { normalizeVarietyDisplay } from '../lib/legacyHyv';
 import { resolveRecordParentage } from '../lib/sourceParentage';
 
@@ -214,7 +215,7 @@ export default function DetailModal({ recordId, onClose, onEdit, onDeleted, onQu
                     <div className="detail-photo-category-heading"><strong>{section.label}</strong><small>{section.hint}</small></div>
                     <div className="photo-gallery">
                       {sectionPhotos.map(({ id, index }) => <button type="button" className="photo-thumb-button" key={id} onClick={() => setPhotoViewIndex(index)} title="Load full-resolution photo">
-                        <img src={fileViewUrl(record.thumb_file_ids?.[index] || id)} alt={record.photo_names?.[index] || section.label} loading="lazy" decoding="async" fetchPriority="low" />
+                        <StorageImage fileId={record.thumb_file_ids?.[index] || id} fallbackFileId={id} alt={record.photo_names?.[index] || section.label} loading="lazy" decoding="async" fetchPriority="low" />
                         <span>Open photo</span>
                       </button>)}
                     </div>
@@ -307,7 +308,7 @@ export default function DetailModal({ recordId, onClose, onEdit, onDeleted, onQu
         {record && photoViewIndex >= 0 && photos[photoViewIndex] && (
           <div className="photo-lightbox" onMouseDown={(event) => event.target === event.currentTarget && setPhotoViewIndex(-1)}>
             <button type="button" className="icon-button photo-lightbox-close" onClick={() => setPhotoViewIndex(-1)} aria-label="Close full photo"><X size={20} /></button>
-            <img src={fileViewUrl(photos[photoViewIndex])} alt={record.photo_names?.[photoViewIndex] || 'Full sugarcane field photo'} decoding="async" fetchPriority="high" />
+            <StorageImage fileId={photos[photoViewIndex]} fallbackFileId={record.thumb_file_ids?.[photoViewIndex]} alt={record.photo_names?.[photoViewIndex] || 'Full sugarcane field photo'} decoding="async" fetchPriority="high" />
             <span>{record.photo_names?.[photoViewIndex] || `Photo ${photoViewIndex + 1}`}</span>
           </div>
         )}

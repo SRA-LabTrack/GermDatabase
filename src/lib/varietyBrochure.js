@@ -1,4 +1,5 @@
 import { fileViewUrl } from './registryApi';
+import { authenticatedStorageDataUrl } from './storageImage';
 import { normalizeVarietyDisplay } from './legacyHyv';
 import { brochurePhotoSlots } from './photoSections';
 
@@ -89,6 +90,28 @@ function photoUrlAt(record, index) {
   return id ? fileViewUrl(id) : '';
 }
 
+async function printablePhotoOverrides(record = {}) {
+  const slots = brochurePhotoSlots(record);
+  const entries = [
+    ['overview', slots.overview],
+    ['stalk', slots.stalk],
+    ['eye', slots.budEye]
+  ];
+
+  const output = {};
+  await Promise.all(entries.map(async ([key, index]) => {
+    const id = index >= 0 ? record?.photo_file_ids?.[index] : '';
+    if (!id) return;
+    try {
+      output[key] = await authenticatedStorageDataUrl(id);
+    } catch {
+      output[key] = fileViewUrl(id);
+    }
+  }));
+
+  return output;
+}
+
 function partPhotoHtml(url, label, { circular = false, large = false } = {}) {
   if (!url) {
     return `<div class="part-photo ${large ? 'part-photo-large' : ''} ${circular ? 'part-photo-circle' : ''} part-photo-na">
@@ -103,14 +126,14 @@ function partPhotoHtml(url, label, { circular = false, large = false } = {}) {
   </figure>`;
 }
 
-export function printableVarietyBrochureHtml(record = {}) {
+export function printableVarietyBrochureHtml(record = {}, photoOverrides = {}) {
   const variety = shown(record.variety, 'Unnamed Variety');
   const slots = brochurePhotoSlots(record);
   const characteristics = brochureCharacteristics(record);
 
-  const overviewUrl = photoUrlAt(record, slots.overview);
-  const stalkUrl = photoUrlAt(record, slots.stalk);
-  const eyeUrl = photoUrlAt(record, slots.budEye);
+  const overviewUrl = photoOverrides.overview || photoUrlAt(record, slots.overview);
+  const stalkUrl = photoOverrides.stalk || photoUrlAt(record, slots.stalk);
+  const eyeUrl = photoOverrides.eye || photoUrlAt(record, slots.budEye);
 
   const rows = [
     ['Growth Habit', characteristics.growthHabit],
@@ -392,6 +415,10 @@ export function openVarietyBrochure(record = {}) {
   frame.className = 'cs-brochure-preview-frame';
   frame.title = `${variety} variety brochure`;
 
+  const resolvedHtml = printablePhotoOverrides(record)
+    .then((photos) => printableVarietyBrochureHtml(record, photos))
+    .catch(() => printableVarietyBrochureHtml(record));
+
   overlay.append(toolbar, frame);
 
   const previousOverflow = document.body.style.overflow;
@@ -413,14 +440,21 @@ export function openVarietyBrochure(record = {}) {
     if (event.key === 'Escape') closePreview();
   }
 
-  download.addEventListener('click', () => {
+  download.addEventListener('click', async () => {
     triggerDownload(
-      printableVarietyBrochureHtml(record),
+      await resolvedHtml,
       `${safeFilename(variety)}-Variety-Brochure.html`
     );
   });
 
-  print.addEventListener('click', () => {
+  print.addEventListener('click', async () => {
+    const html = await resolvedHtml;
+    if (frame.srcdoc !== html) {
+      await new Promise((resolve) => {
+        frame.onload = () => resolve();
+        frame.srcdoc = html;
+      });
+    }
     frame.contentWindow?.focus();
     frame.contentWindow?.print();
   });
@@ -430,6 +464,9 @@ export function openVarietyBrochure(record = {}) {
   activeBrochureClose = closePreview;
 
   frame.srcdoc = printableVarietyBrochureHtml(record);
+  resolvedHtml.then((html) => {
+    if (!closed && html) frame.srcdoc = html;
+  }).catch(() => {});
   close.focus();
 
   return { close: closePreview };

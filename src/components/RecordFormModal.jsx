@@ -6,9 +6,10 @@ import { formatBytes, prepareImageVariants } from '../lib/imageTools';
 import { queueOfflineRecord } from '../lib/offlineQueue';
 import { submitChangeRequest } from '../lib/approvalApi';
 import { ID, isNetworkFailure } from '../lib/appwrite';
-import { createManualRecord, deleteStoredFiles, fileViewUrl, saveRecord, upsertRecordByVariety, uploadPreparedPhotos } from '../lib/registryApi';
+import { createManualRecord, deleteStoredFiles, saveRecord, upsertRecordByVariety, uploadPreparedPhotos } from '../lib/registryApi';
 import { emptyForm, messageFor } from '../lib/registryUi';
 import { PHOTO_DOCUMENTATION_SECTIONS, normalizedPhotoCategories, primaryPhotoIndex } from '../lib/photoSections';
+import StorageImage from './StorageImage.jsx';
 
 const DRAFT_PREFIX = 'canesprout-local-draft-v230:';
 const DRAFT_SAVE_DELAY_MS = 900;
@@ -310,7 +311,7 @@ export default function RecordFormModal({ initial, actor, isAdmin = false, onlin
                 const selected = newPhotoItems.map((item, index) => ({ ...item, index })).filter((item) => item.category === section.key);
                 return <div className="photo-category-card" key={section.key}>
                   <div className="photo-category-heading"><div><strong>{section.label}</strong><small>{section.hint}</small></div><span>{existing.length + selected.length} photo{existing.length + selected.length === 1 ? '' : 's'}</span></div>
-                  {!!existing.length && <div className="edit-photo-grid">{existing.map(({ id, index }) => <div key={id}><img src={fileViewUrl(form.thumb_file_ids?.[index] || id)} alt={section.label} loading="lazy" decoding="async" /><button type="button" onClick={() => removeExisting(index)}><X size={14} /> Remove</button></div>)}</div>}
+                  {!!existing.length && <div className="edit-photo-grid">{existing.map(({ id, index }) => <div key={id}><StorageImage fileId={form.thumb_file_ids?.[index] || id} fallbackFileId={id} alt={section.label} loading="lazy" decoding="async" /><button type="button" onClick={() => removeExisting(index)}><X size={14} /> Remove</button></div>)}</div>}
                   <label className="photo-drop compact-photo-drop"><ImagePlus size={21} /><span><strong>Add {section.label}</strong><small>Up to 4 at a time • WebP compression before upload/offline save</small></span><input type="file" accept="image/*,.heic,.heif" multiple onChange={(event) => { addPhotos(section.key, event.target.files); event.target.value = ''; }} /></label>
                   {!!selected.length && <div className="selected-files">{selected.map(({ file, index }) => <span key={`${file.name}-${file.size}-${index}`}>{file.name} <small>{formatBytes(file.size)}</small><button type="button" onClick={() => removeNewPhoto(index)} aria-label={`Remove ${file.name}`}><X size={12} /></button></span>)}</div>}
                 </div>;
