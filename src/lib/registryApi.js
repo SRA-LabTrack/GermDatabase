@@ -793,6 +793,75 @@ function parseJsonObject(value) {
   }
 }
 
+function normalizeOriginMetadataCollision(record = {}) {
+  if (!record || typeof record !== 'object' || Array.isArray(record)) return record;
+
+  const next = { ...record };
+  const nestedOrigin =
+    next.origin && typeof next.origin === 'object' && !Array.isArray(next.origin)
+      ? next.origin
+      : null;
+
+  if (!nestedOrigin) return next;
+
+  const firstText = (...values) => {
+    for (const value of values) {
+      if (value == null || typeof value === 'object') continue;
+      const cleaned = String(value).trim();
+      if (cleaned) return cleaned;
+    }
+    return '';
+  };
+
+  // v2.13.88 stored workbook provenance inside details_json.origin. Because
+  // expandRecord() historically spread details_json directly onto the record,
+  // that nested object could overwrite the scalar origin country field.
+  // React then received an object as a card child when viewport previews loaded.
+  next.origin = firstText(
+    next.origin_country,
+    nestedOrigin.origin_country,
+    nestedOrigin.country
+  );
+
+  next.breeding_institution_developer_breeder = firstText(
+    next.breeding_institution_developer_breeder,
+    nestedOrigin.breeding_institution_developer_breeder,
+    nestedOrigin.breeding_institution,
+    nestedOrigin.breeder
+  );
+
+  next.collection_scope = firstText(
+    next.collection_scope,
+    nestedOrigin.collection_scope,
+    nestedOrigin.local_international_collection
+  );
+
+  next.species = firstText(
+    next.species,
+    nestedOrigin.species
+  );
+
+  next.genetic_background = firstText(
+    next.genetic_background,
+    nestedOrigin.genetic_background,
+    nestedOrigin.type_genetic_background
+  );
+
+  next.origin_other_details = firstText(
+    next.origin_other_details,
+    nestedOrigin.origin_other_details,
+    nestedOrigin.other_details
+  );
+
+  next.lot_planted_in_station = firstText(
+    next.lot_planted_in_station,
+    nestedOrigin.lot_planted_in_station,
+    nestedOrigin.lot_planted
+  );
+
+  return next;
+}
+
 function expandRecord(core, detail) {
   if (!core && !detail) return null;
   const traits = parseJsonObject(detail?.traits_json);
@@ -804,7 +873,14 @@ function expandRecord(core, detail) {
   // before live values so website/Electron can show the new traits without
   // spending ~700 Appwrite writes just to duplicate reference data. Any value
   // explicitly stored in Appwrite still wins over the bundled baseline.
-  return { ...OPTIONAL_TRAIT_DEFAULTS, ...baseline, ...traits, ...extra, ...(core || {}), $id: core?.$id || detail?.$id };
+  return normalizeOriginMetadataCollision({
+    ...OPTIONAL_TRAIT_DEFAULTS,
+    ...baseline,
+    ...traits,
+    ...extra,
+    ...(core || {}),
+    $id: core?.$id || detail?.$id
+  });
 }
 
 async function listAllCollection(collectionId, { orderByVariety = false, onProgress } = {}) {
@@ -909,7 +985,7 @@ export async function getLocalRecordPreview(record) {
 
   const hasLocalDetails = Boolean(snapshot || baseline?.variety);
   if (record.__bundledSnapshot) {
-    return {
+    return normalizeOriginMetadataCollision({
       ...OPTIONAL_TRAIT_DEFAULTS,
       ...baseline,
       ...record,
@@ -918,10 +994,10 @@ export async function getLocalRecordPreview(record) {
       __bundledSnapshot: !snapshot,
       __offlineSnapshot: Boolean(snapshot),
       __localPreview: hasLocalDetails
-    };
+    });
   }
 
-  return {
+  return normalizeOriginMetadataCollision({
     ...OPTIONAL_TRAIT_DEFAULTS,
     ...baseline,
     ...(snapshot || {}),
@@ -929,7 +1005,7 @@ export async function getLocalRecordPreview(record) {
     $id: record.$id || snapshot?.$id || baseline?.$id,
     __offlineSnapshot: Boolean(snapshot),
     __localPreview: hasLocalDetails
-  };
+  });
 }
 
 export async function getRecord(recordId, { bypassCache = false } = {}) {

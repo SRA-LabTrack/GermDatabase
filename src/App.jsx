@@ -57,6 +57,37 @@ function hasGermplasmPhoto(record) {
   return Boolean(String(record?.thumbnail_file_id || '').trim());
 }
 
+function safeGermplasmPreviewText(value, fallback = '') {
+  if (value == null) return fallback;
+
+  if (Array.isArray(value)) {
+    const joined = value
+      .map((item) => safeGermplasmPreviewText(item, ''))
+      .filter(Boolean)
+      .join(', ');
+    return joined || fallback;
+  }
+
+  if (typeof value === 'object') {
+    const candidates = [
+      value.origin_country,
+      value.country,
+      value.label,
+      value.name,
+      value.value
+    ];
+    for (const candidate of candidates) {
+      if (candidate == null || typeof candidate === 'object') continue;
+      const cleaned = String(candidate).trim();
+      if (cleaned) return cleaned;
+    }
+    return fallback;
+  }
+
+  const cleaned = String(value).trim();
+  return cleaned || fallback;
+}
+
 function photoFirstBrowseRecords(records, { searchInput = '', recentMode = false } = {}) {
   if (recentMode || String(searchInput || '').trim()) return records;
 
@@ -374,15 +405,22 @@ function RecordCard({ record, onOpen, index }) {
 
   const preview = profilePreview || record;
   const missing = profilePreview ? 'Not recorded' : 'Loading…';
-  const parentFemale = normalizeVarietyDisplay(preview.parentage_female || '');
-  const parentMale = normalizeVarietyDisplay(preview.parentage_male || '');
+  const parentFemale = normalizeVarietyDisplay(safeGermplasmPreviewText(preview.parentage_female, ''));
+  const parentMale = normalizeVarietyDisplay(safeGermplasmPreviewText(preview.parentage_male, ''));
   const parentals = parentMale && parentFemale
     ? `${parentMale} X ${parentFemale}`
     : parentMale || parentFemale || missing;
-  const tcHa = preview.yield_tc_ha || missing;
-  const lkgTc = preview.yield_lkg_tc || missing;
-  const recommended = preview.recommended_locations || preview.tested_location || missing;
-  const disease = preview.disease_reaction || missing;
+  const tcHa = safeGermplasmPreviewText(preview.yield_tc_ha, missing);
+  const lkgTc = safeGermplasmPreviewText(preview.yield_lkg_tc, missing);
+  const country = safeGermplasmPreviewText(preview.origin, safeGermplasmPreviewText(preview.origin_country, missing));
+  const species = safeGermplasmPreviewText(preview.species, missing);
+  const collectionYear = safeGermplasmPreviewText(preview.collection_year, missing);
+  const accessionNumber = safeGermplasmPreviewText(preview.accession_number, missing);
+  const recommended = safeGermplasmPreviewText(
+    preview.recommended_locations,
+    safeGermplasmPreviewText(preview.tested_location, missing)
+  );
+  const disease = safeGermplasmPreviewText(preview.disease_reaction, missing);
 
   async function printFromCard(event, mode) {
     event?.preventDefault?.();
@@ -430,10 +468,10 @@ function RecordCard({ record, onOpen, index }) {
         <div className="record-kicker"><span>Variety Name</span><SugarcaneIcon size={18} /></div>
         <h3>{record.variety || 'Unnamed variety'}</h3>
         <div className="germplasm-preview-grid">
-          <span><small>Accession Number</small><b>{preview.accession_number || missing}</b></span>
-          <span className="new-trait-preview"><small>Country</small><b>{preview.origin || missing}</b></span>
-          <span><small>Collection Year</small><b>{preview.collection_year || missing}</b></span>
-          <span className="new-trait-preview"><small>Species</small><b>{preview.species || missing}</b></span>
+          <span><small>Accession Number</small><b>{accessionNumber}</b></span>
+          <span className="new-trait-preview"><small>Country</small><b>{country}</b></span>
+          <span><small>Collection Year</small><b>{collectionYear}</b></span>
+          <span className="new-trait-preview"><small>Species</small><b>{species}</b></span>
           <span className="preview-wide"><small>Parentage</small><b>{parentals}</b></span>
           <span className="preview-yield"><small>Yield Potential</small><b><em>TC/Ha</em> {tcHa}<i /> <em>LKg/TC</em> {lkgTc}</b></span>
           <span className="preview-wide"><small>Recommended Locations</small><b>{recommended}</b></span>

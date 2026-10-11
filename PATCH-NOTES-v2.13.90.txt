@@ -1,0 +1,55 @@
+CORRECTED BUILD
+---------------
+This corrected patch fixes a syntax error in the first v2.13.90 hotfix package.
+The failed first package stopped before modifying CaneSprout, so it is safe to replace it with this one.
+
+CaneSprout v2.13.89 -> v2.13.90
+GERMPLASM SCROLL CRASH HOTFIX
+================================
+
+Observed symptom
+----------------
+When the Germplasm Collection cards entered the viewport, React could fall into the
+"The app shell could not start cleanly" recovery screen.
+
+Root cause
+----------
+The v2.13.88 workbook update intentionally stored provenance metadata under
+details_json.origin. The runtime expandRecord() function spread details_json directly
+onto the visible record. That nested `origin` object could overwrite the normal scalar
+Country field named `origin`.
+
+When a Germplasm card became visible, getLocalRecordPreview() loaded a cached/offline
+expanded snapshot. React then attempted to render that object as the Country text,
+which can throw and trigger the root error boundary.
+
+Fix
+---
+- Flatten/sanitize nested origin metadata before returning expanded records.
+- Sanitize stale IndexedDB/offline preview snapshots without deleting them.
+- Render Germplasm card preview values through a safe text formatter.
+- Preserve Country, breeder, collection scope, species, genetic background and other
+  new workbook attributes.
+- No Appwrite records are deleted or rewritten.
+- No schema/setup command is needed.
+
+Apply
+-----
+Extract directly into:
+D:\Germ\CaneSprout-Registry-v2.13.0-ELECTRON-OFFLINE-COMPLETE
+
+Run:
+
+cd /d D:\Germ\CaneSprout-Registry-v2.13.0-ELECTRON-OFFLINE-COMPLETE
+
+APPLY-GERMPLASM-SCROLL-CRASH-HOTFIX-v2.13.90.cmd
+
+npm.cmd pkg get version
+npm.cmd run verify:germplasm-scroll-crash
+npm.cmd run build
+
+Expected version:
+"2.13.90"
+
+After deploying to Vercel, refresh the browser once so the new versioned app shell
+replaces any cached v2.13.89 assets.
