@@ -1,0 +1,39 @@
+CaneSprout v2.13.88 -> v2.13.89
+BREEDING PROGRAM TWO-SECTIONS PATCH
+===================================
+
+Requested change
+----------------
+Remove Variety Brochure from the Breeding Program section because it is redundant.
+
+Breeding Program after this patch
+---------------------------------
+1. SOP & Protocols
+2. Research Archive
+
+What this patch changes
+-----------------------
+- Removes the Variety Brochure navigation tab from Breeding Program.
+- Removes the Breeding Program brochure panel and its brochure-only imports.
+- Keeps existing brochure utilities elsewhere in CaneSprout untouched.
+- Changes the Breeding Program navigation from three equal columns to two.
+- Updates the Breeding Program description to match the focused two-section workspace.
+- Bumps package.json, package-lock.json, and public/version.json to 2.13.89.
+- Adds npm verifier: verify:breeding-program-two-sections
+
+Apply
+-----
+Extract this ZIP directly into:
+D:\Germ\CaneSprout-Registry-v2.13.0-ELECTRON-OFFLINE-COMPLETE
+
+Then run:
+
+cd /d D:\Germ\CaneSprout-Registry-v2.13.0-ELECTRON-OFFLINE-COMPLETE
+
+APPLY-BREEDING-PROGRAM-TWO-SECTIONS-v2.13.89.cmd
+
+npm.cmd pkg get version
+npm.cmd run verify:breeding-program-two-sections
+npm.cmd run build
+
+No Appwrite setup command is required for this patch because this is a UI/source cleanup only.

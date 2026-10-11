@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
   Archive,
@@ -18,7 +18,6 @@ import {
   Upload,
   X
 } from 'lucide-react';
-import SugarcaneIcon from './SugarcaneIcon.jsx';
 import {
   breedingProgramFileDownloadUrl,
   breedingProgramFileViewUrl,
@@ -29,8 +28,6 @@ import {
   updateBreedingProgramDocument,
   uploadBreedingProgramDocument
 } from '../lib/breedingProgramApi.js';
-import { fileViewUrl, getRecord, listRecords } from '../lib/registryApi.js';
-import { openVarietyBrochure } from '../lib/varietyBrochure.js';
 
 const BUNDLED_PROTOCOLS = [
   {
@@ -838,134 +835,6 @@ function ResearchArchive({ isAdmin, actor, online }) {
   );
 }
 
-function BrochurePanel() {
-  const [query, setQuery] = useState('');
-  const [suggestions, setSuggestions] = useState([]);
-  const [searching, setSearching] = useState(false);
-  const [selected, setSelected] = useState(null);
-  const [loadingRecord, setLoadingRecord] = useState(false);
-  const [error, setError] = useState('');
-  const requestRef = useRef(0);
-
-  useEffect(() => {
-    const term = query.trim();
-    if (term.length < 3) {
-      setSuggestions([]);
-      return undefined;
-    }
-
-    const requestId = ++requestRef.current;
-    const timer = window.setTimeout(async () => {
-      setSearching(true);
-      try {
-        const result = await listRecords({ search: term, scope: 'variety' });
-        if (requestId === requestRef.current) setSuggestions(result.documents || []);
-      } catch (err) {
-        if (requestId === requestRef.current) setError(err?.message || String(err));
-      } finally {
-        if (requestId === requestRef.current) setSearching(false);
-      }
-    }, 240);
-
-    return () => window.clearTimeout(timer);
-  }, [query]);
-
-  async function choose(item) {
-    setError('');
-    setSuggestions([]);
-    setQuery(item.variety || '');
-    setLoadingRecord(true);
-    try {
-      const full = await getRecord(item.$id);
-      setSelected(full);
-    } catch (err) {
-      setError(err?.message || String(err));
-    } finally {
-      setLoadingRecord(false);
-    }
-  }
-
-  const photoUrl = selected
-    ? fileViewUrl(selected.primary_file_id || selected.thumbnail_file_id || selected.photo_file_ids?.[0])
-    : '';
-
-  return (
-    <div className="breeding-program-pane">
-      <div className="brochure-intro">
-        <div>
-          <small>Variety communication</small>
-          <h3>Variety Brochure</h3>
-          <p>Search a registered variety to generate a cleaner brochure-style presentation of its core germplasm data.</p>
-        </div>
-        <Printer size={26} />
-      </div>
-
-      <div className="brochure-search-wrap">
-        <label className="breeding-program-search-row">
-          <Search size={18} />
-          <input value={query} onChange={(event) => { setQuery(event.target.value); setSelected(null); setError(''); }} placeholder="Search a registered variety…" />
-          {searching && <LoaderCircle className="spin" size={17} />}
-        </label>
-
-        {suggestions.length > 0 && (
-          <div className="brochure-search-results">
-            {suggestions.slice(0, 12).map((item) => (
-              <button key={item.$id} type="button" onClick={() => choose(item)}>
-                <SugarcaneIcon size={16} />
-                <span>{item.variety}</span>
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {error && <div className="breeding-program-inline-error">{error}</div>}
-      {loadingRecord && <div className="breeding-program-loading"><LoaderCircle className="spin" size={22} /> Loading complete variety record…</div>}
-
-      {!selected && !loadingRecord && (
-        <div className="brochure-empty">
-          <SugarcaneIcon size={40} />
-          <strong>Select a variety</strong>
-          <span>The brochure preview will use the current CaneSprout core data for that variety.</span>
-        </div>
-      )}
-
-      {selected && (
-        <div className="brochure-preview-shell">
-          <div className="brochure-preview">
-            <div className="brochure-preview-photo" style={photoUrl ? { backgroundImage: `url("${photoUrl}")` } : undefined}>
-              {!photoUrl && <span>Germplasm photo not recorded</span>}
-            </div>
-            <div className="brochure-preview-identity">
-              <small>Sugarcane Breeding Program · Variety Brochure</small>
-              <h2>{selected.variety || 'Unnamed Variety'}</h2>
-              <p>Core germplasm data presented as a concise breeding and field reference.</p>
-              <div className="brochure-preview-chips">
-                <span>{selected.species || 'Species not recorded'}</span>
-                <span>{selected.origin || 'Origin not recorded'}</span>
-              </div>
-            </div>
-            <div className="brochure-preview-facts">
-              <div><small>Accession no.</small><strong>{selected.accession_number || 'Not recorded'}</strong></div>
-              <div><small>Collection year</small><strong>{selected.collection_year || 'Not recorded'}</strong></div>
-              <div><small>Male parent</small><strong>{selected.parentage_male || 'Not recorded'}</strong></div>
-              <div><small>Female parent</small><strong>{selected.parentage_female || 'Not recorded'}</strong></div>
-              <div><small>Yield · TC/Ha</small><strong>{selected.yield_tc_ha || 'Not recorded'}</strong></div>
-              <div><small>Yield · LKg/TC</small><strong>{selected.yield_lkg_tc || 'Not recorded'}</strong></div>
-              <div className="wide"><small>Recommended locations</small><strong>{selected.recommended_locations || selected.tested_location || 'Not recorded'}</strong></div>
-              <div className="wide"><small>Reaction to diseases</small><strong>{selected.disease_reaction || 'Not recorded'}</strong></div>
-            </div>
-          </div>
-
-          <div className="brochure-preview-actions">
-            <button type="button" className="primary-button" onClick={() => openVarietyBrochure(selected)}><Printer size={17} /> Open printable brochure</button>
-            <span>Use the browser print dialog to print or save the brochure as PDF.</span>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
 
 export default function BreedingProgramModal({
   actor,
@@ -1009,7 +878,7 @@ export default function BreedingProgramModal({
             <div>
               <small>Knowledge, protocols & station research</small>
               <h2 id="breeding-program-title">Breeding Program</h2>
-              <p>Germplasm and breeding SOPs, station research archive, and variety brochure tools in one workspace.</p>
+              <p>Germplasm and breeding SOPs and the station research archive in one focused workspace.</p>
             </div>
           </div>
           <button type="button" className="secondary-button" onClick={onClose}><X size={18} /> Close</button>
@@ -1024,16 +893,11 @@ export default function BreedingProgramModal({
             <Archive size={18} />
             <span><strong>Research Archive</strong><small>View, print/PDF, and edit previous station studies</small></span>
           </button>
-          <button type="button" className={tab === 'brochure' ? 'active' : ''} onClick={() => setTab('brochure')}>
-            <FileText size={18} />
-            <span><strong>Variety Brochure</strong><small>Improved presentation of core variety data</small></span>
-          </button>
         </nav>
 
         <main className="breeding-program-content">
           {tab === 'protocols' && <ProtocolLibrary isAdmin={isAdmin} actor={actor} online={online} />}
           {tab === 'research' && <ResearchArchive isAdmin={isAdmin} actor={actor} online={online} />}
-          {tab === 'brochure' && <BrochurePanel />}
         </main>
       </section>
     </div>,

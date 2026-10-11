@@ -9,3 +9,4 @@ release/
 
 .vercel
 .env*
+*.v*-backup

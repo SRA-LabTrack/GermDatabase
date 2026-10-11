@@ -1,7 +1,7 @@
 {
   "name": "canesprout-registry",
   "private": true,
-  "version": "2.13.88",
+  "version": "2.13.89",
   "description": "Sugarcane Germplasm Resource Database unified web + Electron offline-first edition with red-font Origin/other attributes, A:CH Excel support, local desktop enrollment, persistent offline mutation queues, and paced Appwrite reconnect sync.",
   "main": "electron/main.cjs",
   "author": "SRA-LabTrack",
@@ -87,7 +87,8 @@
     "verify:breeding-storage-reuse": "node scripts/verify-breeding-storage-reuse-v2.13.83.mjs",
     "verify:main-tools-nav": "node scripts/verify-main-tools-nav-v2.13.84.mjs",
     "verify:breeding-map-layout": "node scripts/verify-breeding-map-layout-v2.13.85.mjs",
-    "verify:breeding-content-space": "node scripts/verify-breeding-content-space-v2.13.86.mjs"
+    "verify:breeding-content-space": "node scripts/verify-breeding-content-space-v2.13.86.mjs",
+    "verify:breeding-program-two-sections": "node scripts/verify-breeding-program-two-sections-v2.13.89.mjs"
   },
   "dependencies": {
     "appwrite": "^26.2.0",

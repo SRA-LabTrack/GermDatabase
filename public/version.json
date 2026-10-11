@@ -1,8 +1,8 @@
 {
-  "version": "2.13.88",
+  "version": "2.13.89",
   "channel": "stable",
-  "notes": "Rebalances the Breeding Program map-style workspace so the header and section navigation are smaller and SOP, Research Archive, and Variety Brochure content gets substantially more visible space.",
+  "notes": "Simplifies the Breeding Program workspace to two focused sections: SOP & Protocols and Research Archive. Variety Brochure is removed from Breeding Program because brochure access is already available elsewhere.",
   "migration": "combination-registry-v2100",
-  "updated": "2026-10-10",
-  "updatedAt": "2026-10-10T08:55:32.886Z"
+  "updated": "2026-10-11",
+  "updatedAt": "2026-10-11T05:00:25.618Z"
 }
