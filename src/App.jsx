@@ -47,7 +47,7 @@ const BreedingProgramModal = lazy(() => import('./components/BreedingProgramModa
 const VarietyBrochureModal = lazy(() => import('./components/VarietyBrochureModal.jsx'));
 
 const APP_NAME = 'Sugarcane Germplasm Resource Database';
-const APP_VERSION = '2.13.91';
+const APP_VERSION = '2.13.92';
 const USER_CACHE_KEY = 'sugarcane-registry-user-v230';
 const ROLE_REFRESH_PREFIX = 'canesprout-role-refresh-v251:';
 const MANUAL_REFRESH_COOLDOWN_MS = 30_000;

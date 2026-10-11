@@ -15,7 +15,7 @@ function shown(value, fallback = 'N/A') {
 function PartPhoto({ record, index, label, className = '', onOpen }) {
   const fileId = index >= 0 ? String(record?.photo_file_ids?.[index] || '').trim() : '';
   const thumbId = index >= 0 ? String(record?.thumb_file_ids?.[index] || '').trim() : '';
-  const displayId = thumbId || fileId;
+  const displayId = fileId || thumbId;
 
   if (!displayId) {
     return (
@@ -35,7 +35,7 @@ function PartPhoto({ record, index, label, className = '', onOpen }) {
       aria-label={`Open full-size ${label} photo`}
       title={`Click to enlarge ${label}`}
     >
-      <StorageImage fileId={displayId} fallbackFileId={fileId} alt={`${record?.variety || 'Sugarcane'} ${label}`} loading="eager" decoding="async" />
+      <StorageImage fileId={displayId} fallbackFileId={thumbId} alt={`${record?.variety || 'Sugarcane'} ${label}`} loading="eager" decoding="async" fetchPriority={className.includes('main') ? 'high' : 'auto'} />
       <span className="collection-brochure-photo-caption">{label}</span>
       <span className="collection-brochure-photo-zoom"><ZoomIn size={16} /> Enlarge</span>
     </button>

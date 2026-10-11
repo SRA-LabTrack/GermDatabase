@@ -1,0 +1,43 @@
+CaneSprout v2.13.91 -> v2.13.92
+VARIETY BROCHURE FULL-RESOLUTION PREVIEW FIX
+============================================
+
+Problem
+-------
+The Variety Brochure's large inline preview looked blurry while the Enlarged
+photo was clear.
+
+Cause
+-----
+v2.13.91 intentionally tried the compressed thumbnail first in the inline
+brochure preview. This is efficient for small cards, but the brochure's large
+Whole Variety panel stretches that thumbnail over a much larger area.
+
+Fix
+---
+- The brochure now uses the original full-resolution Appwrite image first.
+- The thumbnail is retained only as a fallback.
+- The large main brochure image gets high fetch priority when the brochure opens.
+- The Enlarge/lightbox behavior remains full resolution.
+- Registry/Germplasm collection cards still use bandwidth-friendly thumbnails
+  where appropriate.
+- No records, images, file IDs, or Appwrite permissions are modified.
+
+Apply
+-----
+Extract directly into:
+D:\Germ\CaneSprout-Registry-v2.13.0-ELECTRON-OFFLINE-COMPLETE
+
+Run:
+
+cd /d D:\Germ\CaneSprout-Registry-v2.13.0-ELECTRON-OFFLINE-COMPLETE
+
+APPLY-BROCHURE-FULL-RES-PREVIEW-v2.13.92.cmd
+
+npm.cmd pkg get version
+npm.cmd run verify:brochure-full-res-preview
+npm.cmd run build
+
+Expected:
+"2.13.92"
+12/12 checks passed.

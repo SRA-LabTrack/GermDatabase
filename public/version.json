@@ -1,8 +1,8 @@
 {
-  "version": "2.13.91",
+  "version": "2.13.92",
   "channel": "stable",
-  "notes": "Restores germplasm and registry images across collection cards, variety brochure, full detail/photo documentation, edit previews, and printable brochures. Private Appwrite Storage files fall back to authenticated JWT-backed blob/data URLs when direct image URLs are blocked by browser privacy rules.",
+  "notes": "Uses original full-resolution germplasm photos in the on-screen Variety Brochure preview. Thumbnail files remain as fallback only, so the large Whole Variety panel stays sharp while preserving recovery behavior.",
   "migration": "combination-registry-v2100",
   "updated": "2026-10-11",
-  "updatedAt": "2026-10-11T05:30:58.599Z"
+  "updatedAt": "2026-10-11T05:36:35.775Z"
 }
